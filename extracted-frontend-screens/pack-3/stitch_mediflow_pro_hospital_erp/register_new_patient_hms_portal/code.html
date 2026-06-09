@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register Patient - Steward HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#7c839b",
+                        "surface-container": "#eceef0",
+                        "surface-tint": "#565e74",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed": "#001a42",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary": "#000000",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#131b2e",
+                        "outline": "#76777d",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-container": "#2170e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#009668",
+                        "secondary": "#0058be",
+                        "on-background": "#191c1e",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "tertiary-container": "#002113",
+                        "surface-bright": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+        
+        /* Custom scrollbar for tight form layouts */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c6c6cd; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #76777d; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex flex-col min-h-screen antialiased">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface flex justify-between items-center w-full px-layout-margin h-16 border-b border-outline-variant dark:border-outline top-0 z-50">
+<div class="flex items-center gap-md">
+<!-- Brand -->
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary">
+                Steward HMS
+            </div>
+<!-- Breadcrumb (Not in JSON, but typical for context) -->
+<nav class="hidden md:flex items-center text-on-surface-variant font-body-sm text-body-sm ml-lg">
+<a class="hover:text-primary transition-colors" href="#">Patient Directory</a>
+<span class="material-symbols-outlined mx-sm text-[16px]">chevron_right</span>
+<span class="text-primary font-medium">New Patient Registration</span>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<!-- Global Search (Left per JSON logic, placed here in top bar context) -->
+<div class="hidden md:flex items-center bg-surface-container-low rounded-full px-md py-sm border border-outline-variant focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm text-[20px]">search</span>
+<input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder-on-surface-variant focus:ring-0 w-48" placeholder="Search patients, ID..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-sm">
+<button aria-label="notifications" class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button aria-label="settings" class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button aria-label="help" class="p-sm rounded-full text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<!-- Emergency Secondary Action -->
+<button class="hidden lg:flex items-center gap-sm px-md py-sm bg-error-container text-on-error-container rounded-DEFAULT font-label-md text-label-md hover:bg-error/10 transition-colors border border-error/20">
+<span class="material-symbols-outlined text-[18px]">emergency</span>
+                Emergency
+            </button>
+<!-- Profile -->
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center ml-sm overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a medical practitioner wearing a white coat and stethoscope, smiling warmly in a well-lit modern hospital corridor. The lighting is soft and natural, emphasizing approachability and competence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrxpeBVVdG3aIGsf3X2SlJ_8iIy4ZKFs_SIKSAr6Ylc4DoqDgNBRrkwesYTc0WydjS1alPhmQ-TIXVfFAZIy-IXaknD9Yb9Ztfq38yQNCiAvXxC0UMlNWxjwDtO-O16Gr-vGUkdeWfxgsQWYfjbBZ89A0sCFc4CfXpPszoFSqeP6UvvF_vicpYg2h0DD9-xnH32KYVoFBurIufX1yVqxhj1inpRZQ9bxBKTwO1uVKuSOfAvL9b8ii9hquCQNfXTbQ1Ru-9uLw3nk0"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full py-lg gap-sm fixed left-0 top-16 w-[280px] bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline z-40 overflow-y-auto pb-24">
+<!-- Header -->
+<div class="px-layout-margin mb-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-DEFAULT bg-white flex items-center justify-center shadow-sm border border-outline-variant">
+<span class="material-symbols-outlined text-secondary text-[24px]">local_hospital</span>
+</div>
+<div>
+<h2 class="font-title-lg text-title-lg font-bold text-on-surface">City General</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">OPD Ward A</p>
+</div>
+</div>
+</div>
+<!-- CTA -->
+<div class="px-layout-margin mb-md">
+<button class="w-full flex items-center justify-center gap-sm bg-secondary text-on-secondary py-sm px-md rounded-DEFAULT font-label-md text-label-md hover:opacity-90 transition-opacity shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Registration
+                </button>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 px-sm space-y-1">
+<!-- Patient Directory (Active) -->
+<a class="flex items-center gap-md px-md py-sm text-secondary dark:text-secondary-fixed-dim bg-secondary-container/10 border-l-4 border-secondary hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all scale-[0.99] duration-100 group" href="#">
+<span class="material-symbols-outlined fill group-hover:scale-110 transition-transform">folder_shared</span>
+<span class="font-label-md text-label-md">Patient Directory</span>
+</a>
+<!-- OPD Queue (Inactive) -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all border-l-4 border-transparent group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">clinical_notes</span>
+<span class="font-label-md text-label-md">OPD Queue</span>
+</a>
+<!-- Appointments (Inactive) -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all border-l-4 border-transparent group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_month</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+<!-- Billing (Inactive) -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all border-l-4 border-transparent group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+<!-- Reports (Inactive) -->
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all border-l-4 border-transparent group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">assessment</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+<!-- Footer Links -->
+<div class="mt-auto px-sm pt-md border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[280px] p-layout-margin overflow-y-auto bg-background">
+<!-- Focused Modal-like Layout Container -->
+<div class="max-w-4xl mx-auto bg-surface border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<!-- Form Header -->
+<div class="px-xl py-lg border-b border-outline-variant bg-surface-container-lowest flex justify-between items-start">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface mb-xs">Register Patient</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Complete demographic and contact details to initiate a new patient record.</p>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant font-label-sm text-label-sm">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+</span>
+                        Draft Auto-saving...
+                    </div>
+</div>
+<!-- Form Content -->
+<form class="p-xl space-y-xl">
+<!-- Section: Demographics -->
+<section>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">person</span>
+                            Demographics
+                        </h3>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-x-md gap-y-lg">
+<!-- Full Name -->
+<div class="md:col-span-12 lg:col-span-6 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="fullName">
+                                    Full Legal Name <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all placeholder-on-surface-variant" id="fullName" placeholder="e.g. Jane Doe" type="text"/>
+</div>
+<!-- DOB -->
+<div class="md:col-span-6 lg:col-span-3 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="dob">
+                                    Date of Birth <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all appearance-none" id="dob" type="date"/>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">calendar_today</span>
+</div>
+</div>
+<!-- Sex -->
+<div class="md:col-span-6 lg:col-span-3 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="sex">
+                                    Sex at Birth <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all appearance-none pr-xl" id="sex">
+<option disabled="" selected="" value="">Select...</option>
+<option value="f">Female</option>
+<option value="m">Male</option>
+<option value="o">Other</option>
+<option value="u">Unknown</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<!-- Phone -->
+<div class="md:col-span-6 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="phone">
+                                    Primary Phone <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all placeholder-on-surface-variant" id="phone" placeholder="(555) 000-0000" type="tel"/>
+</div>
+<!-- Email -->
+<div class="md:col-span-6 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all placeholder-on-surface-variant" id="email" placeholder="jane.doe@example.com" type="email"/>
+</div>
+</div>
+</section>
+<hr class="border-outline-variant"/>
+<!-- Section: Identifiers -->
+<section>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">badge</span>
+                            Identifiers
+                        </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-md gap-y-lg">
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="nationalId">
+                                    National ID / SSN <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-mono placeholder-on-surface-variant" id="nationalId" placeholder="XXX-XX-XXXX" type="text"/>
+</div>
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface" for="mrn">Medical Record Number (MRN)</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface-variant bg-surface-container-low cursor-not-allowed" disabled="" id="mrn" type="text" value="Auto-generated upon save"/>
+</div>
+</div>
+</section>
+<hr class="border-outline-variant"/>
+<!-- Section: Address -->
+<section>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">home</span>
+                            Residential Address
+                        </h3>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-x-md gap-y-lg">
+<div class="md:col-span-12 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="street">
+                                    Street Address
+                                </label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all placeholder-on-surface-variant" id="street" placeholder="123 Main St, Apt 4B" type="text"/>
+</div>
+<div class="md:col-span-6 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface" for="city">City</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" id="city" type="text"/>
+</div>
+<div class="md:col-span-3 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface" for="state">State/Region</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" id="state" type="text"/>
+</div>
+<div class="md:col-span-3 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface" for="zip">ZIP/Postal Code</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-mono" id="zip" type="text"/>
+</div>
+</div>
+</section>
+<hr class="border-outline-variant"/>
+<!-- Section: Emergency Contact -->
+<section class="bg-surface-container-low p-md rounded-lg border border-outline-variant border-dashed">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">contact_emergency</span>
+                            Emergency Contact
+                        </h3>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-x-md gap-y-lg">
+<div class="md:col-span-5 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="ecName">
+                                    Contact Name <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" id="ecName" type="text"/>
+</div>
+<div class="md:col-span-3 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="ecRel">
+                                    Relationship <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all appearance-none pr-xl" id="ecRel">
+<option disabled="" selected="" value="">Select...</option>
+<option value="spouse">Spouse</option>
+<option value="parent">Parent</option>
+<option value="child">Child</option>
+<option value="other">Other</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="md:col-span-4 flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface flex items-center" for="ecPhone">
+                                    Contact Phone <span class="w-1.5 h-1.5 rounded-full bg-error ml-sm" title="Required"></span>
+</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-DEFAULT px-md py-sm font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" id="ecPhone" type="tel"/>
+</div>
+</div>
+</section>
+<!-- Consent -->
+<div class="mt-xl flex items-start gap-sm bg-primary-fixed/30 p-md rounded-DEFAULT border border-primary-fixed-dim">
+<div class="flex items-center h-5">
+<input class="w-4 h-4 text-secondary bg-surface-container-lowest border-outline-variant rounded focus:ring-secondary/50 focus:ring-2 cursor-pointer" id="consent" type="checkbox"/>
+</div>
+<div class="flex flex-col">
+<label class="font-label-md text-label-md text-on-surface cursor-pointer" for="consent">
+                                Data Processing Consent &amp; HIPAA Acknowledgement
+                            </label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">
+                                Patient or guardian has consented to the collection, processing, and storage of health data according to institution policies and regulatory guidelines.
+                            </p>
+</div>
+</div>
+</form>
+<!-- Form Footer Actions -->
+<div class="px-xl py-lg bg-surface-container-low border-t border-outline-variant flex justify-end gap-md items-center">
+<button class="px-lg py-sm font-label-md text-label-md text-on-surface bg-transparent border border-outline rounded-DEFAULT hover:bg-surface-container-highest transition-colors" type="button">
+                        Cancel
+                    </button>
+<button class="px-lg py-sm font-label-md text-label-md text-on-primary bg-primary border border-primary rounded-DEFAULT hover:opacity-90 transition-opacity shadow-sm flex items-center gap-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                        Save &amp; Create OPD Visit
+                    </button>
+</div>
+</div>
+<!-- Bottom spacing for mobile -->
+<div class="h-24 md:h-8"></div>
+</main>
+</div>
+</body></html>

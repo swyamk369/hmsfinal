@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rapid Triage Assessment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#45464d",
+                        "tertiary-container": "#002113",
+                        "surface-dim": "#d8dadc",
+                        "surface-container": "#eceef0",
+                        "surface-bright": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#0058be",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-container": "#2170e4",
+                        "surface-tint": "#565e74",
+                        "inverse-primary": "#bec6e0",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-container": "#fefcff",
+                        "primary-container": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-error": "#ffffff",
+                        "background": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-fixed": "#dae2fd",
+                        "on-tertiary-fixed": "#002113",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-container": "#7c839b",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "error": "#ba1a1a",
+                        "tertiary": "#000000",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#6ffbbe",
+                        "outline-variant": "#c6c6cd",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary-container": "#009668",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px",
+                        "xl": "32px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "title-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex font-body-md">
+<!-- Shared Component: SideNavBar -->
+<aside class="hidden md:flex fixed left-0 top-0 h-full w-[280px] z-40 bg-surface dark:bg-inverse-surface border-r border-outline-variant flex-col py-lg px-md no-shadows">
+<!-- Header -->
+<div class="flex items-center gap-md mb-xl px-sm">
+<div class="w-12 h-12 rounded-full bg-surface-container-high overflow-hidden flex-shrink-0">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a female doctor in her 40s wearing a white coat and stethoscope. She has a warm, confident expression. The background is a slightly blurred modern clinical setting with soft natural light. The lighting is high-key and professional, suitable for a corporate medical application profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLpq5iodp24W-Tw_V57bZrFBs_707Lr1fRunITEiAwqGHw7ry0XZBTudaTnP3VmZLEZrs3qcuSz-OkmTvBq8ezfCKL577gz5SWuzPTnxZMK4auQDJa2eQ8-oj3Zy1CDVoV98M1Bh0CbKYxlJtpzoshXr4tO8B8EHvLeSRPu7skYMpQTw9oFe4-fItxFm3LaQ7rbd4szl_Q1ZLeIWTFEgxiwt0Ceo9OFrreiaOSfsxFXVzw5umqlM2zMkXrTGjff6pGK8_NeBwYX0A"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Dr. Sterling</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Trauma Lead</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg border-l-4 border-secondary text-secondary bg-secondary-container/10 font-bold active-nav transition-colors group scale-[0.99] duration-150" href="#">
+<span class="material-symbols-outlined text-secondary" data-icon="emergency" style="font-variation-settings: 'FILL' 1;">emergency</span>
+<span class="font-body-md text-body-md">Triage Queue</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="personal_injury">personal_injury</span>
+<span class="font-body-md text-body-md font-medium">Trauma Bay Status</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="groups">groups</span>
+<span class="font-body-md text-body-md font-medium">Staffing</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-body-md font-medium">Inventory</span>
+</a>
+</nav>
+<!-- CTA -->
+<div class="mt-auto mb-lg">
+<button class="w-full flex items-center justify-center gap-sm bg-primary text-on-primary py-sm px-md rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+                Quick Status Update
+            </button>
+</div>
+<!-- Footer Links -->
+<div class="border-t border-outline-variant pt-md flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+<span class="font-body-sm text-body-sm">Help</span>
+</a>
+<a class="flex items-center gap-md px-md py-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+<span class="font-body-sm text-body-sm">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-[280px] h-full overflow-hidden bg-background">
+<!-- Shared Component: TopAppBar -->
+<header class="bg-surface-container-highest dark:bg-surface-container-lowest docked full-width top-0 sticky z-50 shadow-md flex justify-between items-center w-full px-layout-margin h-16">
+<div class="flex items-center gap-md">
+<h1 class="text-headline-sm font-headline-sm text-error dark:text-error-container font-black uppercase tracking-tighter">Emergency &amp; Triage</h1>
+</div>
+<div class="flex items-center gap-lg">
+<!-- Search Bar (on right per JSON) -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-lowest border border-outline-variant rounded-full text-body-sm font-body-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent w-64 transition-all placeholder:text-outline" placeholder="Search patients, MRN..." type="text"/>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs bg-error text-on-error px-md py-1.5 rounded-full font-label-md text-label-md hover:bg-error/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+                        Mass Casualty Alert
+                    </button>
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-variant transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-y-auto p-layout-margin flex flex-col lg:flex-row gap-layout-margin relative z-0">
+<!-- Left Column: Assessment Form (Bento Grid) -->
+<div class="flex-1 flex flex-col gap-gutter max-w-4xl">
+<!-- Patient Context Header -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-surface-container-highest shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] flex items-start justify-between">
+<div class="flex items-center gap-md">
+<div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center text-outline-variant text-title-lg font-title-lg font-bold">
+                            JD
+                        </div>
+<div>
+<div class="flex items-center gap-sm">
+<h2 class="font-title-lg text-title-lg text-on-surface">Doe, John M.</h2>
+<span class="bg-surface-container-high text-on-surface px-2 py-0.5 rounded text-label-sm font-label-sm uppercase tracking-wider">MRN: 8849201</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">42yo Male • DOB: 05/12/1981 • Arrived: 10:14 AM</p>
+</div>
+</div>
+<button class="text-secondary font-label-md text-label-md hover:underline flex items-center gap-xs">
+                        View Full Chart <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter flex-1">
+<!-- Chief Complaint -->
+<div class="md:col-span-12 bg-surface-container-lowest rounded-xl p-lg border border-surface-container-highest shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] flex flex-col">
+<div class="flex justify-between items-center mb-sm">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-xs">
+                                Chief Complaint <span class="w-1.5 h-1.5 rounded-full bg-error inline-block" title="Required"></span>
+</label>
+<div class="flex gap-2">
+<button class="px-2 py-1 bg-surface-container text-on-surface-variant rounded text-label-sm font-label-sm hover:bg-surface-container-high transition-colors">Chest Pain</button>
+<button class="px-2 py-1 bg-surface-container text-on-surface-variant rounded text-label-sm font-label-sm hover:bg-surface-container-high transition-colors">SOB</button>
+<button class="px-2 py-1 bg-surface-container text-on-surface-variant rounded text-label-sm font-label-sm hover:bg-surface-container-high transition-colors">Trauma</button>
+</div>
+</div>
+<textarea class="w-full flex-1 min-h-[100px] bg-surface-bright border border-outline-variant rounded-lg p-sm text-body-md font-body-md focus:ring-2 focus:ring-secondary focus:border-transparent resize-none" placeholder="Enter patient's description of primary symptom..."></textarea>
+</div>
+<!-- Primary Vitals -->
+<div class="md:col-span-7 bg-surface-container-lowest rounded-xl p-lg border border-surface-container-highest shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)]">
+<h3 class="font-label-md text-label-md text-on-surface mb-md">Primary Vitals</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-md">
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-outline">HR (bpm)</label>
+<input class="w-full bg-surface-bright border border-outline-variant rounded-md px-sm py-1.5 text-body-md font-body-md focus:ring-2 focus:ring-secondary focus:border-transparent" placeholder="--" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-outline">BP (mmHg)</label>
+<input class="w-full bg-surface-bright border border-outline-variant rounded-md px-sm py-1.5 text-body-md font-body-md focus:ring-2 focus:ring-secondary focus:border-transparent" placeholder="120/80" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-outline">SpO2 (%)</label>
+<input class="w-full bg-surface-bright border border-outline-variant rounded-md px-sm py-1.5 text-body-md font-body-md focus:ring-2 focus:ring-secondary focus:border-transparent" placeholder="--" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-outline">RR</label>
+<input class="w-full bg-surface-bright border border-outline-variant rounded-md px-sm py-1.5 text-body-md font-body-md focus:ring-2 focus:ring-secondary focus:border-transparent" placeholder="--" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-outline">Temp (°C)</label>
+<input class="w-full bg-surface-bright border border-outline-variant rounded-md px-sm py-1.5 text-body-md font-body-md focus:ring-2 focus:ring-secondary focus:border-transparent" placeholder="--" step="0.1" type="number"/>
+</div>
+</div>
+</div>
+<!-- Pain Score -->
+<div class="md:col-span-5 bg-surface-container-lowest rounded-xl p-lg border border-surface-container-highest shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] flex flex-col justify-center">
+<h3 class="font-label-md text-label-md text-on-surface mb-md">Pain Score (0-10)</h3>
+<div class="flex items-center gap-sm mt-2">
+<span class="text-outline material-symbols-outlined">sentiment_satisfied</span>
+<input class="flex-1 h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-secondary" max="10" min="0" type="range" value="0"/>
+<span class="text-error material-symbols-outlined">sentiment_very_dissatisfied</span>
+</div>
+<div class="flex justify-between mt-2 px-1 text-label-sm font-label-sm text-outline">
+<span>0</span><span>5</span><span>10</span>
+</div>
+</div>
+<!-- ESI Triage Level (The Core Action) -->
+<div class="md:col-span-12 bg-surface-container-lowest rounded-xl p-lg border border-surface-container-highest shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)]">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-md flex items-center gap-xs">
+                            Assign ESI Level <span class="w-2 h-2 rounded-full bg-error inline-block ml-1" title="Required"></span>
+</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-lg max-w-2xl">Select the appropriate Emergency Severity Index based on acuity and anticipated resource needs.</p>
+<div class="grid grid-cols-1 sm:grid-cols-5 gap-sm h-32">
+<!-- ESI 1: Resuscitation -->
+<button class="relative flex flex-col items-center justify-center p-md rounded-xl border-2 border-transparent bg-error-container/30 hover:bg-error-container/50 hover:border-error transition-all group focus:outline-none focus:ring-4 focus:ring-error/20">
+<span class="font-display-lg text-display-lg text-error mb-1">1</span>
+<span class="font-label-md text-label-md text-error-container-on font-bold text-center">Resuscitation</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2">Immediate life-saving</span>
+</button>
+<!-- ESI 2: Emergent -->
+<button class="relative flex flex-col items-center justify-center p-md rounded-xl border-2 border-transparent bg-tertiary-container/10 hover:bg-tertiary-container/20 hover:border-tertiary-container transition-all group focus:outline-none focus:ring-4 focus:ring-tertiary-container/20">
+<span class="font-display-lg text-display-lg text-tertiary-container mb-1">2</span>
+<span class="font-label-md text-label-md text-tertiary-container font-bold text-center">Emergent</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2">High risk / Severe pain</span>
+</button>
+<!-- ESI 3: Urgent -->
+<button class="relative flex flex-col items-center justify-center p-md rounded-xl border-2 border-transparent bg-secondary-container/10 hover:bg-secondary-container/20 hover:border-secondary transition-all group focus:outline-none focus:ring-4 focus:ring-secondary/20">
+<span class="font-display-lg text-display-lg text-secondary mb-1">3</span>
+<span class="font-label-md text-label-md text-secondary font-bold text-center">Urgent</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2">2+ Resources</span>
+</button>
+<!-- ESI 4: Less Urgent -->
+<button class="relative flex flex-col items-center justify-center p-md rounded-xl border-2 border-transparent bg-primary-fixed/30 hover:bg-primary-fixed/50 hover:border-primary transition-all group focus:outline-none focus:ring-4 focus:ring-primary/20">
+<span class="font-display-lg text-display-lg text-primary mb-1">4</span>
+<span class="font-label-md text-label-md text-primary font-bold text-center">Less Urgent</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2">1 Resource</span>
+</button>
+<!-- ESI 5: Non-Urgent -->
+<button class="relative flex flex-col items-center justify-center p-md rounded-xl border-2 border-transparent bg-surface-variant hover:bg-surface-container-high hover:border-outline-variant transition-all group focus:outline-none focus:ring-4 focus:ring-outline/20">
+<span class="font-display-lg text-display-lg text-on-surface-variant mb-1">5</span>
+<span class="font-label-md text-label-md text-on-surface-variant font-bold text-center">Non-Urgent</span>
+<span class="font-label-sm text-label-sm text-outline text-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-2">0 Resources</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="flex justify-end gap-md mt-sm pb-xl">
+<button class="px-xl py-sm rounded-lg font-label-md text-label-md text-on-surface border border-outline-variant hover:bg-surface-variant transition-colors shadow-sm bg-surface-container-lowest">
+                        Cancel
+                    </button>
+<button class="px-xl py-sm rounded-lg font-label-md text-label-md text-on-primary bg-secondary hover:bg-secondary/90 transition-colors shadow-sm flex items-center gap-sm">
+                        Submit Triage <span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Wait Times Panel (Contextual Data) -->
+<aside class="w-full lg:w-[320px] shrink-0 flex flex-col gap-md">
+<div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col h-[500px]">
+<div class="bg-surface-container-low p-md border-b border-surface-container-highest flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">schedule</span>
+                            Current Wait Times
+                        </h3>
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Live</span>
+</div>
+<div class="p-md flex-1 overflow-y-auto no-scrollbar flex flex-col gap-sm">
+<!-- Wait Time Item 1 -->
+<div class="flex items-center justify-between p-sm rounded bg-error-container/10 border-l-4 border-error">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-error flex items-center justify-center font-label-md text-label-md text-on-error font-bold">1</div>
+<span class="font-body-md text-body-md text-on-surface">Resuscitation</span>
+</div>
+<span class="font-label-md text-label-md text-error font-bold">0 min</span>
+</div>
+<!-- Wait Time Item 2 -->
+<div class="flex items-center justify-between p-sm rounded bg-tertiary-container/5 border-l-4 border-tertiary-container">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-tertiary-container/20 text-tertiary-container flex items-center justify-center font-label-md text-label-md font-bold">2</div>
+<span class="font-body-md text-body-md text-on-surface">Emergent</span>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-tertiary-container font-bold block">12 min</span>
+<span class="font-label-sm text-label-sm text-outline">Target: &lt;15m</span>
+</div>
+</div>
+<!-- Wait Time Item 3 -->
+<div class="flex items-center justify-between p-sm rounded bg-surface-container border-l-4 border-secondary">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-secondary/20 text-secondary flex items-center justify-center font-label-md text-label-md font-bold">3</div>
+<span class="font-body-md text-body-md text-on-surface">Urgent</span>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-on-surface font-bold block">45 min</span>
+<span class="font-label-sm text-label-sm text-outline">Target: &lt;60m</span>
+</div>
+</div>
+<!-- Wait Time Item 4 -->
+<div class="flex items-center justify-between p-sm rounded bg-surface-container border-l-4 border-primary">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center font-label-md text-label-md font-bold">4</div>
+<span class="font-body-md text-body-md text-on-surface">Less Urgent</span>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-on-surface font-bold block">2 hrs 15m</span>
+</div>
+</div>
+<!-- Wait Time Item 5 -->
+<div class="flex items-center justify-between p-sm rounded bg-surface-container border-l-4 border-outline-variant">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-variant text-on-surface-variant flex items-center justify-center font-label-md text-label-md font-bold">5</div>
+<span class="font-body-md text-body-md text-on-surface">Non-Urgent</span>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-on-surface font-bold block">3 hrs 40m</span>
+</div>
+</div>
+</div>
+<div class="p-sm bg-surface-container-lowest border-t border-surface-container-highest text-center">
+<span class="font-label-sm text-label-sm text-outline flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                            Impacts bed allocation recommendations.
+                        </span>
+</div>
+</div>
+<!-- Secondary Info Card (Atmospheric) -->
+<div class="bg-surface-container-lowest rounded-xl p-md border border-surface-container-highest shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)]">
+<h4 class="font-label-md text-label-md text-on-surface mb-sm">Dept. Capacity Status</h4>
+<div class="w-full bg-surface-container-high rounded-full h-2 mb-1">
+<div class="bg-error h-2 rounded-full" style="width: 85%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm">
+<span class="text-error font-bold">85% Full</span>
+<span class="text-outline">4 beds available</span>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

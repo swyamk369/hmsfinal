@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Telehealth Appointment Queue - HMS Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eff1f3",
+                        "outline-variant": "#c6c6cd",
+                        "surface-bright": "#f7f9fb",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "tertiary-container": "#002113",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-surface": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#009668",
+                        "secondary-container": "#2170e4",
+                        "surface-container-low": "#f2f4f6",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "secondary": "#0058be",
+                        "on-background": "#191c1e",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "inverse-primary": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary": "#000000",
+                        "surface-tint": "#565e74",
+                        "on-primary-container": "#7c839b",
+                        "surface-container": "#eceef0",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-variant": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar (from JSON) -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low fixed left-0 top-0 h-full w-[280px] bg-surface-container-low border-r border-outline-variant hidden md:flex flex-col py-md z-20">
+<div class="px-5 mb-8 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">CGH</div>
+<div>
+<h1 class="text-headline-sm font-headline-sm font-bold text-primary dark:text-primary-fixed">HMS Analytics</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">City General Hospital</p>
+</div>
+</div>
+<div class="flex flex-col flex-1 gap-1 px-3">
+<a class="text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150 rounded-lg flex items-center gap-3" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Executive Dashboard</span>
+</a>
+<a aria-current="page" class="text-secondary font-bold border-l-4 border-secondary pl-4 py-3 bg-secondary-container/10 hover:bg-surface-container-high transition-colors duration-150 rounded-r-lg flex items-center gap-3" href="#">
+<span class="material-symbols-outlined fill">analytics</span>
+<span class="font-label-md text-label-md">Clinical Quality</span>
+</a>
+<a class="text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150 rounded-lg flex items-center gap-3" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Financial Performance</span>
+</a>
+<a class="text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150 rounded-lg flex items-center gap-3" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Staff Productivity</span>
+</a>
+<a class="text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150 rounded-lg flex items-center gap-3 mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">System Settings</span>
+</a>
+</div>
+<div class="px-5 mt-4">
+<button class="w-full py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">Export Report</button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-[280px] w-full min-h-screen">
+<!-- TopAppBar (from JSON) -->
+<header class="bg-surface dark:bg-surface docked full-width top-0 bg-surface border-b border-outline-variant flex justify-between items-center h-[64px] px-layout-margin z-10 sticky">
+<div class="flex items-center gap-4">
+<!-- Mobile menu button (hidden on desktop) -->
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface">Analytics Central</h2>
+</div>
+<!-- Search Bar (on_left configuration as per JSON, but pushed right visually for balance if needed, adhering to 'search_bar': 'on_left' instruction structurally by placing it before trailing icons) -->
+<div class="flex-1 max-w-md mx-4 hidden lg:block">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:outline-none transition-shadow" placeholder="Search patients, providers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-secondary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 overflow-y-auto p-layout-margin bg-background">
+<div class="flex justify-between items-end mb-6">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-background mb-1">Telehealth Queue</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage incoming virtual consultations for Dr. Smith.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Filter
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span> New Appointment
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout for Queue -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Status Summary Cards (Top Row) -->
+<div class="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface rounded-xl border border-outline-variant p-5 flex items-center justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Waiting in Lobby</p>
+<p class="font-display-lg text-display-lg text-secondary">4</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">hourglass_empty</span>
+</div>
+</div>
+<div class="bg-surface rounded-xl border border-outline-variant p-5 flex items-center justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">In Consultation</p>
+<p class="font-display-lg text-display-lg text-tertiary-fixed-dim">1</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary-fixed-dim">
+<span class="material-symbols-outlined">video_camera_front</span>
+</div>
+</div>
+<div class="bg-surface rounded-xl border border-outline-variant p-5 flex items-center justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Completed Today</p>
+<p class="font-display-lg text-display-lg text-on-surface">12</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Main Queue List -->
+<div class="lg:col-span-8 bg-surface rounded-xl border border-outline-variant overflow-hidden flex flex-col">
+<div class="p-5 border-b border-outline-variant bg-surface-bright flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg text-on-surface">Active Queue</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Auto-refreshes in 30s</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- Queue Item: Waiting -->
+<div class="bg-surface rounded-lg border border-outline-variant p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-secondary transition-colors cursor-pointer group shadow-sm">
+<div class="flex items-center gap-4">
+<img alt="Patient Avatar" class="w-12 h-12 rounded-full border border-outline-variant" data-alt="A professional headshot of a middle-aged woman with light brown hair, smiling warmly. She is wearing a simple blue blouse. The lighting is soft and natural, suggesting a high-quality ID photo suitable for a medical record. The background is a neutral light gray." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGuYvsq8O12J2i6pjcH0CAJcrxFYJjXAFSDGrgw3db93bb7-cDivFQ2k8pljn-4S3gqJpBs3tEEYcEW9TArCkis7ZYb7d2Iau2HeLlLXHy3wKskUcGcvUCJCehejVxnKUj5snlMUWIfDbx3K2wiFwYbPRT3FZj40y3YQCh817eUfgkwGkhuiKfTpEt19pYkIdo0sBaAiS46EZoWwNNjkzH0r4ibiZle0bJn-zNRS4HAaknxpvEW_N1QSHkeseIjFHXgnCUzyJt5gY"/>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Sarah Jenkins</h4>
+<div class="flex items-center gap-3 mt-1">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 10:15 AM (10m wait)
+                                        </span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-[#fef08a]/20 text-[#854d0e] uppercase border border-[#fef08a]/50">Waiting</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+<!-- Technical Status -->
+<div class="flex items-center gap-1" title="Connection: Excellent">
+<span class="material-symbols-outlined text-[#22c55e] text-[20px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[#22c55e] text-[20px]">mic</span>
+<span class="material-symbols-outlined text-[#22c55e] text-[20px]">videocam</span>
+</div>
+<button class="px-5 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">login</span> Join Call
+                                </button>
+</div>
+</div>
+<!-- Queue Item: Waiting (Poor Connection) -->
+<div class="bg-surface rounded-lg border border-outline-variant p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-secondary transition-colors cursor-pointer group shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-title-lg text-title-lg border border-outline-variant">MR</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Marcus Reed</h4>
+<div class="flex items-center gap-3 mt-1">
+<span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 10:30 AM (2m wait)
+                                        </span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-[#fef08a]/20 text-[#854d0e] uppercase border border-[#fef08a]/50">Waiting</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
+<!-- Technical Status - Warning -->
+<div class="flex items-center gap-1" title="Connection: Poor. Camera disabled.">
+<span class="material-symbols-outlined text-[#eab308] text-[20px]">signal_cellular_1_bar</span>
+<span class="material-symbols-outlined text-[#22c55e] text-[20px]">mic</span>
+<span class="material-symbols-outlined text-[#ef4444] text-[20px]">videocam_off</span>
+</div>
+<button class="px-5 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">login</span> Join Call
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Context Panel (Right Side) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Currently Active Call -->
+<div class="bg-surface rounded-xl border border-secondary shadow-sm overflow-hidden relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary"></div>
+<div class="p-5 border-b border-outline-variant bg-secondary-container/5">
+<div class="flex items-center gap-2 mb-4">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-tertiary-fixed-dim"></span>
+</span>
+<span class="font-label-md text-label-md text-on-surface">In Consultation (14:22)</span>
+</div>
+<div class="flex items-center gap-4 mb-4">
+<img alt="Patient Avatar" class="w-14 h-14 rounded-full border-2 border-secondary" data-alt="A portrait of an elderly man with gray hair and glasses, wearing a checkered shirt. He looks attentively at the camera. The setting is bright and clinical, suitable for a medical file placeholder. The lighting is even and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTL0jaOO-XLX5pVMhC2QlSnSUuK4zneAOex3wBLw8BtCCPWi63X5fhVZcyjn3pK8B2SSV7x-nHAAATppWFiZGVPodix6Z8rw1iaU40vY-2UzTlk85jw5ESBybWz6wy52Y9-fzmbhaHIXWJpQ56xI057zN7IigEJuqgXIGJCen7FAX6TGYMhhGETV0ZBMzSus7qFYnbjdOfinj6JP8486HJl7brM7yZm7zSkTkax7Mi6uSF54uSspCSLRTpypaXmUI5jg7Tb7frTJ4"/>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Arthur Pendelton</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">DOB: 05/12/1945</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-surface border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors text-center">View Chart</button>
+<button class="flex-1 py-2 bg-error text-on-error rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity text-center flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[18px]">call_end</span> End Call
+                                </button>
+</div>
+</div>
+</div>
+<!-- Upcoming Schedule -->
+<div class="bg-surface rounded-xl border border-outline-variant flex-1 p-5">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-4 flex items-center justify-between">
+                            Scheduled Next
+                            <button class="text-secondary text-label-sm font-label-sm hover:underline">View All</button>
+</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="font-label-md text-label-md text-on-surface-variant w-16">11:00 AM</div>
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-surface">Elena Rodriguez</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Follow-up</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="font-label-md text-label-md text-on-surface-variant w-16">11:30 AM</div>
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-surface">David Chen</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Initial Consult</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

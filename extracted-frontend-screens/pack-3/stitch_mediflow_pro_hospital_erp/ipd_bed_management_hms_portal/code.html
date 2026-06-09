@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS Bed Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "surface-tint": "#565e74",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "outline": "#76777d",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "primary-fixed": "#dae2fd",
+                        "on-error-container": "#93000a",
+                        "primary": "#000000",
+                        "tertiary": "#000000",
+                        "on-surface": "#191c1e",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-primary-fixed": "#131b2e",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001a42",
+                        "secondary-container": "#2170e4",
+                        "surface-container": "#eceef0",
+                        "surface": "#f7f9fb",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "secondary-fixed": "#d8e2ff",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-container": "#009668",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f7f9fb",
+                        "outline-variant": "#c6c6cd",
+                        "secondary": "#0058be",
+                        "on-background": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "tertiary-container": "#002113",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary-container": "#7c839b",
+                        "inverse-primary": "#bec6e0",
+                        "background": "#f7f9fb",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "layout-margin": "24px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased overflow-hidden flex h-screen">
+<!-- SideNavBar (from JSON) -->
+<nav class="bg-surface dark:bg-inverse-surface fixed left-0 top-0 h-full z-40 flex flex-col border-r border-outline-variant dark:border-outline docked full-height left-0 w-[280px]">
+<!-- Header -->
+<div class="p-lg border-b border-surface-variant flex items-center gap-md">
+<div aria-label="User profile" class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container overflow-hidden shrink-0">
+<span class="material-symbols-outlined text-title-lg">domain</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-primary dark:text-on-primary-fixed truncate">HMS Portal</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">General Hospital</span>
+</div>
+</div>
+<!-- Primary CTA -->
+<div class="p-md">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-sm px-md rounded-lg flex items-center justify-center gap-sm hover:bg-on-surface transition-colors focus:ring-2 focus:ring-secondary focus:ring-offset-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                New Admission
+            </button>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 overflow-y-auto py-sm flex flex-col gap-xs px-sm">
+<a class="flex items-center gap-md px-md py-sm rounded-md text-secondary dark:text-secondary-fixed font-bold border-l-[3px] border-secondary dark:border-secondary-fixed bg-surface-container-low dark:bg-surface-container-high transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed hover:bg-surface-container dark:hover:bg-primary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+                Patients
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed hover:bg-surface-container dark:hover:bg-primary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">event</span>
+                Appointments
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed hover:bg-surface-container dark:hover:bg-primary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+                Billing
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed hover:bg-surface-container dark:hover:bg-primary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">biotech</span>
+                Lab Orders
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed hover:bg-surface-container dark:hover:bg-primary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                Inventory
+            </a>
+</div>
+<!-- Footer Tabs -->
+<div class="p-sm border-t border-surface-variant flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed hover:bg-surface-container dark:hover:bg-primary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed hover:bg-surface-container dark:hover:bg-primary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 ml-[280px] flex flex-col h-full bg-background relative z-0">
+<!-- TopNavBar (from JSON) -->
+<header class="bg-surface-container-lowest dark:bg-surface-dim fixed top-0 right-0 left-[280px] z-30 flex justify-between items-center px-lg border-b border-outline-variant dark:border-outline docked full-width top-0 h-16">
+<div class="flex items-center gap-layout-margin">
+<span class="font-title-lg text-title-lg font-black text-primary dark:text-on-primary-fixed">HMS Enterprise</span>
+<nav class="hidden md:flex gap-gutter">
+<a class="text-secondary dark:text-secondary-fixed border-b-2 border-secondary font-label-md text-label-md h-16 flex items-center" href="#">Ward Selector</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed cursor-pointer font-label-md text-label-md h-16 flex items-center transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 18px;">search</span>
+<input class="pl-xl pr-sm py-xs bg-surface-container border border-surface-variant rounded-full text-body-sm font-body-sm focus:ring-2 focus:ring-secondary focus:border-secondary transition-all w-64 outline-none" placeholder="Global Search" type="text"/>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button aria-label="notifications" class="p-xs rounded-full hover:bg-surface-container transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button aria-label="apps" class="p-xs rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">apps</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden shrink-0 ml-sm cursor-pointer hover:ring-2 ring-secondary ring-offset-2 transition-all">
+<!-- Placeholder for Doctor avatar, using a generic icon for now as instructed not to use data URIs without alt -->
+<div class="w-full h-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-size: 20px;">person</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 mt-16 p-layout-margin overflow-y-auto">
+<!-- Context Header & Actions -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-layout-margin gap-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-body-sm text-body-sm text-on-surface-variant">IPD</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">chevron_right</span>
+<span class="font-body-sm text-body-sm text-primary">Ward Management</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary flex items-center gap-sm">
+                        General Ward A
+                        <button class="text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined">expand_more</span></button>
+</h1>
+</div>
+<div class="flex items-center gap-md">
+<!-- Summary Stats -->
+<div class="flex gap-sm bg-surface-container-lowest border border-surface-variant rounded-lg p-xs px-sm shadow-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Occupied: 14</span>
+</div>
+<div class="w-px h-4 bg-surface-variant"></div>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Available: 4</span>
+</div>
+</div>
+<button class="bg-surface-container-lowest border border-surface-variant text-primary font-label-md text-label-md py-sm px-md rounded-lg flex items-center gap-sm hover:bg-surface-container transition-colors shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 18px;">swap_horiz</span>
+                        Transfer Bed
+                    </button>
+</div>
+</div>
+<!-- Main Workspace Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-layout-margin items-start">
+<!-- Left Area: Bed Grid (Bento Style) -->
+<div class="md:col-span-9 flex flex-col gap-gutter">
+<!-- Section Header -->
+<div class="flex justify-between items-center pb-sm border-b border-surface-variant">
+<h2 class="font-title-lg text-title-lg text-primary">Bed Overview</h2>
+<div class="flex gap-sm">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">filter_list</span></button>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">grid_view</span></button>
+</div>
+</div>
+<!-- The Grid -->
+<div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+<!-- Card 1: Occupied (Normal) -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl border-t-[4px] border-t-secondary p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-primary bg-surface-container px-xs py-[2px] rounded">101-A</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">bed</span>
+</div>
+<div class="mt-xs">
+<h3 class="font-body-lg text-body-lg text-primary truncate">Eleanor Rigby</h3>
+<div class="flex items-center gap-xs mt-xs">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">stethoscope</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Dr. Harrison</span>
+</div>
+</div>
+<div class="mt-auto pt-sm flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface px-xs py-[2px] rounded uppercase tracking-wide">Day 3</span>
+</div>
+</div>
+<!-- Card 2: Occupied (Critical/Attention) -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl border-t-[4px] border-t-error p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer">
+<div class="absolute top-0 right-0 w-8 h-8 bg-error/10 rounded-bl-full flex items-start justify-end p-1">
+<span class="material-symbols-outlined text-error" style="font-size: 14px; font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-primary bg-surface-container px-xs py-[2px] rounded">101-B</span>
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">bed</span>
+</div>
+<div class="mt-xs">
+<h3 class="font-body-lg text-body-lg text-primary truncate">Maxwell Edison</h3>
+<div class="flex items-center gap-xs mt-xs">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">stethoscope</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Dr. McCartney</span>
+</div>
+</div>
+<div class="mt-auto pt-sm flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-error bg-error-container px-xs py-[2px] rounded uppercase tracking-wide font-bold">Vitals Alert</span>
+</div>
+</div>
+<!-- Card 3: Available -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl border-t-[4px] border-t-tertiary-fixed-dim p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer opacity-90 hover:opacity-100">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-primary bg-surface-container px-xs py-[2px] rounded">102-A</span>
+<span class="material-symbols-outlined text-on-tertiary-container">check_circle</span>
+</div>
+<div class="mt-xs flex-1 flex flex-col justify-center items-center py-md text-on-surface-variant">
+<span class="font-body-md text-body-md">Available</span>
+<span class="font-body-sm text-body-sm text-center mt-xs">Ready for admission</span>
+</div>
+</div>
+<!-- Card 4: Cleaning -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl border-t-[4px] border-t-outline-variant p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer opacity-80 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#f2f4f6_10px,#f2f4f6_20px)]">
+<div class="flex justify-between items-start bg-surface-container-lowest p-1 rounded">
+<span class="font-label-md text-label-md text-primary bg-surface-container px-xs py-[2px] rounded">102-B</span>
+<span class="material-symbols-outlined text-outline">cleaning_services</span>
+</div>
+<div class="mt-xs flex-1 flex flex-col justify-center items-center py-md text-on-surface-variant bg-surface-container-lowest/80 rounded">
+<span class="font-body-md text-body-md">Cleaning</span>
+<span class="font-body-sm text-body-sm text-center mt-xs">Est. 15m</span>
+</div>
+</div>
+<!-- Card 5: Maintenance -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl border-t-[4px] border-t-surface-tint p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer opacity-80">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-primary bg-surface-container px-xs py-[2px] rounded">103-A</span>
+<span class="material-symbols-outlined text-surface-tint">build</span>
+</div>
+<div class="mt-xs flex-1 flex flex-col justify-center items-center py-md text-on-surface-variant">
+<span class="font-body-md text-body-md">Maintenance</span>
+<span class="font-body-sm text-body-sm text-center mt-xs">O2 port repair</span>
+</div>
+</div>
+<!-- Card 6: Occupied -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl border-t-[4px] border-t-secondary p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group cursor-pointer">
+<div class="flex justify-between items-start">
+<span class="font-label-md text-label-md text-primary bg-surface-container px-xs py-[2px] rounded">103-B</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">bed</span>
+</div>
+<div class="mt-xs">
+<h3 class="font-body-lg text-body-lg text-primary truncate">Prudence Dear</h3>
+<div class="flex items-center gap-xs mt-xs">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">stethoscope</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Dr. Lennon</span>
+</div>
+</div>
+<div class="mt-auto pt-sm flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface px-xs py-[2px] rounded uppercase tracking-wide">Day 1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Area: Admissions Queue Sidebar Panel -->
+<div class="md:col-span-3 h-[calc(100vh-160px)] sticky top-gutter flex flex-col bg-surface-container-lowest border border-surface-variant rounded-xl shadow-sm overflow-hidden">
+<div class="p-md border-b border-surface-variant bg-surface-bright flex justify-between items-center">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">queue</span>
+<h2 class="font-title-lg text-title-lg text-primary">Queue</h2>
+</div>
+<span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-xs py-[2px] rounded-full">3</span>
+</div>
+<div class="flex-1 overflow-y-auto p-sm flex flex-col gap-sm bg-background/50">
+<!-- Queue Item 1 -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-sm shadow-sm flex gap-sm cursor-grab hover:border-secondary transition-colors relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-[4px] bg-error"></div>
+<div class="flex-1 pl-xs">
+<div class="flex justify-between items-start mb-xs">
+<h4 class="font-label-md text-label-md text-primary">Rita Meter</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-[2px]">
+<span class="material-symbols-outlined" style="font-size: 12px;">schedule</span> 45m
+                                    </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Transfer from ER. Requires monitor.</p>
+<button class="w-full text-center py-xs rounded border border-outline-variant text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors">Assign Bed</button>
+</div>
+</div>
+<!-- Queue Item 2 -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-sm shadow-sm flex gap-sm cursor-grab hover:border-secondary transition-colors relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-[4px] bg-secondary"></div>
+<div class="flex-1 pl-xs">
+<div class="flex justify-between items-start mb-xs">
+<h4 class="font-label-md text-label-md text-primary">Desmond Jones</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-[2px]">
+<span class="material-symbols-outlined" style="font-size: 12px;">schedule</span> 1h 20m
+                                    </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Direct admit. Post-op observation.</p>
+<button class="w-full text-center py-xs rounded border border-outline-variant text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors">Assign Bed</button>
+</div>
+</div>
+<!-- Queue Item 3 -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-sm shadow-sm flex gap-sm cursor-grab hover:border-secondary transition-colors relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-[4px] bg-tertiary-fixed-dim"></div>
+<div class="flex-1 pl-xs">
+<div class="flex justify-between items-start mb-xs">
+<h4 class="font-label-md text-label-md text-primary">Penny Lane</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-[2px]">
+<span class="material-symbols-outlined" style="font-size: 12px;">schedule</span> 2h 10m
+                                    </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Scheduled admission. Routine care.</p>
+<button class="w-full text-center py-xs rounded border border-outline-variant text-primary font-label-sm text-label-sm hover:bg-surface-container transition-colors">Assign Bed</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

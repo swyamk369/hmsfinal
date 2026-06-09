@@ -1,0 +1,77 @@
+import { apiGet, apiPost, apiPatch, apiDelete } from './api';
+
+export interface Patient {
+  id: string;
+  mrn: string;
+  fullName: string;
+  dob: string | null;
+  sex: 'MALE' | 'FEMALE' | 'OTHER' | null;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  emergencyContactName: string | null;
+  emergencyContactPhone: string | null;
+  deletedAt: string | null;
+  archiveReason: string | null;
+  createdAt: string;
+  allergies?: Allergy[];
+  histories?: MedicalHistory[];
+  consents?: Consent[];
+}
+
+export interface Allergy {
+  id: string;
+  substance: string;
+  severity: string | null;
+  notes: string | null;
+}
+export interface MedicalHistory {
+  id: string;
+  type: string;
+  description: string;
+  recordedAt: string;
+}
+export interface Consent {
+  id: string;
+  purpose: string;
+  grantedAt: string;
+  revokedAt: string | null;
+}
+
+export interface PatientTimeline {
+  patient: Patient;
+  encounters: any[];
+  appointments: any[];
+  bills: any[];
+  prescriptions: any[];
+  labOrders: any[];
+  allergies: Allergy[];
+  histories: MedicalHistory[];
+  consents: Consent[];
+}
+
+export interface RegisterPatientInput {
+  fullName: string;
+  dob?: string;
+  sex?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  consent?: boolean;
+}
+
+export const patientsApi = {
+  list: (t: string, q?: string) => apiGet<Patient[]>(`/patients${q ? `?q=${encodeURIComponent(q)}` : ''}`, t),
+  get: (t: string, id: string) => apiGet<Patient>(`/patients/${id}`, t),
+  register: (t: string, body: RegisterPatientInput) => apiPost<Patient>('/patients', body, t),
+  update: (t: string, id: string, body: Partial<RegisterPatientInput>) => apiPatch<Patient>(`/patients/${id}`, body, t),
+  archive: (t: string, id: string, reason: string) => apiDelete<Patient>(`/patients/${id}`, { reason }, t),
+  timeline: (t: string, id: string) => apiGet<PatientTimeline>(`/patients/${id}/timeline`, t),
+  addConsent: (t: string, id: string, purpose: string) => apiPost<Consent>(`/patients/${id}/consents`, { purpose }, t),
+  addAllergy: (t: string, id: string, body: { substance: string; severity?: string; notes?: string }) =>
+    apiPost<Allergy>(`/patients/${id}/allergies`, body, t),
+  addHistory: (t: string, id: string, body: { type: string; description: string }) =>
+    apiPost<MedicalHistory>(`/patients/${id}/history`, body, t),
+};

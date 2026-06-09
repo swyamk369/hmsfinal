@@ -1,0 +1,32 @@
+node_modules/
+dist/
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# env
+.env
+.env.local
+.env.*.local
+*.local
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# prisma generated client
+packages/db/node_modules/.prisma/
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# firebase service account
+**/firebase-service-account.json
+
+# local credentials reference (never commit)
+CREDENTIALS.md

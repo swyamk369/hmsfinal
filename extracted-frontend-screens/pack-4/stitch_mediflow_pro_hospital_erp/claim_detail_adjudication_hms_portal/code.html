@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS Claims &amp; Insurance - Claim Detail &amp; Adjudication</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "inverse-surface": "#2d3133",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e0e3e5",
+                        "secondary": "#0058be",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#002113",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-surface": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "tertiary": "#000000",
+                        "on-primary-container": "#7c839b",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-surface-variant": "#45464d",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "primary-container": "#131b2e",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "inverse-primary": "#bec6e0",
+                        "surface-container": "#eceef0",
+                        "surface-container-low": "#f2f4f6",
+                        "on-tertiary-container": "#009668",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "secondary-container": "#2170e4",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-secondary-container": "#fefcff",
+                        "background": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "on-secondary-fixed": "#001a42",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed": "#002113"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "xs": "4px",
+                        "layout-margin": "24px",
+                        "gutter": "16px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Subtle scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c6c6cd;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #76777d;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen overflow-x-hidden flex">
+<!-- TopNavBar (Mobile Only) -->
+<header class="md:hidden flex justify-between items-center w-full px-layout-margin h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant/30 fixed top-0 z-50">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-2xl">menu</span>
+<span class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed ml-sm">HMS Claims &amp; Insurance</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-high p-sm rounded-full transition-colors" data-icon="search">search</span>
+<img alt="Medical Administrator Profile" class="w-8 h-8 rounded-full border border-surface-variant object-cover" data-alt="Close up professional portrait of a medical administrator wearing a subtle grey lab coat over a light blue collared shirt. Soft, even lighting, modern office setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlaz_spuga2dle865mtQiWiAOwkVeYAJWY025GXZmIwd-sXwIP9mBnkms_VoMB4OGci2OcbYh3QrffncDApe8dedEA7lxCbsPinau9UTHxuJ2JzWoK8ctXPOTd6qi9fM99hSfZ3jDgMTbV-pZobMSw_aphcyxk77aoU4iXYA3tuAkz6E3Sp5NWoFqO7H17XFIvUH3_R_Z_I0zprjwyOK_UF0kdAw6eK6ne0GjpZrtzTnvGcrGlnEkq48-Dmzx7aeDvOVjqxhZH03M"/>
+</div>
+</header>
+<!-- SideNavBar (Desktop Only) -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-[280px] bg-surface dark:bg-inverse-surface z-40 border-r border-outline-variant/30">
+<div class="p-layout-margin border-b border-surface-container flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container fill">health_and_safety</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed tracking-tight">Insurance Module</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Accounts Dept</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-md">
+<ul class="space-y-xs px-sm">
+<li>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-secondary font-bold border-l-4 border-secondary bg-secondary-fixed/10 py-3 px-4 rounded-r-lg opacity-80 transition-all scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined fill">receipt_long</span>
+<span class="font-label-md text-label-md">Claims Queue</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Bill Reconciliation</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">business_center</span>
+<span class="font-label-md text-label-md">Insurance Partners</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">search_check</span>
+<span class="font-label-md text-label-md">CPT/ICD Lookup</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="p-md border-t border-surface-container">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[280px] pt-16 md:pt-0 min-h-screen bg-background flex flex-col">
+<!-- Top App Bar for Desktop Context -->
+<div class="hidden md:flex items-center justify-between px-layout-margin h-16 bg-surface border-b border-surface-container-high sticky top-0 z-30">
+<div class="flex items-center text-body-sm font-body-sm text-on-surface-variant">
+<a class="hover:text-secondary" href="#">Claims Queue</a>
+<span class="material-symbols-outlined text-sm mx-xs">chevron_right</span>
+<span class="text-on-surface font-medium">Claim CLM-2023-8942</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container p-sm rounded-full transition-colors">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container p-sm rounded-full transition-colors">help</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container p-sm rounded-full transition-colors">settings</span>
+</div>
+</div>
+<div class="p-layout-margin max-w-[1400px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-lg items-start">
+<!-- Left/Main Column: Header, Items, Communication -->
+<div class="lg:col-span-8 space-y-lg flex flex-col">
+<!-- Claim Header Card -->
+<div class="bg-surface border border-surface-container-high rounded-xl p-layout-margin shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05)]">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md mb-lg">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-surface-container rounded-lg border border-outline-variant/30 flex items-center justify-center p-2">
+<img alt="Aetna Logo" class="object-contain w-full h-full opacity-80 mix-blend-multiply" data-alt="A stylized, modern generic blue corporate logo representing an insurance company on a pure white background. Minimalist aesthetic, high quality vector-style rendering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2pOQ2D9f8ONlnMNKtLPZS58dyiTXmM1IE-CR52EwdnYdM0I4tpvv5UvnRTMYmINzJEEgDsGK81GE1PhFqPADqNbEtcGZLHBiwfT3IpihJSHAyyDe_3Pov8tTw6MpoQu-O6AoSfw4khLu4XUC9ND64at4YB_wtrU-4SCF82TRD72Igd3BLCmpbTC2eIn1qhxeK_NpXyrIkPnAclf8lgOFwoAH-LYsCsRpvA3iYmKuqUsSILwhRSLXB0QlTlcWRo6Y16h--sH7rzvQ"/>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+                                    CLM-2023-8942
+                                    <span class="inline-flex items-center px-2 py-1 rounded bg-error-container text-on-error-container font-label-sm text-label-sm uppercase tracking-wide">
+                                        Denied - Info Required
+                                    </span>
+</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Patient: Sarah Jenkins (DOB: 04/12/1985) • DOS: 10/14/2023</p>
+</div>
+</div>
+<div class="flex gap-sm">
+<button class="px-4 py-2 border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container-low transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+                                Upload Docs
+                            </button>
+<button class="px-4 py-2 bg-secondary text-on-secondary font-label-md text-label-md rounded-lg hover:bg-secondary-container transition-colors shadow-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm">send</span>
+                                Resubmit
+                            </button>
+</div>
+</div>
+<!-- Quick Stats -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-md p-md bg-surface-container-low rounded-lg border border-surface-container">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Billed Amount</p>
+<p class="font-title-lg text-title-lg text-on-surface mt-xs">$3,450.00</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Allowed</p>
+<p class="font-title-lg text-title-lg text-on-surface mt-xs">$0.00</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Patient Resp.</p>
+<p class="font-title-lg text-title-lg text-on-surface mt-xs">$0.00</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Provider NPI</p>
+<p class="font-body-md text-body-md text-on-surface mt-xs">1982736450</p>
+</div>
+</div>
+</div>
+<!-- Claim Items Table -->
+<div class="bg-surface border border-surface-container-high rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="p-md border-b border-surface-container flex justify-between items-center bg-surface-bright">
+<h3 class="font-title-lg text-title-lg text-on-surface">Service Lines</h3>
+<button class="text-secondary font-label-md text-label-md hover:underline">Expand All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-container-high bg-surface-container-lowest">
+<th class="p-sm font-label-sm text-label-sm text-on-surface-variant uppercase pl-layout-margin w-12"></th>
+<th class="p-sm font-label-sm text-label-sm text-on-surface-variant uppercase">CPT / Rev</th>
+<th class="p-sm font-label-sm text-label-sm text-on-surface-variant uppercase">Description</th>
+<th class="p-sm font-label-sm text-label-sm text-on-surface-variant uppercase text-right">Billed</th>
+<th class="p-sm font-label-sm text-label-sm text-on-surface-variant uppercase text-right">Allowed</th>
+<th class="p-sm font-label-sm text-label-sm text-on-surface-variant uppercase text-center">Status</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group h-12">
+<td class="pl-layout-margin p-sm text-on-surface-variant"><span class="material-symbols-outlined text-sm cursor-pointer">chevron_right</span></td>
+<td class="p-sm font-medium">99214</td>
+<td class="p-sm text-on-surface-variant truncate max-w-[200px]">Office/outpatient visit est</td>
+<td class="p-sm text-right">$250.00</td>
+<td class="p-sm text-right">$0.00</td>
+<td class="p-sm text-center">
+<span class="inline-flex px-2 py-0.5 rounded bg-error-container/50 text-on-error-container font-label-sm text-[10px] uppercase">Denied</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors group h-12">
+<td class="pl-layout-margin p-sm text-on-surface-variant"><span class="material-symbols-outlined text-sm cursor-pointer">chevron_right</span></td>
+<td class="p-sm font-medium">70450</td>
+<td class="p-sm text-on-surface-variant truncate max-w-[200px]">CT head/brain w/o dye</td>
+<td class="p-sm text-right">$3,200.00</td>
+<td class="p-sm text-right">$0.00</td>
+<td class="p-sm text-center">
+<span class="inline-flex px-2 py-0.5 rounded bg-error-container/50 text-on-error-container font-label-sm text-[10px] uppercase">Denied</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Timeline & Metadata -->
+<div class="lg:col-span-4 space-y-lg">
+<!-- Lifecycle Timeline -->
+<div class="bg-surface border border-surface-container-high rounded-xl p-layout-margin shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05)]">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-layout-margin flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+                        Claim Lifecycle
+                    </h3>
+<div class="relative pl-6 space-y-md before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-surface-container-high">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-8 top-1 w-4 h-4 rounded-full bg-error flex items-center justify-center ring-4 ring-surface">
+<span class="material-symbols-outlined text-[10px] text-on-error font-bold">close</span>
+</div>
+<p class="font-label-md text-label-md text-error">Denied by Payer</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Oct 28, 2023 • 14:32 EST</p>
+<div class="mt-sm p-sm bg-error-container/30 border border-error-container rounded text-body-sm font-body-sm text-on-surface">
+<span class="font-medium text-on-error-container">Reason CO-16:</span> Claim/service lacks information or has submission/billing error(s). Missing clinical notes for CPT 70450.
+                            </div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-8 top-1 w-4 h-4 rounded-full bg-surface-variant flex items-center justify-center ring-4 ring-surface border border-outline-variant">
+<span class="material-symbols-outlined text-[10px] text-on-surface-variant">check</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface">Acknowledged</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Oct 16, 2023 • 09:15 EST</p>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative">
+<div class="absolute -left-8 top-1 w-4 h-4 rounded-full bg-surface-variant flex items-center justify-center ring-4 ring-surface border border-outline-variant">
+<span class="material-symbols-outlined text-[10px] text-on-surface-variant">check</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface">Submitted to Clearinghouse</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Oct 15, 2023 • 18:40 EST</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

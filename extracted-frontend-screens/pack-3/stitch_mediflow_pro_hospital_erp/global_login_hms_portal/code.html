@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS Portal - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin 2s linear infinite;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed": "#d8e2ff",
+                    "surface-container-high": "#e6e8ea",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "inverse-surface": "#2d3133",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e0e3e5",
+                    "secondary": "#0058be",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-background": "#191c1e",
+                    "tertiary-container": "#002113",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-surface": "#191c1e",
+                    "surface-container-lowest": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "tertiary": "#000000",
+                    "on-primary-container": "#7c839b",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-surface-variant": "#45464d",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "surface-bright": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "primary-container": "#131b2e",
+                    "primary-fixed": "#dae2fd",
+                    "primary": "#000000",
+                    "outline": "#76777d",
+                    "inverse-primary": "#bec6e0",
+                    "surface-container": "#eceef0",
+                    "surface-container-low": "#f2f4f6",
+                    "on-tertiary-container": "#009668",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#131b2e",
+                    "primary-fixed-dim": "#bec6e0",
+                    "secondary-container": "#2170e4",
+                    "surface-dim": "#d8dadc",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#6ffbbe",
+                    "on-secondary-container": "#fefcff",
+                    "background": "#f7f9fb",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "on-secondary-fixed": "#001a42",
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary-fixed": "#002113"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "gutter": "16px",
+                    "layout-margin": "24px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "title-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-background min-h-screen flex flex-col justify-center sm:px-6 lg:px-8 font-sans antialiased text-on-surface">
+<!-- Main Centered Layout -->
+<div class="sm:mx-auto sm:w-full sm:max-w-[440px]">
+<!-- Branding Area -->
+<div class="flex flex-col items-center mb-xl">
+<div class="w-16 h-16 bg-surface-container-lowest border border-outline-variant rounded-xl flex items-center justify-center mb-md shadow-sm" style="box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);">
+<span class="material-symbols-outlined text-secondary" data-icon="health_and_safety" data-weight="fill" style="font-size: 32px;">health_and_safety</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface">HMS Enterprise</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-sm">Secure Authentication Portal</p>
+</div>
+<!-- Login Card (Surface Level 1 - 1px border, no shadow per guidelines) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl">
+<!-- Error State Banner -->
+<div class="mb-lg p-md bg-error-container border border-error rounded-lg flex items-start gap-sm">
+<span class="material-symbols-outlined text-on-error-container text-[20px] mt-0.5" data-icon="error" data-weight="fill">error</span>
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-error-container">Invalid credentials</h3>
+<p class="font-body-sm text-body-sm text-on-error-container mt-xs opacity-90">The email or password you entered is incorrect. Please verify your details and try again.</p>
+</div>
+</div>
+<!-- Login Form -->
+<form action="#" class="space-y-lg" method="POST" onsubmit="event.preventDefault(); toggleLoading();">
+<!-- Email Field -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs relative inline-flex items-center" for="email">
+                        Work Email
+                        <!-- Validation Red Dot -->
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-error ml-1.5" title="Required"></span>
+</label>
+<div class="mt-1 relative">
+<input autocomplete="email" class="block w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-3 font-body-md text-body-md text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all duration-200" id="email" name="email" placeholder="practitioner@hospital.org" required="" type="email" value="dr.smith@generalhospital.org"/>
+</div>
+</div>
+<!-- Password Field -->
+<div>
+<div class="flex items-center justify-between mb-xs">
+<label class="block font-label-md text-label-md text-on-surface relative inline-flex items-center" for="password">
+                            Password
+                            <!-- Validation Red Dot -->
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-error ml-1.5" title="Required"></span>
+</label>
+<div class="text-sm">
+<a class="font-label-md text-label-md text-secondary hover:text-on-secondary-fixed-variant transition-colors" href="#">
+                                Forgot password?
+                            </a>
+</div>
+</div>
+<div class="mt-1 relative">
+<input autocomplete="current-password" class="block w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-md py-3 font-body-md text-body-md text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all duration-200" id="password" name="password" placeholder="••••••••" required="" type="password" value="password123"/>
+</div>
+</div>
+<!-- Submit Action with Loading State Simulated -->
+<div class="pt-sm">
+<button class="w-full flex justify-center items-center gap-sm bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary py-3 px-md rounded-lg font-label-md text-label-md transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-surface-container-lowest" id="submitBtn" type="submit">
+<!-- Spinner (Visible in this demo state) -->
+<span class="material-symbols-outlined animate-spin-slow text-[20px]" data-icon="progress_activity">progress_activity</span>
+<span id="btnText">Authenticating...</span>
+</button>
+</div>
+</form>
+<div class="mt-lg pt-lg border-t border-outline-variant text-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Need technical assistance? Contact <a class="text-secondary hover:underline font-label-md" href="#">IT Support</a>
+</p>
+</div>
+</div>
+<!-- Footer / Legal -->
+<div class="mt-xl text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">
+                © 2024 General Hospital Systems. All rights reserved. <br/>
+                Unauthorized access is strictly prohibited.
+            </p>
+</div>
+</div>
+<script>
+        // Lightweight interaction for demonstration
+        function toggleLoading() {
+            const btn = document.getElementById('submitBtn');
+            const text = document.getElementById('btnText');
+            // Assuming it's already in loading state based on the prompt request to show it
+            // This is just a placeholder function to prevent default form submission
+            console.log("Login attempt registered.");
+        }
+    </script>
+</body></html>

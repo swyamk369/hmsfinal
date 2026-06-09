@@ -1,0 +1,30 @@
+{
+  "name": "hms-saas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-tenant Hospital Management System SaaS",
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"pnpm --filter @hms/api start:dev\" \"pnpm --filter @hms/web dev\"",
+    "build": "pnpm --filter @hms/shared build && pnpm --filter @hms/db build && pnpm --filter @hms/api build && pnpm --filter @hms/web build",
+    "test": "pnpm --filter @hms/api test && pnpm --filter @hms/web test",
+    "lint": "pnpm --filter @hms/web lint",
+    "format": "prettier --write \"{apps,packages}/**/src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"{apps,packages}/**/src/**/*.{ts,tsx}\"",
+    "typecheck": "pnpm --filter @hms/shared typecheck && pnpm --filter @hms/api build && pnpm --filter @hms/web build",
+    "services:up": "docker compose up -d",
+    "services:down": "docker compose down",
+    "db:migrate": "pnpm --filter @hms/db migrate:deploy",
+    "db:rls": "pnpm --filter @hms/db rls",
+    "db:seed": "pnpm --filter @hms/db seed",
+    "db:setup": "pnpm db:migrate && pnpm db:rls && pnpm db:seed",
+    "prisma:validate": "pnpm --filter @hms/db exec prisma validate"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.4.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.5.2"
+}

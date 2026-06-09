@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS Claims &amp; Insurance - Insurance Payer Directory</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed": "#d8e2ff",
+                      "surface-container-high": "#e6e8ea",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "inverse-surface": "#2d3133",
+                      "error-container": "#ffdad6",
+                      "surface-variant": "#e0e3e5",
+                      "secondary": "#0058be",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-background": "#191c1e",
+                      "tertiary-container": "#002113",
+                      "on-secondary-fixed-variant": "#004395",
+                      "on-surface": "#191c1e",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#f7f9fb",
+                      "tertiary": "#000000",
+                      "on-primary-container": "#7c839b",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-surface-variant": "#45464d",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e0e3e5",
+                      "surface-bright": "#f7f9fb",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "primary-container": "#131b2e",
+                      "primary-fixed": "#dae2fd",
+                      "primary": "#000000",
+                      "outline": "#76777d",
+                      "inverse-primary": "#bec6e0",
+                      "surface-container": "#eceef0",
+                      "surface-container-low": "#f2f4f6",
+                      "on-tertiary-container": "#009668",
+                      "on-primary-fixed": "#131b2e",
+                      "on-primary": "#ffffff",
+                      "primary-fixed-dim": "#bec6e0",
+                      "surface-dim": "#d8dadc",
+                      "secondary-container": "#2170e4",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#6ffbbe",
+                      "on-secondary-container": "#fefcff",
+                      "background": "#f7f9fb",
+                      "on-secondary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#565e74",
+                      "on-secondary-fixed": "#001a42",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary-fixed": "#002113"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "xs": "4px",
+                      "layout-margin": "24px",
+                      "gutter": "16px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "base": "4px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for cleaner UI */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0e3e5;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c6c6cd;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- SideNavBar (JSON Component) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col z-40 bg-surface dark:bg-inverse-surface text-secondary dark:text-secondary-fixed font-label-md text-label-md docked left-0 h-full w-[280px] bg-surface-container dark:bg-surface-container-high border-r border-outline-variant/30 hidden md:flex">
+<!-- Header -->
+<div class="p-layout-margin flex items-center gap-sm border-b border-outline-variant/20">
+<div aria-label="HMS Logo" class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-on-primary-fixed flex-shrink-0">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed">Insurance Module</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Accounts Dept</p>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 overflow-y-auto py-md flex flex-col gap-xs px-sm">
+<!-- Dashboard -->
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<!-- Claims Queue -->
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+                Claims Queue
+            </a>
+<!-- Bill Reconciliation -->
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+                Bill Reconciliation
+            </a>
+<!-- Insurance Partners (Active) -->
+<a class="flex items-center gap-md text-secondary font-bold border-l-4 border-secondary bg-secondary-fixed/50 py-3 px-4 rounded-r-lg transition-transform duration-150 relative" href="#">
+<span class="material-symbols-outlined icon-fill">business_center</span>
+                Insurance Partners
+            </a>
+<!-- CPT/ICD Lookup -->
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">search_check</span>
+                CPT/ICD Lookup
+            </a>
+<!-- Reports -->
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Reports
+            </a>
+</nav>
+<!-- Footer -->
+<div class="p-layout-margin border-t border-outline-variant/20">
+<a class="flex items-center gap-md text-on-surface-variant dark:text-surface-variant py-3 px-4 rounded-lg hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area Wrapper -->
+<main class="flex-1 flex flex-col md:ml-[280px] min-w-0 h-full relative bg-background">
+<!-- TopNavBar (JSON Component) -->
+<header class="bg-surface dark:bg-inverse-surface text-secondary dark:text-secondary-fixed font-body-md text-body-md docked full-width top-0 bg-surface-container-low dark:bg-surface-container-high flex justify-between items-center w-full px-layout-margin h-16 sticky z-30 border-b border-outline-variant/20">
+<div class="flex items-center gap-md">
+<div class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed font-bold tracking-tight">
+                    HMS Claims &amp; Insurance
+                </div>
+</div>
+<!-- Search (on_left logic implemented as simple input here to match standard pattern, though JSON just says "on_left") -->
+<div class="hidden lg:flex flex-1 max-w-md mx-layout-margin">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface-container-highest border-none rounded-full py-2 pl-10 pr-4 text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-secondary focus:bg-surface-container-lowest transition-all" placeholder="Search payer directory..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button aria-label="notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button aria-label="help" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button aria-label="settings" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-outline-variant/40 mx-2"></div>
+<button aria-label="Medical Administrator Profile" class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center border border-outline-variant/30 overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" data-alt="A professional headshot of a female medical administrator in her 40s, wearing business casual attire. The lighting is bright and studio-quality, suitable for an enterprise software profile picture. The background is a clean, neutral soft gray." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9riINYiWjixaEClm7ieddBucqrdssjIrTmBusF80K0-FmWqOWIT9HMEIoUZ1-DFCuudhRHCoxdyEDZuF5Qfx02b8bZP622tMRl2I4qCEzmdg1a28Zbxm2SFhtm2F1OjjFLMUkqxIieV4ISU5wRSsbilOb9upCpuXo-GWKvZ0JiEW2XJWDi-BUYGBF4wmC3BYvZCqY0Dbu6HHCe1zKBHsmrEGjN-3DoiNveTcYDqIFmvtn-paS_94bMQfNozRElo7OOOLdVHJXUWA"/>
+</button>
+</div>
+</header>
+<!-- Canvas Area -->
+<div class="flex-1 overflow-hidden flex flex-col p-layout-margin gap-layout-margin">
+<!-- Page Header & Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md shrink-0">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Payer Directory</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Manage insurance partners, active contracts, and settlement terms.</p>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                        Filter
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-secondary text-on-secondary rounded-lg hover:bg-secondary/90 transition-colors font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Add New Partner
+                    </button>
+</div>
+</div>
+<!-- Main Layout: Master-Detail Split -->
+<div class="flex-1 flex gap-layout-margin min-h-0 overflow-hidden">
+<!-- Left Pane: Payer List (Table) -->
+<div class="flex-1 flex flex-col bg-surface-container-lowest border border-surface-container-highest rounded-xl overflow-hidden shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)]">
+<!-- Table Toolbar -->
+<div class="p-4 border-b border-surface-container-highest flex items-center gap-md bg-surface-bright shrink-0">
+<!-- Filters -->
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md border border-secondary/20">All</button>
+<button class="px-3 py-1.5 rounded-full bg-surface text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container-high font-label-md text-label-md transition-colors">Public</button>
+<button class="px-3 py-1.5 rounded-full bg-surface text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container-high font-label-md text-label-md transition-colors">Private</button>
+<button class="px-3 py-1.5 rounded-full bg-surface text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container-high font-label-md text-label-md transition-colors">TPA</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-lowest z-10 shadow-[0_1px_0_0_#e0e3e5]">
+<tr>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant w-1/3">Insurance Partner Name</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Payer ID</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Type</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Active Contracts</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant">Contact Person</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y divide-surface-container-highest">
+<!-- Row 1 (Active/Selected State) -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer bg-secondary-fixed/20 relative">
+<td class="py-3 px-4 border-l-2 border-secondary font-medium text-on-surface">BlueCross Healthcare</td>
+<td class="py-3 px-4 text-on-surface-variant font-mono text-body-sm">PAY-BC-109</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Private</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+                                            3 Active
+                                        </div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Sarah Jenkins</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4 border-l-2 border-transparent font-medium text-on-surface">Medicare National</td>
+<td class="py-3 px-4 text-on-surface-variant font-mono text-body-sm">PAY-MN-001</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-secondary-fixed/50 text-on-secondary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Public</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+                                            1 Active
+                                        </div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">System Automated</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4 border-l-2 border-transparent font-medium text-on-surface">Aetna Solutions</td>
+<td class="py-3 px-4 text-on-surface-variant font-mono text-body-sm">PAY-AT-442</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Private</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+                                            0 Active
+                                        </div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Michael Chang</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4 border-l-2 border-transparent font-medium text-on-surface">HealthNet TPA Services</td>
+<td class="py-3 px-4 text-on-surface-variant font-mono text-body-sm">PAY-HN-883</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-surface-variant text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider border border-outline-variant/30">TPA</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+                                            5 Active
+                                        </div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Lisa Monroe</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4 border-l-2 border-transparent font-medium text-on-surface">Cigna Regional</td>
+<td class="py-3 px-4 text-on-surface-variant font-mono text-body-sm">PAY-CG-210</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Private</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+                                            2 Active
+                                        </div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Robert Cole</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination (Simplified) -->
+<div class="p-3 border-t border-surface-container-highest flex items-center justify-between text-body-sm text-on-surface-variant bg-surface-bright shrink-0">
+<span>Showing 1-5 of 24 payers</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 rounded hover:bg-surface-container-high flex items-center justify-center disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Pane: Contract Details Side Panel -->
+<aside class="hidden xl:flex w-[400px] flex-col bg-surface-container-lowest border border-surface-container-highest rounded-xl overflow-hidden shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] shrink-0">
+<!-- Panel Header -->
+<div class="p-layout-margin border-b border-surface-container-highest bg-surface-bright">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">BlueCross Healthcare</h3>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-sm bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider">Private</span>
+<span class="text-body-sm text-on-surface-variant font-mono">ID: PAY-BC-109</span>
+</div>
+</div>
+<!-- Panel Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-layout-margin flex flex-col gap-xl">
+<!-- Coverage Rules -->
+<section>
+<h4 class="font-title-lg text-title-lg text-on-surface mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">policy</span>
+                                Coverage Rules
+                            </h4>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/30 flex flex-col gap-2">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] text-error mt-0.5">warning</span>
+<p class="font-body-sm text-body-sm text-on-surface">Requires pre-authorization for all MRI and CT scans.</p>
+</div>
+<div class="h-px bg-outline-variant/20 my-1"></div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant mt-0.5">info</span>
+<p class="font-body-sm text-body-sm text-on-surface">Outpatient physical therapy capped at 20 sessions/year.</p>
+</div>
+<div class="h-px bg-outline-variant/20 my-1"></div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-tertiary-container mt-0.5">check_circle</span>
+<p class="font-body-sm text-body-sm text-on-surface">ER visits copay fixed at $150 regardless of admission.</p>
+</div>
+</div>
+</section>
+<!-- Financial Terms Grid -->
+<section>
+<h4 class="font-title-lg text-title-lg text-on-surface mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">payments</span>
+                                Financial Terms
+                            </h4>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/30">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Base Discount Rate</p>
+<p class="font-headline-sm text-headline-sm text-on-surface">15%</p>
+</div>
+<div class="bg-surface rounded-lg p-3 border border-outline-variant/30">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Settlement Cycle</p>
+<p class="font-headline-sm text-headline-sm text-on-surface">45 Days</p>
+</div>
+<div class="col-span-2 bg-surface rounded-lg p-3 border border-outline-variant/30">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1">Claim Submission Method</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">api</span>
+<p class="font-body-md text-body-md text-on-surface">EDI 837 / Electronic Only</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Active Contracts List -->
+<section>
+<div class="flex justify-between items-center mb-3">
+<h4 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">description</span>
+                                    Active Contracts
+                                </h4>
+<span class="bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Contract Card -->
+<div class="p-3 border border-outline-variant/40 rounded-lg hover:border-secondary/50 transition-colors cursor-pointer group bg-surface">
+<div class="flex justify-between items-start mb-1">
+<p class="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors">Inpatient Care Agreement 2024</p>
+<span class="text-[10px] bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant px-1.5 py-0.5 rounded font-medium">Active</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Expires: Dec 31, 2024</p>
+</div>
+<!-- Contract Card -->
+<div class="p-3 border border-outline-variant/40 rounded-lg hover:border-secondary/50 transition-colors cursor-pointer group bg-surface">
+<div class="flex justify-between items-start mb-1">
+<p class="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors">Outpatient &amp; Diagnostics Annex</p>
+<span class="text-[10px] bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant px-1.5 py-0.5 rounded font-medium">Active</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Expires: Dec 31, 2024</p>
+</div>
+</div>
+</section>
+</div>
+</aside>
+</div>
+</div>
+</main>
+</body></html>

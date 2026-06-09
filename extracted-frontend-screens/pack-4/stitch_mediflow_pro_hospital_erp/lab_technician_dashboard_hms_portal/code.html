@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background antialiased" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumina HMS Lab - Dashboard</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS (with forms plugin) -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#c6c6cd",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary": "#000000",
+                    "on-secondary-fixed": "#001a42",
+                    "on-primary-container": "#7c839b",
+                    "secondary-container": "#2170e4",
+                    "on-background": "#191c1e",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#45464d",
+                    "surface-container": "#eceef0",
+                    "surface-container-high": "#e6e8ea",
+                    "on-secondary-fixed-variant": "#004395",
+                    "tertiary-fixed": "#6ffbbe",
+                    "on-tertiary-fixed": "#002113",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#fefcff",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "primary-fixed-dim": "#bec6e0",
+                    "on-tertiary-container": "#009668",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#191c1e",
+                    "outline": "#76777d",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "background": "#f7f9fb",
+                    "on-primary-fixed": "#131b2e",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-secondary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "inverse-surface": "#2d3133",
+                    "tertiary-container": "#002113",
+                    "primary-fixed": "#dae2fd",
+                    "primary": "#000000",
+                    "surface-container-low": "#f2f4f6",
+                    "secondary-fixed": "#d8e2ff",
+                    "surface-variant": "#e0e3e5",
+                    "surface-bright": "#f7f9fb",
+                    "inverse-primary": "#bec6e0",
+                    "surface": "#f7f9fb",
+                    "surface-dim": "#d8dadc",
+                    "primary-container": "#131b2e",
+                    "error-container": "#ffdad6",
+                    "secondary": "#0058be",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#565e74",
+                    "surface-container-highest": "#e0e3e5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "xl": "32px",
+                    "sm": "8px",
+                    "base": "4px",
+                    "layout-margin": "24px",
+                    "gutter": "16px",
+                    "xs": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                    "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                    "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                    "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                    "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                    "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                    "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Utility class for hiding scrollbar but allowing scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="flex h-full w-full overflow-hidden text-on-surface bg-background">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline fixed left-0 top-0 h-full w-[280px] hidden md:flex flex-col py-md z-40">
+<!-- Header -->
+<div class="px-layout-margin mb-xl">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-[18px]">biotech</span>
+</div>
+<div>
+<h1 class="text-headline-sm font-headline-sm text-on-surface dark:text-inverse-on-surface">Core Laboratory</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Ward A-4 Unit</p>
+</div>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 overflow-y-auto no-scrollbar px-sm">
+<ul class="space-y-sm">
+<!-- Active Item -->
+<li>
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container border-l-4 border-secondary hover:bg-surface-container-highest transition-all duration-200 ease-in-out group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Overview</span>
+</a>
+</li>
+<!-- Inactive Items -->
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-highest transition-all duration-200 ease-in-out border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="text-label-md font-label-md">Specimen Collection</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-highest transition-all duration-200 ease-in-out border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="science">science</span>
+<span class="text-label-md font-label-md">Analysis</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-highest transition-all duration-200 ease-in-out border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="text-label-md font-label-md">Validation</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-highest transition-all duration-200 ease-in-out border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="text-label-md font-label-md">Archived Results</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:bg-surface-container-highest transition-all duration-200 ease-in-out border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</li>
+</ul>
+<!-- CTA -->
+<div class="mt-xl px-sm">
+<button class="w-full flex items-center justify-center gap-sm bg-error text-on-error py-sm px-md rounded-DEFAULT text-label-md font-label-md hover:opacity-90 transition-opacity shadow-sm">
+<span class="material-symbols-outlined text-[18px]">emergency</span>
+                    Emergency Order
+                </button>
+</div>
+</div>
+<!-- Footer Navigation -->
+<div class="mt-auto px-sm pt-md border-t border-outline-variant/30">
+<ul class="space-y-base">
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 ease-in-out rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="text-label-md font-label-md">Support</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 ease-in-out rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="text-label-md font-label-md">Logout</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<div class="flex-1 flex flex-col md:ml-[280px] min-w-0 bg-background h-screen overflow-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-layout-margin h-12 shrink-0 z-30">
+<!-- Left: Breadcrumb / System Status -->
+<div class="flex items-center gap-md">
+<div class="md:hidden flex items-center">
+<span class="text-title-lg font-title-lg text-primary dark:text-inverse-primary">Lumina HMS Lab</span>
+</div>
+<!-- System Status Indicator (Replacing standard breadcrumb for Dashboard) -->
+<div class="hidden md:flex items-center gap-sm bg-surface-container-low px-md py-xs rounded-full border border-outline-variant/50">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></div>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Lab Online</span>
+</div>
+</div>
+<!-- Center: Top Nav Links (Hidden on small, used as secondary nav here since SideNav is primary) -->
+<nav class="hidden lg:flex items-center gap-lg">
+<a class="text-secondary dark:text-secondary-fixed border-b-2 border-secondary font-bold py-md font-body-sm text-body-sm cursor-pointer active:opacity-80" href="#">Dashboard</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors py-md font-body-sm text-body-sm cursor-pointer active:opacity-80" href="#">Work Queue</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors py-md font-body-sm text-body-sm cursor-pointer active:opacity-80" href="#">Inventory</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors py-md font-body-sm text-body-sm cursor-pointer active:opacity-80" href="#">Quality Control</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors py-md font-body-sm text-body-sm cursor-pointer active:opacity-80" href="#">Reports</a>
+</nav>
+<!-- Right: Actions & Profile -->
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-variant transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<!-- Notification Badge -->
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full border border-surface"></span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="h-6 w-px bg-outline-variant mx-sm"></div>
+<div class="flex items-center gap-sm cursor-pointer group">
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden border border-outline-variant">
+<!-- Placeholder for Chief Lab Technician Profile -->
+<div class="w-full h-full bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">person</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto p-layout-margin bg-background">
+<div class="max-w-[1400px] mx-auto">
+<!-- Page Header -->
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="text-display-lg font-display-lg text-on-surface">Lab Overview</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-xs">Tuesday, Oct 24 • Shift A</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm bg-surface border border-outline-variant text-on-surface rounded-DEFAULT text-label-md font-label-md flex items-center gap-xs hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                            Today
+                        </button>
+</div>
+</div>
+<!-- KPI Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md mb-xl">
+<!-- KPI 1: Pending Samples -->
+<div class="bg-surface rounded-xl p-md border border-outline-variant flex flex-col justify-between relative overflow-hidden">
+<div class="flex justify-between items-start mb-md">
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Pending Samples</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">bloodtype</span>
+</div>
+</div>
+<div class="flex items-baseline gap-sm">
+<span class="text-display-lg font-display-lg text-on-surface">42</span>
+<span class="text-label-md font-label-md text-on-surface-variant">awaiting log-in</span>
+</div>
+<!-- Subtle background decor -->
+<div class="absolute -bottom-4 -right-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[100px]" data-weight="fill">bloodtype</span>
+</div>
+</div>
+<!-- KPI 2: Results Pending (Analysis) -->
+<div class="bg-surface rounded-xl p-md border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">In Analysis</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[18px]">science</span>
+</div>
+</div>
+<div class="flex items-baseline gap-sm">
+<span class="text-display-lg font-display-lg text-secondary">18</span>
+<span class="text-label-md font-label-md text-on-surface-variant">machines active</span>
+</div>
+</div>
+<!-- KPI 3: Verification Pending -->
+<div class="bg-surface rounded-xl p-md border border-outline-variant flex flex-col justify-between border-l-4 border-l-secondary-container">
+<div class="flex justify-between items-start mb-md">
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Verification Req.</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary-container text-[18px]">fact_check</span>
+</div>
+</div>
+<div class="flex items-baseline gap-sm">
+<span class="text-display-lg font-display-lg text-on-surface">7</span>
+<span class="text-label-md font-label-md text-on-surface-variant">needs tech review</span>
+</div>
+</div>
+<!-- KPI 4: Completed Today -->
+<div class="bg-surface rounded-xl p-md border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Completed Today</span>
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]">task_alt</span>
+</div>
+</div>
+<div class="flex items-baseline gap-sm">
+<span class="text-display-lg font-display-lg text-on-surface">156</span>
+<span class="text-label-md font-label-md text-tertiary-fixed-dim">+12% vs avg</span>
+</div>
+</div>
+</div>
+<!-- Main Layout Area -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-xl">
+<!-- Left Column: Work Queue Table (Takes up 2/3) -->
+<div class="lg:col-span-2 flex flex-col">
+<div class="flex justify-between items-end mb-md">
+<h3 class="text-title-lg font-title-lg text-on-surface">Active Work Queue</h3>
+<!-- Table Actions -->
+<div class="flex gap-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-xl pr-md py-sm bg-surface border border-outline-variant rounded-DEFAULT text-body-sm font-body-sm focus:ring-2 focus:ring-secondary focus:border-secondary outline-none w-48" placeholder="Search orders..." type="text"/>
+</div>
+<button class="p-sm bg-surface border border-outline-variant rounded-DEFAULT hover:bg-surface-variant text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+</div>
+</div>
+<!-- High Density Table -->
+<div class="bg-surface border border-outline-variant rounded-lg overflow-hidden flex-1">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="py-sm px-md text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider w-24">Order ID</th>
+<th class="py-sm px-md text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Patient Name</th>
+<th class="py-sm px-md text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Test Name</th>
+<th class="py-sm px-md text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="py-sm px-md text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider text-right">Priority</th>
+</tr>
+</thead>
+<tbody class="text-body-sm font-body-sm divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[40px]">
+<td class="py-sm px-md font-mono text-on-surface-variant">ORD-9921</td>
+<td class="py-sm px-md text-on-surface font-medium">Doe, Jonathan</td>
+<td class="py-sm px-md text-on-surface-variant">Complete Blood Count (CBC)</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-fixed text-on-secondary-fixed-variant uppercase tracking-wide">
+                                                Collected
+                                            </span>
+</td>
+<td class="py-sm px-md text-right">
+<span class="text-on-surface-variant">Routine</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[40px] bg-error-container/10">
+<td class="py-sm px-md font-mono text-on-surface-variant">ORD-9922</td>
+<td class="py-sm px-md text-on-surface font-medium">Smith, Sarah A.</td>
+<td class="py-sm px-md text-on-surface-variant">Comprehensive Metabolic Panel</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-surface-variant text-on-surface-variant uppercase tracking-wide">
+                                                Pending Draw
+                                            </span>
+</td>
+<td class="py-sm px-md text-right flex justify-end items-center h-[40px]">
+<span class="inline-flex items-center gap-xs text-error font-medium">
+<span class="material-symbols-outlined text-[14px]">local_fire_department</span>
+                                                STAT
+                                            </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[40px]">
+<td class="py-sm px-md font-mono text-on-surface-variant">ORD-9923</td>
+<td class="py-sm px-md text-on-surface font-medium">Johnson, Robert</td>
+<td class="py-sm px-md text-on-surface-variant">Lipid Panel</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-fixed text-on-secondary-fixed-variant uppercase tracking-wide">
+                                                Collected
+                                            </span>
+</td>
+<td class="py-sm px-md text-right">
+<span class="text-on-surface-variant">Routine</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[40px]">
+<td class="py-sm px-md font-mono text-on-surface-variant">ORD-9924</td>
+<td class="py-sm px-md text-on-surface font-medium">Williams, Maria</td>
+<td class="py-sm px-md text-on-surface-variant">Hemoglobin A1C</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-fixed text-on-secondary-fixed-variant uppercase tracking-wide">
+                                                Collected
+                                            </span>
+</td>
+<td class="py-sm px-md text-right">
+<span class="text-on-surface-variant">Routine</span>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[40px]">
+<td class="py-sm px-md font-mono text-on-surface-variant">ORD-9925</td>
+<td class="py-sm px-md text-on-surface font-medium">Brown, James</td>
+<td class="py-sm px-md text-on-surface-variant">Thyroid Stimulating Hormone</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-surface-variant text-on-surface-variant uppercase tracking-wide">
+                                                Pending Draw
+                                            </span>
+</td>
+<td class="py-sm px-md text-right">
+<span class="text-on-surface-variant">Routine</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column: Critical Alerts & Side Panels -->
+<div class="flex flex-col gap-md">
+<!-- Critical Results Panel -->
+<div class="bg-error-container/20 border border-error/30 rounded-lg overflow-hidden flex flex-col">
+<div class="bg-error-container/50 px-md py-sm border-b border-error/20 flex justify-between items-center">
+<h3 class="text-title-lg font-title-lg text-on-error-container flex items-center gap-xs">
+<span class="material-symbols-outlined" data-weight="fill">warning</span>
+                                    Critical Results
+                                </h3>
+<span class="bg-error text-on-error text-label-sm font-label-sm px-2 py-0.5 rounded-full">2 Action Req.</span>
+</div>
+<div class="p-sm flex flex-col gap-sm">
+<!-- Critical Card 1 -->
+<div class="bg-surface p-sm border border-error/40 rounded-DEFAULT relative overflow-hidden shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="pl-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-label-md font-label-md text-on-surface font-bold">Potassium Level High</span>
+<span class="text-label-sm font-label-sm text-error">6.8 mmol/L</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-sm">Patient: Davis, Emily (Ward B-2)</p>
+<div class="flex justify-end gap-sm">
+<button class="text-label-md font-label-md text-on-surface-variant hover:text-on-surface px-sm py-xs">Review</button>
+<button class="bg-error text-on-error text-label-md font-label-md px-sm py-xs rounded-DEFAULT shadow-sm hover:opacity-90">Notify RN</button>
+</div>
+</div>
+</div>
+<!-- Critical Card 2 -->
+<div class="bg-surface p-sm border border-error/40 rounded-DEFAULT relative overflow-hidden shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="pl-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-label-md font-label-md text-on-surface font-bold">Troponin Elevated</span>
+<span class="text-label-sm font-label-sm text-error">0.45 ng/mL</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-sm">Patient: Garcia, Luis (ED Bay 4)</p>
+<div class="flex justify-end gap-sm">
+<button class="text-label-md font-label-md text-on-surface-variant hover:text-on-surface px-sm py-xs">Review</button>
+<button class="bg-error text-on-error text-label-md font-label-md px-sm py-xs rounded-DEFAULT shadow-sm hover:opacity-90">Notify MD</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions / System Info -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md mt-auto">
+<h4 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider mb-sm">Analyzer Status</h4>
+<ul class="space-y-sm">
+<li class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="flex items-center gap-xs text-on-surface">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+                                        Chemistry (DxC 700)
+                                    </span>
+<span class="text-on-surface-variant text-label-sm">Idle</span>
+</li>
+<li class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="flex items-center gap-xs text-on-surface">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+                                        Hematology (DxH 900)
+                                    </span>
+<span class="text-on-surface-variant text-label-sm">Processing (4)</span>
+</li>
+<li class="flex justify-between items-center text-body-sm font-body-sm opacity-60">
+<span class="flex items-center gap-xs text-on-surface-variant">
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+                                        Coagulation (ACL TOP)
+                                    </span>
+<span class="text-on-surface-variant text-label-sm">Maint.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

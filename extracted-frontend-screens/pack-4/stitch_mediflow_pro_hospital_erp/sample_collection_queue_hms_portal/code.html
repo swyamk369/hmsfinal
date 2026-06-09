@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumina HMS Lab - Specimen Collection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#eff1f3",
+                      "tertiary": "#000000",
+                      "on-secondary-fixed": "#001a42",
+                      "on-primary-container": "#7c839b",
+                      "secondary-container": "#2170e4",
+                      "on-background": "#191c1e",
+                      "on-error": "#ffffff",
+                      "on-surface-variant": "#45464d",
+                      "surface-container": "#eceef0",
+                      "surface-container-high": "#e6e8ea",
+                      "on-secondary-fixed-variant": "#004395",
+                      "tertiary-fixed": "#6ffbbe",
+                      "on-tertiary-fixed": "#002113",
+                      "error": "#ba1a1a",
+                      "on-secondary-container": "#fefcff",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-tertiary-container": "#009668",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#191c1e",
+                      "outline": "#76777d",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "background": "#f7f9fb",
+                      "on-primary-fixed": "#131b2e",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "inverse-surface": "#2d3133",
+                      "tertiary-container": "#002113",
+                      "primary-fixed": "#dae2fd",
+                      "primary": "#000000",
+                      "surface-container-low": "#f2f4f6",
+                      "secondary-fixed": "#d8e2ff",
+                      "surface-variant": "#e0e3e5",
+                      "surface-bright": "#f7f9fb",
+                      "inverse-primary": "#bec6e0",
+                      "surface": "#f7f9fb",
+                      "surface-dim": "#d8dadc",
+                      "primary-container": "#131b2e",
+                      "error-container": "#ffdad6",
+                      "secondary": "#0058be",
+                      "on-error-container": "#93000a",
+                      "surface-tint": "#565e74",
+                      "surface-container-highest": "#e0e3e5"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "base": "4px",
+                      "layout-margin": "24px",
+                      "gutter": "16px",
+                      "xs": "4px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                      "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                      "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                      "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                      "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                      "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                      "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex antialiased">
+<!-- SideNavBar -->
+<aside class="hidden md:flex bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-full w-[280px] flex-col py-md z-40">
+<div class="px-layout-margin mb-xl flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="science">science</span>
+</div>
+<div>
+<h1 class="text-headline-sm font-headline-sm text-on-surface">Core Laboratory</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Ward A-4 Unit</p>
+</div>
+</div>
+<div class="px-layout-margin mb-md">
+<button class="w-full bg-error text-on-error rounded-DEFAULT py-sm px-md flex items-center justify-center gap-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="warning">warning</span>
+<span class="font-label-md text-label-md">Emergency Order</span>
+</button>
+</div>
+<nav class="flex-1 flex flex-col gap-base px-sm">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT bg-secondary-container text-on-secondary-container border-l-4 border-secondary font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="biotech" data-weight="fill">biotech</span>
+                Specimen Collection
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="science">science</span>
+                Analysis
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+                Validation
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                Archived Results
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto flex flex-col gap-base px-sm">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+                Support
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[280px] flex flex-col min-h-screen">
+<!-- TopNavBar (Mobile context / Desktop Header area) -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-layout-margin h-12 sticky top-0 z-30">
+<div class="flex items-center gap-md md:hidden">
+<span class="material-symbols-outlined text-primary cursor-pointer" data-icon="menu">menu</span>
+<span class="text-title-lg font-title-lg text-primary">Lumina HMS Lab</span>
+</div>
+<div class="hidden md:flex items-center gap-lg">
+<div class="flex items-center gap-sm text-on-surface-variant font-body-sm text-body-sm">
+<span>Laboratory</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface font-semibold">Specimen Collection Queue</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]" data-icon="search">search</span>
+<input class="pl-xl pr-sm py-1 bg-surface-container-low border-none rounded-DEFAULT text-body-sm font-body-sm focus:ring-2 focus:ring-secondary w-64" placeholder="Search MRN or Patient..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-secondary transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors cursor-pointer active:opacity-80 hidden sm:block">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant cursor-pointer">
+<img alt="Chief Lab Technician Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a female clinical lab technician in a modern, brightly lit laboratory setting, wearing a clean white coat. Warm neutral lighting. High-end corporate healthcare aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjT0PRUX8FDC71k3P4YTLnqzOlkuwa4opIQgpXWVF9NopGSMS7Zp1ODQMmVmIlDLQ4FMBeQSsRupzrfAG0su-uVIpN628yDWIxqxOsIAyDClgDyqssCb44mAasHovXB6MMVhT6oInn5LHQrGt4lnkwllm8_y8PPhsNTr8UUNHDQskWJjYT-8bOilhO8v6BqTcj6yYB7NV0JqKaIT3cpxitDzyo_hyec-_EAtpY_zwqpHmWc631gTDoebyrifmB4hGZtm-4Vtf7lg8"/>
+</div>
+</div>
+</header>
+<!-- Canvas Content -->
+<div class="p-layout-margin flex-1 flex flex-col gap-lg">
+<!-- Page Header & Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+<div>
+<h2 class="text-headline-md font-headline-md text-on-background">Collection Queue</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">24 patients pending specimen collection.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm border border-outline-variant rounded-DEFAULT text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+                        Filter
+                    </button>
+<button class="px-md py-sm border border-outline-variant rounded-DEFAULT text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="sort">sort</span>
+                        Sort
+                    </button>
+</div>
+</div>
+<!-- Queue List -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-md">
+<!-- Queue Card 1: Emergency -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-md relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<div class="flex justify-between items-start pl-sm">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="bg-error/10 text-error px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase tracking-wider font-semibold">STAT / Emergency</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">MRN: 8492-401</span>
+</div>
+<h3 class="text-title-lg font-title-lg text-on-surface">Chen, Marcus</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Ward B-2 • Bed 14</p>
+</div>
+<div class="text-right">
+<span class="text-error font-label-md text-label-md flex items-center gap-xs justify-end">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+                                45m waiting
+                            </span>
+<p class="text-label-sm font-label-sm text-on-surface-variant mt-1">Ordered: 08:15 AM</p>
+</div>
+</div>
+<div class="pl-sm">
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase mb-sm">Tests Ordered</p>
+<div class="flex flex-wrap gap-sm">
+<span class="bg-surface-container-low border border-outline-variant px-sm py-1 rounded-sm text-body-sm font-body-sm text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="bloodtype">bloodtype</span>
+                                Comprehensive Metabolic Panel (CMP)
+                            </span>
+<span class="bg-surface-container-low border border-outline-variant px-sm py-1 rounded-sm text-body-sm font-body-sm text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="bloodtype">bloodtype</span>
+                                Troponin
+                            </span>
+</div>
+</div>
+<div class="flex gap-sm mt-auto pl-sm pt-sm border-t border-outline-variant/50">
+<button class="flex-1 bg-surface-container text-on-surface py-sm rounded-DEFAULT font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-xs border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="print">print</span>
+                            Print Labels
+                        </button>
+<button class="flex-1 bg-secondary text-on-secondary py-sm rounded-DEFAULT font-label-md text-label-md hover:bg-secondary/90 transition-colors flex items-center justify-center gap-xs shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+                            Mark Collected
+                        </button>
+</div>
+</div>
+<!-- Queue Card 2: Routine -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md flex flex-col gap-md relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex justify-between items-start pl-sm">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="bg-secondary/10 text-secondary px-2 py-0.5 rounded-sm font-label-sm text-label-sm uppercase tracking-wider font-semibold">Routine</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">MRN: 7721-992</span>
+</div>
+<h3 class="text-title-lg font-title-lg text-on-surface">Alvarez, Sofia</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Outpatient Clinic A</p>
+</div>
+<div class="text-right">
+<span class="text-on-surface-variant font-label-md text-label-md flex items-center gap-xs justify-end">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+                                1h 15m waiting
+                            </span>
+<p class="text-label-sm font-label-sm text-on-surface-variant mt-1">Ordered: 07:45 AM</p>
+</div>
+</div>
+<div class="pl-sm">
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase mb-sm">Tests Ordered</p>
+<div class="flex flex-wrap gap-sm">
+<span class="bg-surface-container-low border border-outline-variant px-sm py-1 rounded-sm text-body-sm font-body-sm text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container" data-icon="water_drop">water_drop</span>
+                                Urinalysis w/ Reflex Culture
+                            </span>
+</div>
+</div>
+<div class="flex gap-sm mt-auto pl-sm pt-sm border-t border-outline-variant/50">
+<button class="flex-1 bg-surface-container text-on-surface py-sm rounded-DEFAULT font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-xs border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="print">print</span>
+                            Print Labels
+                        </button>
+<button class="flex-1 bg-secondary text-on-secondary py-sm rounded-DEFAULT font-label-md text-label-md hover:bg-secondary/90 transition-colors flex items-center justify-center gap-xs shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+                            Mark Collected
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

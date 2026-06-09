@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Approve specific dependency build scripts (pnpm 11 blocks them by default).
+allowBuilds:
+  "@prisma/client": true
+  "@prisma/engines": true
+  prisma: true
+  "@nestjs/core": false
+  protobufjs: true
+  unrs-resolver: false

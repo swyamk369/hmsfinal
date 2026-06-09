@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Steward HMS - OPD Queue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#7c839b",
+                        "surface-container": "#eceef0",
+                        "surface-tint": "#565e74",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed": "#001a42",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary": "#000000",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#131b2e",
+                        "outline": "#76777d",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-container": "#2170e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#009668",
+                        "secondary": "#0058be",
+                        "on-background": "#191c1e",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "tertiary-container": "#002113",
+                        "surface-bright": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .queue-scroll::-webkit-scrollbar { width: 4px; }
+        .queue-scroll::-webkit-scrollbar-track { background: transparent; }
+        .queue-scroll::-webkit-scrollbar-thumb { background: theme('colors.outline-variant'); border-radius: 4px; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[280px] bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flex flex-col py-lg gap-sm hidden md:flex z-20">
+<!-- Header -->
+<div class="px-layout-margin mb-md">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center font-bold">CG</div>
+<div>
+<h1 class="font-title-lg text-title-lg font-bold text-on-surface">City General</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">OPD Ward A</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-sm rounded-lg flex items-center justify-center gap-xs hover:bg-on-primary-fixed-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Registration
+            </button>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 px-sm overflow-y-auto">
+<ul class="flex flex-col gap-xs">
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+                        Patient Directory
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-secondary dark:text-secondary-fixed-dim bg-secondary-container/10 border-l-4 border-secondary font-label-md text-label-md scale-[0.99] duration-100" href="#">
+<span class="material-symbols-outlined">clinical_notes</span>
+                        OPD Queue
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+                        Appointments
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">payments</span>
+                        Billing
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">assessment</span>
+                        Reports
+                    </a>
+</li>
+</ul>
+</nav>
+<!-- Footer Tabs -->
+<div class="px-sm mt-auto">
+<ul class="flex flex-col gap-xs">
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+                        Support
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">logout</span>
+                        Logout
+                    </a>
+</li>
+</ul>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-[280px] flex flex-col h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-layout-margin h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline z-10 shrink-0">
+<div class="flex items-center gap-md">
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary hidden md:block">Steward HMS</div>
+<!-- Breadcrumbs -->
+<div class="hidden sm:flex items-center gap-xs font-body-sm text-body-sm text-on-surface-variant ml-lg border-l border-outline-variant pl-lg">
+<span class="hover:text-primary cursor-pointer transition-colors">Home</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-medium">OPD Queue</span>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<!-- Search (on_left in config, but header layout generally dictates this order) -->
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-xl pr-sm py-xs bg-surface-container-low border-outline-variant rounded-full text-body-sm focus:ring-secondary focus:border-secondary transition-all w-64" placeholder="Search patients..." type="text"/>
+</div>
+<div class="flex items-center gap-xs ml-sm">
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors rounded-full">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<div class="h-6 w-px bg-outline-variant mx-xs"></div>
+<button class="font-label-sm text-label-sm text-error hover:bg-error-container px-sm py-xs rounded-md transition-colors flex items-center gap-xs uppercase tracking-wider font-bold">
+<span class="material-symbols-outlined text-[16px]">emergency</span>
+                    Emergency
+                </button>
+<div class="ml-sm cursor-pointer hover:opacity-80 transition-opacity">
+<img alt="User Profile" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5tD6df5bt5NOhvr63HSNpa3jrA8-Rxj-tvXzi84tR8YuTvN09h5XdU_1ova6gFa3OlnrxefA4hX3OZzkP1J5WaSW13EI339R1y8bPOxJ0jFhUiT1JIWBV93f099iJaBpTN5KlfCJn1fsJRS2-pKjFDcR8rBj1QNZPdJDgVRb6LonK1dxreRYCKvfMu_wMDjKmsAJCw1vCq5ZbCy5Mr4gjBYPmHMgEx57fTjUFKNw2vlrKmdp79-AddSfQp4jxMlE32qTz0Jpq-Es"/>
+</div>
+</div>
+</header>
+<!-- Queue Workspace -->
+<div class="flex-1 overflow-hidden flex flex-col p-layout-margin bg-background">
+<!-- Workspace Header & Filters -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md mb-lg shrink-0">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-background">Live OPD Queue</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Manage patient flow across departments.</p>
+</div>
+<div class="flex flex-wrap items-center gap-sm">
+<div class="relative">
+<select class="appearance-none bg-surface border border-outline-variant text-body-sm text-on-surface py-xs pl-sm pr-xl rounded-md focus:ring-secondary focus:border-secondary cursor-pointer">
+<option>All Departments</option>
+<option>Cardiology</option>
+<option>General Medicine</option>
+<option>Orthopedics</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface border border-outline-variant text-body-sm text-on-surface py-xs pl-sm pr-xl rounded-md focus:ring-secondary focus:border-secondary cursor-pointer">
+<option>All Doctors</option>
+<option>Dr. A. Sharma</option>
+<option>Dr. M. Chen</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="bg-surface-container flex p-1 rounded-md border border-outline-variant">
+<button class="p-1 bg-surface shadow-sm rounded text-primary"><span class="material-symbols-outlined text-[18px]">view_column</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]">view_list</span></button>
+</div>
+</div>
+</div>
+<!-- Kanban Board -->
+<div class="flex-1 flex gap-md overflow-x-auto pb-sm snap-x snap-mandatory">
+<!-- Column: Waiting -->
+<div class="flex-1 min-w-[300px] max-w-[350px] flex flex-col bg-surface-container-low rounded-xl border border-outline-variant/50 snap-center">
+<div class="p-sm border-b border-outline-variant/50 flex justify-between items-center bg-surface-container-lowest rounded-t-xl shrink-0">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Waiting</h3>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container px-sm py-xs rounded-full text-on-surface-variant">3 Patients</span>
+</div>
+<div class="flex-1 overflow-y-auto queue-scroll p-sm flex flex-col gap-sm">
+<!-- Card 1 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-sm shadow-[0_2px_4px_-1px_rgba(0,0,0,0.05)] hover:border-secondary transition-colors cursor-grab active:cursor-grabbing">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-sm text-label-sm font-bold text-on-surface bg-surface-container px-xs py-1 rounded">#024</span>
+<span class="font-label-sm text-label-sm text-error bg-error-container px-xs py-1 rounded flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span> 15m wait</span>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Sarah Jenkins</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Fever &amp; Cough (Triage Level 3)</p>
+<div class="flex items-center gap-xs mb-sm">
+<div class="w-5 h-5 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-[10px]">MC</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Dr. M. Chen</span>
+</div>
+<div class="flex gap-xs border-t border-outline-variant/50 pt-xs">
+<button class="flex-1 font-label-sm text-label-sm bg-secondary text-on-secondary py-1 rounded hover:bg-secondary/90 transition-colors">Check In</button>
+<button class="p-1 text-on-surface-variant hover:bg-surface-container rounded transition-colors" title="More Actions"><span class="material-symbols-outlined text-[16px]">more_vert</span></button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-sm shadow-[0_2px_4px_-1px_rgba(0,0,0,0.05)] hover:border-secondary transition-colors cursor-grab">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-sm text-label-sm font-bold text-on-surface bg-surface-container px-xs py-1 rounded">#025</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-xs py-1 rounded flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span> 5m wait</span>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">David Rodriguez</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Routine Follow-up</p>
+<div class="flex items-center gap-xs mb-sm">
+<div class="w-5 h-5 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-sm text-[10px]">AS</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Dr. A. Sharma</span>
+</div>
+<div class="flex gap-xs border-t border-outline-variant/50 pt-xs">
+<button class="flex-1 font-label-sm text-label-sm bg-secondary text-on-secondary py-1 rounded hover:bg-secondary/90 transition-colors">Check In</button>
+<button class="p-1 text-on-surface-variant hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-[16px]">more_vert</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Checked In -->
+<div class="flex-1 min-w-[300px] max-w-[350px] flex flex-col bg-surface-container-low rounded-xl border border-outline-variant/50 snap-center">
+<div class="p-sm border-b border-outline-variant/50 flex justify-between items-center bg-surface-container-lowest rounded-t-xl shrink-0">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Checked In</h3>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container px-sm py-xs rounded-full text-on-surface-variant">2 Patients</span>
+</div>
+<div class="flex-1 overflow-y-auto queue-scroll p-sm flex flex-col gap-sm">
+<!-- Card 3 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-sm shadow-[0_2px_4px_-1px_rgba(0,0,0,0.05)] hover:border-secondary transition-colors cursor-grab border-l-2 border-l-secondary">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-sm text-label-sm font-bold text-on-surface bg-surface-container px-xs py-1 rounded">#021</span>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary/10 px-xs py-1 rounded">Vitals Done</span>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Emily Chen</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Migraine Assessment</p>
+<div class="flex gap-xs border-t border-outline-variant/50 pt-xs mt-sm">
+<button class="flex-1 font-label-sm text-label-sm border border-secondary text-secondary py-1 rounded hover:bg-secondary/5 transition-colors">Start Consult</button>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-sm shadow-[0_2px_4px_-1px_rgba(0,0,0,0.05)] hover:border-secondary transition-colors cursor-grab">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-sm text-label-sm font-bold text-on-surface bg-surface-container px-xs py-1 rounded">#022</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-xs py-1 rounded">Waiting Vitals</span>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Michael Chang</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Knee Pain</p>
+<div class="flex gap-xs border-t border-outline-variant/50 pt-xs mt-sm">
+<button class="flex-1 font-label-sm text-label-sm border border-outline text-on-surface-variant py-1 rounded hover:bg-surface-container transition-colors" disabled="">Start Consult</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: In Consultation -->
+<div class="flex-1 min-w-[300px] max-w-[350px] flex flex-col bg-surface-container-low rounded-xl border border-outline-variant/50 snap-center opacity-90">
+<div class="p-sm border-b border-outline-variant/50 flex justify-between items-center bg-surface-container-lowest rounded-t-xl shrink-0">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-tertiary-fixed-dim"></div>
+<h3 class="font-title-lg text-title-lg text-on-surface">In Consult</h3>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container px-sm py-xs rounded-full text-on-surface-variant">1 Patient</span>
+</div>
+<div class="flex-1 overflow-y-auto queue-scroll p-sm flex flex-col gap-sm">
+<!-- Card 5 -->
+<div class="bg-surface border border-tertiary-fixed-dim rounded-lg p-sm shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05)] relative overflow-hidden">
+<!-- Progress Bar visual -->
+<div class="absolute top-0 left-0 h-1 bg-tertiary-fixed-dim w-3/4"></div>
+<div class="flex justify-between items-start mb-xs mt-1">
+<span class="font-label-sm text-label-sm font-bold text-on-surface bg-surface-container px-xs py-1 rounded">#019</span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container bg-tertiary-fixed/30 px-xs py-1 rounded flex items-center gap-1"><span class="material-symbols-outlined text-[12px] animate-pulse">record_voice_over</span> 12m</span>
+</div>
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Robert King</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-sm">Room 3 • Dr. M. Chen</p>
+<div class="flex gap-xs border-t border-outline-variant/50 pt-xs mt-sm">
+<button class="flex-1 font-label-sm text-label-sm bg-surface-container text-on-surface py-1 rounded hover:bg-surface-container-high transition-colors">Complete</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Completed -->
+<div class="flex-1 min-w-[300px] max-w-[350px] flex flex-col bg-surface-container-low/50 rounded-xl border border-outline-variant/30 snap-center opacity-70">
+<div class="p-sm border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-lowest/50 rounded-t-xl shrink-0">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-3 rounded-full bg-outline"></div>
+<h3 class="font-title-lg text-title-lg text-on-surface-variant">Completed</h3>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container/50 px-sm py-xs rounded-full text-on-surface-variant">12 Today</span>
+</div>
+<div class="flex-1 overflow-y-auto queue-scroll p-sm flex flex-col gap-sm">
+<!-- Card 6 -->
+<div class="bg-surface/50 border border-outline-variant/50 rounded-lg p-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant line-through">#018</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10:45 AM</span>
+</div>
+<h4 class="font-body-md text-body-md text-on-surface-variant">Alice Walker</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Discharged to Pharmacy</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

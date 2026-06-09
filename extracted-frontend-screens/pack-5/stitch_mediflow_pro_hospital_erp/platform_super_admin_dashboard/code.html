@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CareCore HMS - Super Admin Dashboard</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e6e8ea",
+                        "primary": "#000000",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "outline": "#76777d",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-container": "#7c839b",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "inverse-surface": "#2d3133",
+                        "primary-container": "#131b2e",
+                        "on-surface": "#191c1e",
+                        "surface-container": "#eceef0",
+                        "on-tertiary-container": "#009668",
+                        "tertiary-fixed": "#6ffbbe",
+                        "surface-container-highest": "#e0e3e5",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#0058be",
+                        "on-surface-variant": "#45464d",
+                        "surface-bright": "#f7f9fb",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#565e74",
+                        "background": "#f7f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-container": "#fefcff",
+                        "on-background": "#191c1e",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#002113",
+                        "secondary-container": "#2170e4",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "layout-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for clinical feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c6c6cd;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #76777d;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased h-screen overflow-hidden flex">
+<!-- JSON Component: SideNavBar -->
+<nav class="hidden md:flex flex-col h-full border-r border-outline-variant bg-surface-container-low w-[280px] fixed left-0 top-0 z-40">
+<!-- Brand Area -->
+<div class="px-layout-margin py-lg flex items-center gap-md border-b border-outline-variant">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary font-bold">CareCore HMS</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">System Admin</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto py-md flex flex-col gap-xs">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-md text-secondary font-semibold border-l-4 border-secondary px-lg py-md bg-surface-container-high transition-transform duration-200 translate-x-1" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-lg py-md hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">domain</span>
+<span class="font-body-md text-body-md">Departments</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-lg py-md hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">bed</span>
+<span class="font-body-md text-body-md">Ward Management</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-lg py-md hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="font-body-md text-body-md">User Roles</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-lg py-md hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-body-md text-body-md">System Logs</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-lg py-md hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</div>
+<!-- Footer Area -->
+<div class="p-layout-margin border-t border-outline-variant flex flex-col gap-sm">
+<button class="w-full py-2 px-4 bg-secondary text-on-secondary rounded font-label-md text-label-md flex items-center justify-center gap-sm hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                Support Ticket
+            </button>
+<div class="mt-md flex flex-col gap-xs">
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:bg-surface-container rounded transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span class="font-body-sm text-body-sm">Help Center</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:bg-surface-container rounded transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span class="font-body-sm text-body-sm">Logout</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- JSON Component: TopAppBar -->
+<header class="h-16 fixed top-0 right-0 left-0 md:left-[280px] z-30 bg-surface border-b border-outline-variant flex items-center justify-between px-layout-margin w-full md:w-[calc(100%-280px)] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
+<!-- Left Side: Mobile Menu Toggle & Links -->
+<div class="flex items-center gap-lg">
+<button class="md:hidden text-on-surface-variant p-2 -ml-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="hidden md:flex items-center gap-lg font-label-md text-label-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Direct Triage</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Staff Roster</a>
+</div>
+</div>
+<!-- Right Side: Actions & Profile -->
+<div class="flex items-center gap-md">
+<button class="text-error font-label-md text-label-md flex items-center gap-xs px-3 py-1.5 rounded bg-error-container bg-opacity-20 hover:bg-opacity-30 transition-colors">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+                Emergency Alert
+            </button>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<img alt="Admin Avatar" class="w-8 h-8 rounded-full ml-sm border border-outline-variant cursor-pointer hover:opacity-80 transition-opacity" data-alt="A professional headshot of a mature individual representing a systems administrator, clear lighting, neutral grey background, high resolution, clinical yet approachable appearance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeW5s0MjdUOaB82XZyIliQOicodn6wlrvnj1zPcrIKGM0pErf5u_ke5Tzzahp4vbsb_hOU0N3tX3Gw5RWosfsMi8OlszpGoSCStZgVgiKzjWNntRmiqcRtFCl3HnctcIqhGZkDN7N1S46YTjmxGpSnuMziggdZg4XHYuFVJHBo-Gn3sxuROR1MhH5e_bCTbd1TjLz5gia9_ukeAnPtlpOcq6xnbxlcPPmjdZ87HBtiKS5eIQYa1A8FQooesxRc5qFeQJyQOsiddww"/>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="flex-1 w-full h-full overflow-y-auto pt-16 md:pl-[280px] bg-background">
+<div class="p-layout-margin max-w-[1600px] mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col gap-xs mb-lg">
+<h2 class="font-display-lg text-display-lg text-primary">System Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Global infrastructure health and tenant metrics.</p>
+</div>
+<!-- KPI Grid (Bento Style Top Row) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-lg">
+<!-- KPI Card 1: Active Tenants -->
+<div class="bg-surface rounded-xl p-lg border border-outline-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-outline transition-colors">
+<div class="flex items-start justify-between mb-md">
+<div class="p-2 bg-surface-container rounded-lg group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">domain</span>
+</div>
+<span class="flex items-center text-tertiary-fixed-dim font-label-md text-label-md bg-tertiary-fixed-dim bg-opacity-10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12%
+                        </span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">Active Tenants</p>
+<h3 class="font-headline-md text-headline-md text-primary">1,402</h3>
+</div>
+</div>
+<!-- KPI Card 2: Total Active Users -->
+<div class="bg-surface rounded-xl p-lg border border-outline-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-outline transition-colors">
+<div class="flex items-start justify-between mb-md">
+<div class="p-2 bg-surface-container rounded-lg group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">group</span>
+</div>
+<span class="flex items-center text-tertiary-fixed-dim font-label-md text-label-md bg-tertiary-fixed-dim bg-opacity-10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +4.5%
+                        </span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">Active Users</p>
+<h3 class="font-headline-md text-headline-md text-primary">84.5K</h3>
+</div>
+</div>
+<!-- KPI Card 3: System Uptime -->
+<div class="bg-surface rounded-xl p-lg border border-outline-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-outline transition-colors relative overflow-hidden">
+<!-- Decorative background element for "healthy" state -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary-fixed blur-[40px] opacity-10 rounded-full pointer-events-none"></div>
+<div class="flex items-start justify-between mb-md relative z-10">
+<div class="p-2 bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="text-on-surface-variant font-label-md text-label-md">Last 30 days</span>
+</div>
+<div class="relative z-10">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">System Uptime</p>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline-md text-headline-md text-primary">99.98%</h3>
+<span class="font-body-sm text-body-sm text-on-tertiary-fixed-variant">Optimal</span>
+</div>
+</div>
+</div>
+<!-- KPI Card 4: Open Support Tickets -->
+<div class="bg-surface rounded-xl p-lg border border-outline-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between group hover:border-outline transition-colors">
+<div class="flex items-start justify-between mb-md">
+<div class="p-2 bg-error-container bg-opacity-30 rounded-lg">
+<span class="material-symbols-outlined text-error">confirmation_number</span>
+</div>
+<span class="flex items-center text-error font-label-md text-label-md bg-error-container bg-opacity-30 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +2
+                        </span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">Critical Support Tickets</p>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline-md text-headline-md text-error">14</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Awaiting triage</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Lower Grid Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Chart Area: System Resource Usage (Col Span 8) -->
+<div class="col-span-1 lg:col-span-8 bg-surface rounded-xl border border-outline-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col min-h-[400px]">
+<!-- Chart Header -->
+<div class="p-lg border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+<div>
+<h3 class="font-title-lg text-title-lg text-primary">System Resource Usage</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Real-time aggregate load across all primary clusters.</p>
+</div>
+<!-- Segmented Control / Tabs -->
+<div class="flex p-1 bg-surface-container rounded-lg">
+<button class="px-4 py-1.5 rounded-md bg-surface text-primary font-label-md text-label-md shadow-sm border border-outline-variant">CPU</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors">Memory</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-primary font-label-md text-label-md transition-colors">Network</button>
+</div>
+</div>
+<!-- Chart Canvas (Simulated with CSS for aesthetic) -->
+<div class="p-lg flex-1 flex flex-col relative group cursor-crosshair">
+<!-- Y-Axis Labels -->
+<div class="absolute left-lg top-lg bottom-lg flex flex-col justify-between text-on-surface-variant font-label-sm text-label-sm z-10 opacity-50">
+<span>100%</span>
+<span>75%</span>
+<span>50%</span>
+<span>25%</span>
+<span>0%</span>
+</div>
+<!-- Grid Lines -->
+<div class="absolute left-[60px] right-lg top-lg bottom-lg flex flex-col justify-between pointer-events-none">
+<div class="w-full h-px bg-outline-variant opacity-30"></div>
+<div class="w-full h-px bg-outline-variant opacity-30"></div>
+<div class="w-full h-px bg-outline-variant opacity-30"></div>
+<div class="w-full h-px bg-outline-variant opacity-30"></div>
+<div class="w-full h-px bg-outline-variant opacity-30"></div>
+</div>
+<!-- Simulated Data Visual (Bar Chart style) -->
+<div class="flex-1 ml-[50px] mr-md mt-md mb-xl flex items-end justify-between gap-1 relative z-10">
+<!-- Generate varying height bars to simulate data -->
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 40%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 45%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 35%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 60%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 55%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 70%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 65%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 80%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 75%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 50%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 45%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 55%"></div>
+<div class="w-full bg-secondary opacity-40 hover:opacity-100 rounded-t-sm transition-opacity" style="height: 40%"></div>
+<div class="w-full bg-secondary opacity-80 rounded-t-sm" style="height: 60%"></div> <!-- Current/Latest -->
+</div>
+<!-- X-Axis Labels -->
+<div class="absolute left-[60px] right-lg bottom-md flex justify-between text-on-surface-variant font-label-sm text-label-sm opacity-50">
+<span>12:00</span>
+<span>12:15</span>
+<span>12:30</span>
+<span>12:45</span>
+<span>13:00</span>
+<span>Now</span>
+</div>
+</div>
+</div>
+<!-- Table Area: Recent Tenant Activity (Col Span 4) -->
+<div class="col-span-1 lg:col-span-4 bg-surface rounded-xl border border-outline-variant shadow-[0_2px_10px_-4px_rgba(0,0,0,0.02)] flex flex-col overflow-hidden max-h-[500px]">
+<!-- Table Header -->
+<div class="p-lg border-b border-outline-variant flex items-center justify-between bg-surface-bright">
+<h3 class="font-title-lg text-title-lg text-primary">Recent Activity</h3>
+<button class="text-secondary hover:text-secondary-container font-label-md text-label-md transition-colors flex items-center">
+                            View All <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+</button>
+</div>
+<!-- Activity List -->
+<div class="flex-1 overflow-y-auto">
+<!-- Item 1: Sign-up -->
+<div class="px-lg py-md border-b border-surface-container hover:bg-surface-container-low transition-colors flex gap-md items-start">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0 text-on-primary-fixed">
+<span class="font-label-md text-label-md">MG</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-label-md text-label-md text-primary truncate">Mercy General Hosp...</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex-shrink-0">2m ago</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-tertiary-fixed-dim bg-opacity-20 text-on-tertiary-fixed-variant font-label-sm text-[10px] uppercase font-semibold">New Tenant</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Completed onboarding</p>
+</div>
+</div>
+</div>
+<!-- Item 2: Renewal -->
+<div class="px-lg py-md border-b border-surface-container hover:bg-surface-container-low transition-colors flex gap-md items-start">
+<div class="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center flex-shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">autorenew</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-label-md text-label-md text-primary truncate">St. Jude's Clinic</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex-shrink-0">1h ago</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-secondary-fixed bg-opacity-30 text-on-secondary-fixed-variant font-label-sm text-[10px] uppercase font-semibold">Renewal</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Enterprise Annual Plan</p>
+</div>
+</div>
+</div>
+<!-- Item 3: Alert/Error -->
+<div class="px-lg py-md border-b border-surface-container hover:bg-surface-container-low transition-colors flex gap-md items-start">
+<div class="w-10 h-10 rounded-full bg-error-container bg-opacity-30 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-label-md text-label-md text-primary truncate">DB Cluster 4</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex-shrink-0">3h ago</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-1.5 py-0.5 rounded bg-error-container bg-opacity-50 text-error font-label-sm text-[10px] uppercase font-semibold">System Alert</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">High latency detected</p>
+</div>
+</div>
+</div>
+<!-- Item 4: Data Sync -->
+<div class="px-lg py-md border-b border-surface-container hover:bg-surface-container-low transition-colors flex gap-md items-start">
+<div class="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center flex-shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">cloud_sync</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-label-md text-label-md text-primary truncate">Regional Health...</h4>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex-shrink-0">5h ago</span>
+</div>
+<div class="flex items-center gap-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Bulk records import completed</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

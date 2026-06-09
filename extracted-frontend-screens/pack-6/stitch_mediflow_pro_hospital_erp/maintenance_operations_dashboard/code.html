@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MediOps HMS - Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed": "#dae2fd",
+                      "on-secondary-fixed": "#001a42",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "on-primary-fixed": "#131b2e",
+                      "surface-container": "#eceef0",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "tertiary": "#000000",
+                      "tertiary-container": "#002113",
+                      "on-secondary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "primary-container": "#131b2e",
+                      "secondary-container": "#2170e4",
+                      "outline-variant": "#c6c6cd",
+                      "error": "#ba1a1a",
+                      "secondary-fixed": "#d8e2ff",
+                      "outline": "#76777d",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "surface-dim": "#d8dadc",
+                      "on-primary-container": "#7c839b",
+                      "surface": "#f7f9fb",
+                      "surface-variant": "#e0e3e5",
+                      "on-secondary-fixed-variant": "#004395",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "secondary": "#0058be",
+                      "primary": "#000000",
+                      "on-error": "#ffffff",
+                      "on-surface": "#191c1e",
+                      "surface-tint": "#565e74",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-tertiary-container": "#009668",
+                      "inverse-primary": "#bec6e0",
+                      "surface-container-low": "#f2f4f6",
+                      "tertiary-fixed": "#6ffbbe",
+                      "surface-container-high": "#e6e8ea",
+                      "on-tertiary-fixed": "#002113",
+                      "on-secondary-container": "#fefcff",
+                      "surface-bright": "#f7f9fb",
+                      "on-surface-variant": "#45464d",
+                      "on-background": "#191c1e",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#bec6e0",
+                      "inverse-surface": "#2d3133",
+                      "background": "#f7f9fb"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "base": "4px",
+                      "xs": "4px",
+                      "sm": "8px",
+                      "layout-margin": "24px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* High density table styles */
+        .dense-table th, .dense-table td {
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-secondary/20 selection:text-secondary">
+<nav class="w-[280px] h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface flex flex-col h-full py-lg z-50">
+<div class="px-layout-margin mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary fill" data-icon="health_and_safety">health_and_safety</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary">MediOps HMS</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Operations &amp; Maintenance</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto font-label-md text-label-md">
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 border-l-[3px] border-secondary bg-secondary-container/10 text-secondary font-bold transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 ease-in-out border-l-[3px] border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span>Equipment Inventory</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 ease-in-out border-l-[3px] border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="event_upcoming">event_upcoming</span>
+<span>Maintenance Schedule</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 ease-in-out border-l-[3px] border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span>Asset Tracking</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 ease-in-out border-l-[3px] border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span>Service Requests</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 ease-in-out border-l-[3px] border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span>Reports</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant mx-4 font-label-md text-label-md">
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 ease-in-out border-l-[3px] border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 ease-in-out border-l-[3px] border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<header class="h-16 fixed top-0 right-0 left-[280px] z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex items-center justify-between px-layout-margin w-full">
+<div class="flex items-center gap-4 w-1/3">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-on-surface placeholder:text-on-surface-variant" placeholder="Search assets, requests, or reports..." type="text"/>
+</div>
+</div>
+<div class="flex items-center justify-center font-title-lg text-title-lg font-semibold text-on-surface">
+            Operations &amp; Maintenance
+        </div>
+<div class="flex items-center gap-2 justify-end w-1/3">
+<button class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-opacity opacity-80 hover:opacity-100 flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-opacity opacity-80 hover:opacity-100 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant ml-2 bg-surface-container">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a confident female medical administrator wearing a white coat and stethoscope in a brightly lit modern hospital corridor. The lighting is crisp and natural, highlighting her composed expression. The overall style is clean, corporate healthcare, conveying trust and competence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8KBbiXaSFh8l4wNifEGiVraDup4yydw5YMOmEhoopc4Jr-4d9N4W5SY19SUkRQ6RtaFUt85g4PwoUMZGHWouHsRCUbYmh6r1L4NHJHE-_Vxx3I0E2p1gNJH-8lHp9iHZDDF1BiVSA1gqOA9AWdHURGkbbG2G7C2eKBqpcpucr9LDLVBFxPhEQ_9kTqegCbdETWVJiQPqw3LNFWFNSWqXqlxXfnEhZYrapyLAeTTkuH9soE1e3EWsbcUXARMVDe4AJslbVELiwqe0"/>
+</div>
+</div>
+</header>
+<main class="ml-[280px] mt-16 p-layout-margin min-h-[calc(100vh-64px)] flex flex-col gap-lg">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">System Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Real-time facility status and active maintenance tasks.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+                    Filter
+                </button>
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:bg-secondary/90 transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                    New Request
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined fill" data-icon="warning">warning</span>
+<h3 class="font-headline-sm text-headline-sm">Critical Alerts</h3>
+</div>
+<span class="bg-error-container/30 text-error font-label-sm text-label-sm px-2 py-1 rounded-md uppercase tracking-wide">Action Required</span>
+</div>
+<div class="flex items-end gap-3">
+<span class="text-[40px] leading-none font-bold text-on-surface">3</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-1">Equipment offline</span>
+</div>
+<div class="mt-4 pt-4 border-t border-surface-variant">
+<a class="font-label-md text-label-md text-secondary hover:underline flex items-center gap-1" href="#">View critical assets <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span></a>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-secondary" data-icon="vital_signs">vital_signs</span>
+<h3 class="font-headline-sm text-headline-sm">Fleet Uptime</h3>
+</div>
+<span class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-2 py-1 rounded-md">Last 30 Days</span>
+</div>
+<div class="flex items-end gap-3">
+<span class="text-[40px] leading-none font-bold text-on-surface">98.4<span class="text-2xl text-on-surface-variant">%</span></span>
+</div>
+<div class="mt-4 w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 98.4%"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="assignment">assignment</span>
+<h3 class="font-headline-sm text-headline-sm">Open Requests</h3>
+</div>
+</div>
+<div class="flex items-end gap-3">
+<span class="text-[40px] leading-none font-bold text-on-surface">24</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-1">Active tickets</span>
+</div>
+<div class="mt-4 pt-4 border-t border-surface-variant flex gap-4">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">High</span>
+<span class="font-headline-sm text-headline-sm text-error">5</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Medium</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">12</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Low</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">7</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+<div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col">
+<div class="p-5 border-b border-surface-variant flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg text-on-surface">High-Value Assets Status</h3>
+<button class="text-secondary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="p-0 overflow-x-auto">
+<table class="w-full text-left border-collapse dense-table">
+<thead class="bg-surface-container-low font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+<tr>
+<th class="py-2 px-4 border-b border-outline-variant font-medium">Asset Name</th>
+<th class="py-2 px-4 border-b border-outline-variant font-medium">Location</th>
+<th class="py-2 px-4 border-b border-outline-variant font-medium">Status</th>
+<th class="py-2 px-4 border-b border-outline-variant font-medium">Uptime</th>
+<th class="py-2 px-4 border-b border-outline-variant font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface">
+<tr class="hover:bg-surface-container-lowest transition-colors border-b border-surface-variant group">
+<td class="py-3 px-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/10 flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="radiology">radiology</span>
+</div>
+<div class="font-medium">MRI Scanner - Siemens Magnetom</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Radiology Rm 102</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-tertiary-container/10 text-on-tertiary-container font-label-sm text-label-sm uppercase tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span> Online
+                                    </span>
+</td>
+<td class="py-3 px-4">99.8%</td>
+<td class="py-3 px-4 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors border-b border-surface-variant group bg-error-container/5">
+<td class="py-3 px-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-error-container/20 flex items-center justify-center text-error shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="warning">warning</span>
+</div>
+<div class="font-medium text-error">CT Scanner - GE Revolution</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Emergency Dept Rm 4</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-error-container/20 text-error font-label-sm text-label-sm uppercase tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Down
+                                    </span>
+</td>
+<td class="py-3 px-4">87.5%</td>
+<td class="py-3 px-4 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors border-b border-surface-variant group">
+<td class="py-3 px-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/10 flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="science">science</span>
+</div>
+<div class="font-medium">Robotic Surgery System - Da Vinci</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">OR 3</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span> In Use
+                                    </span>
+</td>
+<td class="py-3 px-4">99.9%</td>
+<td class="py-3 px-4 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="py-3 px-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-secondary-container/10 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[18px]" data-icon="monitor_heart">monitor_heart</span>
+</div>
+<div class="font-medium">ECG Machine Fleet (12 units)</div>
+</td>
+<td class="py-3 px-4 text-on-surface-variant">Various Wards</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary-container/10 text-secondary font-label-sm text-label-sm uppercase tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Maintenance
+                                    </span>
+</td>
+<td class="py-3 px-4">95.0%</td>
+<td class="py-3 px-4 text-right">
+<button class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl flex flex-col">
+<div class="p-5 border-b border-surface-variant flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg text-on-surface">Today's Schedule</h3>
+<div class="flex gap-1">
+<button class="p-1 text-on-surface-variant hover:bg-surface-container rounded"><span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span></button>
+<button class="p-1 text-on-surface-variant hover:bg-surface-container rounded"><span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+<div class="p-4 flex-1 overflow-y-auto flex flex-col gap-4">
+<div class="flex gap-4">
+<div class="flex flex-col items-center shrink-0 w-12 pt-1">
+<span class="font-label-md text-label-md text-on-surface-variant">08:00</span>
+<div class="w-px h-full bg-outline-variant mt-2"></div>
+</div>
+<div class="flex-1 bg-surface border border-outline-variant rounded-lg p-3 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary-container"></div>
+<div class="font-label-md text-label-md text-tertiary-container mb-1">Preventative</div>
+<div class="font-title-lg text-title-lg text-on-surface text-sm font-medium">Backup Generator Check</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="location_on">location_on</span> Basement Facility
+                            </div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center shrink-0 w-12 pt-1">
+<span class="font-label-md text-label-md text-on-surface-variant">11:30</span>
+<div class="w-px h-full bg-outline-variant mt-2"></div>
+</div>
+<div class="flex-1 bg-error-container/10 border border-error-container/30 rounded-lg p-3 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="font-label-md text-label-md text-error mb-1">Urgent Repair</div>
+<div class="font-title-lg text-title-lg text-on-surface text-sm font-medium">CT Scanner Compressor</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="person">person</span> Assigned: Tech Team Alpha
+                            </div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center shrink-0 w-12 pt-1">
+<span class="font-label-md text-label-md text-on-surface-variant">14:00</span>
+<div class="w-px h-full bg-transparent mt-2"></div>
+</div>
+<div class="flex-1 bg-surface border border-outline-variant rounded-lg p-3 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="font-label-md text-label-md text-secondary mb-1">Calibration</div>
+<div class="font-title-lg text-title-lg text-on-surface text-sm font-medium">Infusion Pumps (Batch B)</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="timer">timer</span> Est. 2 hours
+                            </div>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-surface-variant text-center">
+<button class="font-label-md text-label-md text-secondary hover:underline">Open Calendar</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

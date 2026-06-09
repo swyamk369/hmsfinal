@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Print-ready Prescription</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-container-high": "#e6e8ea",
+                "primary-fixed": "#dae2fd",
+                "on-tertiary-container": "#009668",
+                "on-background": "#191c1e",
+                "on-error": "#ffffff",
+                "on-secondary": "#ffffff",
+                "error-container": "#ffdad6",
+                "surface-container": "#eceef0",
+                "tertiary-fixed": "#6ffbbe",
+                "surface-bright": "#f7f9fb",
+                "on-primary": "#ffffff",
+                "secondary-fixed-dim": "#adc6ff",
+                "secondary-fixed": "#d8e2ff",
+                "inverse-primary": "#bec6e0",
+                "on-tertiary": "#ffffff",
+                "on-secondary-fixed-variant": "#004395",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#76777d",
+                "tertiary-fixed-dim": "#4edea3",
+                "surface-tint": "#565e74",
+                "inverse-surface": "#2d3133",
+                "error": "#ba1a1a",
+                "on-secondary-fixed": "#001a42",
+                "surface-container-low": "#f2f4f6",
+                "outline-variant": "#c6c6cd",
+                "secondary-container": "#2170e4",
+                "inverse-on-surface": "#eff1f3",
+                "on-tertiary-fixed": "#002113",
+                "background": "#f7f9fb",
+                "primary": "#000000",
+                "surface-container-highest": "#e0e3e5",
+                "on-tertiary-fixed-variant": "#005236",
+                "on-surface-variant": "#45464d",
+                "on-surface": "#191c1e",
+                "surface-dim": "#d8dadc",
+                "on-primary-container": "#7c839b",
+                "on-primary-fixed": "#131b2e",
+                "tertiary": "#000000",
+                "surface": "#f7f9fb",
+                "on-primary-fixed-variant": "#3f465c",
+                "on-error-container": "#93000a",
+                "secondary": "#0058be",
+                "primary-container": "#131b2e",
+                "tertiary-container": "#002113",
+                "primary-fixed-dim": "#bec6e0",
+                "on-secondary-container": "#fefcff",
+                "surface-variant": "#e0e3e5"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "base": "4px",
+                "md": "16px",
+                "gutter": "16px",
+                "xs": "4px",
+                "lg": "24px",
+                "xl": "32px",
+                "sm": "8px",
+                "layout-margin": "24px"
+        },
+        "fontFamily": {
+                "body-sm": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "label-md": [
+                        "Inter"
+                ],
+                "label-sm": [
+                        "Inter"
+                ],
+                "title-lg": [
+                        "Inter"
+                ],
+                "display-lg": [
+                        "Inter"
+                ],
+                "headline-sm": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "body-sm": [
+                        "13px",
+                        {
+                                "lineHeight": "18px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-md": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-lg": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "14px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "title-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "display-lg": [
+                        "30px",
+                        {
+                                "lineHeight": "38px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-sm": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  body {
+    background-color: #f7f9fb; /* background */
+  }
+  @media print {
+    body {
+      background-color: white;
+      margin: 0;
+      padding: 0;
+    }
+    .print-hidden {
+      display: none !important;
+    }
+    .print-container {
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      max-width: 100% !important;
+      border: none !important;
+    }
+  }
+</style>
+</head>
+<body class="font-body-md text-on-surface antialiased bg-background min-h-screen flex items-center justify-center p-layout-margin">
+<!-- Print Actions Container -->
+<div class="fixed top-lg right-lg z-50 print-hidden flex gap-sm">
+<button class="flex items-center gap-xs px-md py-sm bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:bg-on-secondary-fixed-variant transition-colors shadow-sm" onclick="window.print()">
+<span class="material-symbols-outlined" style="font-size: 18px;">print</span>
+      Print Prescription
+    </button>
+</div>
+<!-- Main Document Container -->
+<div class="print-container bg-surface-container-lowest w-full max-w-[800px] bg-white shadow-sm rounded-lg border border-outline-variant overflow-hidden mx-auto my-layout-margin p-[48px] flex flex-col min-h-[1056px]"> <!-- roughly US Letter height proportion -->
+<!-- Header Section -->
+<header class="flex justify-between items-start border-b border-outline-variant pb-xl mb-xl">
+<div class="flex flex-col gap-xs">
+<h1 class="font-display-lg text-display-lg text-primary m-0 p-0">HMS Enterprise</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 p-0">123 Healthway Avenue, Medical District</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 p-0">Contact: +1 (555) 019-8273 | hms@generalhospital.com</p>
+</div>
+<div class="flex flex-col items-end text-right">
+<h2 class="font-title-lg text-title-lg text-primary m-0 p-0">Dr. Sarah Jenkins</h2>
+<p class="font-label-md text-label-md text-secondary m-0 p-0 pt-base">Consulting Physician</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0 p-0">Reg No: MED-88492-X</p>
+</div>
+</header>
+<!-- Patient Details Section -->
+<section class="grid grid-cols-2 gap-lg mb-xl bg-surface-container-lowest p-md border border-outline-variant rounded-DEFAULT">
+<div class="flex flex-col gap-xs">
+<div class="flex">
+<span class="font-label-md text-label-md text-on-surface-variant w-[100px]">Patient Name:</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Robert Chen</span>
+</div>
+<div class="flex">
+<span class="font-label-md text-label-md text-on-surface-variant w-[100px]">Age / Sex:</span>
+<span class="font-body-md text-body-md text-on-surface">42 Y / M</span>
+</div>
+<div class="flex">
+<span class="font-label-md text-label-md text-on-surface-variant w-[100px]">Weight:</span>
+<span class="font-body-md text-body-md text-on-surface">78 kg</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex">
+<span class="font-label-md text-label-md text-on-surface-variant w-[100px]">MRN:</span>
+<span class="font-body-md text-body-md text-on-surface">PT-2023-9941</span>
+</div>
+<div class="flex">
+<span class="font-label-md text-label-md text-on-surface-variant w-[100px]">Date:</span>
+<span class="font-body-md text-body-md text-on-surface">October 24, 2023</span>
+</div>
+<div class="flex">
+<span class="font-label-md text-label-md text-on-surface-variant w-[100px]">Diagnosis:</span>
+<span class="font-body-md text-body-md text-on-surface">Acute Bronchitis</span>
+</div>
+</div>
+</section>
+<!-- Rx Symbol -->
+<div class="mb-lg">
+<span class="font-display-lg text-display-lg text-primary italic pr-2">Rx</span>
+</div>
+<!-- Medications Table -->
+<section class="flex-grow">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant">
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase tracking-wider w-[50px]">#</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Medication &amp; Strength</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Dosage</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Duration</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Instructions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Item 1 -->
+<tr class="border-b border-outline-variant/50">
+<td class="py-md px-xs font-body-md text-body-md text-on-surface-variant align-top">1.</td>
+<td class="py-md px-xs align-top">
+<p class="font-title-lg text-title-lg text-on-surface m-0">Amoxicillin</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0">500mg Tablet</p>
+</td>
+<td class="py-md px-xs font-body-md text-body-md text-on-surface align-top">1 tab TID</td>
+<td class="py-md px-xs font-body-md text-body-md text-on-surface align-top">7 Days</td>
+<td class="py-md px-xs font-body-sm text-body-sm text-on-surface-variant align-top">Take after meals. Complete full course.</td>
+</tr>
+<!-- Item 2 -->
+<tr class="border-b border-outline-variant/50">
+<td class="py-md px-xs font-body-md text-body-md text-on-surface-variant align-top">2.</td>
+<td class="py-md px-xs align-top">
+<p class="font-title-lg text-title-lg text-on-surface m-0">Ibuprofen</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0">400mg Tablet</p>
+</td>
+<td class="py-md px-xs font-body-md text-body-md text-on-surface align-top">1 tab PRN</td>
+<td class="py-md px-xs font-body-md text-body-md text-on-surface align-top">5 Days</td>
+<td class="py-md px-xs font-body-sm text-body-sm text-on-surface-variant align-top">Take for fever or pain. Max 3 per day.</td>
+</tr>
+<!-- Item 3 -->
+<tr class="border-b border-outline-variant/50">
+<td class="py-md px-xs font-body-md text-body-md text-on-surface-variant align-top">3.</td>
+<td class="py-md px-xs align-top">
+<p class="font-title-lg text-title-lg text-on-surface m-0">Guaifenesin Syrup</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0">100mg/5ml</p>
+</td>
+<td class="py-md px-xs font-body-md text-body-md text-on-surface align-top">10ml BID</td>
+<td class="py-md px-xs font-body-md text-body-md text-on-surface align-top">5 Days</td>
+<td class="py-md px-xs font-body-sm text-body-sm text-on-surface-variant align-top">Shake well before use.</td>
+</tr>
+</tbody>
+</table>
+<div class="mt-lg p-md bg-surface-container-low rounded-DEFAULT border border-outline-variant">
+<h3 class="font-label-md text-label-md text-primary mb-xs">Additional Notes:</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0">Please rest and maintain adequate hydration. Follow up in clinic after 7 days if symptoms persist or worsen.</p>
+</div>
+</section>
+<!-- Footer Section -->
+<footer class="mt-xl pt-xl flex justify-between items-end border-t border-outline-variant">
+<div class="flex flex-col gap-xs max-w-[50%]">
+<p class="font-label-sm text-label-sm text-on-surface-variant">This prescription is digitally generated and requires a valid signature to be fulfilled. Validity is 30 days from date of issue unless specified otherwise.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-sm">Generated securely via HMS Enterprise Portal</p>
+</div>
+<div class="flex flex-col items-center min-w-[200px]">
+<div class="border-b border-outline-variant w-full h-[60px] mb-xs relative">
+<!-- Placeholder for actual signature -->
+<span class="absolute bottom-2 left-0 right-0 text-center font-display-lg text-display-lg text-primary opacity-20" style="font-family: 'Brush Script MT', cursive;">S. Jenkins</span>
+</div>
+<span class="font-label-md text-label-md text-primary uppercase tracking-wider">Doctor's Signature</span>
+</div>
+</footer>
+</div>
+</body></html>

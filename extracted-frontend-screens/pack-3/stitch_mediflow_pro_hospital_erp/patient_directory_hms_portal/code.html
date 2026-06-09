@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Directory - Steward HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#7c839b",
+                        "surface-container": "#eceef0",
+                        "surface-tint": "#565e74",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed": "#001a42",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary": "#000000",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#131b2e",
+                        "outline": "#76777d",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-container": "#2170e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#009668",
+                        "secondary": "#0058be",
+                        "on-background": "#191c1e",
+                        "on-surface-variant": "#45464d",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "tertiary-container": "#002113",
+                        "surface-bright": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1; }
+        
+        /* Custom scrollbar for tables */
+        .table-container::-webkit-scrollbar { height: 8px; width: 8px; }
+        .table-container::-webkit-scrollbar-track { background: #f2f4f6; }
+        .table-container::-webkit-scrollbar-thumb { background: #c6c6cd; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb:hover { background: #76777d; }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen overflow-hidden flex font-body-md">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-full w-[280px] bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline py-lg gap-sm z-20">
+<!-- Header Info -->
+<div class="px-layout-margin mb-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-headline-sm font-bold">
+                    CG
+                </div>
+<div>
+<h2 class="font-title-lg text-title-lg font-bold text-on-surface">City General</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">OPD Ward A</p>
+</div>
+</div>
+<button class="mt-lg w-full bg-secondary text-on-secondary hover:bg-secondary-container hover:text-on-secondary-container transition-colors py-sm px-md rounded flex items-center justify-center gap-sm font-label-md">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Registration
+            </button>
+</div>
+<!-- Main Navigation Tabs -->
+<div class="flex-1 flex flex-col gap-xs px-sm mt-sm">
+<!-- Active Tab -->
+<a class="flex items-center gap-md px-md py-sm rounded-r text-secondary dark:text-secondary-fixed-dim bg-secondary-container/10 border-l-4 border-secondary hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all active:scale-[0.99] duration-100 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_shared</span>
+                Patient Directory
+            </a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-md px-md py-sm rounded-r text-on-surface-variant dark:text-surface-variant border-l-4 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all hover:border-outline-variant active:scale-[0.99] duration-100 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">clinical_notes</span>
+                OPD Queue
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-r text-on-surface-variant dark:text-surface-variant border-l-4 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all hover:border-outline-variant active:scale-[0.99] duration-100 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                Appointments
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-r text-on-surface-variant dark:text-surface-variant border-l-4 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all hover:border-outline-variant active:scale-[0.99] duration-100 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+                Billing
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-r text-on-surface-variant dark:text-surface-variant border-l-4 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all hover:border-outline-variant active:scale-[0.99] duration-100 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">assessment</span>
+                Reports
+            </a>
+</div>
+<!-- Footer Navigation Tabs -->
+<div class="px-sm mt-auto border-t border-outline-variant pt-sm">
+<a class="flex items-center gap-md px-md py-sm rounded-r text-on-surface-variant dark:text-surface-variant border-l-4 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all hover:border-outline-variant active:scale-[0.99] duration-100 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">contact_support</span>
+                Support
+            </a>
+<a class="flex items-center gap-md px-md py-sm rounded-r text-on-surface-variant dark:text-surface-variant border-l-4 border-transparent hover:bg-surface-container-high dark:hover:bg-surface-dim transition-all hover:border-outline-variant active:scale-[0.99] duration-100 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[280px] flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-layout-margin h-16 shrink-0 z-10">
+<!-- Left: Brand / Mobile Nav Toggle -->
+<div class="flex items-center gap-md">
+<button class="md:hidden text-on-surface-variant hover:text-on-surface p-sm rounded hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary hidden sm:block">
+                    Steward HMS
+                </div>
+</div>
+<!-- Center: Search Bar -->
+<div class="flex-1 max-w-md mx-md">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-secondary transition-colors text-[20px]">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-low border border-outline-variant rounded focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-shadow font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant" placeholder="Global patient search..." type="text"/>
+</div>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center gap-sm">
+<!-- Trailing Icons -->
+<button class="text-on-surface-variant hover:text-on-surface p-sm rounded hover:bg-surface-container-low transition-colors relative" title="notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-sm rounded hover:bg-surface-container-low transition-colors hidden sm:block" title="settings">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface p-sm rounded hover:bg-surface-container-low transition-colors hidden sm:block" title="help">
+<span class="material-symbols-outlined">help</span>
+</button>
+<!-- Separator -->
+<div class="h-6 w-px bg-outline-variant mx-sm hidden sm:block"></div>
+<!-- Secondary Action -->
+<button class="bg-error/10 text-error hover:bg-error/20 border border-error/20 font-label-md px-md py-sm rounded transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+                    Emergency
+                </button>
+<!-- Profile -->
+<button class="ml-sm w-8 h-8 rounded-full overflow-hidden border border-outline-variant hover:border-outline transition-colors shrink-0">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close-up, professional headshot of a female doctor wearing a white coat and a light blue stethoscope. She has a warm, confident smile and is positioned against a clean, softly lit, out-of-focus modern hospital corridor background. The lighting is bright and clinical but welcoming, fitting a light-mode enterprise medical application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNq6x7z5Ll7pTULlt_H7WpJoSxp8aXFZMl37fKfaa5140W6ucLPrrZHiyqNgmnz9TfFEOJmBXQmIRCwzT6LYoyKK7Xho5lAGQeq5BfN7s3WM2f2ixkrhVWyTtBeUx_Xj21vL_XSRYcXk9Z2APSll8V30Yp5Kp2l5L4Whya_soslG6sro9U3CHdRhmbYFbWqjz4jB1-OzaXq1FB9yLlIjl_OvUzURUe1Clpt7z-5P8J00XDc_NL0jjYpNc6GKDrCqYHBBF4_i8rF08"/>
+</button>
+</div>
+</header>
+<!-- Page Content Scrollable Area -->
+<div class="flex-1 overflow-y-auto bg-background p-layout-margin">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md mb-lg">
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">Patient Directory</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Manage and view all registered patients.</p>
+</div>
+<button class="bg-primary text-on-primary hover:bg-on-surface transition-colors font-label-md px-lg py-sm rounded flex items-center justify-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+                    Register Patient
+                </button>
+</div>
+<!-- Data Surface (Card) -->
+<div class="bg-surface border border-outline-variant rounded-xl flex flex-col shadow-sm">
+<!-- Toolbar (Search & Filters) -->
+<div class="p-md border-b border-outline-variant flex flex-col lg:flex-row gap-md items-center justify-between bg-surface-bright rounded-t-xl">
+<!-- Search Component -->
+<div class="w-full lg:w-96 relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] group-focus-within:text-secondary transition-colors">search</span>
+<input class="w-full h-9 pl-10 pr-4 bg-surface border border-outline-variant rounded focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-shadow font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant" placeholder="Search by MRN, Name, or Phone..." type="text"/>
+</div>
+<!-- Filters -->
+<div class="w-full lg:w-auto flex flex-wrap items-center gap-sm">
+<div class="flex items-center gap-xs bg-surface border border-outline-variant rounded px-sm py-xs h-9">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">filter_list</span>
+<select class="bg-transparent border-none focus:ring-0 font-body-sm text-body-sm text-on-surface py-0 pl-1 pr-6 cursor-pointer">
+<option value="all">All Statuses</option>
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+<option value="discharged">Discharged</option>
+</select>
+</div>
+<div class="flex items-center gap-xs bg-surface border border-outline-variant rounded px-sm py-xs h-9">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">event</span>
+<select class="bg-transparent border-none focus:ring-0 font-body-sm text-body-sm text-on-surface py-0 pl-1 pr-6 cursor-pointer">
+<option value="any">Last Visit: Any</option>
+<option value="today">Today</option>
+<option value="week">Past Week</option>
+<option value="month">Past Month</option>
+</select>
+</div>
+<button class="h-9 px-md border border-outline-variant text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-label-sm transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">refresh</span>
+                            Reset
+                        </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="table-container overflow-x-auto w-full">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-semibold w-32">MRN</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-semibold">Patient Name</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-semibold w-24">Age/Sex</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-semibold w-32">Phone</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-semibold w-32">Last Visit</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-semibold w-24">Status</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant font-semibold w-24 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group h-12">
+<td class="py-sm px-md font-body-sm text-on-surface font-medium">MRN-2024-001</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-md font-bold shrink-0">
+                                            JS
+                                        </div>
+<span class="font-body-sm text-on-surface font-medium group-hover:text-secondary cursor-pointer">John Smith</span>
+</div>
+</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">45Y / M</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">+1 (555) 123-4567</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">Oct 24, 2023</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant">
+                                        Active
+                                    </span>
+</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-sm opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="View Patient">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="Edit Record">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group h-12">
+<td class="py-sm px-md font-body-sm text-on-surface font-medium">MRN-2024-002</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-sm">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="A clear, well-lit portrait of a middle-aged woman with short brown hair, facing forward with a neutral, calm expression. The background is a soft, solid light grey to keep the focus on the subject. The lighting is even and flat, typical of standard identification photography used in medical software systems." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfqokLTOX9vTfpSxMGJPCCDshRXM8jC6JEUMHyVs7gYDKFEwsNab_p-euQ4GxU6LbpC__N9lHsblf-0NxBOLph1JBgssadhLyJCJx-NvNQIUb7i5spA4gUeOkqN9hPArsdf7uf7oZHRk1MpxNbO4kbbEiQTZ_kCNOAi6pmdCID8XKJ8NUprcMNzl3jDc_dslE09sFNyzuqpqUcI4P66k6Q9Eg_A3WlOswZrS86F-_SYUN5x_NGuy-fzlQk_OHC_epXf4nZI4TOUm0"/>
+<span class="font-body-sm text-on-surface font-medium group-hover:text-secondary cursor-pointer">Sarah Jenkins</span>
+</div>
+</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">32Y / F</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">+1 (555) 987-6543</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">Oct 22, 2023</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant">
+                                        Active
+                                    </span>
+</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-sm opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="View Patient">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="Edit Record">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group h-12 bg-surface-container-lowest/50">
+<td class="py-sm px-md font-body-sm text-on-surface font-medium">MRN-2023-842</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-label-md font-bold shrink-0">
+                                            MR
+                                        </div>
+<span class="font-body-sm text-on-surface font-medium group-hover:text-secondary cursor-pointer">Michael Rodriguez</span>
+</div>
+</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">68Y / M</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">+1 (555) 234-5678</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">Sep 15, 2023</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-surface-container-highest text-on-surface-variant">
+                                        Inactive
+                                    </span>
+</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-sm opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="View Patient">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="Edit Record">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group h-12">
+<td class="py-sm px-md font-body-sm text-on-surface font-medium">MRN-2024-003</td>
+<td class="py-sm px-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-md font-bold shrink-0">
+                                            EW
+                                        </div>
+<span class="font-body-sm text-on-surface font-medium group-hover:text-secondary cursor-pointer">Emily Wong</span>
+</div>
+</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">27Y / F</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">+1 (555) 345-6789</td>
+<td class="py-sm px-md font-body-sm text-on-surface-variant">Today, 09:15 AM</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant border border-tertiary-fixed-dim/30">
+                                        In Dept
+                                    </span>
+</td>
+<td class="py-sm px-md text-right">
+<div class="flex items-center justify-end gap-sm opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="View Patient">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary p-xs rounded hover:bg-surface-container transition-colors" title="Edit Record">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="p-sm px-md border-t border-outline-variant bg-surface-bright rounded-b-xl flex items-center justify-between">
+<span class="font-body-sm text-on-surface-variant">Showing 1 to 4 of 1,248 entries</span>
+<div class="flex items-center gap-xs">
+<button class="p-xs text-on-surface-variant hover:bg-surface-container rounded disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<div class="flex gap-xs">
+<button class="w-8 h-8 rounded bg-secondary-container text-on-secondary-container font-label-md flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface-variant font-label-md flex items-center justify-center transition-colors">2</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface-variant font-label-md flex items-center justify-center transition-colors">3</button>
+<span class="w-8 h-8 flex items-center justify-center text-on-surface-variant font-label-md">...</span>
+<button class="w-8 h-8 rounded hover:bg-surface-container text-on-surface-variant font-label-md flex items-center justify-center transition-colors">125</button>
+</div>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container rounded">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

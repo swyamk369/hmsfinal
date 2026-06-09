@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Health - HMS Patient Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f7f9fb",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-surface": "#2d3133",
+                        "surface": "#f7f9fb",
+                        "secondary-container": "#2170e4",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f2f4f6",
+                        "outline-variant": "#c6c6cd",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-tertiary-fixed": "#002113",
+                        "outline": "#76777d",
+                        "on-tertiary-container": "#009668",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#45464d",
+                        "tertiary": "#000000",
+                        "primary-container": "#131b2e",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-container": "#eceef0",
+                        "on-primary-container": "#7c839b",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#002113",
+                        "surface-tint": "#565e74",
+                        "on-secondary-container": "#fefcff",
+                        "on-background": "#191c1e",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-high": "#e6e8ea",
+                        "secondary": "#0058be",
+                        "primary": "#000000",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "md": "16px",
+                        "layout-margin": "24px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0e3e5;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c6c6cd;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex">
+<!-- Shared Component: SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen fixed left-0 top-0 z-40 docked full-height w-72 bg-surface-container-low border-r border-outline-variant">
+<div class="p-lg flex flex-col gap-md border-b border-outline-variant/50">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Patient Avatar" class="w-full h-full object-cover" data-alt="A professional headshot portrait of a casually dressed patient, warm natural lighting, modern clean aesthetic, bright clinical background, soft focus, conveying trust and health." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiJR1ScL03fE4gOWA8lApZmPPjCjYy0A0rTtxrKgZccxISMpNguqzdmLVXYkbzFSoNEICYNJR2IvT4sClXAKooPZqFTinj4drEi7vKn01Sqpwr0B7S2KbdXubwBdJzdiiOzz_s8dkPcf5Lwodrz8_bDycXxxw14cgC0RXYC08aivXVsVPK8zsZKut5EPXkcFee_VoTYnwt7Onpr1cNrFlZe4EKPAvxEApAvt-t7FUiIeXeaKvY6ej09n-C9elucQUXTzrnwMROpyQ"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-secondary font-bold">Welcome back</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Alex Johnson</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-md flex flex-col gap-sm">
+<!-- Overview -->
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<!-- My Health (Active) -->
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container border-l-4 border-secondary px-4 py-3 scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
+<span class="font-label-md text-label-md">My Health</span>
+</a>
+<!-- Book Visit -->
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">calendar_add_on</span>
+<span class="font-label-md text-label-md">Book Visit</span>
+</a>
+<!-- Invoices -->
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Invoices</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<div class="p-4 border-t border-outline-variant/50 flex flex-col gap-sm">
+<button class="w-full bg-error text-on-error font-label-md text-label-md py-2 rounded-lg flex items-center justify-center gap-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">emergency</span>
+                Emergency Support
+            </button>
+<div class="flex flex-col mt-2">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-md transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">contact_support</span>
+<span class="font-label-sm text-label-sm">Support</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-md transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="font-label-sm text-label-sm">Sign Out</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-72 min-h-screen max-w-full overflow-x-hidden">
+<!-- Shared Component: TopNavBar -->
+<header class="sticky top-0 z-30 flex justify-between items-center w-full px-layout-margin h-16 bg-surface border-b border-outline-variant/30">
+<div class="flex items-center gap-lg h-full">
+<span class="font-title-lg text-title-lg font-bold text-secondary md:hidden">HMS Patient Portal</span>
+<!-- Desktop Top Navigation Links -->
+<nav class="hidden md:flex items-end h-full gap-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors h-full flex items-center pt-1" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors h-full flex items-center pt-1" href="#">Appointments</a>
+<a class="font-label-md text-label-md text-secondary border-b-2 border-secondary h-full flex items-center pt-1 opacity-80 transition-all" href="#">Medical Records</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors h-full flex items-center pt-1" href="#">Billing</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-secondary transition-colors p-2 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors p-2 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high md:hidden overflow-hidden">
+<img alt="Patient Profile" class="w-full h-full object-cover" data-alt="A professional headshot portrait of a casually dressed patient, warm natural lighting, modern clean aesthetic, bright clinical background, soft focus, conveying trust and health." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl15tA_yT479uan_sTfqzLVAEYs10tYd6zJLPPwxsX6293B6Bur3SOCwPnsSJy2SG7LLUM3yao3b5xST1UcdtRS-a1LMC3c63c_qRsBIPXEFrUxmtuyGs97xxbPd1LlhqoDSSsVDFmcw1HNWz_PjcyTWPPCc_YOmF5-ZGw66w_evQ1tGKjp0ezrNivUWVg6BGYXahErnh0loo1cCehWJ9QXYT7rqs4ggxaEJD9oZDZbtD6h8OyAE_WghYWH86e74z1hraW_-bNakI"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-layout-margin pb-24 md:pb-layout-margin">
+<!-- Page Header -->
+<div class="mb-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-1">My Health</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Review your recent medical records, lab results, and active prescriptions.</p>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md py-2 px-4 rounded-lg flex items-center gap-2 hover:opacity-90 transition-opacity w-fit shadow-sm">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                    Share Records
+                </button>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Main Column: Recent Records Table -->
+<div class="lg:col-span-2 flex flex-col gap-lg">
+<!-- Clinical Card: Recent Visits & Records -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+<div class="px-lg py-md border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-lowest">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">history</span>
+                                Recent Activity
+                            </h2>
+<button class="font-label-sm text-label-sm text-secondary hover:underline">View All</button>
+</div>
+<div class="flex-1 w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/50">
+<th class="font-label-sm text-label-sm text-on-surface-variant px-lg py-3 font-medium">Record Type</th>
+<th class="font-label-sm text-label-sm text-on-surface-variant px-lg py-3 font-medium">Date</th>
+<th class="font-label-sm text-label-sm text-on-surface-variant px-lg py-3 font-medium">Status / Provider</th>
+<th class="font-label-sm text-label-sm text-on-surface-variant px-lg py-3 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm">
+<!-- Record Item 1: Complete Blood Count -->
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors group">
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container/20 text-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">science</span>
+</div>
+<span class="font-medium text-on-surface">Complete Blood Count</span>
+</div>
+</td>
+<td class="px-lg py-4 text-on-surface-variant whitespace-nowrap">Oct 24, 2023</td>
+<td class="px-lg py-4">
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+                                                Normal
+                                            </span>
+</td>
+<td class="px-lg py-4 text-right">
+<button class="inline-flex items-center justify-center gap-1 bg-surface border border-outline-variant hover:border-outline text-on-surface px-3 py-1.5 rounded-lg transition-colors shadow-sm text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                                                View
+                                            </button>
+</td>
+</tr>
+<!-- Record Item 2: General Consultation -->
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors group">
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container/10 text-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">stethoscope</span>
+</div>
+<span class="font-medium text-on-surface">General Consultation</span>
+</div>
+</td>
+<td class="px-lg py-4 text-on-surface-variant whitespace-nowrap">Oct 12, 2023</td>
+<td class="px-lg py-4 text-on-surface-variant flex items-center gap-1">
+<span class="w-5 h-5 rounded-full bg-surface-container overflow-hidden inline-block shrink-0">
+<img alt="Dr. Smith" class="w-full h-full object-cover" data-alt="Professional headshot of a male doctor in a white coat, modern clinic background, soft lighting, trustworthy expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuiGpHcAfX9mkkb0DqxLgk5olnF-26sb0fMXKIaUI1c6aLvfJ9UalfaduD7h39zoRwdm-lURp8ICAJ7loavgc41CoX9tBgHUVGw_9TwnKXMEPMG_DAtamDeMBqGL0H4lA1jTnqnruH8CROqEV-_juw7UtYhxCQoomiMjSyzEH9NwFDxK-CC5V_pCqLywHcRLuy9y18A1aOJYpzVccvndItmsBrM2tosxP59vD5fYHEec-CH2G6v0YSIp8AQrTgX3P58F3pJKR59pE"/>
+</span>
+                                            Dr. Sarah Smith
+                                        </td>
+<td class="px-lg py-4 text-right">
+<button class="inline-flex items-center justify-center gap-1 bg-surface border border-outline-variant hover:border-outline text-on-surface px-3 py-1.5 rounded-lg transition-colors shadow-sm text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]">download</span>
+                                                PDF
+                                            </button>
+</td>
+</tr>
+<!-- Record Item 3: Imaging -->
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">radiology</span>
+</div>
+<span class="font-medium text-on-surface">Chest X-Ray</span>
+</div>
+</td>
+<td class="px-lg py-4 text-on-surface-variant whitespace-nowrap">Sep 28, 2023</td>
+<td class="px-lg py-4">
+<span class="inline-flex items-center px-2 py-1 rounded-md bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+                                                Reviewed
+                                            </span>
+</td>
+<td class="px-lg py-4 text-right">
+<button class="inline-flex items-center justify-center gap-1 bg-surface border border-outline-variant hover:border-outline text-on-surface px-3 py-1.5 rounded-lg transition-colors shadow-sm text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                                                View
+                                            </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Side Column: Prescriptions & Vitals -->
+<div class="flex flex-col gap-lg">
+<!-- Clinical Card: Active Prescriptions -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-sm p-lg relative overflow-hidden">
+<!-- Decorative subtle gradient -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/5 rounded-bl-full pointer-events-none"></div>
+<div class="flex justify-between items-center mb-md relative z-10">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">medication</span>
+                                Active Prescriptions
+                            </h2>
+</div>
+<div class="flex flex-col gap-md relative z-10">
+<!-- Prescription Item -->
+<div class="p-md rounded-lg border border-outline-variant/40 bg-surface-container-lowest flex flex-col gap-2 hover:border-secondary/30 transition-colors">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface font-semibold leading-tight">Atorvastatin</h3>
+<p class="font-label-md text-label-md text-secondary mt-0.5">20mg Tablet</p>
+</div>
+<span class="material-symbols-outlined text-outline">info</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                    Take 1 tablet daily at bedtime
+                                </div>
+<div class="mt-3 pt-3 border-t border-outline-variant/30 flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Refills: 2 left</span>
+<button class="font-label-md text-label-md text-secondary hover:text-secondary-container transition-colors flex items-center gap-1 font-semibold">
+                                        Request Refill
+                                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Small Info Card -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-sm p-lg flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-container">vital_signs</span>
+</div>
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-1">Health Summary</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">Your last recorded vitals are within normal ranges. Keep up the good work.</p>
+<button class="font-label-md text-label-md text-secondary border border-secondary px-4 py-1.5 rounded-lg hover:bg-secondary/5 transition-colors">
+                                View Vitals History
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Shared Component: BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface border-t border-outline-variant rounded-t-xl shadow-lg">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Health (Active) -->
+<a class="flex flex-col items-center justify-center text-secondary bg-secondary-container/10 rounded-xl p-2 scale-90 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<span class="font-label-sm text-label-sm mt-1 font-bold">Health</span>
+</a>
+<!-- Book -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-label-sm text-label-sm mt-1">Book</span>
+</a>
+<!-- Pay -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm mt-1">Pay</span>
+</a>
+</nav>
+</body></html>

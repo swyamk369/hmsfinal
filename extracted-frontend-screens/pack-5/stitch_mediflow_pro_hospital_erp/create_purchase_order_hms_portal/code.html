@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Purchase Order Builder - Pharmacy HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-high": "#e6e8ea",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-tertiary-fixed": "#002113",
+                        "tertiary-container": "#002113",
+                        "surface-container": "#eceef0",
+                        "secondary-container": "#2170e4",
+                        "inverse-surface": "#2d3133",
+                        "surface-dim": "#d8dadc",
+                        "on-background": "#191c1e",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#fefcff",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#004395",
+                        "background": "#f7f9fb",
+                        "on-secondary-fixed": "#001a42",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-container": "#009668",
+                        "on-surface": "#191c1e",
+                        "on-primary-container": "#7c839b",
+                        "surface-variant": "#e0e3e5",
+                        "inverse-on-surface": "#eff1f3",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-tint": "#565e74",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline": "#76777d",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "tertiary": "#000000",
+                        "secondary": "#0058be",
+                        "outline-variant": "#c6c6cd",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-tertiary-fixed-variant": "#005236"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "lg": "24px",
+                        "md": "16px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "layout-margin": "24px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }],
+                        "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "title-lg": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+                        "display-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom scrollbar for high-density tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c6c6cd;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #76777d;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen flex overflow-hidden selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex flex-col h-screen sticky left-0 top-0 w-72 bg-surface-container-low border-r border-outline-variant py-md z-50 shrink-0">
+<!-- Header -->
+<div class="px-layout-margin mb-8 flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary fill text-xl">local_pharmacy</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">Clinical Ops</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Pharmacy Division</p>
+</div>
+</div>
+<!-- CTA -->
+<div class="px-layout-margin mb-6">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md h-10 rounded flex items-center justify-center gap-2 hover:bg-inverse-surface transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Prescription
+            </button>
+</div>
+<!-- Main Navigation -->
+<nav class="flex-1 overflow-y-auto px-sm space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">medication_liquid</span>
+                Dispensing
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+                Stock Master
+            </a>
+<!-- Active State Navigation -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded font-body-md text-body-md text-secondary font-semibold border-l-4 border-secondary pl-2 bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-[20px] fill">shopping_cart</span>
+                Procurement
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+                Reports
+            </a>
+</nav>
+<!-- Footer Navigation -->
+<div class="mt-auto px-sm space-y-1 pt-4 border-t border-outline-variant/30 mx-layout-margin">
+<a class="flex items-center gap-3 px-3 py-2 rounded font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+<!-- TopNavBar (Shared Component) -->
+<header class="hidden md:flex justify-between items-center w-full px-layout-margin h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant shrink-0">
+<!-- Left: Brand / Context -->
+<div class="flex items-center gap-lg">
+<span class="font-title-lg text-title-lg text-primary font-black tracking-tight">Pharmacy HMS</span>
+<!-- Search (on_left configuration) -->
+<div class="relative hidden lg:block w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full h-9 pl-9 pr-3 bg-surface-container-low border border-outline-variant rounded text-body-sm focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all placeholder:text-on-surface-variant/70" placeholder="Search POs, Vendors, Items..." type="text"/>
+</div>
+</div>
+<!-- Middle: Navigation Links -->
+<nav class="hidden xl:flex items-center gap-6">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Fast Track</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Inventory Hub</a>
+</nav>
+<!-- Right: Actions & Profile -->
+<div class="flex items-center gap-4">
+<button class="h-9 px-4 bg-secondary-container text-on-secondary-container font-label-md text-label-md rounded hover:bg-secondary hover:text-on-secondary transition-colors shadow-sm scale-95 active:scale-90">
+                    Dispense Now
+                </button>
+<div class="flex items-center gap-1 border-l border-outline-variant pl-4 ml-2">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors scale-95 active:scale-90">
+<span class="material-symbols-outlined text-[20px]">timer</span> <!-- fallback for expiry -->
+</button>
+<button class="w-8 h-8 ml-2 rounded-full overflow-hidden border border-outline-variant scale-95 active:scale-90 transition-transform">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVPNz-DQ7xg41pkIutkDz4wCFpdA0Ji4-77KYMnrWUKNPKOYXZ5Gu7iXzn7ncV2ssQpaOaUZcFmjAh3PYtCDccr1UWrmjgJxgkNAqYsV7LEVak1WqXpbyRdNU7hwK6U7m5t6PS-Lr8SeMk0JYS5GdqEFt8sUPgXXp5H2JLjj1AvcFGegl3_LufQgQTILEVIyxfmV6PixOvFelm8LKLo-U8w6NnNDfNIcmqWUimM_UeiCc6nxwzE0DlmPyVVhHCAj8znncwo_kjNjU"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas Area -->
+<main class="flex-1 overflow-y-auto bg-background p-layout-margin relative">
+<div class="max-w-7xl mx-auto flex flex-col gap-lg h-full">
+<!-- Page Header & Actions -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 shrink-0">
+<div>
+<nav class="flex items-center gap-2 text-label-sm font-label-sm text-on-surface-variant mb-2">
+<a class="hover:text-primary transition-colors" href="#">Procurement</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Purchase Orders</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-semibold">New PO</span>
+</nav>
+<div class="flex items-center gap-3">
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">Builder: PO-2023-089</h2>
+<span class="px-2 py-0.5 rounded-sm bg-surface-variant text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Draft</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 border border-outline text-on-surface font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors">
+                            Save Draft
+                        </button>
+<button class="px-4 py-2 bg-error text-on-error font-label-md text-label-md rounded hover:bg-error/90 transition-colors shadow-sm">
+                            Cancel
+                        </button>
+</div>
+</div>
+<!-- Stepper (Visual Only) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-1 shrink-0 shadow-sm">
+<div class="flex items-center justify-between px-4 py-2">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<div class="w-6 h-6 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+<span class="font-label-md text-label-md">1. Vendor &amp; Details</span>
+</div>
+<div class="h-[1px] flex-1 bg-outline-variant mx-4"></div>
+<!-- Active Step -->
+<div class="flex items-center gap-2 text-secondary">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-sm text-label-sm font-bold ring-2 ring-secondary ring-offset-2 ring-offset-surface">
+                                2
+                            </div>
+<span class="font-label-md text-label-md font-bold">Line Items</span>
+</div>
+<div class="h-[1px] flex-1 bg-outline-variant mx-4"></div>
+<div class="flex items-center gap-2 text-outline">
+<div class="w-6 h-6 rounded-full border border-outline flex items-center justify-center font-label-sm text-label-sm">
+                                3
+                            </div>
+<span class="font-label-md text-label-md">Review</span>
+</div>
+<div class="h-[1px] flex-1 bg-outline-variant mx-4"></div>
+<div class="flex items-center gap-2 text-outline">
+<div class="w-6 h-6 rounded-full border border-outline flex items-center justify-center font-label-sm text-label-sm">
+                                4
+                            </div>
+<span class="font-label-md text-label-md">Submit</span>
+</div>
+</div>
+</div>
+<!-- Main Workspace (Bento Grid Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg flex-1 min-h-[500px]">
+<!-- Left Column: Catalog & Line Items (Col Span 8) -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<!-- Catalog Search Bar -->
+<div class="bg-surface border border-outline-variant rounded-lg p-2 shadow-sm shrink-0 flex gap-2">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-lowest border border-outline-variant rounded font-body-md text-body-md focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all" placeholder="Search Master Catalog (Medication/Supplies)..." type="text"/>
+</div>
+<button class="h-10 px-4 bg-secondary text-on-secondary rounded font-label-md text-label-md hover:bg-secondary/90 transition-colors whitespace-nowrap flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                                Add Item
+                            </button>
+</div>
+<!-- Line Items Table Card -->
+<div class="bg-surface border border-outline-variant rounded-lg shadow-sm flex-1 flex flex-col overflow-hidden">
+<div class="px-4 py-3 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest shrink-0">
+<h3 class="font-title-lg text-title-lg text-primary tracking-tight">Purchase Items</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container p-1 px-2 rounded">3 Items Added</span>
+</div>
+<div class="flex-1 overflow-auto">
+<table class="w-full text-left border-collapse min-w-[700px]">
+<thead class="bg-surface-container-low sticky top-0 z-10 shadow-sm">
+<tr>
+<th class="px-4 py-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold border-b border-outline-variant w-10"></th>
+<th class="px-4 py-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold border-b border-outline-variant">Item Description</th>
+<th class="px-4 py-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold border-b border-outline-variant w-28">Stock / ROP</th>
+<th class="px-4 py-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold border-b border-outline-variant w-24">Qty</th>
+<th class="px-4 py-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold border-b border-outline-variant w-28">Unit Price</th>
+<th class="px-4 py-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold border-b border-outline-variant w-28 text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/50 bg-surface-container-lowest">
+<!-- Row 1 (Critical Stock) -->
+<tr class="h-12 hover:bg-surface-container-low transition-colors group">
+<td class="px-4 py-2 text-center">
+<button class="text-on-surface-variant hover:text-error transition-colors opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</td>
+<td class="px-4 py-2">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-primary font-medium">Sodium Chloride 0.9% IV</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SKU: IV-SC-009 • 500ml Bag</span>
+</div>
+</td>
+<td class="px-4 py-2">
+<div class="flex items-center gap-1">
+<span class="font-label-md text-label-md text-error font-bold">12</span>
+<span class="text-outline-variant">/</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">50</span>
+</div>
+</td>
+<td class="px-4 py-2">
+<input class="w-20 h-8 px-2 border border-outline-variant rounded text-body-sm focus:ring-2 focus:ring-secondary outline-none text-right" type="number" value="100"/>
+</td>
+<td class="px-4 py-2">
+<div class="relative">
+<span class="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[12px]">$</span>
+<input class="w-full h-8 pl-5 pr-2 border border-transparent hover:border-outline-variant rounded text-body-sm focus:bg-surface-container-lowest focus:border-secondary outline-none text-right bg-surface transition-all cursor-pointer" type="text" value="2.45"/>
+</div>
+</td>
+<td class="px-4 py-2 font-body-sm text-body-sm text-primary text-right font-medium">
+                                                $245.00
+                                            </td>
+</tr>
+<!-- Row 2 (Normal Stock) -->
+<tr class="h-12 hover:bg-surface-container-low transition-colors group">
+<td class="px-4 py-2 text-center">
+<button class="text-on-surface-variant hover:text-error transition-colors opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</td>
+<td class="px-4 py-2">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-primary font-medium">Syringe w/ Needle 10cc</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SKU: SY-10-N • Box of 100</span>
+</div>
+</td>
+<td class="px-4 py-2">
+<div class="flex items-center gap-1">
+<span class="font-label-md text-label-md text-on-tertiary-container font-bold">240</span>
+<span class="text-outline-variant">/</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">150</span>
+</div>
+</td>
+<td class="px-4 py-2">
+<input class="w-20 h-8 px-2 border border-outline-variant rounded text-body-sm focus:ring-2 focus:ring-secondary outline-none text-right" type="number" value="50"/>
+</td>
+<td class="px-4 py-2">
+<div class="relative">
+<span class="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[12px]">$</span>
+<input class="w-full h-8 pl-5 pr-2 border border-transparent hover:border-outline-variant rounded text-body-sm focus:bg-surface-container-lowest focus:border-secondary outline-none text-right bg-surface transition-all cursor-pointer" type="text" value="15.00"/>
+</div>
+</td>
+<td class="px-4 py-2 font-body-sm text-body-sm text-primary text-right font-medium">
+                                                $750.00
+                                            </td>
+</tr>
+<!-- Row 3 -->
+<tr class="h-12 hover:bg-surface-container-low transition-colors group">
+<td class="px-4 py-2 text-center">
+<button class="text-on-surface-variant hover:text-error transition-colors opacity-0 group-hover:opacity-100"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</td>
+<td class="px-4 py-2">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-primary font-medium">Paracetamol 500mg Tabs</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">SKU: RX-PAR-500 • Bottle of 1000</span>
+</div>
+</td>
+<td class="px-4 py-2">
+<div class="flex items-center gap-1">
+<span class="font-label-md text-label-md text-primary font-bold">85</span>
+<span class="text-outline-variant">/</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">100</span>
+</div>
+</td>
+<td class="px-4 py-2">
+<input class="w-20 h-8 px-2 border border-outline-variant rounded text-body-sm focus:ring-2 focus:ring-secondary outline-none text-right" type="number" value="20"/>
+</td>
+<td class="px-4 py-2">
+<div class="relative">
+<span class="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[12px]">$</span>
+<input class="w-full h-8 pl-5 pr-2 border border-transparent hover:border-outline-variant rounded text-body-sm focus:bg-surface-container-lowest focus:border-secondary outline-none text-right bg-surface transition-all cursor-pointer" type="text" value="32.50"/>
+</div>
+</td>
+<td class="px-4 py-2 font-body-sm text-body-sm text-primary text-right font-medium">
+                                                $650.00
+                                            </td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Empty State Placeholder (Hidden for this view) -->
+<!-- <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-on-surface-variant">
+                                <span class="material-symbols-outlined text-[48px] text-surface-tint mb-4 opacity-50">inventory_2</span>
+                                <p class="font-body-md">No items added to this purchase order yet.</p>
+                                <p class="font-label-sm mt-1">Use the search bar above to add catalog items.</p>
+                            </div> -->
+</div>
+</div>
+<!-- Right Column: Summary & Controls (Col Span 4) -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<!-- Vendor Details (Step 1 Summary - Compact) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-4 shadow-sm relative overflow-hidden group">
+<div class="absolute top-2 right-2">
+<button class="text-secondary font-label-sm text-label-sm hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[14px]">edit</span> Edit
+                                </button>
+</div>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                                Vendor &amp; Delivery
+                            </h3>
+<div class="font-body-sm text-body-sm space-y-1">
+<p class="font-semibold text-primary">MedTech Global Supplies Ltd.</p>
+<p class="text-on-surface-variant">Vendor ID: V-88921</p>
+<div class="mt-2 pt-2 border-t border-outline-variant/30">
+<p class="text-on-surface-variant"><span class="font-medium text-primary">Deliver To:</span> Central Pharmacy Storage</p>
+<p class="text-on-surface-variant"><span class="font-medium text-primary">Req. Date:</span> Oct 25, 2023</p>
+</div>
+</div>
+</div>
+<!-- Notes (Step 4 Preview) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-4 shadow-sm flex flex-col">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">note_alt</span>
+                                Internal Notes
+                            </h3>
+<textarea class="w-full h-24 p-2 bg-surface-container-lowest border border-outline-variant rounded text-body-sm focus:ring-2 focus:ring-secondary focus:border-transparent outline-none resize-none" placeholder="Add notes for approval workflow or receiving staff..."></textarea>
+</div>
+<!-- Order Summary & Actions (Sticky bottom behavior if needed, but fixed in grid here) -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-4 shadow-sm mt-auto">
+<h3 class="font-title-lg text-title-lg text-primary tracking-tight mb-4 border-b border-outline-variant pb-2">Order Summary</h3>
+<div class="space-y-2 font-body-sm text-body-sm text-on-surface-variant mb-4">
+<div class="flex justify-between">
+<span>Subtotal</span>
+<span>$1,645.00</span>
+</div>
+<div class="flex justify-between">
+<span>Tax (0% - Medical Exemption)</span>
+<span>$0.00</span>
+</div>
+<div class="flex justify-between">
+<span>Shipping Estimate</span>
+<span>$45.00</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t border-outline-variant pt-3 mb-6">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">Total</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">$1,690.00</span>
+</div>
+<button class="w-full h-10 bg-secondary text-on-secondary rounded font-label-md text-label-md hover:bg-secondary/90 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                                Review &amp; Submit
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

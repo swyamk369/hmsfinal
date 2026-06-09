@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Claim Submission - HMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed": "#d8e2ff",
+                      "surface-container-high": "#e6e8ea",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "inverse-surface": "#2d3133",
+                      "error-container": "#ffdad6",
+                      "surface-variant": "#e0e3e5",
+                      "secondary": "#0058be",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-background": "#191c1e",
+                      "tertiary-container": "#002113",
+                      "on-secondary-fixed-variant": "#004395",
+                      "on-surface": "#191c1e",
+                      "surface-container-lowest": "#ffffff",
+                      "surface": "#f7f9fb",
+                      "tertiary": "#000000",
+                      "on-primary-container": "#7c839b",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-surface-variant": "#45464d",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e0e3e5",
+                      "surface-bright": "#f7f9fb",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "primary-container": "#131b2e",
+                      "primary-fixed": "#dae2fd",
+                      "primary": "#000000",
+                      "outline": "#76777d",
+                      "inverse-primary": "#bec6e0",
+                      "surface-container": "#eceef0",
+                      "surface-container-low": "#f2f4f6",
+                      "on-tertiary-container": "#009668",
+                      "on-primary-fixed": "#131b2e",
+                      "on-primary": "#ffffff",
+                      "primary-fixed-dim": "#bec6e0",
+                      "surface-dim": "#d8dadc",
+                      "secondary-container": "#2170e4",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#6ffbbe",
+                      "on-secondary-container": "#fefcff",
+                      "background": "#f7f9fb",
+                      "on-secondary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#565e74",
+                      "on-secondary-fixed": "#001a42",
+                      "outline-variant": "#c6c6cd",
+                      "on-tertiary-fixed": "#002113"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "xs": "4px",
+                      "layout-margin": "24px",
+                      "gutter": "16px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "base": "4px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        /* Focus styles for inputs */
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px theme('colors.secondary'), 0 0 0 4px theme('colors.surface');
+            border-color: theme('colors.secondary');
+        }
+        /* Required field dot */
+        .required::after {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background-color: theme('colors.error');
+            border-radius: 50%;
+            margin-left: 4px;
+            vertical-align: super;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar -->
+<nav aria-label="Sidebar Navigation" class="hidden md:flex flex-col z-40 bg-surface dark:bg-inverse-surface text-on-surface-variant dark:text-surface-variant docked left-0 h-full w-[280px] bg-surface-container dark:bg-surface-container-high py-4">
+<div class="px-layout-margin mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="local_hospital">local_hospital</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed">Insurance Module</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Accounts Dept</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-layout-margin hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-secondary font-bold border-l-4 border-secondary bg-secondary-fixed/10 py-3 px-[20px] scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined fill" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-md text-label-md">Claims Queue</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-layout-margin hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Bill Reconciliation</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-layout-margin hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="business_center">business_center</span>
+<span class="font-label-md text-label-md">Insurance Partners</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-layout-margin hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="search_check">search_check</span>
+<span class="font-label-md text-label-md">CPT/ICD Lookup</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-layout-margin hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</div>
+<div class="mt-auto px-layout-margin">
+<a class="flex items-center gap-3 text-on-surface-variant py-3 hover:bg-surface-container-highest transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-w-0 bg-background">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface flex justify-between items-center w-full px-layout-margin h-16 bg-surface-container-low dark:bg-surface-container-high sticky top-0 z-30">
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-primary dark:text-primary-fixed">HMS Claims &amp; Insurance</h2>
+</div>
+<div class="flex items-center gap-4 text-secondary dark:text-secondary-fixed">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden ml-2">
+<img alt="Medical Administrator Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOSr7J0r1OANPdOOXkJjNeege5xA1ROPBsPjs2tY8S04YTN3_XbAL_oO8I42YcF7JVZs22BjEuSywVb_fa3fFyC_iviwUO0uhVZ_QLBffqNbnHFfv6SaMx1HHBjWmzepd_ihF5XjJIldxgl8Qw0p4nu3WgeHmNYY9Y_v8Kb7uO0KLGap4AqX9C8_aBuEFkLn8R004pWHQcPSdU-Wrc7kq_j4rDhl_YAiSIOGgqRIgehiWTaHIv2oy0PtUbbBeIlZ641TRhYqmq-lg"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 p-layout-margin overflow-y-auto">
+<div class="max-w-5xl mx-auto">
+<!-- Page Header -->
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="font-body-sm text-body-sm cursor-pointer hover:text-secondary transition-colors">Claims Queue</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="font-body-sm text-body-sm text-on-surface">New Claim Submission</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary">New Claim Submission</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Complete the required fields to submit a new insurance claim.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 border border-outline-variant text-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+                            Save Draft
+                        </button>
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md hover:bg-secondary-container transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+                            Validate &amp; Submit
+                        </button>
+</div>
+</div>
+<form class="space-y-6">
+<!-- 1. Patient Info Card -->
+<section class="bg-surface border border-surface-variant rounded-xl overflow-hidden">
+<div class="border-b border-surface-variant bg-surface-bright px-6 py-4">
+<h2 class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-label-sm">1</span>
+                                Patient &amp; Payer Information
+                            </h2>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-4">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 required">Patient Name / ID</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search patient..." type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Date of Birth</label>
+<input class="w-full px-3 py-2 bg-surface-container border border-surface-variant rounded-lg font-body-md text-body-md text-on-surface-variant cursor-not-allowed" disabled="" type="date"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Gender</label>
+<input class="w-full px-3 py-2 bg-surface-container border border-surface-variant rounded-lg font-body-md text-body-md text-on-surface-variant cursor-not-allowed" disabled="" type="text"/>
+</div>
+</div>
+</div>
+<div class="space-y-4 border-t md:border-t-0 md:border-l border-surface-variant pt-4 md:pt-0 md:pl-6">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 required">Insurance Provider</label>
+<select class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface appearance-none">
+<option disabled="" selected="" value="">Select Provider</option>
+<option>Aetna Health</option>
+<option>Blue Cross Blue Shield</option>
+<option>Cigna</option>
+<option>UnitedHealthcare</option>
+<option>Medicare</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 required">Plan ID</label>
+<input class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface" placeholder="e.g. PLN-892" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 required">Policy Number</label>
+<input class="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface" placeholder="e.g. POL-12345" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Medical Coding -->
+<section class="bg-surface border border-surface-variant rounded-xl overflow-hidden">
+<div class="border-b border-surface-variant bg-surface-bright px-6 py-4">
+<h2 class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-label-sm">2</span>
+                                Clinical Details
+                            </h2>
+</div>
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 required">Primary Diagnosis (ICD-10)</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="manage_search">manage_search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface" placeholder="Search ICD-10 code or description..." type="text"/>
+</div>
+<div class="mt-2 flex gap-2 flex-wrap">
+<!-- Placeholder for selected codes -->
+<span class="inline-flex items-center gap-1 px-2 py-1 bg-surface-container-high rounded font-label-sm text-label-sm text-on-surface">
+                                        J01.90 - Acute sinusitis, unspecified
+                                        <span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-error" data-icon="close">close</span>
+</span>
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1 required">Referring Physician</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="person_search">person_search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface" placeholder="Search by NPI or Name..." type="text"/>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Line Items -->
+<section class="bg-surface border border-surface-variant rounded-xl overflow-hidden">
+<div class="border-b border-surface-variant bg-surface-bright px-6 py-4 flex justify-between items-center">
+<h2 class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-label-sm">3</span>
+                                Service Line Items
+                            </h2>
+<button class="flex items-center gap-1 text-secondary font-label-md text-label-md hover:bg-secondary-fixed/20 px-3 py-1.5 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                                Add Row
+                            </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-lowest border-b border-surface-variant">
+<tr>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider w-[140px] required">Service Date</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider w-[120px] required">CPT Code</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Description</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider w-[80px] required">Units</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider w-[120px] required">Charges ($)</th>
+<th class="px-6 py-3 w-[60px]"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant bg-surface">
+<!-- Row 1 -->
+<tr class="h-12 hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface" type="date"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface" placeholder="Code" type="text" value="99213"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface" placeholder="Description" type="text" value="Office/outpatient visit est"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface text-right" min="1" type="number" value="1"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface text-right" min="0" step="0.01" type="number" value="125.00"/>
+</td>
+<td class="px-6 py-2 text-center">
+<button class="text-on-surface-variant hover:text-error transition-colors p-1 rounded-full hover:bg-surface-container-high" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</td>
+</tr>
+<!-- Add Row Template Style -->
+<tr class="h-12 hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border border-outline-variant rounded focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md text-on-surface" type="date"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border border-outline-variant rounded focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md text-on-surface" placeholder="Search CPT" type="text"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border border-outline-variant rounded focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md text-on-surface text-on-surface-variant italic" disabled="" placeholder="Auto-fills from CPT" type="text"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border border-outline-variant rounded focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md text-on-surface text-right" min="1" type="number" value="1"/>
+</td>
+<td class="px-6 py-2">
+<input class="w-full px-2 py-1 bg-transparent border border-outline-variant rounded focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md text-on-surface text-right" min="0" placeholder="0.00" step="0.01" type="number"/>
+</td>
+<td class="px-6 py-2 text-center">
+<button class="text-on-surface-variant hover:text-error transition-colors p-1 rounded-full hover:bg-surface-container-high" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="bg-surface-container-lowest border-t border-surface-variant p-6 flex justify-end">
+<div class="w-64">
+<div class="flex justify-between items-center py-2 font-body-md text-body-md text-on-surface-variant">
+<span>Subtotal</span>
+<span>$125.00</span>
+</div>
+<div class="flex justify-between items-center py-2 font-body-md text-body-md text-on-surface-variant">
+<span>Tax/Adjustments</span>
+<span>$0.00</span>
+</div>
+<div class="flex justify-between items-center py-3 mt-2 border-t border-surface-variant font-title-lg text-title-lg text-primary">
+<span>Total Amount</span>
+<span>$125.00</span>
+</div>
+</div>
+</div>
+</section>
+</form>
+<!-- Spacer for scrolling past form -->
+<div class="h-12"></div>
+</div>
+</div>
+</main>
+</body></html>

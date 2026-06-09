@@ -1,0 +1,29 @@
+{
+  "name": "@hms/db",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "prisma:generate": "prisma generate",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "rls": "node scripts/apply-rls.mjs",
+    "seed": "ts-node --compiler-options '{\"module\":\"commonjs\",\"types\":[\"node\"]}' prisma/seed.ts",
+    "studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options '{\"module\":\"commonjs\",\"types\":[\"node\"]}' prisma/seed.ts"
+  },
+  "dependencies": {
+    "@hms/shared": "workspace:*",
+    "@prisma/client": "^6.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.6",
+    "prisma": "^6.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

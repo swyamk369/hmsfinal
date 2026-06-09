@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS Patient Portal - Book Visit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#f7f9fb",
+                      "primary-fixed-dim": "#bec6e0",
+                      "inverse-surface": "#2d3133",
+                      "surface": "#f7f9fb",
+                      "secondary-container": "#2170e4",
+                      "surface-dim": "#d8dadc",
+                      "on-tertiary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f2f4f6",
+                      "outline-variant": "#c6c6cd",
+                      "inverse-primary": "#bec6e0",
+                      "tertiary-fixed": "#6ffbbe",
+                      "on-tertiary-fixed": "#002113",
+                      "outline": "#76777d",
+                      "on-tertiary-container": "#009668",
+                      "on-surface": "#191c1e",
+                      "on-surface-variant": "#45464d",
+                      "tertiary": "#000000",
+                      "primary-container": "#131b2e",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#004395",
+                      "surface-container": "#eceef0",
+                      "on-primary-container": "#7c839b",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-error": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "surface-container-highest": "#e0e3e5",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#002113",
+                      "surface-tint": "#565e74",
+                      "on-secondary-container": "#fefcff",
+                      "on-background": "#191c1e",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "surface-variant": "#e0e3e5",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-primary-fixed": "#131b2e",
+                      "surface-bright": "#f7f9fb",
+                      "on-secondary-fixed": "#001a42",
+                      "surface-container-high": "#e6e8ea",
+                      "secondary": "#0058be",
+                      "primary": "#000000",
+                      "primary-fixed": "#dae2fd",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "md": "16px",
+                      "layout-margin": "24px",
+                      "lg": "24px",
+                      "base": "4px",
+                      "xl": "32px",
+                      "sm": "8px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background h-full flex flex-col md:flex-row antialiased">
+<!-- TopNavBar (Web) -->
+<header class="hidden md:flex sticky top-0 z-50 flex justify-between items-center w-full px-layout-margin h-16 max-w-full bg-surface border-b border-outline-variant flat no shadows absolute w-full top-0 md:hidden">
+<div class="text-title-lg font-title-lg font-bold text-secondary">
+             HMS Patient Portal
+         </div>
+<nav class="flex space-x-lg">
+<a class="text-on-surface-variant hover:text-secondary transition-colors text-label-md font-label-md" href="#">Dashboard</a>
+<a class="text-secondary border-b-2 border-secondary pb-1 opacity-80 transition-all text-label-md font-label-md" href="#">Appointments</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors text-label-md font-label-md" href="#">Medical Records</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors text-label-md font-label-md" href="#">Billing</a>
+</nav>
+<div class="flex items-center space-x-md text-primary">
+<button aria-label="notifications" class="hover:text-secondary transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button aria-label="help_outline" class="hover:text-secondary transition-colors"><span class="material-symbols-outlined">help_outline</span></button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Patient Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a confident patient smiling slightly. Soft, modern corporate lighting with a bright background. Clean, high-quality resolution suitable for a healthcare portal profile image. Warm-neutral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDt55wlTMcP9EziaHrxQ45GwM8K1TFtshOdnbpzovqJNG-ust1LM2Fh2eurP9H4P4PqABjPsBCE3ny6KEjddmVYtsb_MVzHPdG6_itu5RBcf8A_JkpEQ3cStcQTtFW5MoigfHhNW310LZO0cO4bW5cKMMncQ3-r3zPHgV6IvShoI8MZuQ0x7e1Zh7lEPmrw4W2R4jYoZQ4gr0Ok-O9zFEX2Q8kjdX2uEbPxVxfLk3dFGYaV_k77uvRSfXIEZlMqL0A3qZ6jFKmDQcQ"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Web) -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 z-40 docked full-height left-0 w-72 bg-surface-container-low border-r border-outline-variant flat no shadows">
+<div class="p-layout-margin">
+<div class="text-headline-sm font-headline-sm font-bold text-secondary mb-xl">
+                HMS Patient Portal
+            </div>
+<div class="flex items-center space-x-md mb-xl p-md bg-surface-container rounded-lg">
+<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+<img alt="Patient Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a confident patient smiling slightly. Soft, modern corporate lighting with a bright background. Clean, high-quality resolution suitable for a healthcare portal profile image. Warm-neutral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDonZj3UoioB_5-Zt0tmvhNRPNjeqxVfmsPrdcFQiREvkypW2HB4Qlt8b4hR3OV4B5IBeIsyFn7wyu4A_B0I10q18lWBwR1LHvNzKz2Ou5dsanWr6Aqaoy3gF4nVHpdPhPNrneiHvzv4xjpHm_bbjdU1ECMomIdtnGJ1yagNDDrBvwMhR4csaNNFa8OfMpmG7xq6kVe_x9F-rQWw7OcpTYV9z9krc_A18FkX51z-JNNpmP0b_1k5ba0nLc9H5NaXS2Vulle1wzQidY"/>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Welcome back</p>
+<p class="text-body-md font-body-md font-semibold text-on-surface">Alex Johnson</p>
+</div>
+</div>
+<nav class="space-y-sm flex-1">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span> Overview
+                </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">folder_shared</span> My Health
+                </a>
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container border-l-4 border-secondary px-4 py-3 rounded-r-lg scale-95 transition-transform text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_add_on</span> Book Visit
+                </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">payments</span> Invoices
+                </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-3 rounded-lg transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+                </a>
+</nav>
+</div>
+<div class="mt-auto p-layout-margin space-y-md">
+<button class="w-full flex items-center justify-center gap-sm bg-error-container text-on-error-container py-2 rounded-lg text-label-md font-label-md hover:bg-error hover:text-on-error transition-colors">
+<span class="material-symbols-outlined text-sm">warning</span> Emergency Support
+             </button>
+<nav class="space-y-xs">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-lg transition-all text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-sm">contact_support</span> Support
+                </a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-4 py-2 rounded-lg transition-all text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-sm">logout</span> Sign Out
+                </a>
+</nav>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-72 mt-16 md:mt-0 p-layout-margin overflow-y-auto">
+<div class="max-w-5xl mx-auto">
+<!-- Header -->
+<div class="mb-xl">
+<h1 class="text-display-lg font-display-lg text-on-background">Book a Visit</h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant mt-sm">Schedule your next appointment with our healthcare professionals.</p>
+</div>
+<div class="flex flex-col lg:flex-row gap-layout-margin">
+<!-- Booking Flow (Left Side) -->
+<div class="flex-1 space-y-xl">
+<!-- Progress Tracker -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex items-center justify-between relative">
+<div class="absolute left-10 right-10 top-1/2 -translate-y-1/2 h-0.5 bg-surface-variant -z-10"></div>
+<div class="absolute left-10 w-1/2 top-1/2 -translate-y-1/2 h-0.5 bg-secondary -z-10"></div>
+<div class="flex flex-col items-center gap-xs z-10 bg-surface px-sm">
+<div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center text-label-md font-label-md shadow-sm">1</div>
+<span class="text-label-sm font-label-sm text-secondary">Specialty</span>
+</div>
+<div class="flex flex-col items-center gap-xs z-10 bg-surface px-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-label-md font-label-md shadow-sm border-2 border-secondary">2</div>
+<span class="text-label-sm font-label-sm text-on-surface">Date &amp; Time</span>
+</div>
+<div class="flex flex-col items-center gap-xs z-10 bg-surface px-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center text-label-md font-label-md border border-outline-variant">3</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Confirm</span>
+</div>
+</div>
+<!-- Step 2: Date & Time (Bento Grid Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Calendar Widget -->
+<div class="bg-surface border border-outline-variant rounded-xl p-lg flex flex-col">
+<h2 class="text-headline-sm font-headline-sm text-on-background mb-md">Select Date</h2>
+<!-- Calendar Header -->
+<div class="flex items-center justify-between mb-md">
+<button class="p-1 hover:bg-surface-container rounded-full text-on-surface-variant"><span class="material-symbols-outlined">chevron_left</span></button>
+<span class="text-title-lg font-title-lg text-on-surface">October 2023</span>
+<button class="p-1 hover:bg-surface-container rounded-full text-on-surface-variant"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+<!-- Calendar Grid -->
+<div class="grid grid-cols-7 gap-1 text-center mb-2">
+<span class="text-label-sm font-label-sm text-on-surface-variant py-1">S</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant py-1">M</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant py-1">T</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant py-1">W</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant py-1">T</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant py-1">F</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant py-1">S</span>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center flex-1">
+<!-- Empty cells -->
+<div></div><div></div><div></div>
+<!-- Days -->
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">1</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">2</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">3</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">4</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">5</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">6</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">7</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">8</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">9</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">10</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface-variant hover:bg-surface-container">11</button>
+<button class="aspect-square flex items-center justify-center rounded-full bg-secondary text-on-secondary shadow-md font-semibold ring-2 ring-secondary ring-offset-2 ring-offset-surface">12</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface hover:bg-surface-container">13</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface hover:bg-surface-container">14</button>
+<button class="aspect-square flex items-center justify-center rounded-full text-body-md font-body-md text-on-surface hover:bg-surface-container">15</button>
+</div>
+</div>
+<!-- Time Slots -->
+<div class="bg-surface border border-outline-variant rounded-xl p-lg flex flex-col">
+<h2 class="text-headline-sm font-headline-sm text-on-background mb-md">Available Times</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-md">Thursday, Oct 12 for <span class="font-semibold text-on-surface">Cardiology</span></p>
+<div class="grid grid-cols-2 gap-sm overflow-y-auto max-h-64 pr-2 custom-scrollbar">
+<button class="border border-outline-variant rounded-lg py-2 text-body-sm font-body-sm text-on-surface hover:border-secondary hover:text-secondary transition-colors">09:00 AM</button>
+<button class="border border-outline-variant rounded-lg py-2 text-body-sm font-body-sm text-on-surface hover:border-secondary hover:text-secondary transition-colors">09:30 AM</button>
+<button class="border border-outline-variant rounded-lg py-2 text-body-sm font-body-sm text-on-surface hover:border-secondary hover:text-secondary transition-colors">10:00 AM</button>
+<button class="border-2 border-secondary bg-secondary-container/10 rounded-lg py-2 text-body-sm font-body-sm text-secondary font-semibold transition-colors">10:30 AM</button>
+<button class="border border-outline-variant rounded-lg py-2 text-body-sm font-body-sm text-on-surface hover:border-secondary hover:text-secondary transition-colors">11:00 AM</button>
+<button class="border border-surface-variant bg-surface-container-lowest rounded-lg py-2 text-body-sm font-body-sm text-outline-variant opacity-50 cursor-not-allowed" disabled="">11:30 AM</button>
+<button class="border border-outline-variant rounded-lg py-2 text-body-sm font-body-sm text-on-surface hover:border-secondary hover:text-secondary transition-colors">01:00 PM</button>
+<button class="border border-outline-variant rounded-lg py-2 text-body-sm font-body-sm text-on-surface hover:border-secondary hover:text-secondary transition-colors">01:30 PM</button>
+</div>
+</div>
+</div>
+<!-- Selected Doctor Card (Glassmorphism inspired, flat) -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex items-start gap-md">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border border-outline-variant">
+<img alt="Dr. Sarah Jenkins" class="w-full h-full object-cover" data-alt="A professional portrait of a female cardiologist wearing a white coat and stethoscope. Bright, modern clinic background. Professional and empathetic expression. Modern corporate lighting, warm-neutral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr7KKoJB4-d8B5sGffz7iZ4V0zeNJQEjLP_c7kGjV7wskdVS5fNz3WDJ_9VGVtOrCX5ZdpjGGFbVj_brKKcz19G70mafnDrJSIOAHA0XekGzKwcKARgeaipNx56lCby7tHR50OQhb2-Hi69KziAxxi7OoxusnpVGaeWCiUd4kATdXUthltn2abVC4fSogwCr4-rRXfU3yz8bALfGCIKY1hRAvMw6BXkYRHzFSRzma4MsBaErBhSAXODb6sMz_zCzpRXWBLf1aaB8U"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-title-lg font-title-lg text-on-surface">Dr. Sarah Jenkins</h3>
+<p class="text-body-sm font-body-sm text-secondary font-medium">Cardiology <span class="text-outline-variant mx-1">•</span> <span class="text-on-surface-variant">Recent</span></p>
+</div>
+<button class="text-secondary hover:bg-secondary-container/20 p-1 rounded transition-colors text-label-sm font-label-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">edit</span> Change
+                                </button>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-sm">Initial consultation for ongoing symptom management. Please bring recent records.</p>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex justify-end gap-md pt-md border-t border-surface-variant">
+<button class="px-lg py-2 border border-outline-variant text-on-surface-variant rounded-lg text-label-md font-label-md hover:bg-surface-container transition-colors">Back</button>
+<button class="px-lg py-2 bg-secondary text-on-secondary rounded-lg text-label-md font-label-md hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors shadow-sm">Continue to Confirm</button>
+</div>
+</div>
+<!-- Right Sidebar: Appointments Context -->
+<div class="w-full lg:w-80 space-y-lg">
+<!-- Upcoming Appointments -->
+<div class="bg-surface border border-outline-variant rounded-xl overflow-hidden">
+<div class="bg-surface-container-low px-md py-sm border-b border-outline-variant flex justify-between items-center">
+<h3 class="text-label-md font-label-md text-on-surface">Upcoming</h3>
+<span class="bg-primary-fixed text-on-primary-fixed text-xs px-2 py-0.5 rounded-full font-medium">1</span>
+</div>
+<div class="p-md">
+<div class="border border-outline-variant rounded-lg p-sm hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-xs">
+<span class="bg-tertiary-fixed/20 text-on-tertiary-container text-xs px-2 py-0.5 rounded uppercase font-semibold tracking-wider">Confirmed</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary text-sm">more_vert</span>
+</div>
+<h4 class="text-body-md font-body-md font-semibold text-on-surface">General Checkup</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Dr. Alan Turing</p>
+<div class="flex items-center gap-xs mt-sm text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">event</span> Oct 15, 2:00 PM
+                                </div>
+</div>
+</div>
+</div>
+<!-- Past Appointments -->
+<div class="bg-surface border border-outline-variant rounded-xl overflow-hidden">
+<div class="bg-surface-container-low px-md py-sm border-b border-outline-variant">
+<h3 class="text-label-md font-label-md text-on-surface">Past Visits</h3>
+</div>
+<div class="p-md space-y-sm">
+<div class="flex gap-sm items-start opacity-70">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center text-outline flex-shrink-0">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div>
+<h4 class="text-body-sm font-body-sm font-medium text-on-surface">Blood Work</h4>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Sep 28 <span class="mx-1">•</span> Lab C</p>
+</div>
+</div>
+<div class="flex gap-sm items-start opacity-70">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center text-outline flex-shrink-0">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<div>
+<h4 class="text-body-sm font-body-sm font-medium text-on-surface">Cardiology Consult</h4>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Aug 12 <span class="mx-1">•</span> Dr. S. Jenkins</p>
+</div>
+</div>
+</div>
+<button class="w-full text-center py-sm border-t border-outline-variant text-label-sm font-label-sm text-secondary hover:bg-surface-container transition-colors">View All History</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface border-t border-outline-variant shadow-lg docked full-width bottom-0 rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined mb-1">medical_services</span>
+            Health
+        </a>
+<a class="flex flex-col items-center justify-center text-secondary bg-secondary-container/10 rounded-xl p-2 scale-90 transition-all duration-150 text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">event</span>
+            Book
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:bg-surface-container text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined mb-1">account_balance_wallet</span>
+            Pay
+        </a>
+</nav>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: var(--color-surface-variant);
+            border-radius: 4px;
+        }
+    </style>
+</body></html>

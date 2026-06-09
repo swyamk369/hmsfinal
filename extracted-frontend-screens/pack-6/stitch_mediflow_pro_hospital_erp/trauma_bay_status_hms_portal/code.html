@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trauma Bay Whiteboard - Emergency &amp; Triage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#45464d",
+                        "tertiary-container": "#002113",
+                        "surface-dim": "#d8dadc",
+                        "surface-container": "#eceef0",
+                        "surface-bright": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "primary": "#000000",
+                        "outline": "#76777d",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#0058be",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-container": "#2170e4",
+                        "surface-tint": "#565e74",
+                        "inverse-primary": "#bec6e0",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-container": "#fefcff",
+                        "primary-container": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-error": "#ffffff",
+                        "background": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-fixed": "#dae2fd",
+                        "on-tertiary-fixed": "#002113",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-container": "#7c839b",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "error": "#ba1a1a",
+                        "tertiary": "#000000",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#6ffbbe",
+                        "outline-variant": "#c6c6cd",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary-container": "#009668",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px",
+                        "xl": "32px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "title-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+        
+        /* Custom Scrollbar for compact lists */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c6c6cd; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #76777d; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex flex-col md:flex-row min-h-screen">
+<!-- TopAppBar (Mobile Only - based on responsive pivot rule) -->
+<header class="md:hidden bg-surface-container-highest flex justify-between items-center w-full px-layout-margin h-16 docked full-width top-0 sticky z-50 shadow-md">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">menu</span>
+<span class="font-headline-sm text-headline-sm-mobile font-black uppercase tracking-tighter text-error">Emergency &amp; Triage</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full py-lg px-md bg-surface border-r border-outline-variant fixed left-0 top-0 w-[280px] z-40 transition-all duration-300">
+<!-- Brand / Header -->
+<div class="mb-xl px-sm">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-md">Emergency &amp; Triage</div>
+<!-- User Profile Dropdown Sim -->
+<div class="flex items-center gap-md p-sm bg-surface-container-low rounded-lg border border-surface-variant cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a male doctor in his 40s wearing standard blue hospital scrubs and a stethoscope around his neck. The background is a slightly blurred, brightly lit clinical corridor. The lighting is bright and even, typical of a modern hospital setting. The mood is calm, confident, and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3amYMILQpVcNpW70Ba35yZ-khnss0GFvZeUbuZ3QRQ2Phia_jdoR0sxISGEnO6Ck8sG5E9ln1TPqT9nC4g_LLUKBYlfvLa2IGQkwn1qiH9jCyQUqG0tu9rjo-Rylf-Bgw-ek0WxrSJqEcz-nezemBP64CkPlNMRU9W4xH_L9pHIhODn7LoOydVh9gWto7AFkbZkP72CQnEt_nXVUNifNuYbOToMCwVYI1alKOO7KQIc7dogyyh04b3L042DyzhmG_AU1y89JcBZ0"/>
+</div>
+<div class="flex-1">
+<div class="font-label-md text-label-md text-on-surface">Dr. Sterling</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Trauma Lead</div>
+</div>
+<span class="material-symbols-outlined text-outline">expand_more</span>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="emergency">emergency</span>
+<span>Triage Queue</span>
+</a>
+<!-- Active State Navigation -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg border-l-4 border-secondary text-secondary bg-secondary-container/10 font-bold font-body-md text-body-md opacity-90 transition-all duration-100 scale-[0.99]" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="personal_injury">personal_injury</span>
+<span>Trauma Bay Status</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="groups">groups</span>
+<span>Staffing</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="inventory_2">inventory_2</span>
+<span>Inventory</span>
+</a>
+</div>
+<!-- Call to Action -->
+<div class="mt-xl mb-lg px-sm">
+<button class="w-full py-sm px-md bg-secondary text-on-secondary rounded-lg font-label-md text-label-md shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                Quick Status Update
+            </button>
+</div>
+<!-- Footer Navigation -->
+<div class="border-t border-outline-variant pt-md flex flex-col gap-xs mt-auto">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="help">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="logout">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[280px] p-layout-margin bg-background min-h-screen">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-md">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-background">Trauma Bay Whiteboard</h1>
+<div class="flex items-center gap-sm text-on-surface-variant font-body-sm text-body-sm mt-xs">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container">location_on</span>
+<span>Level 1 Trauma Center • Sector Alpha</span>
+<span class="mx-sm text-outline-variant">|</span>
+<span class="flex items-center gap-xs text-error">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+                        3 Active Resuscitations
+                    </span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="bg-surface px-md py-xs rounded-full border border-surface-variant flex items-center gap-sm shadow-sm">
+<span class="font-label-md text-label-md text-on-surface-variant">View:</span>
+<select class="bg-transparent border-none text-primary font-label-md text-label-md focus:ring-0 p-0 pr-lg cursor-pointer">
+<option>All Bays</option>
+<option>Critical Only</option>
+<option>Available</option>
+</select>
+</div>
+<button class="bg-primary text-on-primary px-md py-sm rounded-lg font-label-md text-label-md shadow-sm hover:opacity-90 transition-opacity flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">add_alert</span>
+                    Mass Casualty Alert
+                </button>
+</div>
+</div>
+<!-- Bento Grid Layout for Trauma Bays -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-lg">
+<!-- BAY 1: Critical / Active Resuscitation (High Density Card) -->
+<div class="bg-surface rounded-xl border border-error/30 shadow-sm overflow-hidden flex flex-col h-full relative">
+<!-- Status Top Bar -->
+<div class="h-1 w-full bg-error"></div>
+<div class="p-md flex justify-between items-start border-b border-surface-variant bg-error/5">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-error text-on-error rounded-lg flex items-center justify-center font-display-lg text-[24px]">
+                            01
+                        </div>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-sm">
+                                DOE, JOHN (Unidentified)
+                                <span class="bg-error/10 text-error px-sm py-[2px] rounded text-[10px] font-bold uppercase tracking-wider">Level 1</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs flex items-center gap-md">
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[14px]">badge</span> Dr. Sterling, N. Chen (RN)</span>
+<span class="flex items-center gap-xs text-error font-medium"><span class="material-symbols-outlined text-[14px]">timer</span> 14:22 in Bay</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">MTP Initiated</div>
+<div class="font-title-lg text-title-lg text-error">ETA OR: 5m</div>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 p-md grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Vitals Stream (Left) -->
+<div class="col-span-1 border-r border-surface-variant pr-md flex flex-col justify-between">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-sm">Current Vitals</div>
+<div class="grid grid-cols-2 gap-sm mb-md">
+<div class="bg-surface-container-low p-sm rounded border border-surface-variant">
+<div class="text-[10px] text-outline uppercase font-semibold">HR</div>
+<div class="font-title-lg text-error font-bold flex items-end gap-xs">138 <span class="material-symbols-outlined text-[14px]">arrow_upward</span></div>
+</div>
+<div class="bg-surface-container-low p-sm rounded border border-surface-variant">
+<div class="text-[10px] text-outline uppercase font-semibold">BP</div>
+<div class="font-title-lg text-error font-bold flex items-end gap-xs">70/40 <span class="material-symbols-outlined text-[14px]">arrow_downward</span></div>
+</div>
+<div class="bg-surface-container-low p-sm rounded border border-surface-variant">
+<div class="text-[10px] text-outline uppercase font-semibold">SpO2</div>
+<div class="font-title-lg text-on-surface font-bold">94%</div>
+</div>
+<div class="bg-surface-container-low p-sm rounded border border-surface-variant">
+<div class="text-[10px] text-outline uppercase font-semibold">GCS</div>
+<div class="font-title-lg text-error font-bold">6</div>
+</div>
+</div>
+</div>
+<!-- Stability Trend Mini-Chart (CSS representation) -->
+<div class="mt-auto">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-xs">Stability Trend</div>
+<div class="h-12 w-full bg-surface-container-lowest rounded border border-surface-variant relative overflow-hidden flex items-end p-1 gap-1">
+<!-- Bars representing stability over last 15 mins -->
+<div class="w-full bg-error/20 h-[80%] rounded-t-sm"></div>
+<div class="w-full bg-error/30 h-[70%] rounded-t-sm"></div>
+<div class="w-full bg-error/40 h-[60%] rounded-t-sm"></div>
+<div class="w-full bg-error/50 h-[45%] rounded-t-sm"></div>
+<div class="w-full bg-error/70 h-[30%] rounded-t-sm"></div>
+<div class="w-full bg-error h-[20%] rounded-t-sm"></div>
+</div>
+</div>
+</div>
+<!-- Quick Logs & Actions (Right) -->
+<div class="col-span-2 flex flex-col gap-md">
+<!-- Fast Action Buttons -->
+<div class="grid grid-cols-3 gap-sm">
+<button class="bg-surface border border-outline-variant text-on-surface hover:bg-surface-container hover:border-outline py-xs px-sm rounded shadow-sm text-label-sm font-label-sm flex flex-col items-center justify-center gap-xs h-16 transition-colors">
+<span class="material-symbols-outlined text-[20px] text-secondary">vaccines</span>
+                                Log Meds
+                            </button>
+<button class="bg-surface border border-outline-variant text-on-surface hover:bg-surface-container hover:border-outline py-xs px-sm rounded shadow-sm text-label-sm font-label-sm flex flex-col items-center justify-center gap-xs h-16 transition-colors">
+<span class="material-symbols-outlined text-[20px] text-on-tertiary-container">content_cut</span>
+                                Procedure
+                            </button>
+<button class="bg-surface border border-outline-variant text-on-surface hover:bg-surface-container hover:border-outline py-xs px-sm rounded shadow-sm text-label-sm font-label-sm flex flex-col items-center justify-center gap-xs h-16 transition-colors">
+<span class="material-symbols-outlined text-[20px] text-error">science</span>
+                                Stat Labs
+                            </button>
+</div>
+<!-- Recent Timeline Logs -->
+<div class="flex-1 bg-surface-container-lowest border border-surface-variant rounded p-sm flex flex-col">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-sm sticky top-0 bg-surface-container-lowest pb-1">Activity Log</div>
+<div class="flex-1 overflow-y-auto max-h-[120px] flex flex-col gap-sm pr-xs">
+<div class="flex gap-sm items-start">
+<div class="text-[10px] text-outline font-mono mt-[2px]">14:20</div>
+<div class="font-body-sm text-body-sm text-on-surface leading-tight">
+<span class="font-semibold text-error">Intubated</span> by Dr. Sterling. ETT size 7.5 secured at 22cm.
+                                    </div>
+</div>
+<div class="flex gap-sm items-start">
+<div class="text-[10px] text-outline font-mono mt-[2px]">14:15</div>
+<div class="font-body-sm text-body-sm text-on-surface leading-tight">
+<span class="font-semibold text-secondary">TXA 1g IV</span> administered by N. Chen.
+                                    </div>
+</div>
+<div class="flex gap-sm items-start">
+<div class="text-[10px] text-outline font-mono mt-[2px]">14:12</div>
+<div class="font-body-sm text-body-sm text-on-surface leading-tight">
+                                        Massive Transfusion Protocol activated.
+                                    </div>
+</div>
+<div class="flex gap-sm items-start">
+<div class="text-[10px] text-outline font-mono mt-[2px]">14:08</div>
+<div class="font-body-sm text-body-sm text-on-surface leading-tight">
+                                        Patient arrived. Mechanism: MCC vs Auto.
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BAY 2: Stable / Prep for transfer -->
+<div class="bg-surface rounded-xl border border-tertiary-fixed-dim/50 shadow-sm overflow-hidden flex flex-col h-full relative">
+<!-- Status Top Bar -->
+<div class="h-1 w-full bg-on-tertiary-container"></div>
+<div class="p-md flex justify-between items-start border-b border-surface-variant bg-on-tertiary-container/5">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 bg-surface-container-high text-on-surface-variant rounded-lg flex items-center justify-center font-display-lg text-[24px]">
+                            02
+                        </div>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-sm">
+                                SMITH, MICHAEL
+                                <span class="bg-tertiary-fixed-dim/20 text-on-tertiary-container px-sm py-[2px] rounded text-[10px] font-bold uppercase tracking-wider">Level 3</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs flex items-center gap-md">
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[14px]">badge</span> Dr. Patel, K. Williams (RN)</span>
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[14px]">timer</span> 45:10 in Bay</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-xs">Status</div>
+<div class="font-title-lg text-title-lg text-on-tertiary-container">Ready for Ward</div>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 p-md grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Vitals Stream (Left) -->
+<div class="col-span-1 border-r border-surface-variant pr-md flex flex-col justify-between opacity-80">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-sm">Current Vitals</div>
+<div class="grid grid-cols-2 gap-sm mb-md">
+<div class="bg-surface-container-low p-sm rounded border border-surface-variant">
+<div class="text-[10px] text-outline uppercase font-semibold">HR</div>
+<div class="font-title-lg text-on-surface font-bold">82</div>
+</div>
+<div class="bg-surface-container-low p-sm rounded border border-surface-variant">
+<div class="text-[10px] text-outline uppercase font-semibold">BP</div>
+<div class="font-title-lg text-on-surface font-bold">120/80</div>
+</div>
+</div>
+</div>
+<div class="mt-auto">
+<div class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-xs">Readiness</div>
+<div class="w-full bg-surface-container-high rounded-full h-2">
+<div class="bg-on-tertiary-container h-2 rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</div>
+<!-- Transfer Details (Right) -->
+<div class="col-span-2 flex flex-col justify-center items-center p-md bg-surface-bright rounded border border-dashed border-outline-variant text-center">
+<span class="material-symbols-outlined text-[48px] text-outline-variant mb-sm">transfer_within_a_station</span>
+<div class="font-title-lg text-title-lg text-on-surface mb-xs">Awaiting Transport</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant max-w-[200px]">
+                            Bed assigned in Ortho Ward (4B-12). Transport requested at 14:15.
+                        </div>
+<button class="mt-md bg-surface text-secondary border border-secondary px-md py-sm rounded font-label-md hover:bg-secondary-container/10 transition-colors">
+                            Mark as Transferred
+                        </button>
+</div>
+</div>
+</div>
+<!-- BAY 3: Incoming Setup (Empty State pattern) -->
+<div class="bg-surface-bright rounded-xl border-2 border-dashed border-secondary/40 shadow-sm overflow-hidden flex flex-col h-full relative p-xl items-center justify-center text-center min-h-[300px]">
+<div class="absolute top-md left-md w-12 h-12 bg-surface-container text-on-surface-variant rounded-lg flex items-center justify-center font-display-lg text-[24px]">
+                    03
+                </div>
+<span class="material-symbols-outlined text-[64px] text-secondary/30 mb-md animate-pulse">emergency_share</span>
+<div class="font-title-lg text-title-lg text-secondary mb-sm">Incoming Level 2 Trauma</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant max-w-[250px] mb-md">
+                    ETA 8 minutes. Fall from height (&gt;20ft). Isolated head injury reported.
+                </div>
+<div class="flex gap-sm">
+<button class="bg-secondary text-on-secondary px-md py-sm rounded-lg font-label-md text-label-md shadow-sm hover:bg-secondary-container transition-colors">
+                        Assign Team
+                    </button>
+<button class="bg-surface text-on-surface border border-outline-variant px-md py-sm rounded-lg font-label-md text-label-md hover:bg-surface-container transition-colors">
+                        View EMS Report
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

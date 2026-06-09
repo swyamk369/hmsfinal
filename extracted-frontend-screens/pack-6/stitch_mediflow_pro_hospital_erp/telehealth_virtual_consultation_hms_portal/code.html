@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Telehealth Virtual Consultation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eff1f3",
+                        "outline-variant": "#c6c6cd",
+                        "surface-bright": "#f7f9fb",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "tertiary-container": "#002113",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-surface": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#009668",
+                        "secondary-container": "#2170e4",
+                        "surface-container-low": "#f2f4f6",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "secondary": "#0058be",
+                        "on-background": "#191c1e",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "inverse-primary": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary": "#000000",
+                        "surface-tint": "#565e74",
+                        "on-primary-container": "#7c839b",
+                        "surface-container": "#eceef0",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-variant": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full flex overflow-hidden bg-background text-on-surface font-body-md antialiased">
+<!-- Top App Bar (Suppressed for Contextual Focus, replacing with minimal header) -->
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full w-full">
+<!-- Minimal Consultation Header -->
+<header class="flex justify-between items-center h-[64px] px-layout-margin bg-surface border-b border-outline-variant shrink-0">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-2xl">vital_signs</span>
+<span class="font-headline-sm text-headline-sm text-primary">Telehealth Connect</span>
+<div class="h-4 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+<span class="font-label-md text-label-md text-error">Live</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-2">14:32</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="text-right">
+<p class="font-title-lg text-title-lg text-on-surface">Dr. Sarah Jenkins</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cardiology</p>
+</div>
+<img alt="Doctor Avatar" class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a female doctor in her mid-40s wearing a white clinical coat and a stethoscope around her neck. She has a warm, reassuring smile. The background is a clean, softly lit medical office environment. The image is bright and crisp, suitable for a healthcare application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbqNPxVTk1KCjjxZooifsiFq0RC8syhbescJ0tH_EHx04k7B-pp07uJ_3sMphju-sc6p0aWT-uWHBCVW1xbCZ05Pdaoq15xUx7DK7fOpEoRAHnS1eyLtL7wNDpKKb90MHLwnDwbGet58En14youKvSHpsXrHhyvTVyp5r5cyMBGB_N03InhDCrbOBVpRxp_U4grvWDB94LKmEW6U8ddCzHEzxV_UyKK6nqcR8e6P8Gyitg0xYzdTSqtIame2047aSOw_yq7EXEWGE"/>
+</div>
+</header>
+<!-- Consultation Workspace -->
+<div class="flex-1 flex overflow-hidden p-md gap-md">
+<!-- Left Column: Video & Controls -->
+<div class="flex-1 flex flex-col gap-md h-full min-w-[600px]">
+<!-- Video Container -->
+<div class="flex-1 relative rounded-xl overflow-hidden bg-surface-container-highest border border-outline-variant">
+<!-- Main Patient Video -->
+<img alt="Patient Video Feed" class="w-full h-full object-cover" data-alt="A clear, high-resolution video feed of a middle-aged male patient sitting in his well-lit living room. He is looking attentively at the camera, participating in a telehealth consultation. The lighting is natural and warm, providing a comforting yet clinical clarity to the image. The composition is a medium shot, typical of a professional video call setup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQAcvt3W7ZeNGvsSuDa7P3-72uapizJqqZUXoov3aGAAv0en0G5w_IXwPYyKfBk-nFZmiqiv9WX2vAee_tjuxDiDRRyFGcQ034bQWiqJ_-X4w32gBtJDaTlYn3xbkFU-3t1DI39aY4taJ4ys7pKUuETlby1K6oQ-awICs3sCrdoBsq7oJW9d3QmvaVP9q5r6k9idGDA3qYIbksxrjJb0xkwSVcXwosorAsk1eY7sF7h0CeDl56oQHTVKNUtm0aPvnFTMR6BTnWFpk"/>
+<!-- Patient Name Overlay -->
+<div class="absolute bottom-4 left-4 bg-surface/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-outline-variant/50">
+<span class="font-title-lg text-title-lg text-on-surface">Robert Evans, 54</span>
+</div>
+<!-- Doctor Self Preview -->
+<div class="absolute top-4 right-4 w-48 aspect-video rounded-lg overflow-hidden border-2 border-surface shadow-lg">
+<img alt="Self Preview" class="w-full h-full object-cover" data-alt="A small self-preview video feed of the same female doctor from the header. She is looking at the camera, actively engaged in the consultation. The framing is a tight headshot, well-lit with a neutral background, standard for a telehealth application picture-in-picture display." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Zv111_4Jy_4GtKjOnyprjhrrBWKXiZhKbClwHHwIVdYqHvHPqPX1ZbfoxXhoeu78Mwx2ezlS6DinRPqZltMJfLh_GEeq1QMVCcll1FuWf8_V6NbkOtX5rgOLzL0XiSHhwx8IxKBCuArVFxYKn45Cz2gVHFJKHjNJ07wxckcegfd9TYHsizQKc8HpQxOhboCpLr27bQlN7T8xsqPiL2pPrWpFB-DeQo1MbT2xZYrke0hTlf40_6K7aRGy1Z0vSFq-ybDc_P-n_6U"/>
+</div>
+<!-- Connection Quality -->
+<div class="absolute top-4 left-4 flex items-center gap-1 bg-surface/80 backdrop-blur-sm px-2 py-1 rounded-md border border-outline-variant/50">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">signal_cellular_alt</span>
+<span class="font-label-sm text-label-sm text-on-surface">Stable</span>
+</div>
+</div>
+<!-- Call Controls -->
+<div class="h-[72px] bg-surface rounded-xl border border-outline-variant flex items-center justify-center gap-lg shrink-0 px-lg">
+<button class="w-12 h-12 rounded-full flex items-center justify-center bg-surface-container-high hover:bg-surface-variant transition-colors border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface">mic</span>
+</button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center bg-surface-container-high hover:bg-surface-variant transition-colors border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface">videocam</span>
+</button>
+<button class="w-12 h-12 rounded-full flex items-center justify-center bg-surface-container-high hover:bg-surface-variant transition-colors border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface">present_to_all</span>
+</button>
+<div class="w-px h-8 bg-outline-variant mx-2"></div>
+<button class="h-12 px-6 rounded-full flex items-center gap-2 bg-error text-on-error hover:bg-error/90 transition-colors font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[20px]">call_end</span>
+                        End Session
+                    </button>
+</div>
+</div>
+<!-- Right Column: Clinical Tools -->
+<div class="w-[400px] flex flex-col gap-md h-full shrink-0">
+<!-- Patient Medical History Summary -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md flex flex-col shrink-0">
+<div class="flex items-center justify-between mb-sm">
+<h2 class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">history</span>
+                            Patient Overview
+                        </h2>
+<button class="text-secondary font-label-md text-label-md hover:underline">Full Chart</button>
+</div>
+<div class="grid grid-cols-2 gap-sm mb-md">
+<div class="bg-surface-container-low p-2 rounded-lg">
+<span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">DOB</span>
+<span class="block font-body-sm text-body-sm text-on-surface">Oct 12, 1969</span>
+</div>
+<div class="bg-surface-container-low p-2 rounded-lg">
+<span class="block font-label-sm text-label-sm text-on-surface-variant mb-1">MRN</span>
+<span class="block font-body-sm text-body-sm text-on-surface">#883-920-11</span>
+</div>
+</div>
+<div class="space-y-2">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Active Conditions</span>
+<div class="flex flex-wrap gap-1 mt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">Hypertension</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm">Type 2 Diabetes</span>
+</div>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Allergies</span>
+<div class="flex flex-wrap gap-1 mt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm border border-outline-variant">Penicillin</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Real-time Charting & E-Prescription Tabs -->
+<div class="flex-1 bg-surface rounded-xl border border-outline-variant flex flex-col overflow-hidden">
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant bg-surface-container-low">
+<button class="flex-1 py-3 text-center font-label-md text-label-md text-primary border-b-2 border-primary bg-surface">
+                            Charting
+                        </button>
+<button class="flex-1 py-3 text-center font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                            Rx &amp; Orders
+                        </button>
+</div>
+<!-- Charting Content -->
+<div class="flex-1 p-md flex flex-col gap-md overflow-y-auto">
+<!-- Vitals Quick Entry -->
+<div class="space-y-2">
+<h3 class="font-label-md text-label-md text-on-surface">Current Vitals</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex items-center gap-2 bg-surface-container-low p-2 rounded-lg border border-outline-variant/50 focus-within:border-secondary focus-within:ring-1 focus-within:ring-secondary">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">favorite</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 w-full font-body-sm text-body-sm" placeholder="BP" type="text" value="135/85"/>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low p-2 rounded-lg border border-outline-variant/50 focus-within:border-secondary focus-within:ring-1 focus-within:ring-secondary">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">monitor_heart</span>
+<input class="bg-transparent border-none p-0 focus:ring-0 w-full font-body-sm text-body-sm" placeholder="HR" type="text" value="78 bpm"/>
+</div>
+</div>
+</div>
+<!-- Notes Area -->
+<div class="flex-1 flex flex-col gap-2 min-h-[200px]">
+<h3 class="font-label-md text-label-md text-on-surface flex justify-between items-center">
+                                Clinical Notes
+                                <span class="font-label-sm text-label-sm text-on-surface-variant font-normal">SOAP Format</span>
+</h3>
+<textarea class="flex-1 w-full bg-surface border border-outline-variant rounded-lg p-3 font-body-sm text-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary resize-none" placeholder="Start typing notes here... Use '/' for templates.">Patient reports mild headache and dizziness over the last 3 days. Compliant with Lisinopril 10mg daily. Denies chest pain or shortness of breath. Home BP logs indicate slight elevation averaging 138/88.</textarea>
+</div>
+<!-- Diagnosis Quick Add -->
+<div class="space-y-2 shrink-0">
+<h3 class="font-label-md text-label-md text-on-surface">Diagnosis</h3>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant">search</span>
+<input class="w-full pl-9 pr-3 py-2 bg-surface border border-outline-variant rounded-lg font-body-sm text-body-sm focus:border-secondary focus:ring-1 focus:ring-secondary" placeholder="Search ICD-10 codes..." type="text"/>
+</div>
+<div class="mt-2 flex items-center justify-between p-2 rounded-lg bg-surface-container border border-outline-variant">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">I10</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Essential (primary) hypertension</span>
+</div>
+<button class="text-error hover:bg-error-container p-1 rounded transition-colors">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="p-md border-t border-outline-variant bg-surface-container-low mt-auto shrink-0 flex justify-end gap-3">
+<button class="px-4 py-2 rounded-lg border border-outline-variant font-label-md text-label-md text-on-surface hover:bg-surface-variant transition-colors bg-surface">Save Draft</button>
+<button class="px-4 py-2 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-secondary/90 transition-colors shadow-sm">Sign &amp; Finish</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

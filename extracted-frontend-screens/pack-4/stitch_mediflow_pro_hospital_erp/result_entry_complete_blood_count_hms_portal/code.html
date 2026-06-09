@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumina HMS Lab - Lab Result Entry Form</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary": "#000000",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-container": "#7c839b",
+                        "secondary-container": "#2170e4",
+                        "on-background": "#191c1e",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "surface-container": "#eceef0",
+                        "surface-container-high": "#e6e8ea",
+                        "on-secondary-fixed-variant": "#004395",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-tertiary-fixed": "#002113",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#fefcff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-tertiary-container": "#009668",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "outline": "#76777d",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "background": "#f7f9fb",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#002113",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-variant": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "inverse-primary": "#bec6e0",
+                        "surface": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "primary-container": "#131b2e",
+                        "error-container": "#ffdad6",
+                        "secondary": "#0058be",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#565e74",
+                        "surface-container-highest": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "layout-margin": "24px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex antialiased">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full py-md shadow-none bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline fixed left-0 top-0 w-[280px] z-20">
+<div class="px-md pb-md mb-sm border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container text-[18px]">medical_services</span>
+</div>
+<div>
+<h2 class="text-headline-sm font-headline-sm text-on-surface dark:text-inverse-on-surface">Core Laboratory</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ward A-4 Unit</p>
+</div>
+</div>
+<button class="mt-md w-full bg-error text-on-error py-2 px-4 rounded font-label-md text-label-md hover:bg-error-container hover:text-on-error-container transition-colors duration-200 ease-in-out flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">emergency</span>
+                Emergency Order
+            </button>
+</div>
+<nav class="flex-1 px-sm space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="biotech">biotech</span>
+                Specimen Collection
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container border-l-4 border-secondary font-label-md text-label-md transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="science">science</span>
+                Analysis
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="fact_check">fact_check</span>
+                Validation
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+                Archived Results
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="p-sm border-t border-outline-variant dark:border-outline space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="contact_support">contact_support</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 md:pl-[280px]">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-layout-margin h-12 sticky top-0 z-10 flat no shadows">
+<div class="flex items-center gap-md">
+<button class="md:hidden p-1 text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="text-title-lg font-title-lg text-primary dark:text-inverse-primary hidden md:block">Lumina HMS Lab</div>
+<div class="relative ml-4 hidden md:block">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="pl-8 pr-3 py-1 bg-surface-container-low border border-outline-variant rounded text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary w-64 text-on-surface placeholder:text-on-surface-variant font-body-sm text-body-sm" placeholder="Search..." type="text"/>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-md font-body-sm text-body-sm h-full">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors cursor-pointer active:opacity-80 flex h-full items-center" href="#">Dashboard</a>
+<a class="text-secondary dark:text-secondary-fixed border-b-2 border-secondary font-bold hover:text-secondary dark:hover:text-secondary-fixed transition-colors cursor-pointer active:opacity-80 flex h-full items-center" href="#">Work Queue</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors cursor-pointer active:opacity-80 flex h-full items-center" href="#">Inventory</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors cursor-pointer active:opacity-80 flex h-full items-center" href="#">Quality Control</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors cursor-pointer active:opacity-80 flex h-full items-center" href="#">Reports</a>
+</nav>
+<div class="flex items-center gap-3">
+<button class="p-1 text-on-surface-variant hover:text-secondary transition-colors cursor-pointer active:opacity-80 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-1 text-on-surface-variant hover:text-secondary transition-colors cursor-pointer active:opacity-80 hidden sm:block">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-7 h-7 rounded-full bg-primary-fixed-dim overflow-hidden ml-2 cursor-pointer border border-outline-variant">
+<img alt="Chief Lab Technician Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzCMsBj4OkNos2Z3W0QqY2cZdYaM6tl9w4yFgaww4N9sHcI60M-TYG0k0YMUptMH8gwyAmcRe83aPonn8GUjn3SlzTQ8QzPOURPi7hfcHJ4jDZUMzWITZegZGiYLgJ5payMNB9YpfLD5RxYQhaPsCbIYXW7nqfP7I811FuushX2I1IZbAUmsyN3Xpt4eKO5cVj6vPqfQ78P0D8Q1bML8nAhxOCJtZG9taFWveXfc3c5erqyMZd0V8liytHBng8qsuJghcatuEjKGQ"/>
+</div>
+</div>
+</header>
+<main class="flex-1 p-layout-margin overflow-y-auto">
+<!-- Content goes here -->
+<div class="max-w-5xl mx-auto space-y-xl">
+<!-- Patient & Order Header -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md">
+<div class="flex flex-col md:flex-row justify-between gap-md mb-md pb-md border-b border-outline-variant">
+<div class="flex items-start gap-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-headline-sm text-headline-sm shrink-0">
+                                JD
+                            </div>
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface m-0 leading-tight">John Doe</h1>
+<div class="flex flex-wrap gap-x-4 gap-y-1 mt-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">id_card</span> MRN: 987654321</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">cake</span> 45 yrs</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">male</span> Male</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:items-end font-body-sm text-body-sm text-on-surface-variant bg-surface-container-low p-sm rounded-lg border border-outline-variant border-dashed">
+<div class="font-label-md text-label-md text-on-surface mb-1">Order Details</div>
+<div><span class="font-medium text-on-surface">Order #:</span> ORD-2023-1142</div>
+<div><span class="font-medium text-on-surface">Ordered By:</span> Dr. Sarah Smith (Oncology)</div>
+<div><span class="font-medium text-on-surface">Priority:</span> <span class="text-error font-medium">STAT</span></div>
+</div>
+</div>
+<div class="flex justify-between items-center bg-surface-container py-2 px-3 rounded-lg border border-outline-variant">
+<div class="font-title-lg text-title-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">science</span>
+                            Complete Blood Count (CBC)
+                        </div>
+<div class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed px-2 py-1 rounded uppercase tracking-wider">
+                            In Progress
+                        </div>
+</div>
+</div>
+<!-- Alert Banner -->
+<div class="bg-error-container border border-error rounded-lg p-sm flex items-start gap-3 shadow-sm">
+<span class="material-symbols-outlined text-error mt-0.5">warning</span>
+<div>
+<h4 class="font-label-md text-label-md text-on-error-container mb-0.5">Critical Value Alert</h4>
+<p class="font-body-sm text-body-sm text-on-error-container opacity-90">Panic values require immediate verbal notification to the ordering physician. Document notification in notes.</p>
+</div>
+</div>
+<!-- Result Entry Form -->
+<div class="bg-surface border border-outline-variant rounded-xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+<th class="p-3 w-1/4">Test Name</th>
+<th class="p-3 w-1/4">Result Value</th>
+<th class="p-3 w-1/12">Unit</th>
+<th class="p-3 w-1/6">Ref. Range</th>
+<th class="p-3 w-1/4">Flag</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="p-3 align-top">
+<div class="font-medium text-on-surface">White Blood Cells (WBC)</div>
+</td>
+<td class="p-3 align-top relative">
+<div class="absolute right-6 top-5 w-1.5 h-1.5 bg-error rounded-full hidden"></div> <!-- Required dot placeholder if needed -->
+<input class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-on-surface" placeholder="e.g. 7.5" step="0.1" type="number"/>
+</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">x10^9/L</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">4.0 - 11.0</td>
+<td class="p-3 align-top">
+<select class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-on-surface appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2345464d%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_8px_center] bg-no-repeat pr-8">
+<option value="normal">Normal</option>
+<option value="high">High (H)</option>
+<option value="low">Low (L)</option>
+<option value="critical_high">Critical High (*H)</option>
+<option value="critical_low">Critical Low (*L)</option>
+</select>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="p-3 align-top">
+<div class="font-medium text-on-surface">Red Blood Cells (RBC)</div>
+</td>
+<td class="p-3 align-top relative">
+<input class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-on-surface" placeholder="e.g. 4.8" step="0.1" type="number"/>
+</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">x10^12/L</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">4.5 - 5.9</td>
+<td class="p-3 align-top">
+<select class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-on-surface appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2345464d%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_8px_center] bg-no-repeat pr-8">
+<option value="normal">Normal</option>
+<option value="high">High (H)</option>
+<option value="low">Low (L)</option>
+<option value="critical_high">Critical High (*H)</option>
+<option value="critical_low">Critical Low (*L)</option>
+</select>
+</td>
+</tr>
+<!-- Row 3 - Example of a pre-filled error state -->
+<tr class="hover:bg-surface-bright transition-colors group bg-error-container/10">
+<td class="p-3 align-top">
+<div class="font-medium text-on-surface">Hemoglobin (Hgb)</div>
+</td>
+<td class="p-3 align-top relative">
+<input class="w-full bg-surface border-2 border-error rounded px-2 py-1.5 focus:outline-none focus:ring-0 text-error font-medium" step="0.1" type="number" value="6.5"/>
+</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">g/dL</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">13.5 - 17.5</td>
+<td class="p-3 align-top">
+<select class="w-full bg-error/10 border border-error rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-error text-error font-medium appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ba1a1a%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_8px_center] bg-no-repeat pr-8">
+<option value="normal">Normal</option>
+<option value="high">High (H)</option>
+<option value="low">Low (L)</option>
+<option value="critical_high">Critical High (*H)</option>
+<option selected="" value="critical_low">Critical Low (*L)</option>
+</select>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="p-3 align-top">
+<div class="font-medium text-on-surface">Platelets (Plt)</div>
+</td>
+<td class="p-3 align-top relative">
+<input class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-on-surface" placeholder="e.g. 250" type="number"/>
+</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">x10^9/L</td>
+<td class="p-3 align-top text-on-surface-variant pt-4">150 - 450</td>
+<td class="p-3 align-top">
+<select class="w-full bg-surface border border-outline-variant rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-on-surface appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2345464d%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:16px_16px] bg-[right_8px_center] bg-no-repeat pr-8">
+<option value="normal">Normal</option>
+<option value="high">High (H)</option>
+<option value="low">Low (L)</option>
+<option value="critical_high">Critical High (*H)</option>
+<option value="critical_low">Critical Low (*L)</option>
+</select>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Notes Section -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md">
+<label class="block font-label-md text-label-md text-on-surface mb-sm" for="clinical-notes">Clinical Notes &amp; Comments</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg p-3 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary resize-y" id="clinical-notes" placeholder="Enter comments, verification notes, or details regarding panic value notifications..." rows="4"></textarea>
+</div>
+<!-- Actions -->
+<div class="flex justify-end gap-md pt-md border-t border-outline-variant pb-xl">
+<button class="px-6 py-2 rounded border border-outline text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+                        Cancel
+                    </button>
+<button class="px-6 py-2 rounded bg-surface-container-high text-on-surface font-label-md text-label-md hover:bg-surface-container-highest transition-colors border border-outline-variant">
+                        Save Draft
+                    </button>
+<button class="px-6 py-2 rounded bg-secondary text-on-secondary font-label-md text-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                        Submit for Verification
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

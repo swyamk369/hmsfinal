@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HMS - Medication Administration Chart</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config defined by Brand Guidelines -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#f2f4f6",
+                    "on-tertiary-fixed": "#002113",
+                    "surface-variant": "#e0e3e5",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#45464d",
+                    "surface-tint": "#565e74",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-dim": "#d8dadc",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "outline": "#76777d",
+                    "on-secondary-fixed-variant": "#004395",
+                    "surface-container-high": "#e6e8ea",
+                    "inverse-surface": "#2d3133",
+                    "primary-fixed": "#dae2fd",
+                    "on-error-container": "#93000a",
+                    "primary": "#000000",
+                    "tertiary": "#000000",
+                    "on-surface": "#191c1e",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed": "#6ffbbe",
+                    "on-primary-fixed": "#131b2e",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#001a42",
+                    "secondary-container": "#2170e4",
+                    "surface-container": "#eceef0",
+                    "surface": "#f7f9fb",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "secondary-fixed": "#d8e2ff",
+                    "primary-container": "#131b2e",
+                    "on-tertiary-container": "#009668",
+                    "surface-container-highest": "#e0e3e5",
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#f7f9fb",
+                    "outline-variant": "#c6c6cd",
+                    "secondary": "#0058be",
+                    "on-background": "#191c1e",
+                    "on-secondary-container": "#fefcff",
+                    "tertiary-container": "#002113",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-primary-container": "#7c839b",
+                    "inverse-primary": "#bec6e0",
+                    "background": "#f7f9fb",
+                    "error": "#ba1a1a",
+                    "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "layout-margin": "24px",
+                    "gutter": "16px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom scrollbar for timelines to keep UI clean */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen">
+<!-- Shared Component: SideNavBar -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col border-r border-outline-variant bg-surface w-[280px] hidden md:flex">
+<!-- Header -->
+<div class="px-lg py-layout-margin flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined">local_hospital</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary m-0">HMS Portal</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant m-0">General Hospital</p>
+</div>
+</div>
+<!-- CTA -->
+<div class="px-md mb-lg">
+<button class="w-full flex items-center justify-center gap-sm bg-secondary text-on-secondary font-label-md text-label-md py-sm px-md rounded-lg hover:bg-secondary-fixed hover:text-on-secondary-fixed transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+                New Admission
+            </button>
+</div>
+<!-- Nav Links -->
+<nav class="flex-1 overflow-y-auto hide-scrollbar px-md flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Active State: Context is Patient MAR -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-secondary font-bold border-l-[3px] border-secondary bg-surface-container-low transition-all duration-150" href="#">
+<span class="material-symbols-outlined fill-icon">person</span>
+<span class="font-label-md text-label-md">Patients</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Billing</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">biotech</span>
+<span class="font-label-md text-label-md">Lab Orders</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventory</span>
+</a>
+</nav>
+<!-- Footer Links -->
+<div class="p-md border-t border-outline-variant flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Shared Component: TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-[280px] z-30 flex justify-between items-center px-lg border-b border-outline-variant bg-surface-container-lowest h-16">
+<!-- Brand/Context Area -->
+<div class="flex items-center gap-lg">
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-title-lg text-title-lg font-black text-primary hidden sm:block">HMS Enterprise</div>
+<!-- Breadcrumbs / Secondary Nav -->
+<nav class="hidden md:flex gap-md ml-lg border-l border-outline-variant pl-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary cursor-pointer" href="#">Ward Selector</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary cursor-pointer" href="#">Reports</a>
+</nav>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-md">
+<!-- Global Search - Left aligned conceptually relative to trailing icons as per JSON -->
+<div class="hidden sm:flex relative items-center mr-md">
+<span class="material-symbols-outlined absolute left-sm text-on-surface-variant" style="font-size: 20px;">search</span>
+<input class="pl-xl pr-sm py-xs bg-surface-container-low border-none rounded-full font-body-sm text-body-sm focus:ring-2 focus:ring-secondary focus:ring-offset-2 w-48 transition-all" placeholder="Global Search" type="text"/>
+</div>
+<!-- Icon Actions -->
+<button class="text-on-surface-variant hover:text-secondary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<!-- Profile -->
+<div class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden ml-sm cursor-pointer hover:ring-2 hover:ring-secondary transition-all">
+<img alt="Doctor avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a female doctor wearing a white coat and stethoscope, set against a neutral, brightly lit clinical background. The image has a clean, high-resolution corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBd3XcIfl1yBMBz9RANUf-ded8f_01yEfTc6Kz0TsWJfJPgqq7zVO8LhMnaDYK5RxdBqLjmI9z3Fw8WOHObidSLyphvtLWlRakiersrKudgnzLvvwT_TPGujS7My4AoESLPCZWF2UoqJ5gMXzvoYYPFDlEG3LKhTMkIqzgEzVO9VPdwGMIA6PTIACdMSmWakFfA-Bby-A2pLwTj_X-9TeR7BNxWuTBL-106T1_Q0_M7pwH6uPkhV8NLvPOWnEV8FtfyZY0m7SZj2iM"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="md:ml-[280px] mt-16 p-md md:p-layout-margin min-h-[calc(100vh-64px)]">
+<!-- Context Header -->
+<div class="mb-md flex items-center text-on-surface-variant gap-xs">
+<span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
+<a class="font-label-md text-label-md hover:text-secondary" href="#">Back to Ward 4B</a>
+</div>
+<!-- Patient Header Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg mb-layout-margin flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md shadow-sm">
+<div class="flex items-center gap-lg">
+<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden border border-outline-variant shrink-0">
+<img alt="Patient photo" class="w-full h-full object-cover" data-alt="A clear, respectful ID-style photograph of an elderly male patient with grey hair. The lighting is soft and neutral, suitable for a medical record file." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnAWkZuPLuS5_M0TNqimnFg8TT_q37fV-5tIvU1sJMSeJPyropXOxKgApqtyhljQjFHd1Th15D3M6X7OLNPISTjiT6UvUhAXAbFZncKewxJGpLaJ8ysbrXb8khi5RlWbWarF4OPf-cssDyk4V-WvctJGQrsgCDf-Xm9kJaS1isdgK-o0Dab9eaOk5SgeeYi4UpVyjSQgBppTjypXpN8WfxflRM-KztObqradSauwEsokWrtx1Vkrr-PLYiL2vyUoap5w_Z1jGcmqQ"/>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-primary m-0 mb-xs">Robert Jenkins</h2>
+<div class="flex flex-wrap items-center gap-x-md gap-y-xs font-body-sm text-body-sm text-on-surface-variant">
+<span><strong class="font-medium">MRN:</strong> 884-921-00</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span><strong class="font-medium">DOB:</strong> 12/04/1952 (71y M)</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span><strong class="font-medium">Wt:</strong> 82kg</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span><strong class="font-medium">Admitted:</strong> Oct 24, 2023</span>
+</div>
+</div>
+</div>
+<!-- Critical Alerts -->
+<div class="bg-[#fef2f2] border border-[#fecaca] rounded-lg p-sm px-md flex items-start gap-sm max-w-sm">
+<span class="material-symbols-outlined text-[#dc2626] mt-[2px]" style="font-size: 20px;">warning</span>
+<div>
+<p class="font-label-sm text-label-sm text-[#991b1b] uppercase tracking-wider mb-[2px]">Known Allergies</p>
+<p class="font-body-sm text-body-sm text-[#7f1d1d] font-medium leading-tight">Penicillin (Anaphylaxis), Sulfa Drugs (Rash)</p>
+</div>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-layout-margin">
+<!-- Left Column: MAR Grid (Spans 8 cols on desktop) -->
+<div class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Medication List Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- MAR Header & Filters -->
+<div class="border-b border-outline-variant px-lg py-md flex flex-wrap items-center justify-between gap-md bg-surface-bright">
+<h3 class="font-title-lg text-title-lg text-primary m-0">Medication Administration</h3>
+<!-- Toggle Group -->
+<div class="flex bg-surface-container-low rounded-lg p-[2px] border border-outline-variant">
+<button class="px-md py-xs rounded-md bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm border border-outline-variant">Scheduled</button>
+<button class="px-md py-xs rounded-md text-on-surface-variant font-label-md text-label-md hover:text-secondary transition-colors">PRN (As Needed)</button>
+<button class="px-md py-xs rounded-md text-on-surface-variant font-label-md text-label-md hover:text-secondary transition-colors">Stat / Once</button>
+</div>
+</div>
+<!-- Timeline Header Row -->
+<div class="flex border-b border-outline-variant bg-surface text-on-surface-variant font-label-sm text-label-sm py-sm px-lg items-center">
+<div class="w-1/3 pr-md">Medication Order</div>
+<div class="w-2/3 flex justify-between px-md relative">
+<!-- Timeline indicators -->
+<div class="text-center absolute left-0 w-8 -ml-4">08:00</div>
+<div class="text-center absolute left-1/4 w-8 -ml-4">12:00</div>
+<div class="text-center absolute left-2/4 w-8 -ml-4">16:00</div>
+<div class="text-center absolute left-3/4 w-8 -ml-4 text-secondary font-bold">20:00<br/><span class="text-[9px] font-normal text-on-surface-variant">NOW</span></div>
+<div class="text-center absolute right-0 w-8 -mr-4">00:00</div>
+<!-- Timeline background track -->
+<div class="absolute top-1/2 left-0 right-0 h-[2px] bg-outline-variant -z-10 mt-[6px]"></div>
+</div>
+</div>
+<!-- Medication List Items -->
+<div class="flex flex-col divide-y divide-surface-variant">
+<!-- Order Item 1 -->
+<div class="flex flex-col sm:flex-row py-md px-lg hover:bg-surface-bright transition-colors group">
+<!-- Drug Info -->
+<div class="sm:w-1/3 pr-md mb-sm sm:mb-0">
+<div class="font-title-lg text-title-lg text-primary leading-tight">Metoprolol Tartrate</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs">25 mg, PO, BID</div>
+<div class="font-label-sm text-label-sm text-secondary mt-xs flex items-center gap-[2px]">
+<span class="material-symbols-outlined" style="font-size: 14px;">info</span> Indicates parameters: Hold if HR &lt; 60
+                                </div>
+</div>
+<!-- Timeline Grid -->
+<div class="sm:w-2/3 relative flex items-center h-12">
+<!-- Track -->
+<div class="absolute w-full h-[1px] bg-surface-variant top-1/2 -translate-y-1/2 z-0"></div>
+<!-- Doses -->
+<div class="absolute w-full h-full flex items-center z-10">
+<!-- Given Dose -->
+<button class="absolute left-0 w-8 h-8 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant border border-tertiary-fixed-dim flex items-center justify-center -ml-4 shadow-sm hover:brightness-95 transition-all group-hover:-translate-y-[2px]" title="Given by S. Smith at 08:05">
+<span class="material-symbols-outlined" style="font-size: 18px;">check</span>
+</button>
+<!-- Due Dose (Now) -->
+<button class="absolute left-3/4 w-8 h-8 rounded bg-surface-container-lowest border-2 border-secondary text-secondary flex items-center justify-center -ml-4 shadow-sm hover:bg-secondary-fixed transition-all group-hover:-translate-y-[2px] pulse-subtle" title="Due Now: 20:00">
+<span class="font-label-md text-label-md">20</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Order Item 2 -->
+<div class="flex flex-col sm:flex-row py-md px-lg hover:bg-surface-bright transition-colors group">
+<div class="sm:w-1/3 pr-md mb-sm sm:mb-0">
+<div class="font-title-lg text-title-lg text-primary leading-tight">Apixaban (Eliquis)</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs">5 mg, PO, BID</div>
+</div>
+<div class="sm:w-2/3 relative flex items-center h-12">
+<div class="absolute w-full h-[1px] bg-surface-variant top-1/2 -translate-y-1/2 z-0"></div>
+<div class="absolute w-full h-full flex items-center z-10">
+<!-- Held Dose -->
+<button class="absolute left-[12%] w-8 h-8 rounded bg-error-container text-on-error-container border border-[#fca5a5] flex items-center justify-center -ml-4 shadow-sm hover:brightness-95 transition-all group-hover:-translate-y-[2px]" title="Held by Dr. Orders at 09:00. Reason: Pending Lab Results.">
+<span class="material-symbols-outlined" style="font-size: 18px;">block</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Order Item 3 -->
+<div class="flex flex-col sm:flex-row py-md px-lg hover:bg-surface-bright transition-colors group">
+<div class="sm:w-1/3 pr-md mb-sm sm:mb-0">
+<div class="font-title-lg text-title-lg text-primary leading-tight flex items-center gap-xs">
+                                    Insulin Glargine
+                                    <span class="px-xs py-[2px] bg-[#fef3c7] text-[#92400e] border border-[#fde68a] rounded font-label-sm text-[10px] uppercase">High Alert</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs">15 units, SubQ, Daily</div>
+</div>
+<div class="sm:w-2/3 relative flex items-center h-12">
+<div class="absolute w-full h-[1px] bg-surface-variant top-1/2 -translate-y-1/2 z-0"></div>
+<div class="absolute w-full h-full flex items-center z-10">
+<!-- Due Dose (Future) -->
+<button class="absolute left-3/4 w-8 h-8 rounded bg-surface-container border border-outline border-dashed text-on-surface-variant flex items-center justify-center -ml-4 hover:border-solid hover:border-secondary transition-all group-hover:-translate-y-[2px]" title="Due: 20:00">
+<span class="font-label-md text-label-md">20</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- MAR Footer Actions -->
+<div class="border-t border-outline-variant bg-surface-bright p-md flex justify-end gap-md">
+<button class="px-md py-sm rounded-lg border border-outline-variant text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors">Print MAR</button>
+<button class="px-md py-sm rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-[#1f2937] transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-size: 18px;">fact_check</span>
+                            Review Selected Orders
+                        </button>
+</div>
+</div>
+</div>
+<!-- Right Column: Context Panels (Spans 4 cols on desktop) -->
+<div class="lg:col-span-4 flex flex-col gap-lg">
+<!-- Add Vitals Panel (Bento block) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="bg-surface-container-low px-md py-sm border-b border-outline-variant flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">monitor_heart</span>
+<h4 class="font-title-lg text-title-lg text-primary m-0">Quick Vitals</h4>
+</div>
+<div class="p-md">
+<form class="grid grid-cols-2 gap-sm">
+<div class="col-span-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-[2px]">Blood Pressure (mmHg)</label>
+<div class="flex items-center gap-xs">
+<input class="w-full bg-surface border border-outline-variant rounded-md px-sm py-xs font-body-sm text-body-sm focus:ring-1 focus:ring-secondary focus:border-secondary transition-all text-center" placeholder="Sys" type="text"/>
+<span class="text-outline-variant font-light">/</span>
+<input class="w-full bg-surface border border-outline-variant rounded-md px-sm py-xs font-body-sm text-body-sm focus:ring-1 focus:ring-secondary focus:border-secondary transition-all text-center" placeholder="Dia" type="text"/>
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-[2px]">Heart Rate (bpm)</label>
+<input class="w-full bg-surface border border-outline-variant rounded-md px-sm py-xs font-body-sm text-body-sm focus:ring-1 focus:ring-secondary focus:border-secondary transition-all text-right" placeholder="--" type="number"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-[2px]">SpO2 (%)</label>
+<input class="w-full bg-surface border border-outline-variant rounded-md px-sm py-xs font-body-sm text-body-sm focus:ring-1 focus:ring-secondary focus:border-secondary transition-all text-right" placeholder="--" type="number"/>
+</div>
+<button class="col-span-2 mt-sm bg-secondary-fixed text-on-secondary-fixed-variant font-label-md text-label-md py-sm rounded-md border border-[#bfdbfe] hover:bg-[#bfdbfe] transition-colors w-full flex items-center justify-center gap-xs" type="button">
+<span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
+                                Log Vitals
+                            </button>
+</form>
+</div>
+</div>
+<!-- Nursing Progress Notes Timeline -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm flex flex-col flex-1 min-h-[300px]">
+<div class="px-md py-sm border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h4 class="font-title-lg text-title-lg text-primary m-0 flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline" style="font-size: 20px;">history_edu</span>
+                            Progress Notes
+                        </h4>
+<button class="text-secondary hover:text-secondary-fixed font-label-sm text-label-sm uppercase tracking-wide">View All</button>
+</div>
+<div class="p-md flex-1 overflow-y-auto hide-scrollbar relative">
+<!-- Vertical line for timeline -->
+<div class="absolute left-[27px] top-md bottom-md w-[2px] bg-surface-variant z-0"></div>
+<div class="flex flex-col gap-md relative z-10">
+<!-- Note 1 -->
+<div class="flex gap-md relative">
+<div class="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-secondary flex items-center justify-center shrink-0 mt-[2px] bg-white">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+</div>
+<div class="pb-sm border-b border-surface-variant flex-1">
+<div class="flex justify-between items-baseline mb-xs">
+<span class="font-label-md text-label-md text-primary">Shift Assessment</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">14:30 Today</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 leading-snug">Patient resting comfortably. Pain rated 2/10. Incision site clean, dry, and intact. Vitals stable. Awaiting rounding physician.</p>
+<div class="mt-xs font-label-sm text-label-sm text-outline flex items-center gap-[4px]">
+<span class="material-symbols-outlined" style="font-size: 14px;">edit_square</span>
+                                        S. Smith, RN
+                                    </div>
+</div>
+</div>
+<!-- Note 2 -->
+<div class="flex gap-md relative">
+<div class="w-6 h-6 rounded-full bg-surface-container-lowest border-2 border-outline-variant flex items-center justify-center shrink-0 mt-[2px] bg-white"></div>
+<div class="pb-sm border-b border-surface-variant flex-1">
+<div class="flex justify-between items-baseline mb-xs">
+<span class="font-label-md text-label-md text-primary">Medication Held</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">09:05 Today</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 leading-snug">Apixaban held per verbal order from Dr. Chen pending morning coags.</p>
+<div class="mt-xs font-label-sm text-label-sm text-outline flex items-center gap-[4px]">
+<span class="material-symbols-outlined" style="font-size: 14px;">edit_square</span>
+                                        M. Johnson, RN
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-sm border-t border-outline-variant bg-surface-container-low">
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant rounded-full pl-md pr-xl py-sm font-body-sm text-body-sm focus:ring-1 focus:ring-secondary focus:border-secondary transition-all" placeholder="Quick add note..." type="text"/>
+<button class="absolute right-sm top-1/2 -translate-y-1/2 text-secondary hover:text-secondary-fixed p-xs rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

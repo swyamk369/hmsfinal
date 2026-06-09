@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MedBill Pro - Collect Payment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#191c1e",
+                        "on-primary-container": "#7c839b",
+                        "secondary-container": "#2170e4",
+                        "outline": "#76777d",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-container": "#002113",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#131b2e",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-fixed": "#001a42",
+                        "background": "#f7f9fb",
+                        "surface": "#f7f9fb",
+                        "surface-tint": "#565e74",
+                        "on-tertiary-container": "#009668",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-background": "#191c1e",
+                        "surface-container": "#eceef0",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-primary": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "on-surface-variant": "#45464d",
+                        "on-secondary-fixed-variant": "#004395",
+                        "tertiary": "#000000",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary-container": "#fefcff",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e6e8ea",
+                        "secondary-fixed": "#d8e2ff",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-error": "#ffffff",
+                        "secondary": "#0058be",
+                        "surface-variant": "#e0e3e5",
+                        "primary": "#000000",
+                        "inverse-on-surface": "#eff1f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "layout-margin": "24px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; color: #191c1e; }
+        .payment-method-radio:checked + label {
+            border-color: #0058be;
+            background-color: rgba(0, 88, 190, 0.05);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNav -->
+<nav class="bg-surface-container-low dark:bg-surface-container-lowest text-secondary dark:text-secondary-fixed-dim font-label-md text-label-md fixed left-0 top-0 h-screen w-[280px] flat no shadows flex flex-col border-r border-outline-variant dark:border-outline hidden md:flex z-10">
+<div class="px-layout-margin py-lg border-b border-outline-variant">
+<h1 class="font-headline-sm text-headline-sm text-on-surface dark:text-on-surface-variant flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">local_hospital</span>
+                City General
+            </h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Accounts Department</p>
+</div>
+<div class="flex-1 overflow-y-auto py-md flex flex-col gap-xs px-sm">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-150 cursor-pointer group rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-150 cursor-pointer group rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
+<span>Bill Creation</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-secondary dark:text-secondary-fixed-dim border-l-4 border-secondary bg-secondary-container/10 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-150 cursor-pointer group rounded-r-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span>Payment Collection</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-150 cursor-pointer group rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span>Service Catalog</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-150 cursor-pointer group rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span>Reports</span>
+</a>
+</div>
+<div class="border-t border-outline-variant p-sm flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-150 cursor-pointer group rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">contact_support</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant dark:text-outline hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-150 cursor-pointer group rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-[280px] min-w-0">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface-dim text-primary dark:text-primary-fixed-dim font-body-sm text-body-sm w-full h-16 flat no shadows flex justify-between items-center px-layout-margin border-b border-outline-variant dark:border-outline sticky top-0 z-20">
+<div class="flex items-center gap-md">
+<h2 class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed-dim md:hidden">MedBill Pro</h2>
+<div class="hidden md:flex items-center gap-sm text-on-surface-variant">
+<span class="hover:text-secondary cursor-pointer transition-colors">Payment Collection</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-semibold text-secondary">Collect Payment</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-xl pr-sm py-sm bg-surface-container-low border border-outline-variant rounded-full text-body-sm font-body-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary w-64" placeholder="Search bills..." type="text"/>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 rounded-full text-on-surface-variant hidden sm:block">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-xs hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-200 cursor-pointer active:scale-95 rounded-full text-on-surface-variant hidden sm:block">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="ml-sm h-8 w-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant cursor-pointer">
+<img alt="Finance Manager Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate finance manager, softly lit against a neutral grey background. The subject is wearing modern business casual attire. The lighting is balanced and clean, conveying trust and competence suitable for a healthcare administration interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuUZ-p34ZZAlUJ2XOwQdktvL50MhjaB-JSgdC9FKZHyWnjRB8M1Bu3MAIbB25EUiZnxJJFp4FDnCw8cfITisHk-LdH73HbuXkFEuow8tFl1Yp6_oEolmcZ75DJzaAJdti-9c9kBvbDGd43uKS4JAEmKc29mh21_9Ff8n_QGYbIabWayS1Vwn1qKUq4ZwC0ospuTXWEy18U60vIFvJ70WGK2M9D8YV8qlP3Hn5aoVI4I_oNf9Dv8e8gS1V60DUYT1kt7HJ7nFBUNiA"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-layout-margin overflow-y-auto">
+<div class="max-w-4xl mx-auto space-y-md" id="payment-interface">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Collect Payment</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Process payment for Bill #B-2023-4921</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="px-sm py-xs bg-error-container text-on-error-container font-label-md text-label-md rounded-DEFAULT uppercase tracking-wide">Unpaid</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Left Column: Bill Details -->
+<div class="lg:col-span-1 space-y-md">
+<!-- Patient Summary Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
+<h3 class="font-title-lg text-title-lg text-on-surface mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary">person</span> Patient Details
+                            </h3>
+<div class="space-y-sm font-body-sm text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Name</span>
+<span class="font-semibold text-on-surface">Eleanor Richards</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">MRN</span>
+<span class="text-on-surface">MRN-847291</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Admit Date</span>
+<span class="text-on-surface">Oct 12, 2023</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Ward</span>
+<span class="text-on-surface">Cardiac Step-Down</span>
+</div>
+</div>
+</div>
+<!-- Outstanding Balance Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-secondary/5 rounded-bl-full -z-10"></div>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-sm">Outstanding Balance</h3>
+<div class="font-display-lg text-display-lg text-secondary mb-sm">$4,250.00</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm border-t border-outline-variant pt-sm mt-sm">
+<span class="text-on-surface-variant">Total Billed</span>
+<span class="text-on-surface">$5,500.00</span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm mt-xs">
+<span class="text-on-surface-variant">Insurance Paid</span>
+<span class="text-on-surface text-on-tertiary-container">-$1,250.00</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Payment Form -->
+<div class="lg:col-span-2">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg h-full">
+<form class="space-y-lg" id="payment-form">
+<!-- Payment Method -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-sm">Payment Method <span class="text-error inline-block w-2 h-2 rounded-full bg-error ml-xs"></span></label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-sm">
+<div class="relative">
+<input checked="" class="payment-method-radio sr-only" id="method_cc" name="payment_method" type="radio"/>
+<label class="flex flex-col items-center justify-center p-sm border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors h-24 text-center" for="method_cc">
+<span class="material-symbols-outlined text-2xl mb-xs text-on-surface-variant">credit_card</span>
+<span class="font-label-md text-label-md text-on-surface">Credit Card</span>
+</label>
+</div>
+<div class="relative">
+<input class="payment-method-radio sr-only" id="method_cash" name="payment_method" type="radio"/>
+<label class="flex flex-col items-center justify-center p-sm border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors h-24 text-center" for="method_cash">
+<span class="material-symbols-outlined text-2xl mb-xs text-on-surface-variant">payments</span>
+<span class="font-label-md text-label-md text-on-surface">Cash</span>
+</label>
+</div>
+<div class="relative">
+<input class="payment-method-radio sr-only" id="method_upi" name="payment_method" type="radio"/>
+<label class="flex flex-col items-center justify-center p-sm border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors h-24 text-center" for="method_upi">
+<span class="material-symbols-outlined text-2xl mb-xs text-on-surface-variant">qr_code_scanner</span>
+<span class="font-label-md text-label-md text-on-surface">UPI / Wallet</span>
+</label>
+</div>
+<div class="relative">
+<input class="payment-method-radio sr-only" id="method_insurance" name="payment_method" type="radio"/>
+<label class="flex flex-col items-center justify-center p-sm border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors h-24 text-center" for="method_insurance">
+<span class="material-symbols-outlined text-2xl mb-xs text-on-surface-variant">health_and_safety</span>
+<span class="font-label-md text-label-md text-on-surface">Add'l Insurance</span>
+</label>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+<!-- Amount to Pay -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="amount">Amount to Pay <span class="text-error inline-block w-2 h-2 rounded-full bg-error ml-xs"></span></label>
+<div class="relative">
+<span class="absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-[18px]">attach_money</span>
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent font-semibold" id="amount" step="0.01" type="number" value="4250.00"/>
+</div>
+</div>
+<!-- Transaction ID -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="transaction_id">Transaction ID / Reference</label>
+<input class="w-full px-sm py-sm bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent placeholder:text-outline" id="transaction_id" placeholder="Optional for cash" type="text"/>
+</div>
+</div>
+<!-- Notes -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs" for="notes">Payment Notes</label>
+<textarea class="w-full px-sm py-sm bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm font-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent placeholder:text-outline" id="notes" placeholder="Enter any specific notes regarding this transaction..." rows="2"></textarea>
+</div>
+<!-- Actions -->
+<div class="flex justify-end gap-sm pt-sm border-t border-outline-variant">
+<button class="px-md py-sm rounded-lg border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors" type="button">Cancel</button>
+<button class="px-md py-sm rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-colors flex items-center gap-xs" id="btn-confirm" type="button">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                        Confirm Payment
+                                    </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Success State (Hidden by default) -->
+<div class="hidden max-w-2xl mx-auto mt-xl text-center" id="success-state">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl flex flex-col items-center shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05)]">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed-dim/20 flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-4xl text-on-tertiary-fixed-variant" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs">Payment Successful</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Transaction <span class="font-semibold">#TRX-9982-AC</span> has been recorded for Bill #B-2023-4921.</p>
+<div class="flex gap-sm">
+<button class="px-md py-sm rounded-lg border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                            Return to Bill
+                        </button>
+<button class="px-md py-sm rounded-lg bg-surface-tint text-on-primary font-label-md text-label-md hover:bg-inverse-surface transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">print</span>
+                            Print Receipt
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        document.getElementById('btn-confirm').addEventListener('click', function() {
+            // Simple interaction: Hide form, show success state
+            document.getElementById('payment-interface').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+            document.getElementById('success-state').classList.add('flex', 'flex-col');
+        });
+    </script>
+</body></html>

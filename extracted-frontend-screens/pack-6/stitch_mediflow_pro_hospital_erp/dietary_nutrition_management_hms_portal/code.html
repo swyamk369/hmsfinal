@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dietary &amp; Nutrition Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eff1f3",
+                        "outline-variant": "#c6c6cd",
+                        "surface-bright": "#f7f9fb",
+                        "primary-container": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "tertiary-container": "#002113",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "on-surface": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#009668",
+                        "secondary-container": "#2170e4",
+                        "surface-container-low": "#f2f4f6",
+                        "outline": "#76777d",
+                        "on-surface-variant": "#45464d",
+                        "secondary": "#0058be",
+                        "on-background": "#191c1e",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "inverse-primary": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary": "#000000",
+                        "surface-tint": "#565e74",
+                        "on-primary-container": "#7c839b",
+                        "surface-container": "#eceef0",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9fb",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "primary": "#000000",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-variant": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "layout-margin": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "title-lg": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+        
+        /* Custom Scrollbar for dense areas */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.surface-variant'); border-radius: theme('borderRadius.full'); }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.outline'); }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex">
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden md:flex flex-col h-full py-md fixed left-0 top-0 w-[280px] bg-surface-container-low border-r border-outline-variant z-40">
+<div class="px-layout-margin mb-xl">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary icon-fill text-3xl" data-icon="restaurant_menu">restaurant_menu</span>
+<div>
+<h1 class="text-headline-sm font-headline-sm font-bold text-primary">HMS Analytics</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">City General Hospital</p>
+</div>
+</div>
+</div>
+<ul class="flex flex-col flex-grow w-full gap-sm">
+<li>
+<a class="flex items-center gap-md text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Executive Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-secondary font-bold border-l-4 border-secondary pl-4 py-3 bg-secondary-container/10 scale-[0.99] transition-transform duration-100" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Clinical Quality</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Financial Performance</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Staff Productivity</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md text-on-surface-variant font-medium pl-5 py-3 hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">System Settings</span>
+</a>
+</li>
+</ul>
+<div class="px-layout-margin mt-auto">
+<button class="w-full bg-surface-container-high text-on-surface font-label-md text-label-md py-sm rounded-lg hover:bg-surface-variant transition-colors border border-outline-variant flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span> Export Report
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-h-screen ml-0 md:ml-[280px]">
+<!-- TopAppBar (from JSON) -->
+<header class="flex justify-between items-center h-[64px] px-layout-margin bg-surface border-b border-outline-variant sticky top-0 z-30 w-full">
+<div class="flex items-center gap-md">
+<div class="md:hidden">
+<button class="p-xs rounded-full hover:bg-surface-container-high text-on-surface-variant"><span class="material-symbols-outlined" data-icon="menu">menu</span></button>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface hidden md:block">Analytics Central</h2>
+</div>
+<!-- Search Bar (on_left in JSON, putting it middle-ish for balance) -->
+<div class="flex-1 max-w-md mx-layout-margin hidden sm:block relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-10 pr-4 font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" placeholder="Search patients, diets, rooms..." type="text"/>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-sm">
+<button class="p-xs rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-secondary transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-secondary transition-colors ml-xs">
+<span class="material-symbols-outlined icon-fill text-[28px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Canvas Body -->
+<div class="flex-1 p-layout-margin max-w-7xl mx-auto w-full flex flex-col gap-lg">
+<!-- Context Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-sm mb-xs">
+<div>
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-on-surface-variant mb-1">
+<span class="hover:underline cursor-pointer">Clinical Operations</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface font-medium">Dietary Management</span>
+</div>
+<h1 class="text-display-lg font-display-lg text-on-surface">Nutrition &amp; Meal Ops</h1>
+</div>
+<!-- Ward Selector Dropdown (Simulated) -->
+<div class="flex items-center gap-xs">
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Current Ward</span>
+<button class="flex items-center gap-xs bg-surface border border-outline-variant rounded-lg px-3 py-1.5 hover:bg-surface-container-low transition-colors shadow-sm">
+<span class="text-label-md font-label-md text-on-surface">North Wing (Cardio)</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant" data-icon="arrow_drop_down">arrow_drop_down</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Metrics Row (Spans full width) -->
+<div class="col-span-1 lg:col-span-12 grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<!-- Metric Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col justify-between h-[120px]">
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-on-surface-variant">Trays Ordered</span>
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="receipt_long">receipt_long</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface">142</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant">+12% from yesterday</div>
+</div>
+</div>
+<!-- Metric Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col justify-between h-[120px]">
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-on-surface-variant">In Preparation</span>
+<span class="material-symbols-outlined text-[#d97706] text-[20px]" data-icon="skillet">skillet</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface">38</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant">Avg prep time: 14m</div>
+</div>
+</div>
+<!-- Metric Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col justify-between h-[120px]">
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-on-surface-variant">Out for Delivery</span>
+<span class="material-symbols-outlined text-secondary-container text-[20px]" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-surface">84</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant">3 carts active</div>
+</div>
+</div>
+<!-- Metric Card 4 (Alert) -->
+<div class="bg-error-container border border-error/20 rounded-xl p-md flex flex-col justify-between h-[120px]">
+<div class="flex justify-between items-start">
+<span class="text-label-md font-label-md text-on-error-container">Critical Restrictions</span>
+<span class="material-symbols-outlined text-error text-[20px]" data-icon="warning">warning</span>
+</div>
+<div>
+<div class="text-display-lg font-display-lg text-on-error-container">7</div>
+<div class="text-label-sm font-label-sm text-on-error-container/80">Require manual review</div>
+</div>
+</div>
+</div>
+<!-- Main Data Grid: Patient Meal Requirements (Spans 8 cols) -->
+<div class="col-span-1 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col h-[500px]">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h3 class="text-title-lg font-title-lg text-on-surface">Patient Diet Orders</h3>
+<div class="flex gap-xs">
+<button class="p-xs rounded hover:bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[20px]" data-icon="filter_list">filter_list</span></button>
+<button class="p-xs rounded hover:bg-surface-container-low text-on-surface-variant"><span class="material-symbols-outlined text-[20px]" data-icon="sort">sort</span></button>
+</div>
+</div>
+<div class="overflow-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-lowest sticky top-0 z-10 shadow-sm">
+<tr>
+<th class="py-2 px-md text-label-sm font-label-sm text-on-surface-variant border-b border-outline-variant font-medium">Room/Bed</th>
+<th class="py-2 px-md text-label-sm font-label-sm text-on-surface-variant border-b border-outline-variant font-medium">Patient</th>
+<th class="py-2 px-md text-label-sm font-label-sm text-on-surface-variant border-b border-outline-variant font-medium">Diet Type</th>
+<th class="py-2 px-md text-label-sm font-label-sm text-on-surface-variant border-b border-outline-variant font-medium">Restrictions / Alerts</th>
+<th class="py-2 px-md text-label-sm font-label-sm text-on-surface-variant border-b border-outline-variant font-medium">Tray Status</th>
+<th class="py-2 px-md text-label-sm font-label-sm text-on-surface-variant border-b border-outline-variant font-medium w-10"></th>
+</tr>
+</thead>
+<tbody class="text-body-sm font-body-sm text-on-surface divide-y divide-outline-variant/50">
+<!-- Row 1 (NPO) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px] bg-error-container/10">
+<td class="py-2 px-md font-medium">204-A</td>
+<td class="py-2 px-md">Miller, J.</td>
+<td class="py-2 px-md"><span class="font-medium text-error">NPO</span></td>
+<td class="py-2 px-md">
+<div class="flex gap-xs">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-error/10 text-error text-[10px] font-semibold uppercase tracking-wider border border-error/20"><span class="material-symbols-outlined text-[12px]" data-icon="water_drop">water_drop</span> Clear Liq Only</span>
+</div>
+</td>
+<td class="py-2 px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface-variant text-on-surface-variant text-label-sm font-label-sm">Held</span>
+</td>
+<td class="py-2 px-md"><button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span></button></td>
+</tr>
+<!-- Row 2 (Diabetic) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px]">
+<td class="py-2 px-md font-medium">205-B</td>
+<td class="py-2 px-md">Davis, R.</td>
+<td class="py-2 px-md">Consistent Carb</td>
+<td class="py-2 px-md">
+<div class="flex gap-xs flex-wrap">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-sm bg-secondary/10 text-secondary text-[10px] font-semibold uppercase tracking-wider border border-secondary/20">Diabetic</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-sm bg-surface-container-high text-on-surface-variant text-[10px] font-semibold uppercase tracking-wider border border-outline-variant/50">No Grapefruit</span>
+</div>
+</td>
+<td class="py-2 px-md">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#dcfce7] text-[#166534] text-label-sm font-label-sm"><span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span> Delivered</span>
+</td>
+<td class="py-2 px-md"><button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span></button></td>
+</tr>
+<!-- Row 3 (Low Sodium) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px]">
+<td class="py-2 px-md font-medium">208-A</td>
+<td class="py-2 px-md">Chen, W.</td>
+<td class="py-2 px-md">Cardiac</td>
+<td class="py-2 px-md">
+<div class="flex gap-xs">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-sm bg-[#fef9c3] text-[#854d0e] text-[10px] font-semibold uppercase tracking-wider border border-[#fef08a]">Low Sodium (2g)</span>
+</div>
+</td>
+<td class="py-2 px-md">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#e0f2fe] text-[#075985] text-label-sm font-label-sm"><span class="material-symbols-outlined text-[14px]" data-icon="local_shipping">local_shipping</span> Out for Del</span>
+</td>
+<td class="py-2 px-md"><button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span></button></td>
+</tr>
+<!-- Row 4 (Regular) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px]">
+<td class="py-2 px-md font-medium">210-C</td>
+<td class="py-2 px-md">Smith, K.</td>
+<td class="py-2 px-md">Regular</td>
+<td class="py-2 px-md">
+<span class="text-on-surface-variant text-[11px] italic">None</span>
+</td>
+<td class="py-2 px-md">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#fef3c7] text-[#92400e] text-label-sm font-label-sm"><span class="material-symbols-outlined text-[14px]" data-icon="skillet">skillet</span> Prepared</span>
+</td>
+<td class="py-2 px-md"><button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span></button></td>
+</tr>
+<!-- Row 5 (Renal) -->
+<tr class="hover:bg-surface-container-lowest transition-colors h-[48px]">
+<td class="py-2 px-md font-medium">211-A</td>
+<td class="py-2 px-md">Johnson, L.</td>
+<td class="py-2 px-md">Renal</td>
+<td class="py-2 px-md">
+<div class="flex gap-xs flex-wrap">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-sm bg-[#f3e8ff] text-[#6b21a8] text-[10px] font-semibold uppercase tracking-wider border border-[#e9d5ff]">Low Phos</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-sm bg-[#f3e8ff] text-[#6b21a8] text-[10px] font-semibold uppercase tracking-wider border border-[#e9d5ff]">Low K+</span>
+</div>
+</td>
+<td class="py-2 px-md">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm"><span class="material-symbols-outlined text-[14px]" data-icon="receipt">receipt</span> Ordered</span>
+</td>
+<td class="py-2 px-md"><button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span></button></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-sm border-t border-outline-variant bg-surface-bright flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant">
+<span>Showing 5 of 42 patients</span>
+<div class="flex gap-xs">
+<button class="px-2 py-1 rounded border border-outline-variant hover:bg-surface-container-low disabled:opacity-50" disabled="">&lt; Prev</button>
+<button class="px-2 py-1 rounded border border-outline-variant hover:bg-surface-container-low">Next &gt;</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Planner & Queue (Spans 4 cols) -->
+<div class="col-span-1 lg:col-span-4 flex flex-col gap-gutter h-[500px]">
+<!-- Daily Menu Planner Compact -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex-1 overflow-hidden flex flex-col">
+<div class="flex justify-between items-center mb-sm">
+<h3 class="text-title-lg font-title-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]" data-icon="menu_book">menu_book</span>
+                                Daily Menu
+                            </h3>
+<span class="text-label-sm font-label-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded">Lunch</span>
+</div>
+<div class="flex-1 overflow-y-auto pr-1">
+<div class="space-y-sm">
+<!-- Menu Item Card -->
+<div class="bg-surface border border-outline-variant rounded-lg p-sm hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-label-md font-label-md text-on-surface group-hover:text-secondary transition-colors">Baked Lemon Herb Salmon</h4>
+<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant">Standard</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant line-clamp-2">Served with quinoa pilaf and steamed asparagus.</p>
+<div class="mt-2 flex gap-2">
+<span class="text-[10px] text-on-surface-variant flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]" data-icon="bolt">bolt</span> 450 kcal</span>
+<span class="text-[10px] text-on-surface-variant flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]" data-icon="science">science</span> 32g Pro</span>
+</div>
+</div>
+<!-- Menu Item Card -->
+<div class="bg-surface border border-outline-variant rounded-lg p-sm hover:border-secondary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-label-md font-label-md text-on-surface group-hover:text-secondary transition-colors">Vegetable Lentil Stew</h4>
+<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#fef9c3] text-[#854d0e] border border-[#fef08a]">Cardiac/Renal</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant line-clamp-2">Low sodium broth, root vegetables, pureed option available.</p>
+<div class="mt-2 flex gap-2">
+<span class="text-[10px] text-on-surface-variant flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]" data-icon="bolt">bolt</span> 320 kcal</span>
+<span class="text-[10px] text-error flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]" data-icon="warning">warning</span> Contains Soy</span>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-sm text-secondary font-label-md text-label-md py-1.5 hover:bg-secondary/5 rounded transition-colors border border-transparent hover:border-secondary/20">View Full Planner</button>
+</div>
+<!-- Tray Prep Queue -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md h-[200px] flex flex-col">
+<div class="flex justify-between items-center mb-sm">
+<h3 class="text-label-md font-label-md text-on-surface font-semibold uppercase tracking-wider">Kitchen Queue (North)</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="drag_indicator">drag_indicator</span>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-lg p-xs border border-outline-variant/50 relative overflow-hidden flex flex-col gap-xs">
+<!-- Draggable Queue Item (Simulated) -->
+<div class="bg-surface rounded shadow-sm p-2 flex justify-between items-center border border-outline-variant cursor-grab active:cursor-grabbing">
+<div class="flex items-center gap-2">
+<div class="w-2 h-8 rounded-full bg-secondary"></div>
+<div>
+<div class="text-label-md font-label-md text-on-surface leading-tight">Cart 3 (Diabetic)</div>
+<div class="text-[10px] text-on-surface-variant">12 trays</div>
+</div>
+</div>
+<div class="text-label-sm font-label-sm text-secondary font-medium">Next</div>
+</div>
+<div class="bg-surface rounded shadow-sm p-2 flex justify-between items-center border border-outline-variant cursor-grab active:cursor-grabbing opacity-70">
+<div class="flex items-center gap-2">
+<div class="w-2 h-8 rounded-full bg-outline"></div>
+<div>
+<div class="text-label-md font-label-md text-on-surface leading-tight">Cart 4 (Regular)</div>
+<div class="text-[10px] text-on-surface-variant">18 trays</div>
+</div>
+</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant font-medium">In 15m</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

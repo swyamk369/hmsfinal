@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Print-ready Invoice - MedBill Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#191c1e",
+                    "on-primary-container": "#7c839b",
+                    "secondary-container": "#2170e4",
+                    "outline": "#76777d",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-container": "#002113",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#131b2e",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "outline-variant": "#c6c6cd",
+                    "on-secondary-fixed": "#001a42",
+                    "background": "#f7f9fb",
+                    "surface": "#f7f9fb",
+                    "surface-tint": "#565e74",
+                    "on-tertiary-container": "#009668",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-background": "#191c1e",
+                    "surface-container": "#eceef0",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "primary-fixed-dim": "#bec6e0",
+                    "inverse-primary": "#bec6e0",
+                    "surface-dim": "#d8dadc",
+                    "inverse-surface": "#2d3133",
+                    "surface-container-highest": "#e0e3e5",
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#f7f9fb",
+                    "on-error-container": "#93000a",
+                    "primary-container": "#131b2e",
+                    "on-tertiary-fixed": "#002113",
+                    "on-surface-variant": "#45464d",
+                    "on-secondary-fixed-variant": "#004395",
+                    "tertiary": "#000000",
+                    "primary-fixed": "#dae2fd",
+                    "on-secondary-container": "#fefcff",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#e6e8ea",
+                    "secondary-fixed": "#d8e2ff",
+                    "tertiary-fixed": "#6ffbbe",
+                    "on-error": "#ffffff",
+                    "secondary": "#0058be",
+                    "surface-variant": "#e0e3e5",
+                    "primary": "#000000",
+                    "inverse-on-surface": "#eff1f3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "layout-margin": "24px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        @media print {
+            body {
+                background-color: white !important;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+            .watermark {
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex items-center justify-center py-layout-margin">
+<!-- Print Action Bar (Hidden on print) -->
+<div class="fixed top-0 left-0 right-0 bg-surface-container-highest border-b border-outline-variant p-md flex justify-between items-center no-print z-50">
+<div class="flex items-center gap-sm text-on-surface">
+<span class="material-symbols-outlined font-[24px]">arrow_back</span>
+<span class="font-label-md text-label-md cursor-pointer">Back to Billing</span>
+</div>
+<button class="bg-secondary text-on-secondary font-label-md text-label-md px-md py-sm rounded flex items-center gap-sm hover:bg-secondary/90 transition-colors" onclick="window.print()">
+<span class="material-symbols-outlined font-[18px]">print</span>
+            Print Invoice
+        </button>
+</div>
+<!-- Invoice Container -->
+<div class="print-container bg-surface-container-lowest max-w-[800px] w-full mx-auto p-xl mt-16 lg:mt-0 relative overflow-hidden bg-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05)] border border-outline-variant">
+<!-- Watermark -->
+<div class="watermark absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-45 text-[120px] font-display-lg text-outline-variant/10 pointer-events-none select-none z-0">
+            PAID
+        </div>
+<div class="relative z-10">
+<!-- Header section -->
+<div class="flex justify-between items-start mb-xl pb-md border-b-2 border-outline-variant/50">
+<div class="flex items-center gap-md">
+<!-- Logo placeholder -->
+<div class="w-16 h-16 bg-surface-container-high rounded flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined font-[32px]">local_hospital</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface mb-xs">City General</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Accounts Department</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">123 Medical Center Blvd</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Metro City, MC 90210</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Phone: (555) 123-4567</p>
+</div>
+</div>
+<div class="text-right">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-sm">INVOICE</h2>
+<div class="inline-block bg-tertiary-fixed-dim/20 text-on-tertiary-fixed-variant px-sm py-xs rounded font-label-md text-label-md mb-md border border-tertiary-fixed-dim/50">
+                        PAID IN FULL
+                    </div>
+</div>
+</div>
+<!-- Meta Data Row -->
+<div class="grid grid-cols-2 gap-lg mb-xl">
+<!-- Patient Details -->
+<div class="p-md bg-surface-container-low rounded border border-outline-variant/30">
+<h3 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-sm">Bill To</h3>
+<p class="font-title-lg text-title-lg text-on-surface mb-xs">John Doe</p>
+<div class="grid grid-cols-[auto_1fr] gap-x-sm gap-y-xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="font-medium text-on-surface">MRN:</span>
+<span>#MRN-847291</span>
+<span class="font-medium text-on-surface">DOB:</span>
+<span>1985-04-12</span>
+<span class="font-medium text-on-surface">Phone:</span>
+<span>(555) 987-6543</span>
+<span class="font-medium text-on-surface">Address:</span>
+<span>456 Elm St, Apt 2B<br/>Metro City, MC 90211</span>
+</div>
+</div>
+<!-- Invoice Details -->
+<div class="p-md bg-surface-container-low rounded border border-outline-variant/30">
+<h3 class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-sm">Invoice Details</h3>
+<div class="grid grid-cols-[auto_1fr] gap-x-sm gap-y-sm font-body-sm text-body-sm text-on-surface-variant">
+<span class="font-medium text-on-surface">Invoice No:</span>
+<span class="text-right">INV-2023-1045</span>
+<span class="font-medium text-on-surface">Date Issued:</span>
+<span class="text-right">Oct 24, 2023</span>
+<span class="font-medium text-on-surface">Date of Service:</span>
+<span class="text-right">Oct 22, 2023</span>
+<span class="font-medium text-on-surface">Attending:</span>
+<span class="text-right">Dr. Sarah Jenkins</span>
+</div>
+</div>
+</div>
+<!-- Line Items Table -->
+<div class="mb-xl">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b-2 border-outline-variant/50">
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase w-16">Item</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase">Description / Service Code</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase text-right w-24">Qty</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase text-right w-32">Unit Price</th>
+<th class="py-sm px-xs font-label-md text-label-md text-on-surface-variant uppercase text-right w-32">Total</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant/30">
+<tr>
+<td class="py-md px-xs text-on-surface-variant">01</td>
+<td class="py-md px-xs">
+<div class="font-medium">Emergency Room Visit (Level 3)</div>
+<div class="font-body-sm text-body-sm text-outline mt-xs">Code: 99283</div>
+</td>
+<td class="py-md px-xs text-right">1</td>
+<td class="py-md px-xs text-right">$450.00</td>
+<td class="py-md px-xs text-right font-medium">$450.00</td>
+</tr>
+<tr>
+<td class="py-md px-xs text-on-surface-variant">02</td>
+<td class="py-md px-xs">
+<div class="font-medium">Comprehensive Metabolic Panel</div>
+<div class="font-body-sm text-body-sm text-outline mt-xs">Code: 80053</div>
+</td>
+<td class="py-md px-xs text-right">1</td>
+<td class="py-md px-xs text-right">$120.00</td>
+<td class="py-md px-xs text-right font-medium">$120.00</td>
+</tr>
+<tr>
+<td class="py-md px-xs text-on-surface-variant">03</td>
+<td class="py-md px-xs">
+<div class="font-medium">CT Scan - Head/Brain w/o contrast</div>
+<div class="font-body-sm text-body-sm text-outline mt-xs">Code: 70450</div>
+</td>
+<td class="py-md px-xs text-right">1</td>
+<td class="py-md px-xs text-right">$850.00</td>
+<td class="py-md px-xs text-right font-medium">$850.00</td>
+</tr>
+<tr>
+<td class="py-md px-xs text-on-surface-variant">04</td>
+<td class="py-md px-xs">
+<div class="font-medium">IV Fluids (Normal Saline)</div>
+<div class="font-body-sm text-body-sm text-outline mt-xs">Code: J7030</div>
+</td>
+<td class="py-md px-xs text-right">2</td>
+<td class="py-md px-xs text-right">$45.00</td>
+<td class="py-md px-xs text-right font-medium">$90.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Summary Section -->
+<div class="flex justify-end mb-xl">
+<div class="w-1/2 border-t border-outline-variant pt-sm">
+<div class="flex justify-between py-xs font-body-sm text-body-sm text-on-surface-variant">
+<span>Subtotal</span>
+<span>$1,510.00</span>
+</div>
+<div class="flex justify-between py-xs font-body-sm text-body-sm text-on-surface-variant">
+<span>Insurance Adjustment (BlueCross)</span>
+<span class="text-error">-$850.00</span>
+</div>
+<div class="flex justify-between py-xs font-body-sm text-body-sm text-on-surface-variant">
+<span>Patient Discount (10%)</span>
+<span class="text-error">-$66.00</span>
+</div>
+<div class="flex justify-between py-sm mt-sm border-t-2 border-outline-variant/50 font-title-lg text-title-lg text-on-surface">
+<span>Patient Responsibility</span>
+<span>$594.00</span>
+</div>
+<div class="flex justify-between py-xs font-body-sm text-body-sm text-on-tertiary-fixed-variant bg-tertiary-fixed-dim/10 px-sm rounded mt-xs">
+<span>Amount Paid (Oct 24, 2023)</span>
+<span>-$594.00</span>
+</div>
+<div class="flex justify-between py-sm mt-xs font-headline-sm text-headline-sm text-on-surface bg-surface-container-high px-sm rounded">
+<span>Balance Due</span>
+<span>$0.00</span>
+</div>
+</div>
+</div>
+<!-- Footer / Terms -->
+<div class="border-t border-outline-variant/50 pt-md text-center">
+<p class="font-label-sm text-label-sm text-outline mb-xs uppercase tracking-wider">Terms &amp; Conditions</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-[600px] mx-auto text-xs">
+                    Please make all checks payable to City General. Accounts not paid within 30 days are subject to a 1.5% monthly finance charge. If you have questions regarding this bill, please contact our Accounts Department at (555) 123-4567 during normal business hours. Thank you for trusting us with your care.
+                </p>
+</div>
+</div>
+</div>
+</body></html>
