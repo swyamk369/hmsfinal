@@ -139,7 +139,12 @@ export class PatientService {
           take: 50,
           include: { items: true },
         }),
-        s.db.labOrder.findMany({ where: { patientId: id }, orderBy: { createdAt: 'desc' }, take: 50 }),
+        s.db.labOrder.findMany({
+          where: { patientId: id },
+          orderBy: { createdAt: 'desc' },
+          take: 50,
+          include: { items: { include: { results: { orderBy: { recordedAt: 'desc' } } } } },
+        }),
         s.db.allergy.findMany({ where: { patientId: id } }),
         s.db.medicalHistory.findMany({ where: { patientId: id }, orderBy: { recordedAt: 'desc' } }),
         s.db.consent.findMany({ where: { patientId: id }, orderBy: { grantedAt: 'desc' } }),

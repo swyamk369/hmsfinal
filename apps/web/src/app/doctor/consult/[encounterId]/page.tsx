@@ -8,6 +8,8 @@ import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
 import { opdApi, type EncounterDetail } from '@/lib/opd';
+import { getActiveMembership } from '@/lib/access';
+import { labApi, type LabOrder, type LabTestCatalog } from '@/lib/lab';
 import { ageFromDob, formatDateTime } from '@/lib/format';
 import {
   Button,
@@ -25,12 +27,15 @@ import {
   cx,
 } from '@/components/ui';
 
-const TABS = ['History', 'Vitals', 'Diagnosis', 'Notes', 'Prescription', 'Follow-up'] as const;
+const TABS = ['History', 'Vitals', 'Diagnosis', 'Notes', 'Prescription', 'Lab', 'Follow-up'] as const;
 type Tab = (typeof TABS)[number];
 
 function Consult({ id }: { id: string }) {
-  const { activeTenantId } = useAuth();
+  const { activeTenantId, profile } = useAuth();
   const t = activeTenantId!;
+  const membership = getActiveMembership(profile, activeTenantId);
+  const hasLab = membership?.modules.includes('LAB') ?? false;
+  const canLabOrder = membership?.permissions.includes('lab.order') ?? false;
   const router = useRouter();
   const toast = useToast();
   const [enc, setEnc] = useState<EncounterDetail | null>(null);
@@ -202,6 +207,9 @@ function Consult({ id }: { id: string }) {
           {tab === 'Diagnosis' && <DiagnosisTab enc={enc} canEdit={inProgress} onSaved={load} />}
           {tab === 'Notes' && <NotesTab enc={enc} canEdit={inProgress} onSaved={load} />}
           {tab === 'Prescription' && <PrescriptionTab enc={enc} canEdit={inProgress} onSaved={load} />}
+          {tab === 'Lab' && (
+            <LabTab encounterId={enc.id} tenantId={t} hasLab={hasLab} canOrder={canLabOrder && inProgress} />
+          )}
           {tab === 'Follow-up' && (
             <Section title="Follow-up">
               <div className="px-5 py-4 text-body-sm">
@@ -231,6 +239,149 @@ function Consult({ id }: { id: string }) {
         }}
       />
     </>
+  );
+}
+
+function LabTab({
+  encounterId,
+  tenantId,
+  hasLab,
+  canOrder,
+}: {
+  encounterId: string;
+  tenantId: string;
+  hasLab: boolean;
+  canOrder: boolean;
+}) {
+  const toast = useToast();
+  const [orders, setOrders] = useState<LabOrder[] | null>(null);
+  const [catalog, setCatalog] = useState<LabTestCatalog[]>([]);
+  const [picked, setPicked] = useState<Set<string>>(new Set());
+  const [notes, setNotes] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    if (!hasLab) return;
+    setErr(null);
+    try {
+      const o = await labApi.encounterOrders(tenantId, encounterId);
+      setOrders(o);
+    } catch (e) {
+      setErr((e as Error).message);
+    }
+  }, [tenantId, encounterId, hasLab]);
+
+  useEffect(() => {
+    void load();
+    if (hasLab && canOrder) labApi.catalog(tenantId).then(setCatalog).catch(() => setCatalog([]));
+  }, [load, hasLab, canOrder, tenantId]);
+
+  if (!hasLab) {
+    return (
+      <EmptyState
+        title="Lab module not enabled"
+        hint="This hospital's plan does not include the Laboratory module. Upgrade to order tests."
+        icon={AlertTriangle}
+      />
+    );
+  }
+
+  function toggle(idv: string) {
+    setPicked((prev) => {
+      const next = new Set(prev);
+      next.has(idv) ? next.delete(idv) : next.add(idv);
+      return next;
+    });
+  }
+
+  async function order() {
+    if (picked.size === 0) {
+      toast.error('Select at least one test.');
+      return;
+    }
+    const tests = catalog.filter((c) => picked.has(c.id)).map((c) => ({ testId: c.id, testName: c.name }));
+    setBusy(true);
+    try {
+      await labApi.orderFromEncounter(tenantId, encounterId, { notes: notes.trim() || undefined, tests });
+      toast.success('Lab order placed.');
+      setPicked(new Set());
+      setNotes('');
+      await load();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {err && <ErrorState message={err} />}
+
+      {canOrder && (
+        <div className="rounded-lg border border-line p-4">
+          <div className="mb-2 text-title-md text-ink">Order lab tests</div>
+          {catalog.length === 0 ? (
+            <p className="text-body-sm text-ink-soft">No lab tests configured in the catalog.</p>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+                {catalog.map((c) => (
+                  <label key={c.id} className="flex items-center gap-2 rounded px-2 py-1.5 text-body-sm hover:bg-canvas">
+                    <input type="checkbox" checked={picked.has(c.id)} onChange={() => toggle(c.id)} />
+                    <span className="text-ink">{c.name}</span>
+                    <span className="ml-auto text-label-sm text-ink-soft">{c.code}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="mt-3 flex items-end gap-3">
+                <FormField label="Notes" >
+                  <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional" />
+                </FormField>
+                <Button icon={Plus} loading={busy} disabled={picked.size === 0} onClick={order}>
+                  Place order
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {orders === null && <Spinner label="Loading lab orders…" />}
+      {orders !== null && orders.length === 0 && <EmptyState title="No lab orders for this visit" />}
+      {orders !== null &&
+        orders.map((o) => (
+          <div key={o.id} className="rounded-lg border border-line p-4">
+            <div className="mb-2 flex items-center justify-between">
+              <Link href={`/lab/orders/${o.id}`} className="text-title-md text-ink hover:text-primary">
+                {o.items.map((i) => i.testName).join(', ') || 'Lab order'}
+              </Link>
+              <StatusChip status={o.status} />
+            </div>
+            <ul className="space-y-1 text-body-sm">
+              {o.items.map((it) => {
+                const r = it.results[0];
+                return (
+                  <li key={it.id} className="flex items-center justify-between">
+                    <span className="text-ink-muted">{it.testName}</span>
+                    {r ? (
+                      <span className="flex items-center gap-2">
+                        <span className="text-ink">
+                          {r.value ?? '—'} {r.unit}
+                        </span>
+                        <StatusChip status={r.isVerified ? 'VERIFIED' : r.abnormalFlag} />
+                      </span>
+                    ) : (
+                      <span className="text-label-sm text-ink-soft">Pending</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+    </div>
   );
 }
 

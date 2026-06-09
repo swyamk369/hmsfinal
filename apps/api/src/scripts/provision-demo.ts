@@ -17,6 +17,34 @@ async function dept(tenantId: string, name: string) {
   return found ?? platformDb.department.create({ data: { tenantId, name, type: 'CLINICAL' } });
 }
 
+// Lab test catalog + matching LAB service-catalog rows (so ordering a test can
+// append a priced line item to an open encounter bill). Idempotent.
+const LAB_TESTS = [
+  { code: 'CBC', name: 'Complete Blood Count', specimenType: 'Blood (EDTA)', price: 30000 },
+  { code: 'LIPID', name: 'Lipid Profile', specimenType: 'Serum', price: 60000 },
+  { code: 'GLUC-F', name: 'Fasting Blood Glucose', specimenType: 'Plasma (Fluoride)', price: 15000 },
+  { code: 'LFT', name: 'Liver Function Test', specimenType: 'Serum', price: 75000 },
+  { code: 'TSH', name: 'Thyroid Stimulating Hormone', specimenType: 'Serum', price: 45000 },
+];
+
+async function seedLabCatalog(tenantId: string) {
+  for (const t of LAB_TESTS) {
+    const existing = await platformDb.labTestCatalog.findFirst({ where: { tenantId, code: t.code } });
+    if (!existing) {
+      await platformDb.labTestCatalog.create({
+        data: { tenantId, code: t.code, name: t.name, specimenType: t.specimenType, price: t.price },
+      });
+    }
+    const svc = await platformDb.serviceCatalog.findFirst({ where: { tenantId, code: `LAB-${t.code}` } });
+    if (!svc) {
+      await platformDb.serviceCatalog.create({
+        data: { tenantId, code: `LAB-${t.code}`, name: t.name, type: 'LAB', price: t.price },
+      });
+    }
+  }
+  console.log(`  ✓ ${LAB_TESTS.length} lab tests + matching LAB service items`);
+}
+
 async function main(): Promise<void> {
   if (!firebaseConfigured()) {
     console.error('Firebase is not configured.');
@@ -33,6 +61,7 @@ async function main(): Promise<void> {
 
   const medicine = await dept(tenant.id, 'General Medicine');
   const nursing = await dept(tenant.id, 'Nursing');
+  await seedLabCatalog(tenant.id);
 
   const users: Array<{
     role: string;

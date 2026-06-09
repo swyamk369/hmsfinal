@@ -80,6 +80,25 @@ export function forTenant(tenantId: string): TenantClient {
   return client;
 }
 
+/** Prisma transaction client (no extension) used inside tenantTransaction(). */
+export type TenantTx = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0];
+
+/**
+ * Runs `fn` inside a single interactive transaction on the RLS-enforced app
+ * client, with `app.current_tenant_id` set once for the whole transaction.
+ * Every query through `tx` is therefore tenant-scoped AND atomic — if `fn`
+ * throws, the entire transaction rolls back. Use for multi-step writes that
+ * must be all-or-nothing (e.g. pharmacy dispense: stock deduction + ledger +
+ * bill). Still honours tenant isolation (non-owner role → FORCE RLS).
+ */
+export function tenantTransaction<T>(tenantId: string, fn: (tx: TenantTx) => Promise<T>): Promise<T> {
+  if (!tenantId) throw new Error('tenantTransaction() called without a tenantId');
+  return appBase.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
+    return fn(tx);
+  });
+}
+
 export async function disconnectPrisma(): Promise<void> {
   await Promise.all([platformBase.$disconnect(), appBase.$disconnect()]);
 }

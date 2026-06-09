@@ -33,6 +33,7 @@ const TABS = [
   'Visits',
   'Appointments',
   'Prescriptions',
+  'Lab orders',
   'Bills',
   'Allergies',
   'History',
@@ -197,6 +198,44 @@ function PatientDetail({ id }: { id: string }) {
                     {it.drugName} {it.dosage ? `· ${it.dosage}` : ''} {it.frequency ? `· ${it.frequency}` : ''}
                   </li>
                 ))}
+              </ul>
+            </li>
+          )}
+        />
+      )}
+
+      {tab === 'Lab orders' && (
+        <ListSection
+          empty="No lab orders yet."
+          rows={data.labOrders}
+          render={(o: any) => (
+            <li key={o.id} className="px-5 py-3">
+              <div className="flex items-center justify-between">
+                <Link href={`/lab/orders/${o.id}`} className="font-medium text-ink hover:text-primary">
+                  {(o.items ?? []).map((i: any) => i.testName).join(', ') || 'Lab order'}
+                </Link>
+                <StatusChip status={o.status} />
+              </div>
+              <div className="mt-1 text-label-sm text-ink-soft">{formatDateTime(o.createdAt)}</div>
+              <ul className="mt-1 space-y-0.5 text-body-sm text-ink-muted">
+                {(o.items ?? []).map((it: any) => {
+                  const r = (it.results ?? [])[0];
+                  return (
+                    <li key={it.id} className="flex items-center justify-between">
+                      <span>{it.testName}</span>
+                      {r ? (
+                        <span className="flex items-center gap-2">
+                          <span className="text-ink">
+                            {r.value ?? '—'} {r.unit ?? ''}
+                          </span>
+                          <StatusChip status={r.isVerified ? 'VERIFIED' : r.abnormalFlag} />
+                        </span>
+                      ) : (
+                        <span className="text-label-sm text-ink-soft">Pending</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </li>
           )}
