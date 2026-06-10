@@ -5,7 +5,11 @@ const nextConfig = {
   // production container image. No effect on `next dev`.
   output: 'standalone',
   // Monorepo root so file tracing resolves workspace deps correctly in standalone.
-  outputFileTracingRoot: new URL('../../', import.meta.url).pathname,
+  // In Next 14 this lives under `experimental` (promoted to top-level only in Next 15);
+  // placing it at the top level here is silently ignored and warns on every start.
+  experimental: {
+    outputFileTracingRoot: new URL('../../', import.meta.url).pathname,
+  },
   transpilePackages: ['@hms/shared'],
   eslint: {
     // Lint is run explicitly via `pnpm lint`; don't fail production builds on it.

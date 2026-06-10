@@ -23,8 +23,10 @@ import { InventoryModule } from './inventory/inventory.module';
 import { PharmacyModule } from './pharmacy/pharmacy.module';
 import { IpdModule } from './ipd/ipd.module';
 import { InsuranceModule } from './insurance/insurance.module';
+import { FinanceModule } from './finance/finance.module';
 import { ReportsModule } from './reports/reports.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { OperationsModule } from './operations/operations.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -51,8 +53,10 @@ import { HealthModule } from './health/health.module';
     PharmacyModule,
     IpdModule,
     InsuranceModule,
+    FinanceModule,
     ReportsModule,
     NotificationsModule,
+    OperationsModule,
     HealthModule,
   ],
   providers: [

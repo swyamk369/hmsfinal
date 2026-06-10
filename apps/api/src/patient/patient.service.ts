@@ -178,6 +178,243 @@ export class PatientService {
     };
   }
 
+  async journey(ctx: RequestContext, id: string) {
+    const s = this.scope(ctx);
+    const patient = await this.assertPatient(s, id);
+    const now = new Date();
+
+    const [
+      activeAppointment,
+      activeEncounter,
+      activeAdmission,
+      pendingLabOrders,
+      pendingPrescriptions,
+      pendingCharges,
+      openBills,
+      activeClaim,
+      documentCount,
+    ] = await Promise.all([
+      s.db.appointment.findFirst({
+        where: {
+          patientId: id,
+          status: { in: ['SCHEDULED', 'CHECKED_IN'] as any },
+        },
+        orderBy: { scheduledAt: 'asc' },
+      }),
+      s.db.encounter.findFirst({
+        where: {
+          patientId: id,
+          status: { in: ['CHECKED_IN', 'IN_PROGRESS'] as any },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      s.db.admission.findFirst({
+        where: { patientId: id, status: 'ADMITTED' as any },
+        include: { bed: { include: { ward: true } } },
+        orderBy: { admittedAt: 'desc' },
+      }),
+      s.db.labOrder.findMany({
+        where: { patientId: id, status: { in: ['ORDERED', 'SAMPLE_COLLECTED', 'PROCESSING'] as any } },
+        orderBy: { createdAt: 'asc' },
+        take: 10,
+        include: { items: true },
+      }),
+      s.db.prescription.findMany({
+        where: { encounter: { patientId: id }, status: 'FINALIZED' as any },
+        orderBy: { finalizedAt: 'asc' },
+        take: 10,
+        include: { items: true },
+      }),
+      s.db.billableCharge.findMany({
+        where: { patientId: id, status: 'PENDING' as any },
+        orderBy: { createdAt: 'asc' },
+        take: 10,
+      }),
+      s.db.bill.findMany({
+        where: { patientId: id, status: { in: ['UNPAID', 'PARTIAL'] as any } },
+        orderBy: { createdAt: 'asc' },
+        take: 10,
+        include: { payments: true, refunds: true },
+      }),
+      s.db.insuranceClaim.findFirst({
+        where: {
+          bill: { patientId: id },
+          status: { in: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'PARTIALLY_APPROVED', 'REJECTED'] as any },
+        },
+        include: { bill: true, patientPolicy: { include: { provider: true } } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      s.db.patientDocument.count({ where: { patientId: id } }),
+    ]);
+
+    const blockers: Array<{ type: string; message: string; href: string; priority: 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL' }> = [];
+    if (pendingLabOrders.length > 0) {
+      blockers.push({
+        type: 'LAB',
+        message: `${pendingLabOrders.length} lab order${pendingLabOrders.length === 1 ? '' : 's'} still in progress`,
+        href: '/lab',
+        priority: 'HIGH',
+      });
+    }
+    if (pendingPrescriptions.length > 0) {
+      blockers.push({
+        type: 'PHARMACY',
+        message: `${pendingPrescriptions.length} finalized prescription${pendingPrescriptions.length === 1 ? '' : 's'} awaiting pharmacy follow-up`,
+        href: '/pharmacy',
+        priority: 'NORMAL',
+      });
+    }
+    if (openBills.length > 0) {
+      blockers.push({
+        type: 'BILLING',
+        message: `${openBills.length} unpaid or partial bill${openBills.length === 1 ? '' : 's'} needs settlement`,
+        href: `/finance/bills/${openBills[0].id}`,
+        priority: 'HIGH',
+      });
+    }
+    if (pendingCharges.length > 0) {
+      blockers.push({
+        type: 'FINANCE',
+        message: `${pendingCharges.length} pending charge${pendingCharges.length === 1 ? '' : 's'} not billed yet`,
+        href: `/finance/patient-accounts/${id}`,
+        priority: 'HIGH',
+      });
+    }
+    if (activeClaim?.status === 'REJECTED') {
+      blockers.push({
+        type: 'INSURANCE',
+        message: activeClaim.rejectionReason || 'Insurance claim was rejected and needs correction',
+        href: `/insurance/claims/${activeClaim.id}`,
+        priority: 'HIGH',
+      });
+    }
+    if (activeAdmission?.expectedDischargeAt && new Date(activeAdmission.expectedDischargeAt).getTime() < now.getTime()) {
+      blockers.push({
+        type: 'IPD',
+        message: 'Expected discharge date has passed',
+        href: `/ipd/admissions/${activeAdmission.id}`,
+        priority: 'NORMAL',
+      });
+    }
+
+    const current =
+      activeAdmission
+        ? {
+            status: 'ADMITTED',
+            module: 'IPD',
+            location: `${activeAdmission.bed?.ward?.name ?? 'Ward'} / ${activeAdmission.bed?.bedNumber ?? 'Bed'}`,
+            href: `/ipd/admissions/${activeAdmission.id}`,
+            label: 'Patient is admitted',
+          }
+        : activeEncounter
+          ? {
+              status: activeEncounter.status,
+              module: 'OPD',
+              location: activeEncounter.status === 'IN_PROGRESS' ? 'Doctor consultation' : 'OPD queue',
+              href: activeEncounter.status === 'IN_PROGRESS' ? `/doctor/consult/${activeEncounter.id}` : '/doctor',
+              label: activeEncounter.status === 'IN_PROGRESS' ? 'Consultation in progress' : 'Waiting for consultation',
+            }
+          : activeAppointment
+            ? {
+                status: activeAppointment.status,
+                module: 'SCHEDULING',
+                location: activeAppointment.scheduledAt ? new Date(activeAppointment.scheduledAt).toISOString() : null,
+                href: '/opd/appointments',
+                label: activeAppointment.status === 'CHECKED_IN' ? 'Checked in for appointment' : 'Appointment scheduled',
+              }
+            : blockers.length > 0
+              ? {
+                  status: 'ATTENTION_NEEDED',
+                  module: blockers[0].type,
+                  location: null,
+                  href: blockers[0].href,
+                  label: blockers[0].message,
+                }
+              : {
+                  status: 'STABLE',
+                  module: 'PATIENT',
+                  location: null,
+                  href: `/patients/${id}`,
+                  label: 'No active workflow blockers',
+                };
+
+    const nextRecommendedAction =
+      blockers[0]
+        ? { label: blockers[0].message, href: blockers[0].href, priority: blockers[0].priority }
+        : activeAdmission
+          ? { label: 'Continue IPD care plan', href: `/ipd/admissions/${activeAdmission.id}`, priority: 'NORMAL' as const }
+          : activeEncounter
+            ? { label: 'Continue OPD workflow', href: current.href, priority: 'NORMAL' as const }
+            : activeAppointment
+              ? { label: 'Check in or update appointment', href: '/opd/appointments', priority: 'NORMAL' as const }
+              : { label: 'Review patient timeline', href: `/patients/${id}`, priority: 'LOW' as const };
+
+    return {
+      patientId: patient.id,
+      patientName: patient.fullName,
+      mrn: patient.mrn,
+      current,
+      nextRecommendedAction,
+      blockers,
+      activeAppointment,
+      activeEncounter,
+      activeAdmission: activeAdmission
+        ? {
+            id: activeAdmission.id,
+            status: activeAdmission.status,
+            admittedAt: activeAdmission.admittedAt,
+            expectedDischargeAt: activeAdmission.expectedDischargeAt,
+            bedId: activeAdmission.bedId,
+            wardName: activeAdmission.bed?.ward?.name ?? null,
+            bedNumber: activeAdmission.bed?.bedNumber ?? null,
+          }
+        : null,
+      pendingLabOrders: pendingLabOrders.map((o: any) => ({
+        id: o.id,
+        status: o.status,
+        createdAt: o.createdAt,
+        tests: (o.items ?? []).map((i: any) => i.testName),
+      })),
+      pendingPrescriptions: pendingPrescriptions.map((rx: any) => ({
+        id: rx.id,
+        status: rx.status,
+        finalizedAt: rx.finalizedAt,
+        itemCount: rx.items?.length ?? 0,
+      })),
+      pendingCharges: pendingCharges.map((charge: any) => ({
+        id: charge.id,
+        sourceModule: charge.sourceModule,
+        name: charge.name,
+        total: charge.total,
+        createdAt: charge.createdAt,
+      })),
+      openBills: openBills.map((bill: any) => {
+        const paid = (bill.payments ?? []).reduce((sum: number, p: any) => sum + p.amount, 0);
+        const refunded = (bill.refunds ?? []).reduce((sum: number, r: any) => sum + r.amount, 0);
+        return {
+          id: bill.id,
+          billNumber: bill.billNumber,
+          status: bill.status,
+          netAmount: bill.netAmount,
+          outstanding: Math.max(0, bill.netAmount - (paid - refunded)),
+        };
+      }),
+      activeClaim: activeClaim
+        ? {
+            id: activeClaim.id,
+            status: activeClaim.status,
+            claimAmount: activeClaim.claimAmount,
+            approvedAmount: activeClaim.approvedAmount,
+            patientShare: activeClaim.patientShare,
+            providerName: activeClaim.patientPolicy?.provider?.name ?? null,
+            billNumber: activeClaim.bill?.billNumber ?? null,
+            rejectionReason: activeClaim.rejectionReason,
+          }
+        : null,
+      documentCount,
+    };
+  }
+
   private async assertPatient(s: Scope, patientId: string) {
     const p = await s.db.patient.findFirst({
       where: { id: patientId, deletedAt: null },

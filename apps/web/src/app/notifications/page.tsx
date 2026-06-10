@@ -13,6 +13,7 @@ import {
   type AppNotification,
 } from '@/lib/notifications';
 import { Badge, Button, EmptyState, ErrorState, FormField, PageHeader, Section, Select, Spinner, StatusChip, cx } from '@/components/ui';
+import { HelpTip } from '@/components/operations';
 
 function NotificationRow({ row, onChanged }: { row: AppNotification; onChanged: () => Promise<void> }) {
   const { activeTenantId } = useAuth();
@@ -123,6 +124,11 @@ function NotificationsInner() {
       />
 
       <div className="space-y-6">
+        <HelpTip title="Notification handling">
+          Reading or archiving clears the message from your inbox, but it does not resolve the underlying workflow item.
+          Use Open when a notification points to a bill, lab result, claim, stock risk, or patient workflow.
+        </HelpTip>
+
         <Section title="Filters">
           <div className="grid gap-4 p-5 md:grid-cols-4">
             <FormField label="Read state">

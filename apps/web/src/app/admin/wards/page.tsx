@@ -7,6 +7,7 @@ import AdminTabs from '@/components/AdminTabs';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
 import { adminApi, type Ward, type Bed, WARD_TYPES, BED_STATUSES } from '@/lib/admin';
+import { money } from '@/lib/format';
 import {
   Button,
   Section,
@@ -97,6 +98,9 @@ function WardsInner() {
               title={w.name}
               action={
                 <div className="flex items-center gap-2">
+                  <span className={w.dailyRate > 0 ? 'text-body-sm font-medium text-ink-muted' : 'text-body-sm text-ink-soft'}>
+                    {w.dailyRate > 0 ? `${money(w.dailyRate)}/day` : 'No rate set'}
+                  </span>
                   <StatusChip status={w.type} />
                   {!w.active && <StatusChip status="INACTIVE" />}
                   <Button size="sm" variant="ghost" icon={Pencil} onClick={() => setWardModal({ open: true, ward: w })}>
@@ -174,6 +178,7 @@ function WardModal({
   const [name, setName] = useState('');
   const [type, setType] = useState<string>('GENERAL');
   const [active, setActive] = useState(true);
+  const [dailyRate, setDailyRate] = useState(0); // rupees in the form; stored as paise
   const [busy, setBusy] = useState(false);
   const [nameErr, setNameErr] = useState<string | null>(null);
 
@@ -182,6 +187,7 @@ function WardModal({
       setName(ward?.name ?? '');
       setType(ward?.type ?? 'GENERAL');
       setActive(ward?.active ?? true);
+      setDailyRate(ward ? (ward.dailyRate ?? 0) / 100 : 0);
       setNameErr(null);
     }
   }, [open, ward]);
@@ -194,8 +200,9 @@ function WardModal({
     }
     setBusy(true);
     try {
-      if (ward) await adminApi.updateWard(activeTenantId, ward.id, { name: name.trim(), type, active });
-      else await adminApi.createWard(activeTenantId, { name: name.trim(), type });
+      const rate = Math.max(0, Math.round((Number(dailyRate) || 0) * 100));
+      if (ward) await adminApi.updateWard(activeTenantId, ward.id, { name: name.trim(), type, active, dailyRate: rate });
+      else await adminApi.createWard(activeTenantId, { name: name.trim(), type, dailyRate: rate });
       toast.success(ward ? 'Ward updated.' : 'Ward created.');
       await onSaved();
       onClose();
@@ -234,6 +241,16 @@ function WardModal({
               </option>
             ))}
           </Select>
+        </FormField>
+        <FormField label="Daily room rate (₹)" hint="Charged per calendar day of stay. 0 = not auto-charged.">
+          <Input
+            type="number"
+            min={0}
+            step="0.01"
+            value={dailyRate}
+            onChange={(e) => setDailyRate(Number(e.target.value))}
+            placeholder="0"
+          />
         </FormField>
         {ward && (
           <FormField label="Status">

@@ -166,6 +166,22 @@ enum BillSourceType {
   MANUAL
 }
 
+enum BillableChargeSourceModule {
+  OPD
+  LAB
+  PHARMACY
+  IPD
+  MANUAL
+  INSURANCE
+}
+
+enum BillableChargeStatus {
+  PENDING
+  BILLED
+  CANCELLED
+  REFUNDED
+}
+
 enum PaymentMethod {
   CASH
   CARD
@@ -173,6 +189,27 @@ enum PaymentMethod {
   BANK_TRANSFER
   INSURANCE
   OTHER
+}
+
+enum FinanceDayCloseStatus {
+  OPEN
+  CLOSED
+  REOPENED
+}
+
+enum FinanceApprovalType {
+  REFUND
+  DISCOUNT
+  WRITE_OFF
+  BILL_CANCEL
+  DAY_CLOSE_REOPEN
+  DISCHARGE_OVERRIDE
+}
+
+enum FinanceApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum WardType {
@@ -478,6 +515,11 @@ model HospitalSettings {
   invoicePrefix                 String   @default("INV")
   mrnPrefix                     String   @default("MRN")
   defaultConsultationCatalogId  String?  @db.Uuid
+  // IPD per-diem bed-charge policy (Phase 21.1).
+  ipdDayBasis                   String   @default("CALENDAR_DAY") @map("ipd_day_basis")
+  ipdChargeAdmissionDay         Boolean  @default(true) @map("ipd_charge_admission_day")
+  ipdChargeDischargeDay         Boolean  @default(false) @map("ipd_charge_discharge_day")
+  ipdMinUnits                   Int      @default(1) @map("ipd_min_units")
   createdAt                     DateTime @default(now())
   updatedAt                     DateTime @updatedAt
 
@@ -1073,18 +1115,102 @@ model Refund {
   @@map("refund")
 }
 
+model BillableCharge {
+  id                 String                     @id @default(uuid()) @db.Uuid
+  tenantId           String                     @db.Uuid @map("tenant_id")
+  patientId          String                     @db.Uuid
+  encounterId        String?                    @db.Uuid
+  admissionId        String?                    @db.Uuid
+  billId             String?                    @db.Uuid
+  billItemId         String?                    @db.Uuid
+  catalogId          String?                    @db.Uuid
+  sourceModule       BillableChargeSourceModule
+  sourceType         String
+  sourceId           String?                    @db.Uuid
+  name               String
+  quantity           Int                        @default(1)
+  unitPrice          Int                        @default(0)
+  total              Int                        @default(0)
+  status             BillableChargeStatus       @default(PENDING)
+  cancellationReason String?
+  createdById        String?                    @db.Uuid
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  @@index([tenantId])
+  @@index([patientId])
+  @@index([billId])
+  @@index([status])
+  @@index([sourceModule, sourceId])
+  @@map("billable_charge")
+}
+
+model FinanceDayClose {
+  id               String                @id @default(uuid()) @db.Uuid
+  tenantId         String                @db.Uuid @map("tenant_id")
+  businessDate     DateTime
+  cashierId        String?               @db.Uuid
+  status           FinanceDayCloseStatus @default(CLOSED)
+  cashTotal        Int                   @default(0)
+  cardTotal        Int                   @default(0)
+  upiTotal         Int                   @default(0)
+  bankTotal        Int                   @default(0)
+  insuranceTotal   Int                   @default(0)
+  otherTotal       Int                   @default(0)
+  refundTotal      Int                   @default(0)
+  cancellationTotal Int                  @default(0)
+  netCollection    Int                   @default(0)
+  notes            String?
+  closedById       String?               @db.Uuid
+  closedAt         DateTime              @default(now())
+  reopenedById     String?               @db.Uuid
+  reopenedAt       DateTime?
+  reopenReason     String?
+
+  @@index([tenantId])
+  @@index([businessDate])
+  @@map("finance_day_close")
+}
+
+model FinanceApproval {
+  id            String                @id @default(uuid()) @db.Uuid
+  tenantId      String                @db.Uuid @map("tenant_id")
+  type          FinanceApprovalType
+  status        FinanceApprovalStatus @default(PENDING)
+  amount        Int?
+  entity        String
+  entityId      String?               @db.Uuid
+  reason        String
+  notes         String?
+  requestedById String?               @db.Uuid
+  requestedAt   DateTime              @default(now())
+  decidedById   String?               @db.Uuid
+  decidedAt     DateTime?
+  decisionReason String?
+  metadata      Json?
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([type])
+  @@map("finance_approval")
+}
+
 // ─────────────────────────────────────────────────────────────
 // IPD
 // ─────────────────────────────────────────────────────────────
 
 model Ward {
-  id        String   @id @default(uuid()) @db.Uuid
-  tenantId  String   @db.Uuid @map("tenant_id")
-  name      String
-  type      WardType @default(GENERAL)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  beds      Bed[]
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @db.Uuid @map("tenant_id")
+  name            String
+  type            WardType @default(GENERAL)
+  // Per-day room/bed tariff in minor units (paise). Used by IPD per-diem accrual.
+  dailyRate       Int      @default(0) @map("daily_rate")
+  // Optional link to a ServiceCatalog BED item (for charge name / tax).
+  chargeCatalogId String?  @db.Uuid @map("charge_catalog_id")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  beds            Bed[]
 
   @@index([tenantId])
   @@map("ward")
@@ -1117,6 +1243,8 @@ model Admission {
   dischargeSummary   String?
   dischargeNotes     String?
   expectedDischargeAt DateTime?
+  // Idempotency watermark: bed/room charges have been accrued through this date.
+  bedChargedThrough  DateTime?       @map("bed_charged_through")
   patient            Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
   bed                Bed             @relation(fields: [bedId], references: [id])
   rounds             IpdRound[]

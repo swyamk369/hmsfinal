@@ -49,6 +49,7 @@ function db(): Record<string, any> {
     labOrder: model(),
     bill: model(),
     billItem: model(),
+    billableCharge: model(),
     hospitalSettings: model(),
     tenant: model(),
     diagnosis: model(),
@@ -221,7 +222,7 @@ describe('IPD rounds, charges, summary isolation', () => {
     expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'ipd.round.write' }));
   });
 
-  it('add charge creates IpdCharge and BillItem', async () => {
+  it('add charge creates IpdCharge, BillItem, and Finance charge ledger entry', async () => {
     d.admission.findFirst.mockResolvedValue({ ...admitted });
     d.bill.findFirst.mockResolvedValue(null);
     d.bill.count.mockResolvedValue(0);
@@ -233,6 +234,8 @@ describe('IPD rounds, charges, summary isolation', () => {
 
     expect(d.billItem.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ billId: 'bill1', sourceType: 'IPD' }) }));
     expect(d.ipdCharge.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ billItemId: 'item1' }) }));
+    expect(d.billableCharge.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ sourceModule: 'IPD', status: 'BILLED' }) }));
+    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'charge.create' }));
     expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'ipd.charge.write' }));
   });
 
@@ -240,6 +243,81 @@ describe('IPD rounds, charges, summary isolation', () => {
     await expect(ipd.getAdmission(ctx(d), 'other-adm')).rejects.toBeInstanceOf(NotFoundException);
     d.ward.findMany.mockResolvedValue([]);
     await expect(ipd.occupancy(ctx(d))).resolves.toMatchObject({ wards: [] });
+  });
+});
+
+describe('IPD per-diem bed charges (Phase 21.1)', () => {
+  const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000);
+
+  function wireBedPlan(settings: Record<string, any> = {}) {
+    d.bedTransfer.findMany.mockResolvedValue([]);
+    d.bed.findMany.mockResolvedValue([{ id: 'bed1', ward: { id: 'w1', name: 'General', dailyRate: 100000, chargeCatalogId: null } }]);
+    d.hospitalSettings.findUnique.mockResolvedValue({
+      ipdDayBasis: 'CALENDAR_DAY',
+      ipdChargeAdmissionDay: true,
+      ipdChargeDischargeDay: true,
+      ipdMinUnits: 1,
+      invoicePrefix: 'INV',
+      mrnPrefix: 'MRN',
+      ...settings,
+    });
+    mockTx.bill.findFirst.mockResolvedValue(null);
+    mockTx.bill.create.mockResolvedValue({ id: 'bill1', totalAmount: 0, discount: 0 });
+    mockTx.billItem.create.mockResolvedValue({ id: 'item1' });
+    mockTx.ipdCharge.create.mockResolvedValue({ id: 'ipdc1' });
+  }
+
+  it('accrueBedCharges posts BED_CHARGE ledger lines onto the IPD bill and advances the watermark', async () => {
+    d.admission.findFirst.mockResolvedValue({ ...admitted, admittedAt: daysAgo(3), dischargedAt: null, bedChargedThrough: null, bedId: 'bed1', patientId: 'pat1' });
+    wireBedPlan();
+
+    const out = await ipd.accrueBedCharges(ctx(d), 'adm1');
+
+    expect(mockTx.billItem.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ sourceType: 'IPD' }) }));
+    expect(mockTx.billableCharge.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ sourceModule: 'IPD', sourceType: 'BED_CHARGE', status: 'BILLED' }) }),
+    );
+    expect(mockTx.admission.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ bedChargedThrough: expect.any(Date) }) }));
+    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'ipd.bed_charge.accrue' }));
+    expect(out.posted).toBeGreaterThan(0);
+  });
+
+  it('previewBedCharges surfaces the room rate and applies it to the projected total', async () => {
+    d.admission.findFirst.mockResolvedValue({ ...admitted, admittedAt: new Date(Date.now() - 3 * 60 * 60 * 1000), dischargedAt: null, bedChargedThrough: null, bedId: 'bed1' });
+    d.bedTransfer.findMany.mockResolvedValue([]);
+    d.bed.findMany.mockResolvedValue([{ id: 'bed1', ward: { id: 'w1', name: 'General', dailyRate: 400000, chargeCatalogId: null } }]);
+    d.bed.findFirst.mockResolvedValue({ id: 'bed1', ward: { id: 'w1', name: 'General', dailyRate: 400000 } });
+    d.hospitalSettings.findUnique.mockResolvedValue({ ipdChargeAdmissionDay: true, ipdChargeDischargeDay: false, ipdMinUnits: 1 });
+
+    const out = await ipd.previewBedCharges(ctx(d), 'adm1');
+
+    // The fix: the room rate is surfaced even before a calendar day completes...
+    expect(out.currentWard).toMatchObject({ name: 'General', dailyRate: 400000 });
+    // ...and the projected ("if discharged now") total applies that rate (not the ₹0 placeholder).
+    expect(out.projected.totalUnits).toBeGreaterThanOrEqual(1);
+    expect(out.projected.totalAmount).toBe(out.projected.totalUnits * 400000);
+  });
+
+  it('does not double-charge when the watermark already covers the stay', async () => {
+    d.admission.findFirst.mockResolvedValue({ ...admitted, admittedAt: daysAgo(2), dischargedAt: null, bedChargedThrough: daysAgo(0), bedId: 'bed1', patientId: 'pat1' });
+    wireBedPlan();
+
+    const out = await ipd.accrueBedCharges(ctx(d), 'adm1');
+
+    expect(out.posted).toBe(0);
+    expect(mockTx.billItem.create).not.toHaveBeenCalled();
+  });
+
+  it('discharge auto-accrues the final bed charges', async () => {
+    d.admission.findFirst
+      .mockResolvedValueOnce({ ...admitted, admittedAt: daysAgo(2), dischargedAt: null, bedChargedThrough: null, bedId: 'bed1' })
+      .mockResolvedValueOnce(admissionDetail({ status: 'DISCHARGED' }));
+    wireBedPlan();
+
+    await ipd.discharge(ctx(d), 'adm1', { reason: 'Recovered', summary: 'Stable' });
+
+    expect(mockTx.billableCharge.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ sourceType: 'BED_CHARGE' }) }));
+    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'ipd.bed_charge.accrue' }));
   });
 });
 

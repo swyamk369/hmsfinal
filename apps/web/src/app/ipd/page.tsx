@@ -197,7 +197,7 @@ function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: bool
   const [wards, setWards] = useState<Ward[]>([]);
   const [beds, setBeds] = useState<Bed[]>([]);
   const [selWard, setSelWard] = useState('');
-  const [newWard, setNewWard] = useState({ name: '', type: 'GENERAL' });
+  const [newWard, setNewWard] = useState({ name: '', type: 'GENERAL', rate: '' });
   const [newBed, setNewBed] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -219,8 +219,12 @@ function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: bool
     if (!newWard.name.trim()) return;
     setBusy(true);
     try {
-      await ipdApi.createWard(t, { name: newWard.name.trim(), type: newWard.type });
-      setNewWard({ name: '', type: 'GENERAL' });
+      await ipdApi.createWard(t, {
+        name: newWard.name.trim(),
+        type: newWard.type,
+        dailyRate: Math.max(0, Math.round((Number(newWard.rate) || 0) * 100)),
+      });
+      setNewWard({ name: '', type: 'GENERAL', rate: '' });
       await load();
       await onChanged();
       toast.success('Ward added.');
@@ -266,6 +270,7 @@ function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: bool
               <Select className="w-36" value={newWard.type} onChange={(e) => setNewWard((w) => ({ ...w, type: e.target.value }))}>
                 {WARD_TYPES.map((x) => <option key={x} value={x}>{x}</option>)}
               </Select>
+              <Input className="w-28" type="number" min={0} placeholder="₹/day" value={newWard.rate} onChange={(e) => setNewWard((w) => ({ ...w, rate: e.target.value }))} />
               <Button onClick={addWard} loading={busy} disabled={!newWard.name.trim()}>Add</Button>
             </div>
           </div>

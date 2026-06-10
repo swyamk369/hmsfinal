@@ -23,7 +23,7 @@ import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { getActiveMembership } from '@/lib/access';
 import { useToast } from '@/components/toast';
-import { ipdApi, type AdmissionDetail, type Bed, type Charge, type MedAdmin, type NursingNote, type Round, type Transfer, type Vitals } from '@/lib/ipd';
+import { ipdApi, type AdmissionDetail, type Bed, type BedChargePreview, type Charge, type MedAdmin, type NursingNote, type Round, type Transfer, type Vitals } from '@/lib/ipd';
 import { ageFromDob, formatDate, formatDateTime, money, toMinor } from '@/lib/format';
 import {
   Badge,
@@ -167,7 +167,12 @@ function AdmissionDetailPageInner({ id }: { id: string }) {
       {tab === 'nursing' && <Nursing admission={admission} />}
       {tab === 'medications' && <Medications meds={admission.medications} />}
       {tab === 'lab' && <LabOrders orders={admission.labOrders} />}
-      {tab === 'charges' && <Charges charges={admission.charges} currency="INR" onAdd={canCharge ? () => setChargeOpen(true) : undefined} />}
+      {tab === 'charges' && (
+        <div className="space-y-4">
+          <BedChargeCard admission={admission} canCharge={canCharge} onPosted={load} />
+          <Charges charges={admission.charges} currency="INR" onAdd={canCharge ? () => setChargeOpen(true) : undefined} />
+        </div>
+      )}
       {tab === 'transfers' && <Transfers transfers={admission.transfers} beds={beds} />}
       {tab === 'billing' && <Billing admission={admission} paid={paid} />}
 
@@ -370,6 +375,131 @@ function LabOrders({ orders }: { orders: AdmissionDetail['labOrders'] }) {
               <StatusChip status={o.status} />
             </Link>
           ))}
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function BedChargeCard({ admission, canCharge, onPosted }: { admission: AdmissionDetail; canCharge: boolean; onPosted: () => Promise<void> }) {
+  const { activeTenantId } = useAuth();
+  const toast = useToast();
+  const [preview, setPreview] = useState<BedChargePreview | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+
+  const loadPreview = useCallback(async () => {
+    if (!activeTenantId) return;
+    setLoading(true);
+    try {
+      setPreview(await ipdApi.bedChargePreview(activeTenantId, admission.id));
+    } catch {
+      setPreview(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeTenantId, admission.id]);
+
+  useEffect(() => {
+    void loadPreview();
+  }, [loadPreview]);
+
+  const pending = preview?.pending.lines.filter((l) => l.total > 0) ?? [];
+  const pendingTotal = pending.reduce((s, l) => s + l.total, 0);
+  const rate = preview?.currentWard?.dailyRate ?? 0;
+  const hasRate = !!preview?.currentWard && rate > 0;
+  const active = admission.status === 'ADMITTED';
+
+  async function post() {
+    if (!activeTenantId) return;
+    setBusy(true);
+    try {
+      const res = await ipdApi.accrueBedCharges(activeTenantId, admission.id);
+      toast.success(res.posted ? `Posted ${res.plan.totalUnits} bed-day(s) to the bill.` : 'No completed days to bill yet.');
+      await onPosted();
+      await loadPreview();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Section
+      title="Room / bed charges (per-diem)"
+      action={
+        canCharge && pendingTotal > 0 ? (
+          <Button size="sm" icon={CreditCard} onClick={post} loading={busy}>
+            Post bed charges
+          </Button>
+        ) : undefined
+      }
+    >
+      {loading ? (
+        <p className="text-body-sm text-ink-muted">Calculating room charges…</p>
+      ) : !hasRate ? (
+        <p className="text-body-sm text-ink-muted">
+          No room rate is configured for {preview?.currentWard?.name ?? 'this ward'}. Set a daily rate in{' '}
+          <Link href="/admin/wards" className="font-medium text-primary hover:underline">
+            Admin → Wards
+          </Link>
+          .
+        </p>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-body-sm">
+            <span className="text-ink-muted">
+              Room: <span className="font-medium text-ink">{preview!.currentWard!.name}</span> · {money(rate)}/day
+            </span>
+            <span className="text-ink-muted">
+              Billable now: <span className="font-medium text-ink">{money(pendingTotal)}</span>
+            </span>
+            {active && (
+              <span className="text-ink-muted">
+                If discharged now: <span className="font-medium text-ink">{money(preview!.projected.totalAmount)}</span> ({preview!.projected.totalUnits} day
+                {preview!.projected.totalUnits === 1 ? '' : 's'})
+              </span>
+            )}
+          </div>
+          {pending.length > 0 ? (
+            <table className="w-full text-body-sm">
+              <thead>
+                <tr className="text-left text-ink-muted">
+                  <th className="py-1">Ward</th>
+                  <th>Days</th>
+                  <th>Rate / day</th>
+                  <th className="text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pending.map((l) => (
+                  <tr key={l.wardId + l.fromDate} className="border-t border-line">
+                    <td className="py-1.5">
+                      {l.wardName} <span className="ml-1 text-ink-soft">{l.fromDate}…{l.toDate}</span>
+                    </td>
+                    <td>{l.units}</td>
+                    <td>{money(l.unitPrice)}</td>
+                    <td className="text-right font-medium">{money(l.total)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="border-t border-line font-semibold">
+                  <td className="py-1.5" colSpan={3}>
+                    Billable now
+                  </td>
+                  <td className="text-right">{money(pendingTotal)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          ) : (
+            <p className="rounded-md bg-canvas px-3 py-2 text-body-sm text-ink-muted">
+              {active
+                ? 'Today is still in progress — completed days post to an interim bill here, and the current day is billed automatically at discharge.'
+                : 'Bed charges were finalized at discharge and appear on the bill.'}
+            </p>
+          )}
         </div>
       )}
     </Section>

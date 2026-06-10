@@ -89,6 +89,14 @@ export const PERMISSIONS = {
   PAYMENT_COLLECT: 'payment.collect',
   PAYMENT_REFUND: 'payment.refund',
   REPORTS_FINANCIAL_READ: 'reports.financial.read',
+  FINANCE_READ: 'finance.read',
+  FINANCE_CASHIER: 'finance.cashier',
+  FINANCE_PATIENT_ACCOUNT_READ: 'finance.patient_account.read',
+  FINANCE_CHARGE_MANAGE: 'finance.charge.manage',
+  FINANCE_DAY_CLOSE: 'finance.day_close',
+  FINANCE_RECONCILE: 'finance.reconcile',
+  FINANCE_APPROVAL_MANAGE: 'finance.approval.manage',
+  FINANCE_WRITE_OFF: 'finance.write_off',
 
   // ── IPD ───────────────────────────────────────────────────
   IPD_READ: 'ipd.read',

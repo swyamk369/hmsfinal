@@ -19,12 +19,19 @@ export default function LoginPage() {
     if (!loading && profile) router.replace(landingPath(profile, activeTenantId));
   }, [loading, profile, activeTenantId, router]);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const submittedEmail = String(form.get('email') ?? email).trim();
+    const submittedPassword = String(form.get('password') ?? password);
+    if (!submittedEmail || !submittedPassword) {
+      setErr('Enter your email and password.');
+      return;
+    }
     setBusy(true);
     setErr(null);
     try {
-      await firebaseLogin(email, password);
+      await firebaseLogin(submittedEmail, submittedPassword);
     } catch (e) {
       setErr(friendlyAuthError((e as Error).message));
     } finally {
@@ -58,6 +65,7 @@ export default function LoginPage() {
             <FormField label="Work Email" required>
               <Input
                 type="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@hospital.org"
@@ -75,6 +83,7 @@ export default function LoginPage() {
               </div>
               <Input
                 type="password"
+                name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••"
@@ -83,7 +92,7 @@ export default function LoginPage() {
               />
             </FormField>
 
-            <Button type="submit" className="w-full" loading={busy} disabled={busy || !email || !password}>
+            <Button type="submit" className="w-full" loading={busy} disabled={busy}>
               {busy ? 'Authenticating…' : 'Sign in'}
             </Button>
           </form>

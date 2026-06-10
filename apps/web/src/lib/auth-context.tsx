@@ -25,6 +25,7 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const AUTH_BOOTSTRAP_TIMEOUT_MS = 8_000;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [activeTenantId, setActiveTenantId] = useState<string | null>(null);
 
   const loadProfile = useCallback(async () => {
+    setLoading(true);
     try {
       const p = await apiGet<Profile>('/auth/me');
       setProfile(p);
@@ -47,7 +49,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       setProfile(null);
       setActiveTenantId(null);
-      if (e instanceof ApiError && e.status !== 401) setError(e.message);
+      // 401 just means signed out — anything else (5xx, timeout, network) must
+      // surface so Protected can show a retry screen instead of hanging.
+      if (e instanceof ApiError) {
+        if (e.status !== 401) setError(e.message || 'Could not load your profile.');
+      } else {
+        setError('Could not load your profile.');
+      }
     } finally {
       setLoading(false);
     }
@@ -60,16 +68,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       return;
     }
+
+    let settled = false;
+    const timer = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      setProfile(null);
+      setActiveTenantId(null);
+      setError('Authentication is taking too long. Please sign in again or refresh the page.');
+      setLoading(false);
+    }, AUTH_BOOTSTRAP_TIMEOUT_MS);
+
     const unsub = auth.onAuthStateChanged(async (u) => {
-      if (u) {
-        await loadProfile();
-      } else {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      try {
+        if (u) {
+          await loadProfile();
+        } else {
+          setProfile(null);
+          setActiveTenantId(null);
+          setLoading(false);
+        }
+      } catch {
         setProfile(null);
         setActiveTenantId(null);
+        setError('Could not start your session. Please sign in again.');
         setLoading(false);
       }
     });
-    return () => unsub();
+
+    return () => {
+      settled = true;
+      window.clearTimeout(timer);
+      unsub();
+    };
   }, [loadProfile]);
 
   const firebaseLogin = useCallback(

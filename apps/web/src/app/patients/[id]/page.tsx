@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Pencil, Archive, Plus, FileText, Upload, ExternalLink, Wand2 } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, Pencil, Archive, Plus, FileText, Upload, ExternalLink, Wand2 } from 'lucide-react';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
-import { patientsApi, type PatientTimeline } from '@/lib/patients';
+import { patientsApi, type PatientJourney, type PatientTimeline } from '@/lib/patients';
 import { money } from '@/lib/format';
 import { ageFromDob, formatDate, formatDateTime } from '@/lib/format';
 import {
@@ -47,6 +47,7 @@ function PatientDetail({ id }: { id: string }) {
   const router = useRouter();
   const toast = useToast();
   const [data, setData] = useState<PatientTimeline | null>(null);
+  const [journey, setJourney] = useState<PatientJourney | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('Overview');
   const [editOpen, setEditOpen] = useState(false);
@@ -59,7 +60,12 @@ function PatientDetail({ id }: { id: string }) {
     if (!activeTenantId) return;
     setErr(null);
     try {
-      setData(await patientsApi.timeline(activeTenantId, id));
+      const [timeline, currentJourney] = await Promise.all([
+        patientsApi.timeline(activeTenantId, id),
+        patientsApi.journey(activeTenantId, id),
+      ]);
+      setData(timeline);
+      setJourney(currentJourney);
     } catch (e) {
       setErr((e as Error).message);
     }
@@ -104,6 +110,8 @@ function PatientDetail({ id }: { id: string }) {
           Archived: {p.archiveReason}
         </div>
       )}
+
+      {journey && <JourneyStrip journey={journey} />}
 
       <div className="mb-6 -mx-1 flex gap-1 overflow-x-auto border-b border-line pb-px">
         {TABS.map((t) => (
@@ -253,7 +261,7 @@ function PatientDetail({ id }: { id: string }) {
           rows={data.bills}
           render={(b) => (
             <li key={b.id} className="flex items-center justify-between px-5 py-3">
-              <Link href={`/billing/${b.id}`} className="font-mono text-body-sm text-primary hover:underline">
+              <Link href={`/finance/bills/${b.id}`} className="font-mono text-body-sm text-primary hover:underline">
                 {b.billNumber}
               </Link>
               <div className="flex items-center gap-3">
@@ -470,6 +478,86 @@ function ListSection({ rows, render, empty }: { rows: any[]; render: (r: any) =>
         <ul className="divide-y divide-line">{rows.map(render)}</ul>
       )}
     </Section>
+  );
+}
+
+function JourneyStrip({ journey }: { journey: PatientJourney }) {
+  const billTotal = journey.openBills.reduce((sum, bill) => sum + bill.outstanding, 0);
+  const pendingChargeTotal = (journey.pendingCharges ?? []).reduce((sum, charge) => sum + charge.total, 0);
+  return (
+    <Section
+      title="Current patient journey"
+      className="mb-6"
+      action={
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/finance/patient-accounts/${journey.patientId}`}>
+            <Button size="sm" variant="ghost">
+              Patient account
+            </Button>
+          </Link>
+          <Link href={journey.nextRecommendedAction.href}>
+            <Button size="sm" variant="ghost">
+              Next action <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      }
+    >
+      <div className="grid gap-4 p-5 lg:grid-cols-[1.2fr_1fr]">
+        <div className="rounded-md border border-line bg-canvas px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="primary">{journey.current.module}</Badge>
+            <StatusChip status={journey.current.status} />
+          </div>
+          <div className="mt-3 text-title-lg text-ink">{journey.current.label}</div>
+          {journey.current.location && <div className="mt-1 text-body-sm text-ink-muted">{journey.current.location}</div>}
+          <Link
+            href={journey.current.href}
+            className="mt-3 inline-flex items-center gap-1.5 text-body-sm font-medium text-primary hover:underline"
+          >
+            Open current workflow <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <JourneyMetric label="Lab pending" value={journey.pendingLabOrders.length} />
+          <JourneyMetric label="Pharmacy pending" value={journey.pendingPrescriptions.length} />
+          <JourneyMetric label="Pending charges" value={(journey.pendingCharges ?? []).length} hint={pendingChargeTotal ? money(pendingChargeTotal) : undefined} />
+          <JourneyMetric label="Open bills" value={journey.openBills.length} hint={billTotal ? money(billTotal) : undefined} />
+          <JourneyMetric label="Documents" value={journey.documentCount} />
+        </div>
+      </div>
+      <div className="border-t border-line px-5 py-4">
+        {journey.blockers.length === 0 ? (
+          <p className="text-body-sm text-ink-muted">No active blockers. Keep documents and timeline up to date as care continues.</p>
+        ) : (
+          <div className="grid gap-2 md:grid-cols-2">
+            {journey.blockers.map((b) => (
+              <Link
+                key={`${b.type}-${b.message}`}
+                href={b.href}
+                className="flex items-start gap-2 rounded-md border border-warning/30 bg-warning-bg px-3 py-2 text-body-sm hover:border-warning"
+              >
+                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-warning-fg" />
+                <span>
+                  <span className="font-medium text-warning-fg">{b.type}: </span>
+                  <span className="text-ink-muted">{b.message}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </Section>
+  );
+}
+
+function JourneyMetric({ label, value, hint }: { label: string; value: React.ReactNode; hint?: string }) {
+  return (
+    <div className="rounded-md border border-line px-3 py-2">
+      <div className="text-headline-md text-ink">{value}</div>
+      <div className="text-label-sm text-ink-soft">{label}</div>
+      {hint && <div className="mt-0.5 text-label-sm text-ink-muted">{hint}</div>}
+    </div>
   );
 }
 

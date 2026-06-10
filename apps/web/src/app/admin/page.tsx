@@ -20,6 +20,7 @@ import AdminTabs from '@/components/AdminTabs';
 import { useAuth } from '@/lib/auth-context';
 import { adminApi, type AdminOverview } from '@/lib/admin';
 import { Button, PageHeader, Section, Spinner, ErrorState, StatCard, cx } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 // Routes whose pages exist in Phase 5 (so checklist actions never become dead links).
 const LIVE_ROUTES = new Set([
@@ -67,6 +68,13 @@ function AdminDashboard() {
 
       {data && (
         <div className="space-y-6">
+          <HelpTip title="Admin setup guidance">
+            Configure profile, departments, catalog, staff, wards, lab catalog, and insurance before pushing teams into
+            daily workflows. Role permissions can be reviewed from Admin Roles for each hospital’s access pattern.
+          </HelpTip>
+
+          <WorkQueuePanel title="Setup work queue" modules={['ADMIN']} limit={6} compact />
+
           {/* Setup checklist */}
           <Section
             title="Setup checklist"

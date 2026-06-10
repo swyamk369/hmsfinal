@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { tenantTransaction } from '@hms/db';
-import type { TenantClient } from '@hms/db';
+import type { TenantClient, TenantTx } from '@hms/db';
+import { bedChargePolicyFromSettings, planBedCharges, type BedChargePlan } from './bed-charges';
 import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import { nextBillNumber } from '../common/sequences';
@@ -46,8 +47,10 @@ export class IpdService {
 
   async createWard(ctx: RequestContext, dto: CreateWardDto) {
     const s = this.scope(ctx);
-    const ward = await s.db.ward.create({ data: { tenantId: s.tenantId, name: dto.name, type: (dto.type ?? 'GENERAL') as any } });
-    await this.record(s, 'ward.create', 'ward', ward.id, { name: ward.name });
+    const ward = await s.db.ward.create({
+      data: { tenantId: s.tenantId, name: dto.name, type: (dto.type ?? 'GENERAL') as any, dailyRate: dto.dailyRate ?? 0, chargeCatalogId: dto.chargeCatalogId ?? null },
+    });
+    await this.record(s, 'ward.create', 'ward', ward.id, { name: ward.name, dailyRate: ward.dailyRate });
     return ward;
   }
 
@@ -55,7 +58,10 @@ export class IpdService {
     const s = this.scope(ctx);
     const existing = await s.db.ward.findFirst({ where: { id } });
     if (!existing) throw new NotFoundException('Ward not found');
-    const ward = await s.db.ward.update({ where: { id }, data: { name: dto.name, type: dto.type as any, active: dto.active } });
+    const ward = await s.db.ward.update({
+      where: { id },
+      data: { name: dto.name, type: dto.type as any, active: dto.active, dailyRate: dto.dailyRate, chargeCatalogId: dto.chargeCatalogId },
+    });
     await this.record(s, dto.active === false ? 'ward.deactivate' : 'ward.update', 'ward', id, { changes: dto });
     return ward;
   }
@@ -283,8 +289,148 @@ export class IpdService {
         billItemId: billItem.id,
       },
     });
+    const ledgerCharge = await s.db.billableCharge.create({
+      data: {
+        tenantId: s.tenantId,
+        patientId: adm.patientId,
+        admissionId: id,
+        billId: bill.id,
+        billItemId: billItem.id,
+        catalogId: dto.catalogId ?? null,
+        sourceModule: 'IPD',
+        sourceType: 'IPD_CHARGE',
+        sourceId: charge.id,
+        name: dto.description,
+        quantity,
+        unitPrice: dto.unitPrice,
+        total,
+        status: 'BILLED',
+        createdById: s.actorId,
+      },
+    });
     await this.record(s, 'ipd.charge.write', 'ipd_charge', charge.id, { admissionId: id, billId: bill.id, total });
+    await this.record(s, 'charge.create', 'billable_charge', ledgerCharge.id, { admissionId: id, billId: bill.id, sourceModule: 'IPD', total });
     return charge;
+  }
+
+  // ── Per-diem bed/room charges (Phase 21.1) ────────────────────
+  /** Read the inputs and compute the bed-charge plan as of a given instant (no writes). */
+  private async computeBedPlan(
+    s: Scope,
+    adm: { id: string; bedId: string; admittedAt: Date | string; dischargedAt: Date | string | null; bedChargedThrough: Date | string | null },
+    asOf: Date,
+  ): Promise<BedChargePlan> {
+    const transfers = await s.db.bedTransfer.findMany({ where: { admissionId: adm.id }, orderBy: { transferredAt: 'asc' } });
+    const bedIds = new Set<string>([adm.bedId]);
+    for (const t of transfers) {
+      bedIds.add(t.fromBedId);
+      bedIds.add(t.toBedId);
+    }
+    const beds = await s.db.bed.findMany({ where: { id: { in: [...bedIds] } }, include: { ward: true } });
+    const wardByBedId = new Map(
+      beds
+        .filter((b: any) => b.ward)
+        .map((b: any) => [b.id, { wardId: b.ward.id, wardName: b.ward.name, dailyRate: b.ward.dailyRate ?? 0, chargeCatalogId: b.ward.chargeCatalogId ?? null }]),
+    );
+    const settings = await s.db.hospitalSettings.findUnique({ where: { tenantId: s.tenantId } });
+    return planBedCharges({
+      admission: {
+        bedId: adm.bedId,
+        admittedAt: new Date(adm.admittedAt),
+        dischargedAt: adm.dischargedAt ? new Date(adm.dischargedAt) : null,
+        bedChargedThrough: adm.bedChargedThrough ? new Date(adm.bedChargedThrough) : null,
+      },
+      transfers: transfers.map((t: any) => ({ fromBedId: t.fromBedId, toBedId: t.toBedId, transferredAt: new Date(t.transferredAt) })),
+      wardByBedId,
+      policy: bedChargePolicyFromSettings(settings ?? undefined),
+      asOf,
+    });
+  }
+
+  /** Post a computed bed-charge plan onto the running IPD bill and advance the watermark. */
+  private async postBedCharges(tx: TenantTx, s: Scope, adm: { id: string; patientId: string }, plan: BedChargePlan) {
+    const billable = plan.lines.filter((l) => l.total > 0);
+    if (!billable.length) {
+      if (plan.chargedThrough) await tx.admission.update({ where: { id: adm.id }, data: { bedChargedThrough: plan.chargedThrough } });
+      return { billId: null as string | null, posted: 0 };
+    }
+    const added = billable.reduce((sum, l) => sum + l.total, 0);
+    let bill = await tx.bill.findFirst({ where: { admissionId: adm.id, status: { in: ['UNPAID', 'PARTIAL'] } }, orderBy: { createdAt: 'desc' } });
+    if (!bill) {
+      const billNumber = await nextBillNumber(tx as unknown as TenantClient, s.tenantId);
+      bill = await tx.bill.create({
+        data: { tenantId: s.tenantId, patientId: adm.patientId, admissionId: adm.id, billNumber, totalAmount: added, discount: 0, netAmount: added, status: 'UNPAID', notes: 'IPD charges' },
+      });
+    } else {
+      const totalAmount = bill.totalAmount + added;
+      await tx.bill.update({ where: { id: bill.id }, data: { totalAmount, netAmount: totalAmount - bill.discount } });
+    }
+    for (const line of billable) {
+      const desc = `${line.wardName} room charge (${line.units} day${line.units > 1 ? 's' : ''})`;
+      const item = await tx.billItem.create({
+        data: { tenantId: s.tenantId, billId: bill.id, catalogId: line.catalogId, sourceType: 'IPD' as any, name: desc, quantity: line.units, unitPrice: line.unitPrice, total: line.total },
+      });
+      const ipdCharge = await tx.ipdCharge.create({
+        data: { tenantId: s.tenantId, admissionId: adm.id, catalogId: line.catalogId, description: desc, quantity: line.units, unitPrice: line.unitPrice, notes: `Auto bed charge ${line.fromDate}…${line.toDate}`, createdById: s.actorId, billItemId: item.id },
+      });
+      await tx.billableCharge.create({
+        data: {
+          tenantId: s.tenantId,
+          patientId: adm.patientId,
+          admissionId: adm.id,
+          billId: bill.id,
+          billItemId: item.id,
+          catalogId: line.catalogId,
+          sourceModule: 'IPD' as any,
+          sourceType: 'BED_CHARGE',
+          sourceId: ipdCharge.id,
+          name: desc,
+          quantity: line.units,
+          unitPrice: line.unitPrice,
+          total: line.total,
+          status: 'BILLED' as any,
+          createdById: s.actorId,
+        },
+      });
+    }
+    await tx.admission.update({ where: { id: adm.id }, data: { bedChargedThrough: plan.chargedThrough } });
+    return { billId: bill.id as string | null, posted: billable.length };
+  }
+
+  /**
+   * Preview bed charges without writing: what is billable NOW (completed days), the
+   * running total if the patient were discharged now, and the current room rate — so
+   * the UI can show the rate even before any calendar day has completed.
+   */
+  async previewBedCharges(ctx: RequestContext, id: string) {
+    const s = this.scope(ctx);
+    const adm = await this.load(s, id);
+    const now = new Date();
+    const pending = await this.computeBedPlan(s, adm as any, now);
+    const projected = adm.dischargedAt ? pending : await this.computeBedPlan(s, { ...(adm as any), dischargedAt: now }, now);
+    const bed = await s.db.bed.findFirst({ where: { id: adm.bedId }, include: { ward: true } });
+    return {
+      pending,
+      projected,
+      currentWard: bed?.ward ? { id: bed.ward.id, name: bed.ward.name, dailyRate: bed.ward.dailyRate ?? 0 } : null,
+      admittedAt: adm.admittedAt,
+      bedChargedThrough: adm.bedChargedThrough ?? null,
+    };
+  }
+
+  /** Interim/manual accrual: post bed charges accrued through `asOf` (default now). */
+  async accrueBedCharges(ctx: RequestContext, id: string, asOf?: string) {
+    const s = this.scope(ctx);
+    const adm = await this.load(s, id);
+    const asOfDate = asOf ? new Date(asOf) : new Date();
+    if (Number.isNaN(asOfDate.getTime())) throw new BadRequestException('Invalid asOf date');
+    const plan = await this.computeBedPlan(s, adm as any, asOfDate);
+    const result = await tenantTransaction(s.tenantId, (tx) => this.postBedCharges(tx, s, { id, patientId: adm.patientId }, plan));
+    if (result.billId) {
+      await this.record(s, 'charge.create', 'billable_charge', result.billId, { admissionId: id, sourceModule: 'IPD', sourceType: 'BED_CHARGE', units: plan.totalUnits, total: plan.totalAmount });
+      await this.record(s, 'ipd.bed_charge.accrue', 'admission', id, { units: plan.totalUnits, total: plan.totalAmount, billId: result.billId });
+    }
+    return { posted: result.posted, billId: result.billId, plan };
   }
 
   async discharge(ctx: RequestContext, id: string, dto: DischargeDto) {
@@ -292,10 +438,15 @@ export class IpdService {
     const adm = await this.load(s, id);
     if (adm.status !== 'ADMITTED') throw new BadRequestException(`Admission is already ${adm.status.toLowerCase()}`);
 
+    // Final bed-charge true-up: compute against the discharge instant before the txn.
+    const dischargedAt = new Date();
+    const plan = await this.computeBedPlan(s, { ...(adm as any), dischargedAt }, dischargedAt);
+    let billResult: { billId: string | null; posted: number } = { billId: null, posted: 0 };
+
     await tenantTransaction(s.tenantId, async (tx) => {
       await tx.admission.update({
         where: { id },
-        data: { status: 'DISCHARGED', dischargedAt: new Date(), dischargeReason: dto.reason, dischargeSummary: dto.summary, dischargeNotes: dto.instructions },
+        data: { status: 'DISCHARGED', dischargedAt, dischargeReason: dto.reason, dischargeSummary: dto.summary, dischargeNotes: dto.instructions },
       });
       await tx.bed.update({ where: { id: adm.bedId }, data: { status: 'AVAILABLE' } });
       if (adm.encounterId) await tx.encounter.update({ where: { id: adm.encounterId }, data: { status: 'COMPLETED', endedAt: new Date() } });
@@ -304,9 +455,14 @@ export class IpdService {
         create: { tenantId: s.tenantId, admissionId: id, summary: dto.summary, instructions: dto.instructions, followUpDate: dto.followUpDate ? new Date(dto.followUpDate) : null, preparedById: s.actorId, finalizedAt: new Date() },
         update: { summary: dto.summary, instructions: dto.instructions, followUpDate: dto.followUpDate ? new Date(dto.followUpDate) : null, finalizedAt: new Date() },
       });
+      billResult = await this.postBedCharges(tx, s, { id, patientId: adm.patientId }, plan);
     });
 
     await this.record(s, 'ipd.discharge', 'admission', id, { reason: dto.reason });
+    if (billResult.billId) {
+      await this.record(s, 'charge.create', 'billable_charge', billResult.billId, { admissionId: id, sourceModule: 'IPD', sourceType: 'BED_CHARGE', units: plan.totalUnits, total: plan.totalAmount });
+      await this.record(s, 'ipd.bed_charge.accrue', 'admission', id, { units: plan.totalUnits, total: plan.totalAmount, billId: billResult.billId });
+    }
     await this.notifications?.safeNotify(ctx, {
       category: 'IPD',
       type: 'ipd.discharge_summary.ready',

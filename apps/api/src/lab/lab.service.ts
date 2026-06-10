@@ -194,8 +194,7 @@ export class LabService {
       include: ORDER_INCLUDE,
     });
 
-    // Billing integration — best-effort, never blocks the order.
-    const billing = await this.tryAddLabBilling(s, order.encounterId, input.tests);
+    const billing = await this.tryPostLabCharges(s, order.id, input.patientId, order.encounterId, input.tests);
     await this.record(s, 'lab.order', 'lab_order', order.id, {
       patientId: input.patientId,
       encounterId: input.encounterId ?? null,
@@ -206,53 +205,62 @@ export class LabService {
   }
 
   /**
-   * If the lab order belongs to an encounter that already has an open (UNPAID/PARTIAL)
-   * bill, and matching LAB service-catalog items are configured, append bill items and
-   * recompute totals. Any failure is swallowed so a lab order never fails on billing.
+   * Lab orders post pending charges into the unified Finance ledger. Billing can
+   * then select the charges into an OPD/IPD bill according to hospital policy.
    */
-  private async tryAddLabBilling(
+  private async tryPostLabCharges(
     s: Scope,
+    orderId: string,
+    patientId: string,
     encounterId: string | null | undefined,
     tests: { testId: string; testName: string }[],
-  ): Promise<{ billed: boolean; reason?: string; items?: number; amount?: number }> {
-    try {
-      if (!encounterId) return { billed: false, reason: 'no_encounter' };
-      const bill = await s.db.bill.findFirst({
-        where: { encounterId, status: { in: ['UNPAID', 'PARTIAL'] } },
-        orderBy: { createdAt: 'desc' },
-      });
-      if (!bill) return { billed: false, reason: 'no_open_bill' };
-
-      const lineItems: { name: string; price: number }[] = [];
-      for (const t of tests) {
+  ): Promise<{ posted: boolean; reason?: string; items?: number; amount?: number }> {
+    const lineItems: { name: string; price: number; catalogId: string }[] = [];
+    for (const t of tests) {
+      // Source of truth: the lab test's OWN catalog price, matched by id (exact) — this
+      // is the price set in Admin → Lab Catalog and the test the doctor actually ordered.
+      // Only fall back to a ServiceCatalog LAB entry (by name) when the test has no price.
+      let resolved: { name: string; price: number; catalogId: string } | null = null;
+      if (t.testId) {
+        const labTest = await s.db.labTestCatalog.findFirst({ where: { id: t.testId } });
+        if (labTest && labTest.price > 0) {
+          resolved = { name: labTest.name, price: labTest.price, catalogId: labTest.id };
+        }
+      }
+      if (!resolved) {
         const svc = await s.db.serviceCatalog.findFirst({
           where: { type: 'LAB', active: true, name: { equals: t.testName, mode: 'insensitive' } },
         });
-        if (svc) lineItems.push({ name: svc.name, price: svc.price });
+        if (svc && svc.price > 0) resolved = { name: svc.name, price: svc.price, catalogId: svc.id };
       }
-      if (lineItems.length === 0) return { billed: false, reason: 'no_catalog_match' };
-
-      const added = lineItems.reduce((sum, li) => sum + li.price, 0);
-      await s.db.billItem.createMany({
-        data: lineItems.map((li) => ({
-          tenantId: s.tenantId,
-          billId: bill.id,
-          sourceType: 'LAB' as const,
-          name: li.name,
-          quantity: 1,
-          unitPrice: li.price,
-          total: li.price,
-        })),
-      });
-      const totalAmount = bill.totalAmount + added;
-      await s.db.bill.update({
-        where: { id: bill.id },
-        data: { totalAmount, netAmount: totalAmount - bill.discount },
-      });
-      return { billed: true, items: lineItems.length, amount: added };
-    } catch {
-      return { billed: false, reason: 'billing_error' };
+      if (resolved) lineItems.push(resolved);
     }
+    if (lineItems.length === 0) return { posted: false, reason: 'no_catalog_match' };
+
+    await s.db.billableCharge.createMany({
+      data: lineItems.map((li) => ({
+        tenantId: s.tenantId,
+        patientId,
+        encounterId: encounterId ?? null,
+        catalogId: li.catalogId,
+        sourceModule: 'LAB' as const,
+        sourceType: 'LAB_ORDER',
+        sourceId: orderId,
+        name: li.name,
+        quantity: 1,
+        unitPrice: li.price,
+        total: li.price,
+        createdById: s.actorId,
+      })),
+    });
+    await this.record(s, 'charge.create', 'lab_order', orderId, {
+      patientId,
+      encounterId: encounterId ?? null,
+      sourceModule: 'LAB',
+      items: lineItems.length,
+      amount: lineItems.reduce((sum, li) => sum + li.price, 0),
+    });
+    return { posted: true, items: lineItems.length, amount: lineItems.reduce((sum, li) => sum + li.price, 0) };
   }
 
   // ── Sample collection ─────────────────────────────────────────
@@ -409,6 +417,60 @@ export class LabService {
       });
     }
     return { result: updated, orderId };
+  }
+
+  /**
+   * Batch-verify every unverified result on an order in one step, completing the order
+   * once all items are done. Replaces clicking "verify" on each result individually.
+   */
+  async verifyAll(ctx: RequestContext, orderId: string) {
+    const s = this.scope(ctx);
+    const order = await s.db.labOrder.findFirst({
+      where: { id: orderId },
+      include: { items: { include: { results: true } } },
+    });
+    if (!order) throw new NotFoundException('Lab order not found');
+    if (order.status === 'CANCELLED') throw new BadRequestException('Lab order is cancelled');
+
+    const unverified = order.items.flatMap((i) => i.results).filter((r) => !r.isVerified);
+    if (unverified.length === 0) {
+      throw new BadRequestException('No results to verify — enter results first');
+    }
+
+    let severity: 'NORMAL' | 'ABNORMAL' | 'CRITICAL' = 'NORMAL';
+    for (const r of unverified) {
+      await s.db.labResult.update({
+        where: { id: r.id },
+        data: { isVerified: true, verifiedById: s.actorId, verifiedAt: new Date() },
+      });
+      await s.db.labOrderItem.update({ where: { id: r.labOrderItemId }, data: { status: 'COMPLETED' } });
+      if (r.abnormalFlag === 'CRITICAL') severity = 'CRITICAL';
+      else if (r.abnormalFlag !== 'NORMAL' && severity !== 'CRITICAL') severity = 'ABNORMAL';
+    }
+
+    const remaining = await s.db.labOrderItem.count({ where: { labOrderId: orderId, status: { not: 'COMPLETED' } } });
+    const completed = remaining === 0;
+    if (completed) await s.db.labOrder.update({ where: { id: orderId }, data: { status: 'COMPLETED' } });
+
+    await this.record(s, 'lab.result.verify', 'lab_order', orderId, { verified: unverified.length, completed });
+
+    const abnormal = severity !== 'NORMAL';
+    const provider = order.providerId
+      ? await s.db.provider.findFirst({ where: { id: order.providerId, active: true }, select: { userId: true } })
+      : null;
+    await this.notifications?.safeNotify(ctx, {
+      category: 'LAB',
+      type: abnormal ? 'lab.result.abnormal' : 'lab.result.ready',
+      severity: severity === 'CRITICAL' ? 'CRITICAL' : abnormal ? 'WARNING' : 'INFO',
+      title: abnormal ? 'Abnormal lab results verified' : 'Lab report ready',
+      message: abnormal ? 'Verified lab results need clinical review.' : 'A verified lab report is ready.',
+      actionUrl: `/lab/reports/${orderId}`,
+      metadata: { labOrderId: orderId, verified: unverified.length, completed },
+      roleCodes: abnormal ? ['LAB_TECH', 'DOCTOR', 'HOSPITAL_ADMIN'] : ['LAB_TECH', 'HOSPITAL_ADMIN'],
+      userIds: provider?.userId ? [provider.userId] : [],
+    });
+
+    return this.getOrder(ctx, orderId);
   }
 
   // ── Report ────────────────────────────────────────────────────

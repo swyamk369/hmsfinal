@@ -5,6 +5,7 @@ import type { RequestContext } from '../common/types';
 import { MODULES, PERMISSIONS } from '@hms/db';
 import {
   CompleteEncounterDto,
+  ConsultationChargeDto,
   CreateEncounterDto,
   CreatePrescriptionDto,
   DiagnosisDto,
@@ -74,6 +75,12 @@ export class EncounterController {
   @RequirePermission(PERMISSIONS.ENCOUNTER_WRITE)
   cancel(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: ReasonDto) {
     return this.svc.cancel(ctx, id, dto.reason);
+  }
+
+  @Post(':id/consultation-charge')
+  @RequirePermission(PERMISSIONS.FINANCE_CHARGE_MANAGE, PERMISSIONS.BILL_WRITE)
+  chargeConsultation(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: ConsultationChargeDto) {
+    return this.svc.chargeConsultation(ctx, id, dto);
   }
 
   // Clinical

@@ -3,7 +3,7 @@ import { IpdService } from './ipd.service';
 import { Ctx, RequireModule, RequirePermission } from '../common/decorators';
 import type { RequestContext } from '../common/types';
 import { MODULES, PERMISSIONS } from '@hms/db';
-import { ChargeDto, CreateAdmissionDto, CreateBedDto, CreateWardDto, DischargeDto, RoundDto, TransferDto, UpdateBedDto, UpdateWardDto } from './dto';
+import { AccrueBedChargesDto, ChargeDto, CreateAdmissionDto, CreateBedDto, CreateWardDto, DischargeDto, RoundDto, TransferDto, UpdateBedDto, UpdateWardDto } from './dto';
 
 @Controller('ipd')
 @RequireModule(MODULES.IPD)
@@ -96,6 +96,18 @@ export class IpdController {
   @RequirePermission(PERMISSIONS.IPD_CHARGE_WRITE)
   addCharge(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: ChargeDto) {
     return this.svc.addCharge(ctx, id, dto);
+  }
+
+  @Get('admissions/:id/bed-charge-preview')
+  @RequirePermission(PERMISSIONS.IPD_READ)
+  previewBedCharges(@Ctx() ctx: RequestContext, @Param('id') id: string) {
+    return this.svc.previewBedCharges(ctx, id);
+  }
+
+  @Post('admissions/:id/accrue-bed-charges')
+  @RequirePermission(PERMISSIONS.IPD_CHARGE_WRITE)
+  accrueBedCharges(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: AccrueBedChargesDto) {
+    return this.svc.accrueBedCharges(ctx, id, dto.asOf);
   }
 
   @Post('admissions/:id/discharge')

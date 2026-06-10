@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from './api';
+import type { BillableCharge } from './finance';
 
 interface PatientRef {
   id: string;
@@ -142,6 +143,11 @@ export const opdApi = {
     apiPost<Encounter>(`/encounters/${id}/complete`, body, t),
   cancelEncounter: (t: string, id: string, reason: string) =>
     apiPost<Encounter>(`/encounters/${id}/cancel`, { reason }, t),
+  chargeConsultation: (
+    t: string,
+    id: string,
+    body: { catalogId?: string; name?: string; unitPrice?: number; quantity?: number },
+  ) => apiPost<BillableCharge>(`/encounters/${id}/consultation-charge`, body, t),
 
   addVitals: (t: string, id: string, body: Partial<Vitals>) => apiPost<Vitals>(`/encounters/${id}/vitals`, body, t),
   addDiagnosis: (

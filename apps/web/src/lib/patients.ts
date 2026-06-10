@@ -64,6 +64,34 @@ export interface PatientTimeline {
   documents: PatientDocument[];
 }
 
+export interface PatientJourney {
+  patientId: string;
+  patientName: string;
+  mrn: string;
+  current: {
+    status: string;
+    module: string;
+    location: string | null;
+    href: string;
+    label: string;
+  };
+  nextRecommendedAction: {
+    label: string;
+    href: string;
+    priority: 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
+  };
+  blockers: Array<{ type: string; message: string; href: string; priority: 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL' }>;
+  activeAppointment: any | null;
+  activeEncounter: any | null;
+  activeAdmission: any | null;
+  pendingLabOrders: Array<{ id: string; status: string; createdAt: string; tests: string[] }>;
+  pendingPrescriptions: Array<{ id: string; status: string; finalizedAt: string | null; itemCount: number }>;
+  pendingCharges: Array<{ id: string; sourceModule: string; name: string; total: number; createdAt: string }>;
+  openBills: Array<{ id: string; billNumber: string; status: string; netAmount: number; outstanding: number }>;
+  activeClaim: any | null;
+  documentCount: number;
+}
+
 export interface RegisterPatientInput {
   fullName: string;
   dob?: string;
@@ -83,6 +111,7 @@ export const patientsApi = {
   update: (t: string, id: string, body: Partial<RegisterPatientInput>) => apiPatch<Patient>(`/patients/${id}`, body, t),
   archive: (t: string, id: string, reason: string) => apiDelete<Patient>(`/patients/${id}`, { reason }, t),
   timeline: (t: string, id: string) => apiGet<PatientTimeline>(`/patients/${id}/timeline`, t),
+  journey: (t: string, id: string) => apiGet<PatientJourney>(`/patients/${id}/journey`, t),
   addConsent: (t: string, id: string, purpose: string) => apiPost<Consent>(`/patients/${id}/consents`, { purpose }, t),
   addAllergy: (t: string, id: string, body: { substance: string; severity?: string; notes?: string }) =>
     apiPost<Allergy>(`/patients/${id}/allergies`, body, t),

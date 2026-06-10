@@ -261,7 +261,7 @@ export class AdminService {
   async createWard(ctx: RequestContext, dto: CreateWardDto) {
     const s = this.scope(ctx);
     const ward = await s.db.ward.create({
-      data: { tenantId: s.tenantId, name: dto.name, type: (dto.type ?? 'GENERAL') as any },
+      data: { tenantId: s.tenantId, name: dto.name, type: (dto.type ?? 'GENERAL') as any, dailyRate: dto.dailyRate ?? 0 },
     });
     await this.record(s, 'ward.create', 'ward', ward.id, { name: ward.name, type: ward.type });
     return ward;
@@ -273,7 +273,7 @@ export class AdminService {
     if (!existing) throw new NotFoundException('Ward not found');
     const ward = await s.db.ward.update({
       where: { id },
-      data: { name: dto.name, type: dto.type as any, active: dto.active },
+      data: { name: dto.name, type: dto.type as any, active: dto.active, dailyRate: dto.dailyRate },
     });
     await this.record(s, dto.active === false ? 'ward.deactivate' : 'ward.update', 'ward', id, { changes: dto });
     return ward;

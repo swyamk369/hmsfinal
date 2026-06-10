@@ -55,6 +55,12 @@ export class PatientController {
     return this.svc.timeline(ctx, id);
   }
 
+  @Get(':id/journey')
+  @RequirePermission(PERMISSIONS.PATIENT_TIMELINE_READ)
+  journey(@Ctx() ctx: RequestContext, @Param('id') id: string) {
+    return this.svc.journey(ctx, id);
+  }
+
   @Get(':id/documents')
   @RequirePermission(PERMISSIONS.PATIENT_TIMELINE_READ)
   documents(@Ctx() ctx: RequestContext, @Param('id') id: string) {

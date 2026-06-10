@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 import { inventoryApi, type InventoryAlerts, type InventoryStats, type InventoryTransaction } from '@/lib/inventory';
 import { money, formatDate, formatDateTime } from '@/lib/format';
 import { Button, Section, PageHeader, StatCard, Spinner, ErrorState, EmptyState, Badge } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 function InventoryInner() {
   const { activeTenantId } = useAuth();
@@ -97,6 +98,14 @@ function InventoryInner() {
                 View ledger
               </Button>
             </Link>
+          </div>
+
+          <div className="mb-6 space-y-6">
+            <HelpTip title="Inventory flow">
+              Treat the ledger as the source of truth. Receive stock through procurement, adjust only with a reason, and
+              clear expiry or low-stock blockers before they affect pharmacy.
+            </HelpTip>
+            <WorkQueuePanel title="Inventory work queue" modules={['INVENTORY']} limit={8} compact />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">

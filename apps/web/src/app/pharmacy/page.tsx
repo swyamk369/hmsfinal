@@ -19,6 +19,7 @@ import {
   Input,
   Select,
 } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 function PharmacyInner() {
   const { activeTenantId } = useAuth();
@@ -70,6 +71,14 @@ function PharmacyInner() {
           <StatCard label="Near expiry" value={stats.nearExpiry} hint="next 30 days" />
         </div>
       )}
+
+      <div className="mb-6 space-y-6">
+        <HelpTip title="Pharmacy flow">
+          Dispense finalized prescriptions only after stock is confirmed. Partial dispenses and low-stock risks stay in
+          the queue until they are resolved.
+        </HelpTip>
+        <WorkQueuePanel title="Pharmacy work queue" modules={['PHARMACY', 'INVENTORY']} limit={6} compact />
+      </div>
 
       <Section
         title="Prescription queue"

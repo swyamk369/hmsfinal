@@ -20,6 +20,7 @@ import {
   Input,
   Select,
 } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 function BillingInner() {
   const { activeTenantId } = useAuth();
@@ -72,6 +73,14 @@ function BillingInner() {
           <StatCard label="Outstanding" value={money(stats.outstandingReceivables)} hint="UNPAID + PARTIAL" />
         </div>
       )}
+
+      <div className="mb-6 space-y-6">
+        <HelpTip title="Billing flow">
+          Prioritize partial and unpaid bills tied to active IPD or completed visits. Refunds and cancellations should
+          always carry the reason that belongs in the audit trail.
+        </HelpTip>
+        <WorkQueuePanel title="Billing work queue" modules={['BILLING', 'INSURANCE']} limit={6} compact />
+      </div>
 
       <Section
         title="Bills"

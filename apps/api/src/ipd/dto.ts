@@ -28,6 +28,16 @@ export class CreateWardDto {
   @IsOptional()
   @IsIn(WARD_TYPES)
   type?: (typeof WARD_TYPES)[number];
+
+  // Per-day room tariff in minor units (paise).
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  dailyRate?: number;
+
+  @IsOptional()
+  @IsUUID()
+  chargeCatalogId?: string;
 }
 
 export class UpdateWardDto {
@@ -42,8 +52,23 @@ export class UpdateWardDto {
   type?: (typeof WARD_TYPES)[number];
 
   @IsOptional()
+  @IsInt()
+  @Min(0)
+  dailyRate?: number;
+
+  @IsOptional()
+  @IsUUID()
+  chargeCatalogId?: string;
+
+  @IsOptional()
   @IsBoolean()
   active?: boolean;
+}
+
+export class AccrueBedChargesDto {
+  @IsOptional()
+  @IsDateString()
+  asOf?: string;
 }
 
 // ── Beds ────────────────────────────────────────────────────────

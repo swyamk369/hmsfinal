@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import type { TenantClient } from '@hms/db';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { MODULES, type TenantClient } from '@hms/db';
 import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import { nextToken } from '../common/sequences';
@@ -7,6 +7,7 @@ import type { RequestContext } from '../common/types';
 import { NotificationsService } from '../notifications/notifications.service';
 import {
   CompleteEncounterDto,
+  ConsultationChargeDto,
   CreateEncounterDto,
   CreatePrescriptionDto,
   DiagnosisDto,
@@ -116,6 +117,7 @@ export class EncounterService {
     if (dto.appointmentId) {
       await s.db.appointment.updateMany({ where: { id: dto.appointmentId }, data: { status: 'CHECKED_IN' } });
     }
+    if (ctx.modules.has(MODULES.BILLING)) await this.postDefaultConsultationCharge(s, enc.id, dto.patientId);
     await this.record(s, 'encounter.create', 'encounter', enc.id, { patientId: dto.patientId, token });
     return enc;
   }
@@ -126,8 +128,76 @@ export class EncounterService {
     this.assertTransition(enc.status, 'CHECKED_IN');
     const token = enc.tokenNumber ?? (await nextToken(s.db));
     const updated = await s.db.encounter.update({ where: { id }, data: { status: 'CHECKED_IN', tokenNumber: token } });
+    if (ctx.modules.has(MODULES.BILLING)) await this.postDefaultConsultationCharge(s, id, enc.patientId);
     await this.record(s, 'encounter.checkin', 'encounter', id, { token });
     return updated;
+  }
+
+  private async postDefaultConsultationCharge(s: Scope, encounterId: string, patientId: string) {
+    return this.createConsultationCharge(s, encounterId, patientId, {}, true);
+  }
+
+  private async createConsultationCharge(
+    s: Scope,
+    encounterId: string,
+    patientId: string,
+    dto: ConsultationChargeDto,
+    allowMissingDefault = false,
+  ) {
+    const duplicate = await s.db.billableCharge.findFirst({
+      where: { encounterId, sourceModule: 'OPD' as any, sourceType: 'CONSULTATION', status: { in: ['PENDING', 'BILLED'] as any } },
+    });
+    if (duplicate) return duplicate;
+
+    let catalog = null;
+    let catalogId = dto.catalogId ?? null;
+    if (!catalogId) {
+      const settings = await s.db.hospitalSettings.findUnique({ where: { tenantId: s.tenantId } });
+      catalogId = settings?.defaultConsultationCatalogId ?? null;
+    }
+    if (catalogId) {
+      catalog = await s.db.serviceCatalog.findFirst({ where: { id: catalogId, active: true } });
+    }
+
+    const name = (dto.name?.trim() || catalog?.name || 'OPD consultation').slice(0, 200);
+    const unitPrice = dto.unitPrice ?? catalog?.price;
+    if (unitPrice == null) {
+      if (allowMissingDefault) return null;
+      throw new BadRequestException('Configure a default consultation service or enter a consultation fee');
+    }
+    const quantity = dto.quantity ?? 1;
+    const charge = await s.db.billableCharge.create({
+      data: {
+        tenantId: s.tenantId,
+        patientId,
+        encounterId,
+        catalogId: catalog?.id ?? null,
+        sourceModule: 'OPD',
+        sourceType: 'CONSULTATION',
+        sourceId: encounterId,
+        name,
+        quantity,
+        unitPrice,
+        total: quantity * unitPrice,
+        createdById: s.actorId,
+      },
+    });
+    await this.record(s, 'charge.create', 'billable_charge', charge.id, {
+      sourceModule: 'OPD',
+      sourceType: 'CONSULTATION',
+      encounterId,
+      patientId,
+      amount: charge.total,
+    });
+    return charge;
+  }
+
+  async chargeConsultation(ctx: RequestContext, id: string, dto: ConsultationChargeDto) {
+    if (!ctx.modules.has(MODULES.BILLING)) throw new ForbiddenException('BILLING module is not enabled');
+    const s = this.scope(ctx);
+    const enc = await this.load(s, id);
+    if (enc.status === 'CANCELLED') throw new BadRequestException('Cancelled encounters cannot be charged');
+    return this.createConsultationCharge(s, id, enc.patientId, dto);
   }
 
   async start(ctx: RequestContext, id: string) {

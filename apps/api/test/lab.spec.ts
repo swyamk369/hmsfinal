@@ -42,6 +42,7 @@ function mockDb(): Record<string, any> {
     serviceCatalog: model(),
     bill: model(),
     billItem: model(),
+    billableCharge: model(),
     appointment: model(),
     consent: model(),
     allergy: model(),
@@ -111,7 +112,7 @@ describe('Lab orders + lifecycle', () => {
     const data = db.labOrder.create.mock.calls[0][0].data;
     expect(data.status).toBe('ORDERED');
     expect(data.items.create).toHaveLength(1);
-    expect(out.billing).toEqual({ billed: false, reason: 'no_encounter' });
+    expect(out.billing).toEqual({ posted: false, reason: 'no_catalog_match' });
     expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'lab.order' }));
   });
 
@@ -124,27 +125,50 @@ describe('Lab orders + lifecycle', () => {
     expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'lab.order' }));
   });
 
-  it('billing integration adds a BillItem when an open bill + LAB catalog match exist', async () => {
+  it('bills lab charges from the lab test catalog price (by testId), not a name match', async () => {
     db.encounter.findFirst.mockResolvedValue({ id: 'e1', patientId: 'p1', providerId: 'dr1', status: 'IN_PROGRESS' });
     db.labOrder.create.mockResolvedValue({ id: 'o1', encounterId: 'e1', items: [{ id: 'i1' }] });
-    db.bill.findFirst.mockResolvedValue({ id: 'b1', totalAmount: 50000, discount: 0 });
+    db.labTestCatalog.findFirst.mockResolvedValue({ id: 'c1', name: 'CBC', price: 400000, active: true });
+    const out = await svc.createFromEncounter(ctx(db), 'e1', { tests });
+    expect(db.serviceCatalog.findFirst).not.toHaveBeenCalled(); // the lab test price short-circuits the fallback
+    expect(db.billableCharge.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [expect.objectContaining({ sourceModule: 'LAB', sourceType: 'LAB_ORDER', name: 'CBC', total: 400000, catalogId: 'c1' })],
+      }),
+    );
+    expect(out.billing).toMatchObject({ posted: true, items: 1, amount: 400000 });
+  });
+
+  it('billing integration falls back to a ServiceCatalog LAB entry when the test has no price', async () => {
+    db.encounter.findFirst.mockResolvedValue({ id: 'e1', patientId: 'p1', providerId: 'dr1', status: 'IN_PROGRESS' });
+    db.labOrder.create.mockResolvedValue({ id: 'o1', encounterId: 'e1', items: [{ id: 'i1' }] });
     db.serviceCatalog.findFirst.mockResolvedValue({ id: 's1', name: 'CBC', price: 30000 });
     const out = await svc.createFromEncounter(ctx(db), 'e1', { tests });
-    expect(db.billItem.createMany).toHaveBeenCalled();
-    expect(db.bill.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ totalAmount: 80000, netAmount: 80000 }) }),
+    expect(db.billableCharge.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: [
+          expect.objectContaining({
+            patientId: 'p1',
+            encounterId: 'e1',
+            sourceModule: 'LAB',
+            sourceType: 'LAB_ORDER',
+            name: 'CBC',
+            total: 30000,
+          }),
+        ],
+      }),
     );
-    expect(out.billing).toMatchObject({ billed: true, items: 1, amount: 30000 });
+    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'charge.create' }));
+    expect(out.billing).toMatchObject({ posted: true, items: 1, amount: 30000 });
   });
 
   it('lab order still succeeds (no crash) when no billing catalog matches', async () => {
     db.encounter.findFirst.mockResolvedValue({ id: 'e1', patientId: 'p1', providerId: null, status: 'IN_PROGRESS' });
     db.labOrder.create.mockResolvedValue({ id: 'o1', encounterId: 'e1', items: [{ id: 'i1' }] });
-    db.bill.findFirst.mockResolvedValue({ id: 'b1', totalAmount: 50000, discount: 0 });
     db.serviceCatalog.findFirst.mockResolvedValue(null);
     const out = await svc.createFromEncounter(ctx(db), 'e1', { tests });
-    expect(db.billItem.createMany).not.toHaveBeenCalled();
-    expect(out.billing).toEqual({ billed: false, reason: 'no_catalog_match' });
+    expect(db.billableCharge.createMany).not.toHaveBeenCalled();
+    expect(out.billing).toEqual({ posted: false, reason: 'no_catalog_match' });
   });
 
   it('ORDERED → SAMPLE_COLLECTED via sample collection, audits lab.sample.collect', async () => {
@@ -217,6 +241,49 @@ describe('Lab results', () => {
   it('rejects re-verifying an already verified result', async () => {
     db.labResult.findFirst.mockResolvedValue({ id: 'r1', labOrderItemId: 'i1', isVerified: true });
     await expect(svc.verifyResult(ctx(db), 'r1')).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('verifyAll batch-verifies every unverified result and completes the order in one step', async () => {
+    db.labOrder.findFirst
+      .mockResolvedValueOnce({
+        id: 'o1',
+        status: 'PROCESSING',
+        providerId: null,
+        items: [
+          { id: 'i1', results: [{ id: 'r1', labOrderItemId: 'i1', isVerified: false, abnormalFlag: 'NORMAL' }] },
+          { id: 'i2', results: [{ id: 'r2', labOrderItemId: 'i2', isVerified: false, abnormalFlag: 'HIGH' }] },
+        ],
+      })
+      .mockResolvedValueOnce({ id: 'o1', status: 'COMPLETED', items: [] });
+    db.labOrderItem.count.mockResolvedValue(0);
+
+    await svc.verifyAll(ctx(db), 'o1');
+
+    expect(db.labResult.update).toHaveBeenCalledTimes(2);
+    expect(db.labOrderItem.update).toHaveBeenCalledTimes(2);
+    expect(db.labOrder.update).toHaveBeenCalledWith(expect.objectContaining({ data: { status: 'COMPLETED' } }));
+    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'lab.result.verify' }));
+  });
+
+  it('verifyAll rejects when no results have been entered yet', async () => {
+    db.labOrder.findFirst.mockResolvedValue({ id: 'o1', status: 'SAMPLE_COLLECTED', items: [{ id: 'i1', results: [] }] });
+    await expect(svc.verifyAll(ctx(db), 'o1')).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('verifyAll leaves the order open while items still lack results', async () => {
+    db.labOrder.findFirst
+      .mockResolvedValueOnce({
+        id: 'o1',
+        status: 'PROCESSING',
+        providerId: null,
+        items: [{ id: 'i1', results: [{ id: 'r1', labOrderItemId: 'i1', isVerified: false, abnormalFlag: 'NORMAL' }] }],
+      })
+      .mockResolvedValueOnce({ id: 'o1', status: 'PROCESSING', items: [] });
+    db.labOrderItem.count.mockResolvedValue(1); // a second item has no result yet
+
+    await svc.verifyAll(ctx(db), 'o1');
+
+    expect(db.labOrder.update).not.toHaveBeenCalled();
   });
 });
 

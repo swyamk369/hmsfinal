@@ -24,6 +24,7 @@ import {
   Settings,
   LifeBuoy,
   ShieldPlus,
+  ListChecks,
   Menu,
   Search,
   ChevronDown,
@@ -41,6 +42,7 @@ const ICONS: Record<string, LucideIcon> = {
   '/dashboard': LayoutDashboard,
   '/manager': BarChart3,
   '/reception': ClipboardList,
+  '/opd': ListChecks,
   '/patients': Users,
   '/doctor': Stethoscope,
   '/nursing': HeartPulse,
@@ -48,6 +50,7 @@ const ICONS: Record<string, LucideIcon> = {
   '/pharmacy': Pill,
   '/inventory': Package,
   '/ipd': BedDouble,
+  '/finance': Calculator,
   '/billing': Receipt,
   '/accounts': Calculator,
   '/insurance': ShieldCheck,
@@ -100,9 +103,9 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <Link href="/settings/account" onClick={onNavigate} className="nav-item">
           <Settings className="h-[18px] w-[18px]" /> Settings
         </Link>
-        <div className="nav-item cursor-default opacity-70">
+        <Link href="/support" onClick={onNavigate} className="nav-item">
           <LifeBuoy className="h-[18px] w-[18px]" /> Support
-        </div>
+        </Link>
       </div>
     </div>
   );

@@ -265,6 +265,23 @@ export class PharmacyService {
           },
         },
       });
+      await tx.billableCharge.createMany({
+        data: billItems.map((li) => ({
+          tenantId: s.tenantId,
+          patientId: rx.encounter.patientId,
+          encounterId: rx.encounterId,
+          billId: bill.id,
+          sourceModule: 'PHARMACY' as const,
+          sourceType: 'DISPENSE',
+          sourceId: dispense.id,
+          name: li.name,
+          quantity: li.quantity,
+          unitPrice: li.unitPrice,
+          total: li.total,
+          status: 'BILLED' as const,
+          createdById: s.actorId,
+        })),
+      });
       await tx.dispenseRecord.update({ where: { id: dispense.id }, data: { billId: bill.id } });
       await tx.prescription.update({ where: { id: prescriptionId }, data: { status: 'DISPENSED' } });
       return { dispenseId: dispense.id, billId: bill.id };
@@ -278,6 +295,12 @@ export class PharmacyService {
       source: 'pharmacy',
       billNumber,
       netAmount: totalAmount,
+    });
+    await this.record(s, 'charge.create', 'dispense_record', result.dispenseId, {
+      sourceModule: 'PHARMACY',
+      billId: result.billId,
+      items: billItems.length,
+      amount: totalAmount,
     });
     await this.notifications?.safeNotify(ctx, {
       category: 'PHARMACY',

@@ -11,6 +11,7 @@ import { useToast } from '@/components/toast';
 import { opdApi, type Encounter } from '@/lib/opd';
 import { ageFromDob } from '@/lib/format';
 import { Button, Section, PageHeader, StatCard, Spinner, ErrorState, EmptyState, StatusChip } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 function DoctorInner() {
   const { profile, activeTenantId } = useAuth();
@@ -73,6 +74,14 @@ function DoctorInner() {
 
       {rows && (
         <>
+          <div className="mb-6 space-y-6">
+            <HelpTip title="Doctor flow">
+              Open in-progress consultations first, then longest-waiting checked-in patients. Lab/IPD items appear here
+              when a result, round, or inpatient action needs your attention.
+            </HelpTip>
+            <WorkQueuePanel title="Clinical work queue" modules={['OPD', 'SCHEDULING', 'LAB', 'IPD']} limit={6} compact />
+          </div>
+
           <div className="mb-6 grid gap-4 sm:grid-cols-3">
             <StatCard label="Waiting" value={groups.waiting.length} />
             <StatCard label="In consult" value={groups.inConsult.length} />

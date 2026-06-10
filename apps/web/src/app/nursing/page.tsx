@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 import { nursingApi, type NursingDashboard } from '@/lib/nursing';
 import { ageFromDob, formatDateTime } from '@/lib/format';
 import { Badge, EmptyState, ErrorState, PageHeader, Section, Spinner, StatCard, StatusChip } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 function NursingDashboardInner() {
   const { activeTenantId } = useAuth();
@@ -37,6 +38,14 @@ function NursingDashboardInner() {
   return (
     <>
       <PageHeader title="Nursing" subtitle="Assigned inpatients, vitals, MAR, notes, and ward alerts" />
+
+      <div className="mb-6 space-y-6">
+        <HelpTip title="Nursing flow">
+          Review alerts and missed medication items first, then record due vitals and notes from each admission card.
+          The patient care page keeps vitals, notes, MAR, and the timeline together.
+        </HelpTip>
+        <WorkQueuePanel title="Nursing work queue" modules={['IPD']} limit={6} compact />
+      </div>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard label="Assigned patients" value={dashboard.counts.admitted} icon={BedDouble} />

@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { MODULES } from '@hms/db';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { PatientService } from '../src/patient/patient.service';
@@ -34,6 +35,8 @@ function mockDb(): Record<string, any> {
     allergy: model(),
     medicalHistory: model(),
     patientDocument: model(),
+    admission: model(),
+    insuranceClaim: model(),
     hospitalSettings: model(),
     tenant: model(),
     encounter: model(),
@@ -44,14 +47,15 @@ function mockDb(): Record<string, any> {
     prescription: model(),
     serviceCatalog: model(),
     bill: model(),
+    billableCharge: model(),
     payment: model(),
     refund: model(),
     labOrder: model(),
   };
 }
 
-function ctx(db: Record<string, any>): RequestContext {
-  return { ...emptyContext(), userId: 'u1', tenantId: 't1', db: db as any };
+function ctx(db: Record<string, any>, over: Partial<RequestContext> = {}): RequestContext {
+  return { ...emptyContext(), userId: 'u1', tenantId: 't1', db: db as any, ...over };
 }
 
 let db: Record<string, any>;
@@ -160,6 +164,37 @@ describe('PatientService', () => {
       expect.objectContaining({ action: 'patient.document.generate_summary' }),
     );
   });
+
+  it('builds a current patient journey with blockers and next action', async () => {
+    db.patient.findFirst.mockResolvedValue({
+      id: 'p1',
+      mrn: 'MRN-1',
+      fullName: 'Jane',
+      dob: null,
+      sex: 'FEMALE',
+      phone: null,
+      email: null,
+    });
+    db.appointment.findFirst.mockResolvedValue(null);
+    db.encounter.findFirst.mockResolvedValue({ id: 'e1', status: 'CHECKED_IN', createdAt: new Date() });
+    db.admission.findFirst.mockResolvedValue(null);
+    db.labOrder.findMany.mockResolvedValue([
+      { id: 'lab1', status: 'ORDERED', createdAt: new Date(), items: [{ testName: 'CBC' }] },
+    ]);
+    db.prescription.findMany.mockResolvedValue([]);
+    db.bill.findMany.mockResolvedValue([
+      { id: 'b1', billNumber: 'INV-1', status: 'UNPAID', netAmount: 10000, payments: [], refunds: [] },
+    ]);
+    db.insuranceClaim.findFirst.mockResolvedValue(null);
+    db.patientDocument.count.mockResolvedValue(2);
+
+    const out = await new PatientService(asAudit()).journey(ctx(db), 'p1');
+
+    expect(out.current).toMatchObject({ status: 'CHECKED_IN', module: 'OPD' });
+    expect(out.blockers.map((b) => b.type)).toEqual(expect.arrayContaining(['LAB', 'BILLING']));
+    expect(out.nextRecommendedAction.href).toBe('/lab');
+    expect(out.documentCount).toBe(2);
+  });
 });
 
 describe('AppointmentService', () => {
@@ -208,6 +243,50 @@ describe('EncounterService', () => {
     await expect(new EncounterService(asAudit()).addVitals(ctx(db), 'e1', { pulse: 80 } as any)).rejects.toBeInstanceOf(
       BadRequestException,
     );
+  });
+
+  it('posts a duplicate-safe OPD consultation charge for billing', async () => {
+    db.encounter.findFirst.mockResolvedValue({ id: 'e1', patientId: 'p1', status: 'CHECKED_IN' });
+    db.billableCharge.findFirst.mockResolvedValue(null);
+    db.billableCharge.create.mockResolvedValue({
+      id: 'charge1',
+      patientId: 'p1',
+      encounterId: 'e1',
+      sourceModule: 'OPD',
+      sourceType: 'CONSULTATION',
+      total: 5000,
+    });
+
+    await new EncounterService(asAudit()).chargeConsultation(ctx(db, { modules: new Set([MODULES.BILLING]) }), 'e1', {
+      name: 'OPD consultation',
+      unitPrice: 5000,
+    });
+
+    expect(db.billableCharge.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          tenantId: 't1',
+          patientId: 'p1',
+          encounterId: 'e1',
+          sourceModule: 'OPD',
+          sourceType: 'CONSULTATION',
+          sourceId: 'e1',
+          name: 'OPD consultation',
+          quantity: 1,
+          unitPrice: 5000,
+          total: 5000,
+        }),
+      }),
+    );
+    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'charge.create' }));
+
+    db.billableCharge.create.mockClear();
+    db.billableCharge.findFirst.mockResolvedValue({ id: 'charge1', status: 'PENDING' });
+    await new EncounterService(asAudit()).chargeConsultation(ctx(db, { modules: new Set([MODULES.BILLING]) }), 'e1', {
+      name: 'OPD consultation',
+      unitPrice: 5000,
+    });
+    expect(db.billableCharge.create).not.toHaveBeenCalled();
   });
 
   it('finalizes a draft prescription and audits prescription.finalize', async () => {

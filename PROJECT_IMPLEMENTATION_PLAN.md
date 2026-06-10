@@ -631,6 +631,207 @@ Acceptance:
 - Backups and rollback are documented.
 - Health checks include API and DB connectivity.
 
+## Phase 21 — Revenue Cycle Hardening
+
+Builds on the Phase 20 unified Finance module (the `BillableCharge` ledger, bills,
+payments, refunds, day-close, approvals). Goal: eliminate revenue leakage and make
+billing automatic, payer-aware, and audit-clean across every module — the way a
+best-in-class hospital information system bills.
+
+**Locked decisions (do not re-litigate):**
+
+- Bed/room days are counted by **calendar day (midnight census)** — count distinct
+  calendar dates the patient occupied a bed. Configurable per tenant.
+- The per-day room rate lives on **`Ward.dailyRate`** (minor units), with an optional
+  link to a `ServiceCatalog` BED item for name/tax.
+- All new charges flow through the existing `BillableCharge` ledger and audit — never
+  a parallel billing path.
+- Every sub-phase must meet the Completion Standard (API, UI, RBAC, module entitlement,
+  tenant isolation, audit, reason enforcement, tests, E2E, production build).
+
+**Recommended accrual rollout (answers "best for seamless day-to-day ops"):**
+
+1. Ship **at-discharge true-up** + **on-demand "post bed charges" button** first — no
+   scheduler needed, immediately usable, idempotent via a watermark.
+2. Add **nightly auto-accrual** (a midnight census job over all `ADMITTED` admissions)
+   as the target state once a scheduler exists — this is the seamless ideal: room
+   charges simply appear each day, the running balance is always current, and no
+   cashier ever has to remember. The watermark makes all three mechanisms safe to run
+   together without double-charging.
+
+### Phase 21.1 — Per-diem bed/room charging ✅ DONE (2026-06-11)
+
+Build:
+
+- Schema: `Ward.dailyRate` (Int, minor units, default 0) + optional `Ward.chargeCatalogId`;
+  `Admission.bedChargedThrough` (DateTime?, idempotency watermark); `HospitalSettings`
+  IPD policy fields — `ipdDayBasis` (default `CALENDAR_DAY`), `ipdChargeAdmissionDay`
+  (default true), `ipdChargeDischargeDay` (default false), `ipdMinUnits` (default 1).
+- Pure, exported, unit-tested helper `apps/api/src/ipd/bed-charges.ts`: rebuild
+  occupancy segments from `admittedAt` → each `BedTransfer.transferredAt` →
+  (`dischargedAt` ?? now), map each segment's bed → ward → rate, compute calendar-day
+  units per the policy, and subtract whatever the watermark already covered.
+- `IpdService.accrueBedCharges(ctx, admissionId, asOf?)`: posts one `BillableCharge`
+  per ward segment (`sourceModule: IPD`, `sourceType: BED_CHARGE`) into the running
+  IPD bill, audits `charge.create`, and advances `bedChargedThrough` — all inside a
+  `tenantTransaction`. Idempotent.
+- Wire accrual into `IpdService.discharge()` (final true-up before the bed is freed).
+- Migration + verify RLS still covers `ward`/`admission` (new columns only, no new
+  tables). Seed demo ward rates + settings defaults.
+
+Frontend routes:
+
+- `/admin/wards` (or `/ipd/wards`) — ward daily-rate field.
+- `/ipd/admissions/[id]` — bed-day preview + "Post bed charges now" action on the
+  charges tab; discharge screen shows the accrued room total.
+
+API endpoints:
+
+- `POST /ipd/admissions/:id/accrue-bed-charges` (interim, `ipd.charge.write`).
+
+Acceptance:
+
+- A 3-calendar-day stay posts 3 bed-days at the ward rate (per admission/discharge-day
+  policy).
+- An ICU → PRIVATE transfer splits the stay and bills each segment at its own ward rate.
+- Re-running accrual (interim, then discharge) never double-charges.
+- A same-day admit/discharge bills the configured minimum (1 day).
+- Bed charges reach the IPD bill, the `BillableCharge` ledger, and audit.
+
+### Phase 21.2 — Revenue-leakage reconciliation (highest ROI) ✅ DONE (2026-06-11)
+
+Build:
+
+- A finance reconciliation service that cross-checks clinical events against charges:
+  `COMPLETED` lab orders with no billed charge, dispenses with no bill, admitted
+  bed-days not yet accrued (uses 21.1's watermark vs today), completed encounters/
+  procedures with no consultation/procedure charge. Returns leakage rows with deep
+  links and a one-click "post charge" action.
+
+Frontend routes:
+
+- `/finance/leakage`.
+
+API endpoints:
+
+- `GET /finance/leakage`.
+
+Acceptance:
+
+- A completed, unbilled lab order appears in the report; posting the charge clears it.
+- Respects tenant isolation, permissions, and module entitlement.
+
+### Phase 21.3 — Payer-specific tariffs / rate plans
+
+Build:
+
+- `PriceList` (name, payerType, active) + `PriceListItem` (catalogId, price, taxRate).
+- Resolve the unit price by the patient's payer (cash vs policy/TPA/corporate/scheme)
+  at charge time, falling back to `ServiceCatalog.price`.
+
+Frontend routes:
+
+- `/admin/price-lists`.
+
+Acceptance:
+
+- The same service prices differently per payer; cash fallback works when no list
+  matches.
+
+### Phase 21.4 — Advance deposits and estimates
+
+Build:
+
+- A patient/admission **advance-deposit** ledger (money taken before/at admission, held
+  as credit, auto-applied against bills, refundable balance on discharge).
+- An **estimate** model: pre-admission/pre-procedure cost projection, printable.
+
+Frontend routes:
+
+- Deposit capture on `/ipd/admit` and the patient account; estimate generator under
+  `/finance/estimates`.
+
+API endpoints:
+
+- `GET/POST /finance/deposits`, `POST /finance/deposits/:id/refund` (reason required),
+  `GET/POST /finance/estimates`.
+
+Acceptance:
+
+- A deposit reduces patient outstanding and is auto-applied to the final bill.
+- Unused deposit is refundable on discharge with reason + audit.
+
+### Phase 21.5 — Discount, refund, and write-off governance
+
+Build:
+
+- Configurable thresholds in `HospitalSettings` (discount %, refund amount, write-off
+  amount). A request above threshold auto-creates a `FinanceApproval` and blocks the
+  action until approved; below threshold auto-approves. (Closes the Phase 20 known gap.)
+- Implement the `WRITE_OFF` execution path: zero the bill's outstanding balance without
+  cash movement, with reason + audit.
+
+Acceptance:
+
+- A refund above the threshold requires approval before it executes.
+- A write-off clears outstanding, leaves a credit/write-off trail, and is audited.
+
+### Phase 21.6 — GST-compliant invoices
+
+Build:
+
+- Tax fields on `BillItem` (taxableValue, taxRate, taxAmount, hsnSac); bill-level
+  CGST/SGST/IGST split + a `roundOff` line on `Bill`.
+- Invoice print view shows hospital GSTIN, per-item tax, HSN/SAC, and tax totals.
+
+Acceptance:
+
+- The invoice shows per-item taxable value + tax and balanced totals with rounding.
+
+### Phase 21.7 — Package / bundled billing
+
+Build:
+
+- A `Package` definition (fixed price, included services, included bed-days) and
+  package-aware billing that suppresses included charges and bills only the extras.
+  (Concretizes the "Package Billing" item in Future Direction.)
+
+Acceptance:
+
+- A package admission bills the package price; out-of-package items are billed
+  separately and visible.
+
+### Phase 21.8 — Day-close locking
+
+Build:
+
+- Block payments/refunds dated into a `CLOSED` business date unless the day is reopened
+  (reopen already requires approval). Day-close becomes a true financial lock, not just
+  a report.
+
+Acceptance:
+
+- A back-dated payment into a closed business date is rejected with a clear error.
+
+### Phase 21.9 — Revenue-cycle polish
+
+Build:
+
+- Bill-time **payer split** (co-pay %, non-payable items → patient-responsible vs
+  payer-responsible) computed up front, feeding insurance receivables.
+- **Credit notes** as a first-class adjustment (own financial-year number series) vs
+  cash refunds.
+- **Charge-posting idempotency keys** on `(sourceModule, sourceId)` so workflow retries
+  cannot duplicate charges.
+- **Dues aging** (0-30 / 30-60 / 60-90) on the patient statement and a printable
+  consolidated patient statement.
+
+Acceptance:
+
+- A bill shows patient-share vs payer-share before any settlement.
+- Re-posting the same source event does not create a duplicate charge.
+- The patient statement prints with aged outstanding buckets.
+
 ## Future Direction — Post-Core Expansion After Phase 18
 
 These items are intentionally deferred until the production HMS core is complete, tested, deployed, and stable. They must not interrupt or reorder Phases 0-18.

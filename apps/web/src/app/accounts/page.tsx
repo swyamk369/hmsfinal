@@ -10,6 +10,7 @@ import { billingApi, type BillingStats } from '@/lib/billing';
 import { insuranceApi, claimApproved, claimSettled, type InsuranceReceivables } from '@/lib/insurance';
 import { money, formatDateTime } from '@/lib/format';
 import { Button, EmptyState, ErrorState, PageHeader, Section, Spinner, StatCard, StatusChip } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 function AccountsInner() {
   const { activeTenantId, profile } = useAuth();
@@ -76,6 +77,14 @@ function AccountsInner() {
           <StatCard label="Settled today" value={money(receivables.stats.settledToday)} />
         </div>
       )}
+
+      <div className="mb-6 space-y-6">
+        <HelpTip title="Accounts flow">
+          Reconcile billing receivables first, then insurance approvals and settlements. Use blockers to catch rejected
+          claims and high-value balances before month-end.
+        </HelpTip>
+        <WorkQueuePanel title="Accounts work queue" modules={['BILLING', 'INSURANCE']} limit={6} compact />
+      </div>
 
       {hasInsurance && (
         <Section title="Insurance receivables">

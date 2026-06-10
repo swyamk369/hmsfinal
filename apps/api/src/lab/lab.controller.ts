@@ -93,6 +93,12 @@ export class LabController {
     return this.svc.verifyResult(ctx, id);
   }
 
+  @Post('orders/:id/verify')
+  @RequirePermission(PERMISSIONS.LAB_RESULT_VERIFY)
+  verifyAll(@Ctx() ctx: RequestContext, @Param('id') id: string) {
+    return this.svc.verifyAll(ctx, id);
+  }
+
   @Get('reports/:id')
   @RequirePermission(PERMISSIONS.LAB_REPORT_PRINT, PERMISSIONS.LAB_READ)
   report(@Ctx() ctx: RequestContext, @Param('id') id: string) {

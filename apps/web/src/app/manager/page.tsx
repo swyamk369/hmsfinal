@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth-context';
 import { money, formatDateTime } from '@/lib/format';
 import { Button, EmptyState, ErrorState, PageHeader, Section, Spinner } from '@/components/ui';
 import { KpiGrid, ModuleCard } from '@/app/reports/report-ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 function ManagerInner() {
   const { activeTenantId } = useAuth();
@@ -42,6 +43,11 @@ function ManagerInner() {
       />
 
       <div className="space-y-6">
+        <HelpTip title="Manager focus">
+          Start with blockers, then scan module pressure. The queue only shows work from modules enabled for this hospital
+          and actions your account can open.
+        </HelpTip>
+
         <KpiGrid
           items={[
             { label: 'OPD volume', value: data.opd?.todayEncounters ?? 0, hint: `${data.opd?.completionRate ?? 0}% completion`, icon: Stethoscope },
@@ -74,6 +80,12 @@ function ManagerInner() {
             </div>
           )}
         </Section>
+
+        <WorkQueuePanel
+          title="Cross-department work queue"
+          modules={['OPD', 'SCHEDULING', 'LAB', 'PHARMACY', 'INVENTORY', 'BILLING', 'IPD', 'INSURANCE', 'ADMIN', 'SYSTEM']}
+          limit={12}
+        />
 
         <Section title="Report shortcuts">
           <div className="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-4">

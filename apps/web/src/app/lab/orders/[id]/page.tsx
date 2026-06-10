@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, FlaskConical, Beaker, Printer, CheckCircle2, Play } from 'lucide-react';
+import { ArrowLeft, FlaskConical, Beaker, Printer, CheckCircle2, Save } from 'lucide-react';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { getActiveMembership } from '@/lib/access';
 import { useToast } from '@/components/toast';
-import { labApi, ABNORMAL_FLAGS, type LabOrder, type LabOrderItem, type ResultEntry } from '@/lib/lab';
+import { labApi, ABNORMAL_FLAGS, type AbnormalFlag, type LabOrder, type LabOrderItem } from '@/lib/lab';
 import { formatDateTime } from '@/lib/format';
 import {
   Button,
@@ -23,6 +23,14 @@ import {
   ErrorState,
 } from '@/components/ui';
 
+interface Entry {
+  value: string;
+  unit: string;
+  range: string;
+  flag: AbnormalFlag;
+  notes: string;
+}
+
 function OrderDetail({ id }: { id: string }) {
   const { activeTenantId, profile } = useAuth();
   const t = activeTenantId!;
@@ -31,6 +39,7 @@ function OrderDetail({ id }: { id: string }) {
   const has = (p: string) => perms.has(p);
 
   const [order, setOrder] = useState<LabOrder | null>(null);
+  const [entries, setEntries] = useState<Record<string, Entry>>({});
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -47,6 +56,27 @@ function OrderDetail({ id }: { id: string }) {
   useEffect(() => {
     void load();
   }, [load]);
+
+  // Seed the editable panel from the order, preserving any unsaved edits across reloads.
+  useEffect(() => {
+    if (!order) return;
+    setEntries((prev) => {
+      const next: Record<string, Entry> = {};
+      for (const item of order.items) {
+        const ex = item.results[0];
+        next[item.id] =
+          prev[item.id] ??
+          {
+            value: ex?.value ?? '',
+            unit: ex?.unit ?? '',
+            range: ex?.referenceRange ?? '',
+            flag: ex?.abnormalFlag ?? 'NORMAL',
+            notes: ex?.notes ?? '',
+          };
+      }
+      return next;
+    });
+  }, [order]);
 
   async function run(label: string, fn: () => Promise<unknown>) {
     setBusy(true);
@@ -65,6 +95,35 @@ function OrderDetail({ id }: { id: string }) {
   if (!order) return <Spinner label="Loading lab order…" />;
 
   const isOpen = !['COMPLETED', 'CANCELLED'].includes(order.status);
+  const canEnter = has('lab.result.enter') && isOpen && ['SAMPLE_COLLECTED', 'PROCESSING'].includes(order.status);
+  const canVerify = has('lab.result.verify');
+  const unverifiedCount = order.items.flatMap((i) => i.results).filter((r) => !r.isVerified).length;
+  const enteredCount = order.items.filter((i) => i.results.length > 0).length;
+
+  function setEntry(itemId: string, patch: Partial<Entry>) {
+    setEntries((e) => ({ ...e, [itemId]: { ...e[itemId], ...patch } }));
+  }
+
+  async function saveAll() {
+    const toSave = order!.items
+      .filter((item) => entries[item.id]?.value.trim())
+      .map((item) => {
+        const e = entries[item.id];
+        return {
+          labOrderItemId: item.id,
+          value: e.value.trim(),
+          unit: e.unit.trim() || undefined,
+          referenceRange: e.range.trim() || undefined,
+          abnormalFlag: e.flag,
+          notes: e.notes.trim() || undefined,
+        };
+      });
+    if (toSave.length === 0) {
+      toast.error('Enter at least one result value first.');
+      return;
+    }
+    await run(`Saved ${toSave.length} result${toSave.length === 1 ? '' : 's'}.`, () => labApi.enterResults(t, order!.id, toSave));
+  }
 
   return (
     <>
@@ -88,21 +147,18 @@ function OrderDetail({ id }: { id: string }) {
               </Link>
             )}
             {has('lab.sample.collect') && order.status === 'ORDERED' && (
-              <Button
-                icon={Beaker}
-                loading={busy}
-                onClick={() => run('Sample collected.', () => labApi.collectSample(t, order.id))}
-              >
+              <Button icon={Beaker} loading={busy} onClick={() => run('Sample collected.', () => labApi.collectSample(t, order.id))}>
                 Collect sample
               </Button>
             )}
-            {has('lab.result.enter') && order.status === 'SAMPLE_COLLECTED' && (
-              <Button
-                icon={Play}
-                loading={busy}
-                onClick={() => run('Order moved to processing.', () => labApi.setStatus(t, order.id, 'PROCESSING'))}
-              >
-                Mark processing
+            {canEnter && (
+              <Button icon={Save} loading={busy} onClick={saveAll}>
+                Save all results
+              </Button>
+            )}
+            {canVerify && unverifiedCount > 0 && order.status !== 'CANCELLED' && (
+              <Button icon={CheckCircle2} loading={busy} onClick={() => run('Results verified.', () => labApi.verifyAll(t, order.id))}>
+                Verify all &amp; complete
               </Button>
             )}
           </div>
@@ -111,6 +167,9 @@ function OrderDetail({ id }: { id: string }) {
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <StatusChip status={order.status} />
+        <span className="text-label-sm text-ink-soft">
+          {enteredCount}/{order.items.length} results entered
+        </span>
         {order.billing && order.billing.billed && (
           <span className="text-label-sm text-ink-soft">Billed: {order.billing.items} item(s)</span>
         )}
@@ -121,18 +180,21 @@ function OrderDetail({ id }: { id: string }) {
         )}
       </div>
 
+      {order.status === 'ORDERED' && (
+        <div className="mb-5 rounded-md border border-line bg-canvas px-4 py-3 text-body-sm text-ink-muted">
+          Collect the sample to start entering results — then fill the whole panel and use <strong>Save all results</strong>.
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           {order.items.map((item) => (
             <ResultCard
               key={item.id}
               item={item}
-              orderStatus={order.status}
-              canEnter={has('lab.result.enter') && isOpen}
-              canVerify={has('lab.result.verify')}
-              onSave={(entry) => run('Result saved.', () => labApi.enterResults(t, order.id, [entry]))}
-              onVerify={(resultId) => run('Result verified.', () => labApi.verifyResult(t, resultId))}
-              busy={busy}
+              entry={entries[item.id]}
+              editable={canEnter}
+              onChange={(patch) => setEntry(item.id, patch)}
             />
           ))}
         </div>
@@ -156,23 +218,13 @@ function OrderDetail({ id }: { id: string }) {
               <TimelineRow label="Ordered" at={order.createdAt} done />
               <TimelineRow
                 label="Sample collected"
-                at={
-                  order.items
-                    .flatMap((i) => i.samples)
-                    .map((s) => s.collectedAt)
-                    .filter(Boolean)[0] ?? null
-                }
+                at={order.items.flatMap((i) => i.samples).map((s) => s.collectedAt).filter(Boolean)[0] ?? null}
                 done={['SAMPLE_COLLECTED', 'PROCESSING', 'COMPLETED'].includes(order.status)}
               />
               <TimelineRow label="Processing" at={null} done={['PROCESSING', 'COMPLETED'].includes(order.status)} />
               <TimelineRow
                 label="Completed / verified"
-                at={
-                  order.items
-                    .flatMap((i) => i.results)
-                    .map((r) => r.verifiedAt)
-                    .filter(Boolean)[0] ?? null
-                }
+                at={order.items.flatMap((i) => i.results).map((r) => r.verifiedAt).filter(Boolean)[0] ?? null}
                 done={order.status === 'COMPLETED'}
               />
             </ul>
@@ -192,9 +244,7 @@ function OrderDetail({ id }: { id: string }) {
 function TimelineRow({ label, at, done }: { label: string; at: string | null; done: boolean }) {
   return (
     <li className="flex items-start gap-3">
-      <span
-        className={done ? 'mt-1 h-2.5 w-2.5 rounded-full bg-success' : 'mt-1 h-2.5 w-2.5 rounded-full bg-slate-300'}
-      />
+      <span className={done ? 'mt-1 h-2.5 w-2.5 rounded-full bg-success' : 'mt-1 h-2.5 w-2.5 rounded-full bg-slate-300'} />
       <div>
         <div className={done ? 'text-ink' : 'text-ink-soft'}>{label}</div>
         {at && <div className="text-label-sm text-ink-soft">{formatDateTime(at)}</div>}
@@ -205,79 +255,50 @@ function TimelineRow({ label, at, done }: { label: string; at: string | null; do
 
 function ResultCard({
   item,
-  orderStatus,
-  canEnter,
-  canVerify,
-  onSave,
-  onVerify,
-  busy,
+  entry,
+  editable,
+  onChange,
 }: {
   item: LabOrderItem;
-  orderStatus: string;
-  canEnter: boolean;
-  canVerify: boolean;
-  onSave: (entry: ResultEntry) => Promise<void>;
-  onVerify: (resultId: string) => Promise<void>;
-  busy: boolean;
+  entry?: Entry;
+  editable: boolean;
+  onChange: (patch: Partial<Entry>) => void;
 }) {
   const existing = item.results[0];
-  const [value, setValue] = useState(existing?.value ?? '');
-  const [unit, setUnit] = useState(existing?.unit ?? '');
-  const [range, setRange] = useState(existing?.referenceRange ?? '');
-  const [flag, setFlag] = useState(existing?.abnormalFlag ?? 'NORMAL');
-  const [notes, setNotes] = useState(existing?.notes ?? '');
-
-  const verified = existing?.isVerified;
-  // Results can be entered once a sample exists and before the order is locked.
-  const entryAllowed = canEnter && !verified && ['SAMPLE_COLLECTED', 'PROCESSING'].includes(orderStatus);
+  const verified = existing?.isVerified ?? false;
+  // Editable until the result is verified (and the order is open).
+  const showForm = editable && !verified;
+  const e = entry ?? { value: '', unit: '', range: '', flag: 'NORMAL' as AbnormalFlag, notes: '' };
 
   return (
     <Section title={item.testName} action={<StatusChip status={item.status} />}>
       <div className="space-y-4 px-5 py-4">
-        {entryAllowed ? (
-          <>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <FormField label="Value" required>
-                <Input value={value} onChange={(e) => setValue(e.target.value)} placeholder="e.g. 13.4" />
+        {showForm ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <FormField label="Value" required>
+              <Input value={e.value} onChange={(ev) => onChange({ value: ev.target.value })} placeholder="e.g. 13.4" />
+            </FormField>
+            <FormField label="Unit">
+              <Input value={e.unit} onChange={(ev) => onChange({ unit: ev.target.value })} placeholder="g/dL" />
+            </FormField>
+            <FormField label="Reference range">
+              <Input value={e.range} onChange={(ev) => onChange({ range: ev.target.value })} placeholder="12–16" />
+            </FormField>
+            <FormField label="Flag">
+              <Select value={e.flag} onChange={(ev) => onChange({ flag: ev.target.value as AbnormalFlag })}>
+                {ABNORMAL_FLAGS.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+            <div className="col-span-2 sm:col-span-3">
+              <FormField label="Notes">
+                <Textarea rows={2} value={e.notes} onChange={(ev) => onChange({ notes: ev.target.value })} />
               </FormField>
-              <FormField label="Unit">
-                <Input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="g/dL" />
-              </FormField>
-              <FormField label="Reference range">
-                <Input value={range} onChange={(e) => setRange(e.target.value)} placeholder="12–16" />
-              </FormField>
-              <FormField label="Flag">
-                <Select value={flag} onChange={(e) => setFlag(e.target.value as typeof flag)}>
-                  {ABNORMAL_FLAGS.map((f) => (
-                    <option key={f} value={f}>
-                      {f}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <div className="col-span-2 sm:col-span-3">
-                <FormField label="Notes">
-                  <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
-                </FormField>
-              </div>
             </div>
-            <Button
-              loading={busy}
-              disabled={!value.trim()}
-              onClick={() =>
-                onSave({
-                  labOrderItemId: item.id,
-                  value: value.trim(),
-                  unit: unit.trim() || undefined,
-                  referenceRange: range.trim() || undefined,
-                  abnormalFlag: flag,
-                  notes: notes.trim() || undefined,
-                })
-              }
-            >
-              {existing ? 'Update result' : 'Save result'}
-            </Button>
-          </>
+          </div>
         ) : existing ? (
           <div className="space-y-2 text-body-sm">
             <div className="flex flex-wrap items-center gap-4">
@@ -286,29 +307,17 @@ function ResultCard({
               </span>
               <StatusChip status={existing.abnormalFlag} />
               {existing.referenceRange && <span className="text-ink-soft">Ref: {existing.referenceRange}</span>}
-              {verified ? (
+              {verified && (
                 <span className="inline-flex items-center gap-1 text-success-fg">
-                  <CheckCircle2 className="h-4 w-4" /> Verified{' '}
-                  {existing.verifiedAt ? formatDateTime(existing.verifiedAt) : ''}
+                  <CheckCircle2 className="h-4 w-4" /> Verified {existing.verifiedAt ? formatDateTime(existing.verifiedAt) : ''}
                 </span>
-              ) : (
-                canVerify && (
-                  <Button size="sm" icon={CheckCircle2} loading={busy} onClick={() => onVerify(existing.id)}>
-                    Verify
-                  </Button>
-                )
               )}
             </div>
             {existing.notes && <p className="text-ink-muted">{existing.notes}</p>}
           </div>
         ) : (
           <p className="flex items-center gap-2 text-body-sm text-ink-soft">
-            <FlaskConical className="h-4 w-4" />
-            {orderStatus === 'ORDERED'
-              ? 'Collect the sample to begin.'
-              : orderStatus === 'CANCELLED'
-                ? 'Order cancelled.'
-                : 'No result entered yet.'}
+            <FlaskConical className="h-4 w-4" /> No result entered yet.
           </p>
         )}
       </div>

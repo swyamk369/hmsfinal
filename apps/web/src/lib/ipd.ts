@@ -18,7 +18,35 @@ export interface Ward {
   name: string;
   type: string;
   active: boolean;
+  dailyRate: number;
+  chargeCatalogId: string | null;
   _count?: { beds: number };
+}
+
+export interface BedChargeLine {
+  wardId: string;
+  wardName: string;
+  catalogId: string | null;
+  fromDate: string;
+  toDate: string;
+  units: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface BedChargePlan {
+  lines: BedChargeLine[];
+  chargedThrough: string | null;
+  totalUnits: number;
+  totalAmount: number;
+}
+
+export interface BedChargePreview {
+  pending: BedChargePlan;
+  projected: BedChargePlan;
+  currentWard: { id: string; name: string; dailyRate: number } | null;
+  admittedAt: string;
+  bedChargedThrough: string | null;
 }
 
 export interface Bed {
@@ -123,7 +151,7 @@ export interface DischargeSummaryView {
 export const ipdApi = {
   occupancy: (t: string) => apiGet<Occupancy>('/ipd/occupancy', t),
   listWards: (t: string) => apiGet<Ward[]>('/ipd/wards', t),
-  createWard: (t: string, body: { name: string; type?: string }) => apiPost<Ward>('/ipd/wards', body, t),
+  createWard: (t: string, body: { name: string; type?: string; dailyRate?: number; chargeCatalogId?: string }) => apiPost<Ward>('/ipd/wards', body, t),
   updateWard: (t: string, id: string, body: Record<string, unknown>) => apiPatch<Ward>(`/ipd/wards/${id}`, body, t),
   listBeds: (t: string, wardId?: string) => apiGet<Bed[]>(`/ipd/beds${wardId ? `?wardId=${wardId}` : ''}`, t),
   createBed: (t: string, body: { wardId: string; bedNumber: string; status?: string }) => apiPost<Bed>('/ipd/beds', body, t),
@@ -139,6 +167,9 @@ export const ipdApi = {
     apiPost<Charge>(`/ipd/admissions/${id}/charges`, body, t),
   discharge: (t: string, id: string, body: { reason: string; summary: string; instructions?: string; followUpDate?: string }) =>
     apiPost<AdmissionDetail>(`/ipd/admissions/${id}/discharge`, body, t),
+  bedChargePreview: (t: string, id: string) => apiGet<BedChargePreview>(`/ipd/admissions/${id}/bed-charge-preview`, t),
+  accrueBedCharges: (t: string, id: string, asOf?: string) =>
+    apiPost<{ posted: number; billId: string | null; plan: BedChargePlan }>(`/ipd/admissions/${id}/accrue-bed-charges`, asOf ? { asOf } : {}, t),
 };
 
 function qs(params: Record<string, string>): string {

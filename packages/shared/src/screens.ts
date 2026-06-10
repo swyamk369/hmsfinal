@@ -17,7 +17,7 @@ export const SCREEN_CATALOG: ScreenRef[] = [
   { ref: 'patient_directory_hms_portal', target: '/patients', pack: 'pack-3', status: 'planned' },
   { ref: 'opd_queue_board_hms_portal', target: '/opd', pack: 'pack-3', status: 'planned' },
   { ref: 'doctor_dashboard_hms_portal', target: '/doctor', pack: 'pack-3', status: 'planned' },
-  { ref: 'billing_dashboard_hms_portal', target: '/billing', pack: 'pack-4', status: 'planned' },
+  { ref: 'billing_dashboard_hms_portal', target: '/finance', pack: 'pack-4', status: 'built' },
   { ref: 'lab_technician_dashboard_hms_portal', target: '/lab', pack: 'pack-4', status: 'planned' },
   { ref: 'pharmacy_dashboard_hms_portal', target: '/pharmacy', pack: 'pack-4', status: 'planned' },
   { ref: 'inventory_management_hms_portal', target: '/inventory', pack: 'pack-4', status: 'planned' },

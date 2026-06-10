@@ -44,7 +44,7 @@ DECLARE
     'lab_test_catalog', 'lab_order', 'lab_order_item', 'lab_sample', 'lab_result',
     'inventory_item', 'supplier', 'inventory_batch', 'purchase_order',
     'purchase_order_item', 'inventory_transaction', 'dispense_record', 'dispense_item',
-    'bill', 'bill_item', 'payment', 'refund',
+    'bill', 'bill_item', 'payment', 'refund', 'billable_charge', 'finance_day_close', 'finance_approval',
     'ward', 'bed', 'admission', 'bed_transfer', 'ipd_round', 'ipd_charge', 'discharge_summary',
     'insurance_provider', 'patient_insurance_policy', 'insurance_claim', 'claim_settlement',
     'notification', 'notification_preference', 'notification_delivery_attempt',

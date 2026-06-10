@@ -32,6 +32,7 @@ import {
   StatusChip,
   Textarea,
 } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 type Tab = 'claims' | 'policies' | 'bills';
 
@@ -132,6 +133,14 @@ function InsuranceInner() {
         <StatCard label="Submitted value" value={money(stats.submitted)} />
         <StatCard label="Approved value" value={money(stats.approved)} />
         <StatCard label="Settled value" value={money(stats.settled)} />
+      </div>
+
+      <div className="mb-6 space-y-6">
+        <HelpTip title="Insurance flow">
+          Claims should move from draft to submitted, review, approval or rejection, then settlement. Rejected claims and
+          approved-but-unsettled claims stay visible until resolved.
+        </HelpTip>
+        <WorkQueuePanel title="Insurance work queue" modules={['INSURANCE']} limit={6} compact />
       </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

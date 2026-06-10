@@ -25,6 +25,7 @@ import {
   EmptyState,
   ErrorState,
 } from '@/components/ui';
+import { HelpTip, WorkQueuePanel } from '@/components/operations';
 
 const GROUPS: { key: string; label: string }[] = [
   { key: 'ORDERED', label: 'Awaiting sample' },
@@ -101,6 +102,14 @@ function LabDashboard() {
         <StatCard label="Processing" value={stats?.processing ?? '—'} />
         <StatCard label="Pending verification" value={stats?.pendingVerification ?? '—'} />
         <StatCard label="Completed today" value={stats?.completedToday ?? '—'} />
+      </div>
+
+      <div className="mb-6 space-y-6">
+        <HelpTip title="Lab flow">
+          Keep orders moving in order: collect sample, process, enter result, verify, then print the report. Critical and
+          abnormal results remain visible until verification.
+        </HelpTip>
+        <WorkQueuePanel title="Lab work queue" modules={['LAB']} limit={6} compact />
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-3">

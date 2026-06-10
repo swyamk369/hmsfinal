@@ -34,8 +34,8 @@ describe('landingPath', () => {
       LAB_TECH: '/lab',
       PHARMACIST: '/pharmacy',
       INVENTORY_MGR: '/inventory',
-      BILLING: '/billing',
-      ACCOUNTANT: '/accounts',
+      BILLING: '/finance',
+      ACCOUNTANT: '/finance',
       INSURANCE_STAFF: '/insurance',
     };
     for (const [role, path] of Object.entries(cases)) {
@@ -101,6 +101,23 @@ describe('visibleNav', () => {
   it('shows Admin for a Hospital Admin', () => {
     const m = membership({ roles: ['HOSPITAL_ADMIN'], modules: ['ADMIN'] });
     expect(visibleNav(profile({ tenants: [m] }), m).map((i) => i.href)).toContain('/admin');
+  });
+
+  it('shows Finance by permission without requiring Accountant role', () => {
+    const m = membership({
+      roles: ['RECEPTION'],
+      modules: ['BILLING'],
+      permissions: ['finance.cashier', 'payment.collect'],
+    });
+    const hrefs = visibleNav(profile({ tenants: [m] }), m).map((i) => i.href);
+    expect(hrefs).toContain('/finance');
+    expect(hrefs).not.toContain('/billing');
+    expect(hrefs).not.toContain('/accounts');
+  });
+
+  it('hides Finance when the user has no finance, billing, payment, or report permission', () => {
+    const m = membership({ roles: ['RECEPTION'], modules: ['BILLING'], permissions: ['patient.read'] });
+    expect(visibleNav(profile({ tenants: [m] }), m).map((i) => i.href)).not.toContain('/finance');
   });
 });
 

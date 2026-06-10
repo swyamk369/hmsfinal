@@ -113,6 +113,28 @@ export class CompleteEncounterDto {
   followUpNotes?: string;
 }
 
+export class ConsultationChargeDto {
+  @IsOptional()
+  @IsUUID()
+  catalogId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  name?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  unitPrice?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  quantity?: number;
+}
+
 // ── Clinical ────────────────────────────────────────────────────
 export class VitalsDto {
   @IsOptional() @IsInt() @Min(0) @Max(400) systolicBp?: number;

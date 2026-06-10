@@ -119,6 +119,7 @@ export const labApi = {
     apiPost<LabOrder>(`/lab/orders/${id}/results`, { results }, t),
   verifyResult: (t: string, resultId: string) =>
     apiPost<{ orderId: string | null }>(`/lab/results/${resultId}/verify`, {}, t),
+  verifyAll: (t: string, id: string) => apiPost<LabOrder>(`/lab/orders/${id}/verify`, {}, t),
   report: (t: string, id: string) => apiGet<LabReport>(`/lab/reports/${id}`, t),
 
   // Clinical integration (encounter scope)

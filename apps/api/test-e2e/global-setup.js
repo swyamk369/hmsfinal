@@ -102,6 +102,26 @@ module.exports = async function globalSetup() {
     if (invited.status >= 300) throw new Error(`Invite Clinic B admin failed: ${invited.status} ${JSON.stringify(invited.body)}`);
   }
 
+  // 5. Self-heal module drift: the isolation/entitlement suites assume Clinic B
+  //    is a plain GROWTH tenant. Manual platform toggles (or an aborted toggle
+  //    test) can leave extra modules enabled — reset them every run.
+  const GROWTH_MODULES = new Set(['ADMIN', 'PATIENT', 'OPD', 'SCHEDULING', 'BILLING', 'LAB', 'PHARMACY']);
+  const mods = await api(saToken, null, 'GET', `/platform/tenants/${clinicB.id}/modules`);
+  if (mods.status === 200 && Array.isArray(mods.body)) {
+    for (const m of mods.body) {
+      const shouldBeEnabled = GROWTH_MODULES.has(m.moduleCode);
+      if (m.enabled !== shouldBeEnabled) {
+        const res = await api(saToken, null, 'POST', `/platform/tenants/${clinicB.id}/modules`, {
+          moduleCode: m.moduleCode,
+          enabled: shouldBeEnabled,
+        });
+        if (res.status >= 300) throw new Error(`Failed to reset module ${m.moduleCode}: ${res.status}`);
+        // eslint-disable-next-line no-console
+        console.log(`[e2e] reset Clinic B module ${m.moduleCode} -> ${shouldBeEnabled ? 'enabled' : 'disabled'}`);
+      }
+    }
+  }
+
   fs.writeFileSync(
     STATE_FILE,
     JSON.stringify(

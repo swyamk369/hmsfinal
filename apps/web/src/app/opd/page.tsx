@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { RefreshCw, Stethoscope, LogIn, Ban, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, Stethoscope, LogIn, Ban, CheckCircle2, CreditCard } from 'lucide-react';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { getActiveMembership } from '@/lib/access';
 import { useToast } from '@/components/toast';
 import { opdApi, type Encounter, type DoctorRef } from '@/lib/opd';
-import { ageFromDob } from '@/lib/format';
-import { Button, PageHeader, Spinner, ErrorState, EmptyState, ReasonModal, Select, cx } from '@/components/ui';
+import { ageFromDob, toMinor } from '@/lib/format';
+import { Button, PageHeader, Spinner, ErrorState, EmptyState, ReasonModal, Select, cx, Modal, FormField, Input } from '@/components/ui';
 
 const COLUMNS: { key: string; label: string; dot: string }[] = [
   { key: 'SCHEDULED', label: 'Scheduled', dot: 'bg-slate-400' },
@@ -27,12 +27,17 @@ function OpdInner() {
   const membership = getActiveMembership(profile, tid);
   const perms = useMemo(() => new Set(membership?.permissions ?? []), [membership]);
   const has = (p: string) => perms.has(p);
+  const modules = useMemo(() => new Set(membership?.modules ?? []), [membership]);
+  const canPostConsultCharge = modules.has('BILLING') && (has('finance.charge.manage') || has('bill.write'));
 
   const [rows, setRows] = useState<Encounter[] | null>(null);
   const [doctors, setDoctors] = useState<DoctorRef[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [doctorFilter, setDoctorFilter] = useState('');
   const [cancelId, setCancelId] = useState<string | null>(null);
+  const [chargeFor, setChargeFor] = useState<Encounter | null>(null);
+  const [chargeName, setChargeName] = useState('OPD consultation');
+  const [chargeFee, setChargeFee] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -62,6 +67,26 @@ function OpdInner() {
     try {
       await fn();
       toast.success(msg);
+      await load();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function postConsultationCharge() {
+    if (!chargeFor) return;
+    setBusyId(chargeFor.id);
+    try {
+      await opdApi.chargeConsultation(t, chargeFor.id, {
+        name: chargeName.trim() || 'OPD consultation',
+        unitPrice: toMinor(chargeFee) ?? undefined,
+      });
+      toast.success('OPD consultation charge is pending billing.');
+      setChargeFor(null);
+      setChargeName('OPD consultation');
+      setChargeFee('');
       await load();
     } catch (e) {
       toast.error((e as Error).message);
@@ -174,6 +199,20 @@ function OpdInner() {
                           </Button>
                         </Link>
                       )}
+                      {canPostConsultCharge && !['SCHEDULED', 'CANCELLED'].includes(e.status) && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          icon={CreditCard}
+                          onClick={() => {
+                            setChargeFor(e);
+                            setChargeName('OPD consultation');
+                            setChargeFee('');
+                          }}
+                        >
+                          Charge
+                        </Button>
+                      )}
                       {['SCHEDULED', 'CHECKED_IN', 'IN_PROGRESS'].includes(e.status) && has('encounter.write') && (
                         <Button size="sm" variant="ghost" icon={Ban} onClick={() => setCancelId(e.id)}>
                           Cancel
@@ -204,6 +243,37 @@ function OpdInner() {
           await load();
         }}
       />
+      <Modal
+        open={!!chargeFor}
+        onClose={() => setChargeFor(null)}
+        title="Add OPD consultation charge"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setChargeFor(null)} disabled={!!busyId}>
+              Cancel
+            </Button>
+            <Button icon={CreditCard} onClick={postConsultationCharge} loading={!!busyId} disabled={!chargeFor}>
+              Add charge
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div className="rounded-md border border-line bg-canvas px-3 py-2 text-body-sm">
+            <span className="font-medium text-ink">{chargeFor?.patient?.fullName ?? 'Patient'}</span>
+            <span className="text-ink-soft"> · token #{chargeFor?.tokenNumber ?? '—'}</span>
+          </div>
+          <FormField label="Charge name">
+            <Input value={chargeName} onChange={(e) => setChargeName(e.target.value)} placeholder="OPD consultation" />
+          </FormField>
+          <FormField label="Fee" hint="Leave blank to use the hospital default consultation service.">
+            <Input inputMode="decimal" value={chargeFee} onChange={(e) => setChargeFee(e.target.value)} placeholder="Default fee" />
+          </FormField>
+          <p className="text-body-sm text-ink-soft">
+            The charge will appear in Finance → Pending Charges and can be added to the patient bill before payment.
+          </p>
+        </div>
+      </Modal>
     </>
   );
 }

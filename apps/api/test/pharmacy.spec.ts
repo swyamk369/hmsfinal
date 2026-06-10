@@ -17,6 +17,7 @@ import { emptyContext, type RequestContext } from '../src/common/types';
 function model() {
   return {
     create: jest.fn().mockResolvedValue({}),
+    createMany: jest.fn().mockResolvedValue({ count: 1 }),
     findFirst: jest.fn().mockResolvedValue(null),
     findUnique: jest.fn().mockResolvedValue(null),
     findMany: jest.fn().mockResolvedValue([]),
@@ -34,6 +35,7 @@ function db(): Record<string, any> {
     dispenseItem: model(),
     bill: model(),
     billItem: model(),
+    billableCharge: model(),
     patient: model(),
     hospitalSettings: model(),
   };
@@ -125,6 +127,7 @@ describe('PharmacyService.dispense', () => {
     expect(mockTx.inventoryTransaction.create.mock.calls[0][0].data.type).toBe('DISPENSE');
     expect(mockTx.dispenseItem.create).toHaveBeenCalled();
     expect(mockTx.bill.create).toHaveBeenCalled();
+    expect(mockTx.billableCharge.createMany).toHaveBeenCalled();
     expect(mockTx.bill.create.mock.calls[0][0].data.netAmount).toBe(15000);
     expect(mockTx.prescription.update).toHaveBeenCalledWith(expect.objectContaining({ data: { status: 'DISPENSED' } }));
     expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'pharmacy.dispense' }));

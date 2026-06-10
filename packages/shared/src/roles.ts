@@ -30,8 +30,8 @@ export const ROLE_LANDING: Record<RoleCode, string> = {
   LAB_TECH: '/lab',
   PHARMACIST: '/pharmacy',
   INVENTORY_MGR: '/inventory',
-  BILLING: '/billing',
-  ACCOUNTANT: '/accounts',
+  BILLING: '/finance',
+  ACCOUNTANT: '/finance',
   INSURANCE_STAFF: '/insurance',
 };
 
@@ -92,6 +92,8 @@ export const ROLE_DEFS: RoleDef[] = [
       P.INVENTORY_READ,
       P.INVENTORY_REPORTS_READ,
       P.BILL_READ,
+      P.FINANCE_READ,
+      P.FINANCE_PATIENT_ACCOUNT_READ,
       P.IPD_READ,
       P.INSURANCE_READ,
       P.REPORTS_READ,
@@ -123,6 +125,10 @@ export const ROLE_DEFS: RoleDef[] = [
       P.BILL_WRITE,
       P.PAYMENT_COLLECT,
       P.INVOICE_PRINT,
+      P.FINANCE_READ,
+      P.FINANCE_CASHIER,
+      P.FINANCE_PATIENT_ACCOUNT_READ,
+      P.FINANCE_CHARGE_MANAGE,
     ],
   },
   {
@@ -208,6 +214,9 @@ export const ROLE_DEFS: RoleDef[] = [
       P.BILL_WRITE,
       P.PAYMENT_COLLECT,
       P.INVOICE_PRINT,
+      P.FINANCE_READ,
+      P.FINANCE_CASHIER,
+      P.FINANCE_PATIENT_ACCOUNT_READ,
     ],
   },
   {
@@ -243,6 +252,10 @@ export const ROLE_DEFS: RoleDef[] = [
       P.PAYMENT_REFUND,
       P.INSURANCE_READ,
       P.REPORTS_FINANCIAL_READ,
+      P.FINANCE_READ,
+      P.FINANCE_CASHIER,
+      P.FINANCE_PATIENT_ACCOUNT_READ,
+      P.FINANCE_CHARGE_MANAGE,
     ],
   },
   {
@@ -258,6 +271,12 @@ export const ROLE_DEFS: RoleDef[] = [
       P.PAYMENT_REFUND,
       P.REPORTS_FINANCIAL_READ,
       P.INSURANCE_READ,
+      P.FINANCE_READ,
+      P.FINANCE_PATIENT_ACCOUNT_READ,
+      P.FINANCE_DAY_CLOSE,
+      P.FINANCE_RECONCILE,
+      P.FINANCE_APPROVAL_MANAGE,
+      P.FINANCE_WRITE_OFF,
     ],
   },
   {
@@ -276,6 +295,8 @@ export const ROLE_DEFS: RoleDef[] = [
       P.INSURANCE_CLAIM_UPDATE,
       P.INSURANCE_CLAIM_APPROVE,
       P.INSURANCE_CLAIM_SETTLE,
+      P.FINANCE_READ,
+      P.FINANCE_PATIENT_ACCOUNT_READ,
     ],
   },
 ];

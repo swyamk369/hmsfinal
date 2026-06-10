@@ -207,6 +207,12 @@ export class CreateWardDto {
   @IsOptional()
   @IsIn(WARD_TYPES)
   type?: (typeof WARD_TYPES)[number];
+
+  // Per-day room tariff in minor units (paise) — drives IPD per-diem accrual.
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  dailyRate?: number;
 }
 
 export class UpdateWardDto {
@@ -219,6 +225,11 @@ export class UpdateWardDto {
   @IsOptional()
   @IsIn(WARD_TYPES)
   type?: (typeof WARD_TYPES)[number];
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  dailyRate?: number;
 
   @IsOptional()
   @IsBoolean()
