@@ -9,7 +9,9 @@
     "start:prod": "node dist/main.js",
     "bootstrap:superadmin": "node dist/scripts/bootstrap-superadmin.js",
     "provision:demo": "node dist/scripts/provision-demo.js",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "jest --config jest.e2e.config.js",
+    "test:rls": "jest --config jest.ci.config.js"
   },
   "dependencies": {
     "@hms/db": "workspace:*",
@@ -17,6 +19,7 @@
     "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.4.15",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/throttler": "^6.5.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.7",

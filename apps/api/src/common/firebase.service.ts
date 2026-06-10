@@ -39,17 +39,27 @@ export class FirebaseService {
   }
 
   /**
-   * Ensures a Firebase auth user exists for a staff invite. New users get a strong
-   * random password they never see — they set their own via the password-reset
-   * flow. Returns the uid and whether it was just created.
+   * Ensures a Firebase auth user exists for a staff invite. New users get either
+   * an admin-issued temporary password or a strong random password they never see
+   * and can replace through the password-reset flow. Existing users can be issued
+   * a fresh temporary password when an admin explicitly provides one.
    */
-  async ensureUser(email: string, displayName?: string): Promise<{ uid: string; created: boolean }> {
+  async ensureUser(
+    email: string,
+    displayName?: string,
+    temporaryPassword?: string,
+  ): Promise<{ uid: string; created: boolean }> {
     const auth = admin.auth(getFirebaseApp());
     try {
       const existing = await auth.getUserByEmail(email);
+      if (temporaryPassword) {
+        await auth.updateUser(existing.uid, { password: temporaryPassword, displayName });
+      } else if (displayName && existing.displayName !== displayName) {
+        await auth.updateUser(existing.uid, { displayName });
+      }
       return { uid: existing.uid, created: false };
     } catch {
-      const tempPassword = `Aa1!${crypto.randomBytes(18).toString('base64url')}`;
+      const tempPassword = temporaryPassword || `Aa1!${crypto.randomBytes(18).toString('base64url')}`;
       const user = await auth.createUser({ email, password: tempPassword, displayName });
       return { uid: user.uid, created: true };
     }

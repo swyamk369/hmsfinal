@@ -3,6 +3,7 @@ import type { TenantClient } from '@hms/db';
 import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import type { RequestContext } from '../common/types';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreateAppointmentDto, UpdateAppointmentDto } from './dto';
 
 interface Scope {
@@ -15,7 +16,7 @@ const PATIENT_SELECT = { select: { id: true, fullName: true, mrn: true, phone: t
 
 @Injectable()
 export class AppointmentService {
-  constructor(private readonly audit: AuditService) {}
+  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -84,6 +85,12 @@ export class AppointmentService {
     if (!p) throw new BadRequestException('Patient not found');
   }
 
+  private async providerUserIds(s: Scope, providerId?: string | null) {
+    if (!providerId) return [];
+    const provider = await s.db.provider.findFirst({ where: { id: providerId, active: true }, select: { userId: true } });
+    return provider?.userId ? [provider.userId] : [];
+  }
+
   async create(ctx: RequestContext, dto: CreateAppointmentDto) {
     const s = this.scope(ctx);
     await this.assertPatient(s, dto.patientId);
@@ -100,6 +107,17 @@ export class AppointmentService {
       include: { patient: PATIENT_SELECT },
     });
     await this.record(s, 'appointment.create', appt.id, { patientId: dto.patientId, scheduledAt: dto.scheduledAt });
+    await this.notifications?.safeNotify(ctx, {
+      category: 'APPOINTMENT',
+      type: 'appointment.confirmed',
+      severity: 'INFO',
+      title: 'Appointment scheduled',
+      message: 'A patient appointment has been scheduled.',
+      actionUrl: '/opd/appointments',
+      metadata: { appointmentId: appt.id },
+      roleCodes: ['RECEPTION', 'HOSPITAL_ADMIN'],
+      userIds: await this.providerUserIds(s, appt.providerId),
+    });
     return appt;
   }
 
@@ -138,6 +156,17 @@ export class AppointmentService {
       include: { patient: PATIENT_SELECT },
     });
     await this.record(s, 'appointment.reschedule', id, { from: appt.scheduledAt, to: scheduledAt, reason });
+    await this.notifications?.safeNotify(ctx, {
+      category: 'APPOINTMENT',
+      type: 'appointment.rescheduled',
+      severity: 'INFO',
+      title: 'Appointment rescheduled',
+      message: 'An appointment time has changed.',
+      actionUrl: '/opd/appointments',
+      metadata: { appointmentId: id },
+      roleCodes: ['RECEPTION', 'HOSPITAL_ADMIN'],
+      userIds: await this.providerUserIds(s, updated.providerId),
+    });
     return updated;
   }
 
@@ -153,6 +182,17 @@ export class AppointmentService {
       include: { patient: PATIENT_SELECT },
     });
     await this.record(s, 'appointment.cancel', id, { reason });
+    await this.notifications?.safeNotify(ctx, {
+      category: 'APPOINTMENT',
+      type: 'appointment.cancelled',
+      severity: 'WARNING',
+      title: 'Appointment cancelled',
+      message: 'An appointment has been cancelled.',
+      actionUrl: '/opd/appointments',
+      metadata: { appointmentId: id },
+      roleCodes: ['RECEPTION', 'HOSPITAL_ADMIN'],
+      userIds: await this.providerUserIds(s, updated.providerId),
+    });
     return updated;
   }
 }

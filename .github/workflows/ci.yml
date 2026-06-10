@@ -46,5 +46,53 @@ jobs:
       - run: pnpm --filter @hms/db rls
       - run: pnpm --filter @hms/db seed
 
-      # Tests
+      # Unit + hermetic tests (no DB/Firebase needed; mocks throughout)
       - run: pnpm test
+
+      # DB-level RLS isolation proof (real Postgres, no Firebase, no API)
+      - run: pnpm --filter @hms/api test:rls
+
+  # Production image build — proves both Dockerfiles build from a clean checkout.
+  # No push; web uses placeholder NEXT_PUBLIC args (real values are set per-deploy).
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          tags: hms-api:ci
+      - name: Build Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: false
+          tags: hms-web:ci
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://localhost:4000
+
+  # Full E2E (live API + Firebase) is intentionally a separate, manual gate.
+  # It needs a running stack and Firebase credentials and therefore cannot run
+  # on every push without secrets. Enable by flipping the `if` once the GitHub
+  # repository/environment secrets below are configured (names only — the values
+  # are NEVER committed):
+  #
+  #   FIREBASE_SERVICE_ACCOUNT   — Admin service-account JSON (write to a file and
+  #                                point GOOGLE_APPLICATION_CREDENTIALS at it)
+  #   NEXT_PUBLIC_FIREBASE_API_KEY        — Firebase web API key (REST sign-in)
+  #   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN / _PROJECT_ID / _APP_ID — web client config
+  #   SUPERADMIN_EMAIL / SUPERADMIN_PASSWORD — platform admin login
+  #   DATABASE_URL / APP_DATABASE_URL        — owner + app connection strings
+  #
+  # Then: boot Postgres, run db:deploy, start api+web, `pnpm --filter @hms/api
+  # provision:demo`, and `pnpm --filter @hms/api test:e2e`.
+  e2e:
+    if: ${{ false }} # enable once Firebase secrets are configured
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "E2E runs against a live stack with Firebase; see apps/api/test-e2e/env.js and docs/deployment.md."

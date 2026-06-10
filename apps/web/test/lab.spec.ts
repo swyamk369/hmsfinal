@@ -83,6 +83,10 @@ describe('Lab API wrappers hit the right endpoints', () => {
 
 // Mirrors the <Protected> requirements on the lab pages.
 const LAB_PAGE = { requireModule: 'LAB', allowedRoles: ['LAB_TECH', 'DOCTOR', 'NURSE', 'HOSPITAL_ADMIN'] };
+const LAB_REPORT_PAGE = {
+  ...LAB_PAGE,
+  requirePermission: ['lab.report.print', 'lab.read'],
+};
 
 function membership(over: Partial<Membership> = {}): Membership {
   return {
@@ -115,5 +119,10 @@ describe('Lab page protection', () => {
   it('blocks a role with no lab access (e.g. BILLING) with unauthorized', () => {
     const m = membership({ roles: ['BILLING'] });
     expect(routeDecision(profile(m), m, LAB_PAGE)).toBe('/unauthorized');
+  });
+
+  it('lets a doctor with lab.read open lab report detail', () => {
+    const m = membership({ roles: ['DOCTOR'], permissions: ['lab.read'] });
+    expect(routeDecision(profile(m), m, LAB_REPORT_PAGE)).toBeNull();
   });
 });

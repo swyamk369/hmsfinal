@@ -1,0 +1,25 @@
+# Build context hygiene: never ship host artifacts or secrets into images.
+**/node_modules
+**/dist
+**/.next
+**/out
+**/build
+**/*.tsbuildinfo
+
+# secrets / env — provided at runtime, never baked in
+**/.env
+**/.env.*
+**/*.local
+**/firebase-service-account.json
+CREDENTIALS.md
+apps/api/test-e2e/.state.json
+
+# vcs / tooling / docs not needed at build
+.git
+.github
+.idea
+.vscode
+*.log
+extracted-frontend-screens
+docs
+infra/scripts/*.local

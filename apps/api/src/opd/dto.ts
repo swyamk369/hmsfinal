@@ -1,3 +1,4 @@
+import { IsReason } from '../common/validation';
 import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
@@ -65,16 +66,12 @@ export class RescheduleDto {
   @IsDateString()
   scheduledAt!: string;
 
-  @IsString()
-  @IsNotEmpty({ message: 'reason is required' })
-  @MaxLength(500)
+  @IsReason()
   reason!: string;
 }
 
 export class ReasonDto {
-  @IsString()
-  @IsNotEmpty({ message: 'reason is required' })
-  @MaxLength(500)
+  @IsReason()
   reason!: string;
 }
 

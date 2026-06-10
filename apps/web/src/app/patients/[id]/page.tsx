@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Pencil, Archive, Plus } from 'lucide-react';
+import { ArrowLeft, Pencil, Archive, Plus, FileText, Upload, ExternalLink, Wand2 } from 'lucide-react';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
@@ -38,6 +38,7 @@ const TABS = [
   'Allergies',
   'History',
   'Consents',
+  'Documents',
 ] as const;
 type Tab = (typeof TABS)[number];
 
@@ -51,6 +52,8 @@ function PatientDetail({ id }: { id: string }) {
   const [editOpen, setEditOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [addOpen, setAddOpen] = useState<null | 'allergy' | 'history' | 'consent'>(null);
+  const [documentOpen, setDocumentOpen] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   const load = useCallback(async () => {
     if (!activeTenantId) return;
@@ -115,6 +118,7 @@ function PatientDetail({ id }: { id: string }) {
             {t}
             {t === 'Visits' && data.encounters.length > 0 && ` (${data.encounters.length})`}
             {t === 'Bills' && data.bills.length > 0 && ` (${data.bills.length})`}
+            {t === 'Documents' && data.documents.length > 0 && ` (${data.documents.length})`}
           </button>
         ))}
       </div>
@@ -142,6 +146,7 @@ function PatientDetail({ id }: { id: string }) {
               <Stat label="Bills" value={data.bills.length} />
               <Stat label="Allergies" value={data.allergies.length} />
               <Stat label="Lab orders" value={data.labOrders.length} />
+              <Stat label="Documents" value={data.documents.length} />
             </div>
           </Section>
         </div>
@@ -344,6 +349,81 @@ function PatientDetail({ id }: { id: string }) {
         </Section>
       )}
 
+      {tab === 'Documents' && (
+        <Section
+          title="Patient documents"
+          action={
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                icon={Wand2}
+                loading={generating}
+                onClick={async () => {
+                  if (!activeTenantId) return;
+                  setGenerating(true);
+                  try {
+                    await patientsApi.generateSummaryDocument(activeTenantId, id, { title: 'Patient summary' });
+                    toast.success('Patient summary generated.');
+                    await load();
+                  } catch (e) {
+                    toast.error((e as Error).message);
+                  } finally {
+                    setGenerating(false);
+                  }
+                }}
+              >
+                Generate summary
+              </Button>
+              <Button size="sm" icon={Upload} onClick={() => setDocumentOpen(true)}>
+                Add document
+              </Button>
+            </div>
+          }
+        >
+          {data.documents.length === 0 ? (
+            <div className="px-5 py-8">
+              <EmptyState
+                icon={FileText}
+                title="No patient documents"
+                hint="Attach scans, PDFs, external reports, insurance files, or generated patient summaries."
+                action={
+                  <Button icon={Upload} onClick={() => setDocumentOpen(true)}>
+                    Add document
+                  </Button>
+                }
+              />
+            </div>
+          ) : (
+            <ul className="divide-y divide-line">
+              {data.documents.map((doc) => (
+                <li key={doc.id} className="flex flex-col gap-3 px-5 py-4 md:flex-row md:items-center md:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <FileText className="h-4 w-4 text-ink-soft" />
+                      <span className="font-medium text-ink">{doc.title}</span>
+                      <Badge tone={doc.source === 'GENERATED' ? 'primary' : 'slate'}>{doc.category.replace(/_/g, ' ')}</Badge>
+                    </div>
+                    <div className="mt-1 text-label-sm text-ink-soft">
+                      {[doc.fileName, doc.mimeType, formatDateTime(doc.createdAt)].filter(Boolean).join(' · ')}
+                    </div>
+                    {doc.notes && <p className="mt-1 text-body-sm text-ink-muted">{doc.notes}</p>}
+                  </div>
+                  <a
+                    href={doc.documentUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-2 text-body-sm font-medium text-ink-muted hover:border-primary hover:text-primary"
+                  >
+                    <ExternalLink className="h-4 w-4" /> Open
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Section>
+      )}
+
       <EditModal open={editOpen} patient={p} onClose={() => setEditOpen(false)} onSaved={load} />
       <ReasonModal
         open={archiveOpen}
@@ -358,6 +438,7 @@ function PatientDetail({ id }: { id: string }) {
         }}
       />
       <AddSubModal kind={addOpen} patientId={id} onClose={() => setAddOpen(null)} onSaved={load} />
+      <DocumentModal open={documentOpen} patientId={id} onClose={() => setDocumentOpen(false)} onSaved={load} />
     </>
   );
 }
@@ -603,6 +684,165 @@ function AddSubModal({
       )}
     </Modal>
   );
+}
+
+const DOCUMENT_CATEGORIES = [
+  'CLINICAL',
+  'BILLING',
+  'INSURANCE',
+  'CONSENT',
+  'LAB',
+  'DISCHARGE',
+  'OTHER',
+] as const;
+
+function DocumentModal({
+  open,
+  patientId,
+  onClose,
+  onSaved,
+}: {
+  open: boolean;
+  patientId: string;
+  onClose: () => void;
+  onSaved: () => Promise<void>;
+}) {
+  const { activeTenantId } = useAuth();
+  const toast = useToast();
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState<(typeof DOCUMENT_CATEGORIES)[number]>('CLINICAL');
+  const [externalUrl, setExternalUrl] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [notes, setNotes] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      setTitle('');
+      setCategory('CLINICAL');
+      setExternalUrl('');
+      setFile(null);
+      setNotes('');
+      setError(null);
+    }
+  }, [open]);
+
+  async function submit() {
+    if (!activeTenantId) return;
+    setError(null);
+    const cleanTitle = title.trim() || file?.name || 'Patient document';
+    const cleanUrl = externalUrl.trim();
+    if (!file && !cleanUrl) {
+      setError('Attach a file or paste an external document URL.');
+      return;
+    }
+    if (file && cleanUrl) {
+      setError('Use either a file or an external URL, not both.');
+      return;
+    }
+    if (cleanUrl && !/^https?:\/\//i.test(cleanUrl)) {
+      setError('External document URL must start with http:// or https://.');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const documentUrl = file ? await readFileAsDataUrl(file) : cleanUrl;
+      await patientsApi.attachDocument(activeTenantId, patientId, {
+        title: cleanTitle,
+        category,
+        mimeType: file?.type || undefined,
+        fileName: file?.name || undefined,
+        documentUrl,
+        notes: notes.trim() || undefined,
+      });
+      toast.success('Document attached.');
+      await onSaved();
+      onClose();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Add patient document"
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button onClick={submit} loading={busy} disabled={!title.trim() && !file}>
+            Attach document
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-4">
+        {error && <div className="rounded-md border border-danger/30 bg-danger-bg px-3 py-2 text-body-sm text-danger-fg">{error}</div>}
+        <FormField label="Title" required>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Discharge scan, external report, insurance ID"
+            autoFocus
+          />
+        </FormField>
+        <FormField label="Category">
+          <Select value={category} onChange={(e) => setCategory(e.target.value as (typeof DOCUMENT_CATEGORIES)[number])}>
+            {DOCUMENT_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c.replace(/_/g, ' ')}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+        <FormField label="Upload file" hint="PDFs, scanned images, photos, and other patient files">
+          <Input
+            type="file"
+            onChange={(e) => {
+              const next = e.target.files?.[0] ?? null;
+              setFile(next);
+              if (next && !title.trim()) setTitle(next.name);
+              if (next) setExternalUrl('');
+            }}
+          />
+        </FormField>
+        <FormField label="External URL" hint="Use this when the file already lives in another secure system">
+          <Input
+            value={externalUrl}
+            onChange={(e) => {
+              setExternalUrl(e.target.value);
+              if (e.target.value.trim()) setFile(null);
+            }}
+            placeholder="https://..."
+          />
+        </FormField>
+        <FormField label="Notes">
+          <Textarea
+            rows={3}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Where this came from, what it contains, or any handling instructions"
+          />
+        </FormField>
+      </div>
+    </Modal>
+  );
+}
+
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Could not read the selected file.'));
+    reader.readAsDataURL(file);
+  });
 }
 
 export default function PatientDetailPage() {

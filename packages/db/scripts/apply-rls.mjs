@@ -34,8 +34,27 @@ if (!rawUrl) {
 // libpq (psql) does not understand Prisma's ?schema= query param — strip it.
 const url = rawUrl.split('?')[0];
 
+// Keep the hms_app role password in sync with APP_DATABASE_URL so production's
+// strong password is applied automatically (defaults to dev's 'app_pw').
+function appPassword() {
+  const appUrl = process.env.APP_DATABASE_URL;
+  if (appUrl) {
+    try {
+      const pw = new URL(appUrl).password;
+      if (pw) return decodeURIComponent(pw);
+    } catch {
+      /* fall through to default */
+    }
+  }
+  return 'app_pw';
+}
+
 try {
-  execFileSync('psql', [url, '-v', 'ON_ERROR_STOP=1', '-f', sqlPath], { stdio: 'inherit' });
+  execFileSync(
+    'psql',
+    [url, '-v', 'ON_ERROR_STOP=1', '-v', `app_password=${appPassword()}`, '-f', sqlPath],
+    { stdio: 'inherit' },
+  );
   console.log('✓ RLS policies + audit trigger applied.');
 } catch (err) {
   console.error('Failed to apply RLS.', err.message);

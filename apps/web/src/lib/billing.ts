@@ -30,6 +30,22 @@ export interface Refund {
   reason: string;
   createdAt: string;
 }
+export interface BillInsuranceClaim {
+  id: string;
+  claimAmount: number;
+  approvedAmount: number | null;
+  patientShare: number | null;
+  status: string;
+  rejectionReason: string | null;
+  settledAt: string | null;
+  createdAt: string;
+  patientPolicy?: {
+    id: string;
+    policyNumber: string;
+    provider?: { id: string; name: string } | null;
+  } | null;
+  settlements?: { id: string; amount: number; settledAt: string }[];
+}
 export interface Bill {
   id: string;
   billNumber: string;
@@ -45,6 +61,7 @@ export interface Bill {
   items: BillItem[];
   payments: Payment[];
   refunds: Refund[];
+  claims?: BillInsuranceClaim[];
   patient?: PatientRef;
 }
 

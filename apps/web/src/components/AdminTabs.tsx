@@ -22,6 +22,7 @@ const TABS: Tab[] = [
   { label: 'Wards & Beds', href: '/admin/wards', module: 'IPD' },
   { label: 'Lab Tests', href: '/admin/lab-catalog', module: 'LAB' },
   { label: 'Insurance', href: '/admin/insurance', module: 'INSURANCE' },
+  { label: 'Audit', href: '/admin/audit' },
 ];
 
 /** Sub-navigation for the Hospital Admin setup area. Module-gated tabs are hidden

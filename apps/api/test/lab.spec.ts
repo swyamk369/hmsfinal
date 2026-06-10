@@ -8,7 +8,8 @@ import { EncounterLabController } from '../src/lab/encounter-lab.controller';
 import { AuditService } from '../src/common/audit.service';
 import { CreateLabOrderDto, EnterResultsDto } from '../src/lab/dto';
 import { emptyContext, type RequestContext } from '../src/common/types';
-import { MODULE_KEY } from '../src/common/decorators';
+import { MODULE_KEY, PERMISSION_KEY } from '../src/common/decorators';
+import { PERMISSIONS } from '@hms/db';
 
 function mockAudit() {
   return { log: jest.fn().mockResolvedValue(undefined), platformLog: jest.fn() };
@@ -45,6 +46,7 @@ function mockDb(): Record<string, any> {
     consent: model(),
     allergy: model(),
     medicalHistory: model(),
+    patientDocument: model(),
     prescription: model(),
   };
 }
@@ -68,6 +70,12 @@ describe('Lab module gating', () => {
   it('both lab controllers require the LAB module', () => {
     expect(Reflect.getMetadata(MODULE_KEY, LabController)).toBe('LAB');
     expect(Reflect.getMetadata(MODULE_KEY, EncounterLabController)).toBe('LAB');
+  });
+
+  it('allows lab report detail for clinical readers as well as print users', () => {
+    const required = Reflect.getMetadata(PERMISSION_KEY, LabController.prototype.report);
+    expect(required).toContain(PERMISSIONS.LAB_READ);
+    expect(required).toContain(PERMISSIONS.LAB_REPORT_PRINT);
   });
 });
 

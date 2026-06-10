@@ -4,6 +4,7 @@ import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import { nextToken } from '../common/sequences';
 import type { RequestContext } from '../common/types';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   CompleteEncounterDto,
   CreateEncounterDto,
@@ -32,7 +33,7 @@ const TRANSITIONS: Record<string, string[]> = {
 
 @Injectable()
 export class EncounterService {
-  constructor(private readonly audit: AuditService) {}
+  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -308,6 +309,16 @@ export class EncounterService {
       include: { items: true },
     });
     await this.record(s, 'prescription.finalize', 'prescription', id, {});
+    await this.notifications?.safeNotify(ctx, {
+      category: 'PHARMACY',
+      type: 'prescription.ready',
+      severity: 'INFO',
+      title: 'Prescription ready',
+      message: 'A finalized prescription is ready for pharmacy dispensing.',
+      actionUrl: '/pharmacy',
+      metadata: { prescriptionId: id, encounterId: rx.encounterId },
+      roleCodes: ['PHARMACIST', 'HOSPITAL_ADMIN'],
+    });
     return updated;
   }
 }

@@ -1,0 +1,3 @@
+# Next.js static assets are served from this directory at the site root.
+# Kept tracked so the production Docker image's `COPY apps/web/public` step
+# always has a source, even when no static assets are present.

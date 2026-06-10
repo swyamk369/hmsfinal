@@ -147,7 +147,11 @@ function LabDashboard() {
       {!err && orders !== null && visible.length === 0 && (
         <EmptyState
           title="No lab orders"
-          hint={canOrder ? 'Create one with “New lab order”, or order from a consultation.' : 'Orders appear here once a doctor places them.'}
+          hint={
+            canOrder
+              ? 'Create one with “New lab order”, or order from a consultation.'
+              : 'Orders appear here once a doctor places them.'
+          }
           icon={FlaskConical}
         />
       )}
@@ -174,9 +178,7 @@ function LabDashboard() {
                         </Link>
                         <div className="text-label-sm text-ink-soft">MRN {o.patient?.mrn ?? '—'}</div>
                       </td>
-                      <td className="px-3 py-2.5 text-ink-muted">
-                        {o.items.map((i) => i.testName).join(', ') || '—'}
-                      </td>
+                      <td className="px-3 py-2.5 text-ink-muted">{o.items.map((i) => i.testName).join(', ') || '—'}</td>
                       <td className="px-3 py-2.5">
                         <StatusChip status={o.status} />
                       </td>
@@ -230,13 +232,19 @@ function CreateOrderModal({
     setPatient(null);
     setPicked(new Set());
     setNotes('');
-    labApi.catalog(tenantId).then(setCatalog).catch(() => setCatalog([]));
+    labApi
+      .catalog(tenantId)
+      .then(setCatalog)
+      .catch(() => setCatalog([]));
   }, [open, tenantId]);
 
   useEffect(() => {
     if (!open || !patientQuery.trim()) return;
     const handle = setTimeout(() => {
-      patientsApi.list(tenantId, patientQuery.trim()).then(setPatients).catch(() => setPatients([]));
+      patientsApi
+        .list(tenantId, patientQuery.trim())
+        .then(setPatients)
+        .catch(() => setPatients([]));
     }, 250);
     return () => clearTimeout(handle);
   }, [open, patientQuery, tenantId]);
@@ -329,9 +337,7 @@ function CreateOrderModal({
 
         <FormField label="Tests" required>
           {catalog.length === 0 ? (
-            <p className="text-body-sm text-ink-soft">
-              No lab tests configured. Add tests in the lab catalog first.
-            </p>
+            <p className="text-body-sm text-ink-soft">No lab tests configured. Add tests in the lab catalog first.</p>
           ) : (
             <div className="grid max-h-48 grid-cols-1 gap-1 overflow-auto rounded-md border border-line p-2 sm:grid-cols-2">
               {catalog.map((c) => (

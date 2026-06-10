@@ -26,16 +26,15 @@ import {
   ShieldPlus,
   Menu,
   Search,
-  Bell,
   ChevronDown,
   ChevronRight,
   LogOut,
-  X,
   type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { ROLE_LABELS, SEGMENT_LABELS, type NavItem } from '@/lib/constants';
 import { visibleNav, breadcrumbs } from '@/lib/access';
+import NotificationBell from './notification-bell';
 import { cx } from './ui';
 
 const ICONS: Record<string, LucideIcon> = {
@@ -98,9 +97,9 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="space-y-1 border-t border-line p-3">
-        <div className="nav-item cursor-default opacity-70">
+        <Link href="/settings/account" onClick={onNavigate} className="nav-item">
           <Settings className="h-[18px] w-[18px]" /> Settings
-        </div>
+        </Link>
         <div className="nav-item cursor-default opacity-70">
           <LifeBuoy className="h-[18px] w-[18px]" /> Support
         </div>
@@ -156,49 +155,6 @@ function GlobalSearch() {
         />
       </div>
     </form>
-  );
-}
-
-function NotificationBell() {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        className="relative rounded-md p-1.5 text-ink-muted hover:bg-canvas"
-        aria-label="Notifications"
-      >
-        <Bell className="h-5 w-5" />
-      </button>
-      {open && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <aside className="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-line bg-surface shadow-raised">
-            <div className="flex items-center justify-between border-b border-line px-5 py-4">
-              <span className="text-title-lg text-ink">Notifications</span>
-              <button
-                onClick={() => setOpen(false)}
-                className="rounded p-1 text-ink-soft hover:bg-canvas"
-                aria-label="Close"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="grid flex-1 place-items-center px-6 text-center">
-              <div>
-                <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-canvas text-ink-soft">
-                  <Bell className="h-6 w-6" />
-                </div>
-                <div className="text-title-lg text-ink">No notifications yet</div>
-                <p className="mt-1 text-body-sm text-ink-soft">
-                  In-app alerts for appointments, results, payments, and stock arrive in a later phase.
-                </p>
-              </div>
-            </div>
-          </aside>
-        </div>
-      )}
-    </>
   );
 }
 

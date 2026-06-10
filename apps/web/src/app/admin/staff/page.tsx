@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { UserPlus, Users, Search, KeyRound, Ban, RotateCcw, X, Copy, Check } from 'lucide-react';
+import { UserPlus, Users, Search, KeyRound, Ban, RotateCcw, X, Copy, Check, Shuffle } from 'lucide-react';
 import Protected from '@/components/Protected';
 import AdminTabs from '@/components/AdminTabs';
 import { useAuth } from '@/lib/auth-context';
@@ -195,7 +195,10 @@ function StaffInner() {
                         )}
                       </td>
                       <td className="px-5 py-3">
-                        <StatusChip status={s.status} />
+                        <div className="flex flex-wrap gap-1.5">
+                          <StatusChip status={s.status} />
+                          {s.mustChangePassword && <Badge tone="warning">Temp password</Badge>}
+                        </div>
                       </td>
                       <td className="px-5 py-3 text-right text-ink-muted">
                         {new Date(s.createdAt).toLocaleDateString()}
@@ -279,6 +282,8 @@ function InviteStaffModal({
   const [departmentId, setDepartmentId] = useState('');
   const [speciality, setSpeciality] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
+  const [useTemporaryPassword, setUseTemporaryPassword] = useState(false);
+  const [temporaryPassword, setTemporaryPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [errs, setErrs] = useState<Record<string, string>>({});
 
@@ -291,6 +296,8 @@ function InviteStaffModal({
       setDepartmentId('');
       setSpeciality('');
       setRegistrationNumber('');
+      setUseTemporaryPassword(false);
+      setTemporaryPassword('');
       setErrs({});
     }
   }, [open]);
@@ -308,6 +315,7 @@ function InviteStaffModal({
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Enter a valid email.';
     if (selectedRoles.length === 0) e.roles = 'Select at least one role.';
     if (needsProvider && !departmentId) e.departmentId = 'A department is required for Doctor/Nurse.';
+    if (useTemporaryPassword && temporaryPassword.length < 8) e.temporaryPassword = 'Use at least 8 characters.';
     setErrs(e);
     if (Object.keys(e).length) return;
 
@@ -321,8 +329,13 @@ function InviteStaffModal({
         departmentId: departmentId || undefined,
         speciality: speciality.trim() || undefined,
         registrationNumber: registrationNumber.trim() || undefined,
+        temporaryPassword: useTemporaryPassword ? temporaryPassword : undefined,
       });
-      toast.success(`Invited ${fullName.trim()}. They set their password via "Forgot password".`);
+      toast.success(
+        useTemporaryPassword
+          ? `Invited ${fullName.trim()} with a temporary password.`
+          : `Invited ${fullName.trim()}. They set their password via "Forgot password".`,
+      );
       await onSaved();
       onClose();
     } catch (e) {
@@ -402,9 +415,62 @@ function InviteStaffModal({
             </FormField>
           </div>
         )}
+        <div className="rounded-md border border-line bg-canvas p-3">
+          <label className="flex items-start gap-2 text-body-sm text-ink">
+            <input
+              type="checkbox"
+              checked={useTemporaryPassword}
+              onChange={(e) => {
+                setUseTemporaryPassword(e.target.checked);
+                if (e.target.checked && !temporaryPassword) setTemporaryPassword(generateTemporaryPassword());
+              }}
+              className="mt-0.5 h-4 w-4 rounded border-line text-primary focus:ring-primary"
+            />
+            <span>
+              <span className="font-medium">Create temporary password</span>
+              <span className="block text-ink-soft">
+                Staff can sign in with this password first, then change it from Settings.
+              </span>
+            </span>
+          </label>
+          {useTemporaryPassword && (
+            <div className="mt-3">
+              <FormField label="Temporary password" required error={errs.temporaryPassword}>
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    value={temporaryPassword}
+                    onChange={(e) => setTemporaryPassword(e.target.value)}
+                    placeholder="At least 8 characters"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    icon={Shuffle}
+                    onClick={() => setTemporaryPassword(generateTemporaryPassword())}
+                  >
+                    Generate
+                  </Button>
+                </div>
+              </FormField>
+            </div>
+          )}
+        </div>
       </div>
     </Modal>
   );
+}
+
+function generateTemporaryPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+  const bytes = new Uint8Array(14);
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < bytes.length; i += 1) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  const body = Array.from(bytes, (b) => chars[b % chars.length]).join('');
+  return `Aa1!${body}`;
 }
 
 // ── Detail drawer ───────────────────────────────────────────────

@@ -4,6 +4,7 @@ import { Ctx, RequireModule, RequirePermission } from '../common/decorators';
 import type { RequestContext } from '../common/types';
 import { MODULES, PERMISSIONS } from '@hms/db';
 import {
+  AuditQueryDto,
   CreateBedDto,
   CreateCatalogItemDto,
   CreateDepartmentDto,
@@ -139,5 +140,11 @@ export class AdminController {
   @RequirePermission(PERMISSIONS.BED_MANAGE)
   updateBed(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: UpdateBedDto) {
     return this.svc.updateBed(ctx, id, dto);
+  }
+  // ── Audit search (read-only) ────────────────────────────────
+  @Get('audit')
+  @RequirePermission(PERMISSIONS.SETTINGS_MANAGE)
+  searchAudit(@Ctx() ctx: RequestContext, @Query() q: AuditQueryDto) {
+    return this.svc.searchAudit(ctx, q);
   }
 }

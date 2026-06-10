@@ -1,0 +1,83 @@
+# ─────────────────────────────────────────────────────────────
+# HMS SaaS — production-like compose (self-host / staging).
+# In real production prefer a MANAGED Postgres and drop the `postgres` service.
+#
+# Build images first (from repo root):
+#   docker build -f apps/api/Dockerfile -t hms-api:latest .
+#   docker build -f apps/web/Dockerfile -t hms-web:latest \
+#     --build-arg NEXT_PUBLIC_API_URL=https://api.example.com \
+#     --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=... (etc) .
+#
+# Then:  docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.production up -d
+#
+# Boot order: postgres (healthy) → migrate (one-shot: migrate+RLS+seed) → api → web.
+# No secrets are baked into images — everything is injected here at runtime.
+# ─────────────────────────────────────────────────────────────
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set a strong POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-hms}
+    volumes:
+      - hms_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-hms}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: prisma migrate deploy → apply RLS (creates hms_app role + policies
+  # + append-only audit triggers) → canonical production seed (plans, modules,
+  # roles, permissions — NO demo users). Exits 0 when done.
+  migrate:
+    image: hms-api:latest
+    command: ['pnpm', 'db:deploy']
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?owner connection string}
+      APP_DATABASE_URL: ${APP_DATABASE_URL:?app (non-owner) connection string}
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    image: hms-api:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      API_PORT: 4000
+      DATABASE_URL: ${DATABASE_URL:?}
+      APP_DATABASE_URL: ${APP_DATABASE_URL:?}
+      CORS_ORIGIN: ${CORS_ORIGIN:?production web origin(s), no localhost}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT:-300}
+      THROTTLE_TTL_MS: ${THROTTLE_TTL_MS:-60000}
+      # Firebase Admin: mount the service account and point at it (preferred),
+      # or supply FIREBASE_* env. The file is provided via the volume below.
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase-service-account.json
+    volumes:
+      - ${FIREBASE_SERVICE_ACCOUNT_FILE:?path to service account json}:/run/secrets/firebase-service-account.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - '${API_PORT:-4000}:4000'
+
+  web:
+    image: hms-web:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4001
+    depends_on:
+      - api
+    ports:
+      - '${WEB_PORT:-4001}:4001'
+
+volumes:
+  hms_pgdata:

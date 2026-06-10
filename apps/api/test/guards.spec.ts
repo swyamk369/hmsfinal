@@ -38,9 +38,9 @@ describe('PermissionsGuard (admin write protection)', () => {
     expect(() => guard.canActivate(execFor(ctx))).toThrow(ForbiddenException);
   });
 
-  it('lets platform users bypass the permission check', () => {
+  it('blocks platform users from permission-gated tenant routes (no casual tenant access)', () => {
     const guard = new PermissionsGuard(reflector(['facility.write']));
-    expect(guard.canActivate(execFor({ userId: 'p1', isPlatform: true }))).toBe(true);
+    expect(() => guard.canActivate(execFor({ userId: 'p1', isPlatform: true }))).toThrow(ForbiddenException);
   });
 
   it('rejects an unauthenticated caller with 401', () => {

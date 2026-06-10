@@ -1,3 +1,4 @@
+import { IsReason } from '../common/validation';
 import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
@@ -91,15 +92,11 @@ export class RefundDto {
   @Min(1)
   amount!: number;
 
-  @IsString()
-  @IsNotEmpty({ message: 'reason is required' })
-  @MaxLength(500)
+  @IsReason()
   reason!: string;
 }
 
 export class CancelBillDto {
-  @IsString()
-  @IsNotEmpty({ message: 'reason is required' })
-  @MaxLength(500)
+  @IsReason()
   reason!: string;
 }

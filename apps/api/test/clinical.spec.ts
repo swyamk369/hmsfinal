@@ -33,6 +33,7 @@ function mockDb(): Record<string, any> {
     consent: model(),
     allergy: model(),
     medicalHistory: model(),
+    patientDocument: model(),
     hospitalSettings: model(),
     tenant: model(),
     encounter: model(),
@@ -87,6 +88,77 @@ describe('PatientService', () => {
   it('blocks archiving an already-archived patient', async () => {
     db.patient.findFirst.mockResolvedValue({ id: 'p1', deletedAt: new Date() });
     await expect(new PatientService(asAudit()).archive(ctx(db), 'p1', 'x')).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('attaches an external patient document and audits it', async () => {
+    db.patient.findFirst.mockResolvedValue({ id: 'p1', mrn: 'MRN-1', fullName: 'Jane' });
+    db.patientDocument.create.mockResolvedValue({
+      id: 'doc1',
+      patientId: 'p1',
+      category: 'LAB',
+      source: 'EXTERNAL',
+      mimeType: 'application/pdf',
+      fileName: 'outside-report.pdf',
+    });
+    const svc = new PatientService(asAudit());
+
+    await svc.attachDocument(ctx(db), 'p1', {
+      title: 'Outside lab report',
+      category: 'LAB',
+      mimeType: 'application/pdf',
+      fileName: 'outside-report.pdf',
+      documentUrl: 'https://secure.example/report.pdf',
+    });
+
+    expect(db.patientDocument.create.mock.calls[0][0].data).toEqual(
+      expect.objectContaining({
+        tenantId: 't1',
+        patientId: 'p1',
+        title: 'Outside lab report',
+        source: 'EXTERNAL',
+      }),
+    );
+    expect(audit.log).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ action: 'patient.document.attach' }),
+    );
+  });
+
+  it('rejects unsafe patient document URLs', async () => {
+    db.patient.findFirst.mockResolvedValue({ id: 'p1', mrn: 'MRN-1', fullName: 'Jane' });
+    const svc = new PatientService(asAudit());
+    await expect(
+      svc.attachDocument(ctx(db), 'p1', {
+        title: 'Bad doc',
+        documentUrl: 'javascript:alert(1)',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('generates a patient summary document and audits it', async () => {
+    db.patient.findFirst.mockResolvedValue({
+      id: 'p1',
+      mrn: 'MRN-1',
+      fullName: 'Jane',
+      dob: null,
+      sex: 'FEMALE',
+      phone: null,
+      email: null,
+    });
+    db.encounter.findMany.mockResolvedValue([{ id: 'e1', status: 'COMPLETED', type: 'OPD', chiefComplaint: 'Fever', createdAt: new Date() }]);
+    db.patientDocument.create.mockResolvedValue({ id: 'doc2', category: 'GENERATED_REPORT', source: 'GENERATED' });
+    const svc = new PatientService(asAudit());
+
+    await svc.generateSummaryDocument(ctx(db), 'p1', {});
+
+    const data = db.patientDocument.create.mock.calls[0][0].data;
+    expect(data.category).toBe('GENERATED_REPORT');
+    expect(data.source).toBe('GENERATED');
+    expect(data.documentUrl).toMatch(/^data:text\/html;base64,/);
+    expect(audit.log).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ action: 'patient.document.generate_summary' }),
+    );
   });
 });
 

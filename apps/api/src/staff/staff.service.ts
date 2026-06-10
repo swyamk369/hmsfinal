@@ -5,12 +5,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { platformDb, ROLES, ROLE_LANDING, type RoleCode } from '@hms/db';
+import { PERMISSIONS, platformDb, ROLES, ROLE_LANDING, TENANT_PERMISSIONS, type RoleCode } from '@hms/db';
 import { AuditService } from '../common/audit.service';
 import { FirebaseService } from '../common/firebase.service';
 import { requireDb } from '../common/util';
 import type { RequestContext } from '../common/types';
-import { InviteStaffDto, UpdateProviderDto, UpdateRolesDto, UpdateStaffDto } from './dto';
+import { InviteStaffDto, UpdateProviderDto, UpdateRolePermissionsDto, UpdateRolesDto, UpdateStaffDto } from './dto';
 
 const PROVIDER_ROLES = new Set<string>([ROLES.DOCTOR, ROLES.NURSE]);
 
@@ -117,6 +117,7 @@ export class StaffService {
       status: m.active ? 'ACTIVE' : 'INACTIVE',
       deactivatedAt: m.deactivatedAt,
       deactivationReason: m.deactivationReason,
+      mustChangePassword: m.mustChangePassword ?? false,
       createdAt: m.createdAt,
     };
   }
@@ -150,7 +151,8 @@ export class StaffService {
       }
     }
 
-    const { uid } = await this.firebase.ensureUser(email, dto.fullName);
+    const temporaryPassword = dto.temporaryPassword?.trim();
+    const { uid } = await this.firebase.ensureUser(email, dto.fullName, temporaryPassword || undefined);
 
     const user = await platformDb.user.upsert({
       where: { email },
@@ -166,8 +168,18 @@ export class StaffService {
 
     const membership = await platformDb.tenantUser.upsert({
       where: { tenantId_userId: { tenantId: s.tenantId, userId: user.id } },
-      update: { active: true, deactivatedAt: null, deactivationReason: null },
-      create: { tenantId: s.tenantId, userId: user.id, active: true },
+      update: {
+        active: true,
+        deactivatedAt: null,
+        deactivationReason: null,
+        ...(temporaryPassword ? { mustChangePassword: true } : {}),
+      },
+      create: {
+        tenantId: s.tenantId,
+        userId: user.id,
+        active: true,
+        mustChangePassword: Boolean(temporaryPassword),
+      },
     });
 
     await this.replaceRoles(membership.id, roleRecords, dto.departmentId);
@@ -181,6 +193,7 @@ export class StaffService {
       email,
       roles,
       providerType: this.providerType(roles),
+      temporaryPasswordIssued: Boolean(temporaryPassword),
     });
     return this.getById(ctx, membership.id);
   }
@@ -397,7 +410,20 @@ export class StaffService {
     };
   }
 
-  // ── Roles & permissions (read-only templates) ─────────────────
+  // ── Roles & permissions ───────────────────────────────────────
+  private mapRole(role: any) {
+    return {
+      id: role.id,
+      code: role.code,
+      name: role.name,
+      description: role.description,
+      systemRole: role.systemRole,
+      landing: ROLE_LANDING[role.code as RoleCode] ?? null,
+      memberCount: role._count?.userRoles ?? 0,
+      permissions: role.permissions.map((rp: any) => rp.permission.key).sort(),
+    };
+  }
+
   async listRoles(ctx: RequestContext) {
     const tenantId = this.scope(ctx).tenantId;
     const roles = await platformDb.role.findMany({
@@ -407,34 +433,73 @@ export class StaffService {
         _count: { select: { userRoles: true } },
       },
     });
-    return roles.map((r) => ({
-      id: r.id,
-      code: r.code,
-      name: r.name,
-      description: r.description,
-      systemRole: r.systemRole,
-      landing: ROLE_LANDING[r.code as RoleCode] ?? null,
-      memberCount: r._count.userRoles,
-      permissions: r.permissions.map((rp) => rp.permission.key),
-    }));
+    return roles.map((r) => this.mapRole(r));
   }
 
   async getRole(ctx: RequestContext, id: string) {
     const tenantId = this.scope(ctx).tenantId;
     const role = await platformDb.role.findFirst({
       where: { id, tenantId },
-      include: { permissions: { include: { permission: true } } },
+      include: { permissions: { include: { permission: true } }, _count: { select: { userRoles: true } } },
     });
     if (!role) throw new NotFoundException('Role not found');
-    return {
-      id: role.id,
-      code: role.code,
-      name: role.name,
-      description: role.description,
-      systemRole: role.systemRole,
-      landing: ROLE_LANDING[role.code as RoleCode] ?? null,
-      permissions: role.permissions.map((rp) => rp.permission.key),
-    };
+    return this.mapRole(role);
+  }
+
+  async updateRolePermissions(ctx: RequestContext, id: string, dto: UpdateRolePermissionsDto) {
+    const s = this.scope(ctx);
+    const role = await platformDb.role.findFirst({
+      where: { id, tenantId: s.tenantId },
+      include: { permissions: { include: { permission: true } }, _count: { select: { userRoles: true } } },
+    });
+    if (!role) throw new NotFoundException('Role not found');
+
+    const requested = [...new Set(dto.permissions.map((p) => p.trim()).filter(Boolean))].sort();
+    if (!requested.length) throw new BadRequestException('At least one permission is required');
+
+    const tenantPermissionSet = new Set<string>(TENANT_PERMISSIONS);
+    const invalid = requested.filter((p) => !tenantPermissionSet.has(p));
+    if (invalid.length) {
+      throw new BadRequestException(`Unknown or platform-only permissions: ${invalid.join(', ')}`);
+    }
+
+    if (role.code === ROLES.HOSPITAL_ADMIN) {
+      const requiredAdminPerms = [PERMISSIONS.ROLE_READ, PERMISSIONS.ROLE_WRITE];
+      const missing = requiredAdminPerms.filter((p) => !requested.includes(p));
+      if (missing.length) {
+        throw new BadRequestException(`Hospital Admin must keep: ${missing.join(', ')}`);
+      }
+    }
+
+    const permissions = await platformDb.permission.findMany({ where: { key: { in: requested } } });
+    if (permissions.length !== requested.length) {
+      const found = new Set(permissions.map((p) => p.key));
+      const missing = requested.filter((p) => !found.has(p));
+      throw new BadRequestException(`Unknown permissions: ${missing.join(', ')}`);
+    }
+
+    const before = role.permissions.map((rp) => rp.permission.key).sort();
+    const beforeSet = new Set(before);
+    const afterSet = new Set(requested);
+    const added = requested.filter((p) => !beforeSet.has(p));
+    const removed = before.filter((p) => !afterSet.has(p));
+
+    await platformDb.$transaction([
+      platformDb.rolePermission.deleteMany({ where: { roleId: role.id } }),
+      platformDb.rolePermission.createMany({
+        data: permissions.map((p) => ({ roleId: role.id, permissionId: p.id })),
+        skipDuplicates: true,
+      }),
+    ]);
+
+    await this.record(s, 'role.permissions.update', 'role', role.id, {
+      roleCode: role.code,
+      added,
+      removed,
+      reason: dto.reason,
+    });
+
+    return this.getRole(ctx, role.id);
   }
 
   async listPermissions() {

@@ -17,7 +17,11 @@
     "db:rls": "pnpm --filter @hms/db rls",
     "db:seed": "pnpm --filter @hms/db seed",
     "db:setup": "pnpm db:migrate && pnpm db:rls && pnpm db:seed",
-    "prisma:validate": "pnpm --filter @hms/db exec prisma validate"
+    "prisma:validate": "pnpm --filter @hms/db exec prisma validate",
+    "test:e2e": "pnpm --filter @hms/api test:e2e",
+    "db:deploy": "pnpm db:migrate && pnpm db:rls && pnpm db:seed",
+    "start:api": "pnpm --filter @hms/api start:prod",
+    "start:web": "pnpm --filter @hms/web start"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

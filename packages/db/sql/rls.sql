@@ -6,14 +6,18 @@
 
 -- 1. Non-owner application role. Because it is NOT the table owner and not a
 --    superuser, FORCE ROW LEVEL SECURITY isolates every query it runs.
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'hms_app') THEN
-    CREATE ROLE hms_app LOGIN PASSWORD 'app_pw';
-  ELSE
-    ALTER ROLE hms_app LOGIN PASSWORD 'app_pw';
-  END IF;
-END$$;
+--    The password comes from the psql variable `app_password` (apply-rls.mjs
+--    parses it out of APP_DATABASE_URL); it defaults to 'app_pw' for local dev.
+\if :{?app_password}
+\else
+  \set app_password app_pw
+\endif
+
+SELECT format('CREATE ROLE hms_app LOGIN PASSWORD %L', :'app_password')
+WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'hms_app')
+\gexec
+
+ALTER ROLE hms_app LOGIN PASSWORD :'app_password';
 
 GRANT USAGE ON SCHEMA public TO hms_app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO hms_app;
@@ -33,7 +37,7 @@ DECLARE
     'subscription', 'module_entitlement',
     'tenant_user', 'provider',
     'facility', 'department', 'hospital_settings', 'service_catalog',
-    'patient', 'patient_identifier', 'consent', 'medical_history', 'allergy',
+    'patient', 'patient_identifier', 'consent', 'medical_history', 'allergy', 'patient_document',
     'appointment', 'encounter', 'vitals', 'diagnosis', 'clinical_note',
     'prescription', 'prescription_item',
     'nursing_note', 'medication_administration',
@@ -43,6 +47,7 @@ DECLARE
     'bill', 'bill_item', 'payment', 'refund',
     'ward', 'bed', 'admission', 'bed_transfer', 'ipd_round', 'ipd_charge', 'discharge_summary',
     'insurance_provider', 'patient_insurance_policy', 'insurance_claim', 'claim_settlement',
+    'notification', 'notification_preference', 'notification_delivery_attempt',
     'audit_log'
   ];
 BEGIN
@@ -73,3 +78,14 @@ DROP TRIGGER IF EXISTS audit_log_immutable ON public.audit_log;
 CREATE TRIGGER audit_log_immutable
   BEFORE UPDATE OR DELETE ON public.audit_log
   FOR EACH ROW EXECUTE FUNCTION prevent_audit_mutation();
+
+-- Platform audit gets the same append-only protection.
+DROP TRIGGER IF EXISTS platform_audit_log_immutable ON public.platform_audit_log;
+CREATE TRIGGER platform_audit_log_immutable
+  BEFORE UPDATE OR DELETE ON public.platform_audit_log
+  FOR EACH ROW EXECUTE FUNCTION prevent_audit_mutation();
+
+-- 4. Defense in depth: the app role gets INSERT/SELECT only on audit tables,
+--    so even without the trigger it could not UPDATE or DELETE them.
+REVOKE UPDATE, DELETE ON public.audit_log FROM hms_app;
+REVOKE UPDATE, DELETE ON public.platform_audit_log FROM hms_app;

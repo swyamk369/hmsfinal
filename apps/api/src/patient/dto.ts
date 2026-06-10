@@ -1,3 +1,4 @@
+import { IsReason } from '../common/validation';
 import {
   IsBoolean,
   IsDateString,
@@ -11,6 +12,16 @@ import {
 } from 'class-validator';
 
 export const SEXES = ['MALE', 'FEMALE', 'OTHER'] as const;
+export const PATIENT_DOCUMENT_CATEGORIES = [
+  'CLINICAL',
+  'BILLING',
+  'INSURANCE',
+  'CONSENT',
+  'LAB',
+  'DISCHARGE',
+  'GENERATED_REPORT',
+  'OTHER',
+] as const;
 
 export class CreatePatientDto {
   @IsString()
@@ -97,9 +108,7 @@ export class UpdatePatientDto {
 }
 
 export class ArchivePatientDto {
-  @IsString()
-  @IsNotEmpty({ message: 'reason is required' })
-  @MaxLength(500)
+  @IsReason()
   reason!: string;
 }
 
@@ -137,4 +146,47 @@ export class HistoryDto {
   @IsNotEmpty()
   @MaxLength(1000)
   description!: string;
+}
+
+export class AttachPatientDocumentDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  title!: string;
+
+  @IsOptional()
+  @IsIn(PATIENT_DOCUMENT_CATEGORIES)
+  category?: (typeof PATIENT_DOCUMENT_CATEGORIES)[number];
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  mimeType?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(240)
+  fileName?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(8_000_000)
+  documentUrl!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  notes?: string;
+}
+
+export class GeneratePatientSummaryDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  notes?: string;
 }

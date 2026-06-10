@@ -30,3 +30,4 @@ packages/db/node_modules/.prisma/
 
 # local credentials reference (never commit)
 CREDENTIALS.md
+apps/api/test-e2e/.state.json

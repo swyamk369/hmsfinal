@@ -156,13 +156,23 @@ function OrderDetail({ id }: { id: string }) {
               <TimelineRow label="Ordered" at={order.createdAt} done />
               <TimelineRow
                 label="Sample collected"
-                at={order.items.flatMap((i) => i.samples).map((s) => s.collectedAt).filter(Boolean)[0] ?? null}
+                at={
+                  order.items
+                    .flatMap((i) => i.samples)
+                    .map((s) => s.collectedAt)
+                    .filter(Boolean)[0] ?? null
+                }
                 done={['SAMPLE_COLLECTED', 'PROCESSING', 'COMPLETED'].includes(order.status)}
               />
               <TimelineRow label="Processing" at={null} done={['PROCESSING', 'COMPLETED'].includes(order.status)} />
               <TimelineRow
                 label="Completed / verified"
-                at={order.items.flatMap((i) => i.results).map((r) => r.verifiedAt).filter(Boolean)[0] ?? null}
+                at={
+                  order.items
+                    .flatMap((i) => i.results)
+                    .map((r) => r.verifiedAt)
+                    .filter(Boolean)[0] ?? null
+                }
                 done={order.status === 'COMPLETED'}
               />
             </ul>
@@ -278,7 +288,8 @@ function ResultCard({
               {existing.referenceRange && <span className="text-ink-soft">Ref: {existing.referenceRange}</span>}
               {verified ? (
                 <span className="inline-flex items-center gap-1 text-success-fg">
-                  <CheckCircle2 className="h-4 w-4" /> Verified {existing.verifiedAt ? formatDateTime(existing.verifiedAt) : ''}
+                  <CheckCircle2 className="h-4 w-4" /> Verified{' '}
+                  {existing.verifiedAt ? formatDateTime(existing.verifiedAt) : ''}
                 </span>
               ) : (
                 canVerify && (

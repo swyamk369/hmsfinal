@@ -37,6 +37,19 @@ export interface Consent {
   grantedAt: string;
   revokedAt: string | null;
 }
+export interface PatientDocument {
+  id: string;
+  patientId: string;
+  title: string;
+  category: 'CLINICAL' | 'BILLING' | 'INSURANCE' | 'CONSENT' | 'LAB' | 'DISCHARGE' | 'GENERATED_REPORT' | 'OTHER';
+  source: 'UPLOADED' | 'EXTERNAL' | 'GENERATED';
+  mimeType: string | null;
+  fileName: string | null;
+  documentUrl: string;
+  notes: string | null;
+  createdById: string | null;
+  createdAt: string;
+}
 
 export interface PatientTimeline {
   patient: Patient;
@@ -48,6 +61,7 @@ export interface PatientTimeline {
   allergies: Allergy[];
   histories: MedicalHistory[];
   consents: Consent[];
+  documents: PatientDocument[];
 }
 
 export interface RegisterPatientInput {
@@ -74,4 +88,19 @@ export const patientsApi = {
     apiPost<Allergy>(`/patients/${id}/allergies`, body, t),
   addHistory: (t: string, id: string, body: { type: string; description: string }) =>
     apiPost<MedicalHistory>(`/patients/${id}/history`, body, t),
+  listDocuments: (t: string, id: string) => apiGet<PatientDocument[]>(`/patients/${id}/documents`, t),
+  attachDocument: (
+    t: string,
+    id: string,
+    body: {
+      title: string;
+      category?: PatientDocument['category'];
+      mimeType?: string;
+      fileName?: string;
+      documentUrl: string;
+      notes?: string;
+    },
+  ) => apiPost<PatientDocument>(`/patients/${id}/documents`, body, t),
+  generateSummaryDocument: (t: string, id: string, body?: { title?: string; notes?: string }) =>
+    apiPost<PatientDocument>(`/patients/${id}/documents/summary`, body ?? {}, t),
 };

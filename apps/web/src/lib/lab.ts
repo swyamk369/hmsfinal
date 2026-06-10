@@ -122,8 +122,7 @@ export const labApi = {
   report: (t: string, id: string) => apiGet<LabReport>(`/lab/reports/${id}`, t),
 
   // Clinical integration (encounter scope)
-  encounterOrders: (t: string, encounterId: string) =>
-    apiGet<LabOrder[]>(`/encounters/${encounterId}/lab-orders`, t),
+  encounterOrders: (t: string, encounterId: string) => apiGet<LabOrder[]>(`/encounters/${encounterId}/lab-orders`, t),
   orderFromEncounter: (
     t: string,
     encounterId: string,

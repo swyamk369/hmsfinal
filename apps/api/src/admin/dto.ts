@@ -1,5 +1,7 @@
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDateString,
   IsEmail,
   IsIn,
   IsInt,
@@ -322,4 +324,46 @@ export class UpdateInsuranceProviderDto {
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+}
+
+// ── Audit search ─────────────────────────────────────────────
+export class AuditQueryDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  action?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  entity?: string;
+
+  @IsOptional()
+  @IsUUID()
+  entityId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  actorId?: string;
+
+  @IsOptional()
+  @IsDateString()
+  from?: string;
+
+  @IsOptional()
+  @IsDateString()
+  to?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  pageSize?: number;
 }

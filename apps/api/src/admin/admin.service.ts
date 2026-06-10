@@ -5,6 +5,7 @@ import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import type { RequestContext } from '../common/types';
 import {
+  AuditQueryDto,
   CreateBedDto,
   CreateCatalogItemDto,
   CreateDepartmentDto,
@@ -452,6 +453,65 @@ export class AdminService {
       beds,
       checklist,
       progress: { completed, total: checklist.length },
+    };
+  }
+  // ── Audit search ─────────────────────────────────────────────
+  /**
+   * Tenant-scoped audit search (read-only, RLS-bound). The response exposes a
+   * whitelist of fields; audit metadata is written minimally (IDs + context,
+   * no PHI payloads) by every producer.
+   */
+  async searchAudit(ctx: RequestContext, q: AuditQueryDto) {
+    const db = requireDb(ctx);
+    const where: Prisma.AuditLogWhereInput = {};
+    if (q.action) where.action = { contains: q.action, mode: 'insensitive' };
+    if (q.entity) where.entity = { contains: q.entity, mode: 'insensitive' };
+    if (q.entityId) where.entityId = q.entityId;
+    if (q.actorId) where.actorId = q.actorId;
+    if (q.from || q.to) {
+      where.createdAt = {
+        ...(q.from ? { gte: new Date(q.from) } : {}),
+        ...(q.to ? { lte: new Date(q.to) } : {}),
+      };
+    }
+
+    const page = q.page ?? 1;
+    const pageSize = q.pageSize ?? 50;
+    const [total, rows] = await Promise.all([
+      db.auditLog.count({ where }),
+      db.auditLog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          action: true,
+          entity: true,
+          entityId: true,
+          actorId: true,
+          metadata: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+
+    // The user table is identity-only (no RLS); resolving display names here
+    // does not cross tenant data boundaries.
+    const actorIds = [...new Set(rows.map((r) => r.actorId).filter((x): x is string => !!x))];
+    const actors = actorIds.length
+      ? await db.user.findMany({
+          where: { id: { in: actorIds } },
+          select: { id: true, fullName: true, email: true },
+        })
+      : [];
+    const actorById = new Map(actors.map((a) => [a.id, a]));
+
+    return {
+      total,
+      page,
+      pageSize,
+      rows: rows.map((r) => ({ ...r, actor: r.actorId ? (actorById.get(r.actorId) ?? null) : null })),
     };
   }
 }

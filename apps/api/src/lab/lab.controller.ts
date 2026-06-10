@@ -94,7 +94,7 @@ export class LabController {
   }
 
   @Get('reports/:id')
-  @RequirePermission(PERMISSIONS.LAB_REPORT_PRINT)
+  @RequirePermission(PERMISSIONS.LAB_REPORT_PRINT, PERMISSIONS.LAB_READ)
   report(@Ctx() ctx: RequestContext, @Param('id') id: string) {
     return this.svc.report(ctx, id);
   }

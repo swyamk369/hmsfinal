@@ -9,6 +9,7 @@ export interface Membership {
   permissions: string[];
   modules: string[];
   providerId: string | null;
+  mustChangePassword?: boolean;
 }
 
 export interface Profile {

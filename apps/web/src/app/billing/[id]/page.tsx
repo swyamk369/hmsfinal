@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, CreditCard, Printer, Ban, RotateCcw } from 'lucide-react';
+import { ArrowLeft, CreditCard, Printer, Ban, RotateCcw, ShieldCheck } from 'lucide-react';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { getActiveMembership } from '@/lib/access';
@@ -30,6 +30,7 @@ function BillDetail({ id }: { id: string }) {
   const t = activeTenantId!;
   const toast = useToast();
   const perms = new Set(getActiveMembership(profile, activeTenantId)?.permissions ?? []);
+  const modules = new Set(getActiveMembership(profile, activeTenantId)?.modules ?? []);
   const has = (p: string) => perms.has(p);
 
   const [bill, setBill] = useState<Bill | null>(null);
@@ -157,6 +158,57 @@ function BillDetail({ id }: { id: string }) {
               </ul>
             )}
           </Section>
+
+          {modules.has('INSURANCE') && has('insurance.read') && (
+            <Section
+              title="Insurance claims"
+              action={
+                has('insurance.claim.create') && bill.status !== 'CANCELLED' ? (
+                  <Link href={`/insurance?billId=${bill.id}`}>
+                    <Button size="sm" variant="ghost" icon={ShieldCheck}>
+                      Create claim
+                    </Button>
+                  </Link>
+                ) : undefined
+              }
+            >
+              {!bill.claims || bill.claims.length === 0 ? (
+                <p className="px-5 py-6 text-body-sm text-ink-soft">No insurance claim linked to this bill.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-body-sm">
+                    <thead>
+                      <tr className="border-b border-line text-label-md uppercase text-ink-soft">
+                        <th className="px-5 py-2 font-medium">Payer / policy</th>
+                        <th className="px-5 py-2 text-right font-medium">Claim</th>
+                        <th className="px-5 py-2 text-right font-medium">Approved</th>
+                        <th className="px-5 py-2 font-medium">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-line">
+                      {bill.claims.map((claim) => (
+                        <tr key={claim.id}>
+                          <td className="px-5 py-2.5">
+                            <Link href={`/insurance/claims/${claim.id}`} className="font-medium text-primary hover:underline">
+                              {claim.patientPolicy?.provider?.name ?? 'Insurance'}
+                            </Link>
+                            <div className="text-label-sm text-ink-soft">{claim.patientPolicy?.policyNumber ?? '—'}</div>
+                          </td>
+                          <td className="px-5 py-2.5 text-right text-ink-muted">{money(claim.claimAmount)}</td>
+                          <td className="px-5 py-2.5 text-right text-ink-muted">
+                            {claim.approvedAmount ? money(claim.approvedAmount) : '—'}
+                          </td>
+                          <td className="px-5 py-2.5">
+                            <StatusChip status={claim.status} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Section>
+          )}
         </div>
 
         <Section title="Summary">

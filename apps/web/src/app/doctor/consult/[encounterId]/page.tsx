@@ -274,7 +274,11 @@ function LabTab({
 
   useEffect(() => {
     void load();
-    if (hasLab && canOrder) labApi.catalog(tenantId).then(setCatalog).catch(() => setCatalog([]));
+    if (hasLab && canOrder)
+      labApi
+        .catalog(tenantId)
+        .then(setCatalog)
+        .catch(() => setCatalog([]));
   }, [load, hasLab, canOrder, tenantId]);
 
   if (!hasLab) {
@@ -328,7 +332,10 @@ function LabTab({
             <>
               <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
                 {catalog.map((c) => (
-                  <label key={c.id} className="flex items-center gap-2 rounded px-2 py-1.5 text-body-sm hover:bg-canvas">
+                  <label
+                    key={c.id}
+                    className="flex items-center gap-2 rounded px-2 py-1.5 text-body-sm hover:bg-canvas"
+                  >
                     <input type="checkbox" checked={picked.has(c.id)} onChange={() => toggle(c.id)} />
                     <span className="text-ink">{c.name}</span>
                     <span className="ml-auto text-label-sm text-ink-soft">{c.code}</span>
@@ -336,7 +343,7 @@ function LabTab({
                 ))}
               </div>
               <div className="mt-3 flex items-end gap-3">
-                <FormField label="Notes" >
+                <FormField label="Notes">
                   <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional" />
                 </FormField>
                 <Button icon={Plus} loading={busy} disabled={picked.size === 0} onClick={order}>

@@ -11,6 +11,7 @@ export interface TenantMembership {
   permissions: string[];
   modules: string[];
   providerId: string | null;
+  mustChangePassword: boolean;
 }
 
 export interface MeResponse {
@@ -46,6 +47,7 @@ export class AuthService {
         permissions: a.permissions,
         modules: a.modules,
         providerId: a.providerId,
+        mustChangePassword: m.mustChangePassword,
       });
     }
 
@@ -56,5 +58,22 @@ export class AuthService {
       isPlatform: user.isPlatform,
       tenants,
     };
+  }
+
+  async markPasswordChanged(userId: string) {
+    const result = await platformDb.tenantUser.updateMany({
+      where: { userId, mustChangePassword: true },
+      data: { mustChangePassword: false },
+    });
+    await platformDb.platformAuditLog.create({
+      data: {
+        actorId: userId,
+        action: 'auth.password.changed',
+        entity: 'user',
+        entityId: userId,
+        metadata: { clearedMemberships: result.count },
+      },
+    });
+    return { ok: true, clearedMemberships: result.count };
   }
 }

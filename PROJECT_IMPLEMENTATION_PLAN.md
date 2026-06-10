@@ -631,6 +631,31 @@ Acceptance:
 - Backups and rollback are documented.
 - Health checks include API and DB connectivity.
 
+## Future Direction — Post-Core Expansion After Phase 18
+
+These items are intentionally deferred until the production HMS core is complete, tested, deployed, and stable. They must not interrupt or reorder Phases 0-18.
+
+Future expansion priorities:
+
+- **Patient Portal + Online Booking:** Patient accounts, family profiles, public doctor/hospital search, online appointment booking, intake forms, reminders, patient records, bills, prescriptions, lab reports, and secure messages.
+- **OT / Procedure Module:** Operation theatre scheduling, surgical teams, anesthesia notes, procedure notes, surgical checklists, OT consumables, procedure charges, and post-operative records.
+- **Radiology / Imaging:** Imaging orders, modality scheduling, radiology reporting, report print views, and future PACS/DICOM integration.
+- **Emergency / Triage:** Emergency registration, ambulance inbound handoff, triage scoring, trauma bay status, critical alerts, and emergency queue.
+- **Document And Consent Management:** Digital consent forms, scanned documents, ID proofs, signatures, version history, medico-legal document tagging, and record release workflows.
+- **Queue Display / Kiosk:** Self check-in kiosk, QR/token generation, department-wise public display boards, patient arrival status, and queue notifications.
+- **Approval Workflows:** Discount approvals, refund approvals, purchase approvals, discharge clearance, claim approvals, and configurable approval chains.
+- **TPA / Corporate / Package Billing:** Corporate contracts, payer-specific price lists, package billing, credit billing, TPA approvals, denial management, and receivables.
+- **Housekeeping / Facility / Biomedical:** Bed cleaning requests, room readiness, facility service tickets, biomedical equipment assets, calibration, AMC/warranty, and maintenance history.
+- **AI Layer:** Doctor AI scribe, multilingual consultation transcription, patient timeline summarization, prescription/lab/discharge draft assistants, billing/insurance helpers, nursing handoff summaries, inventory forecasting, manager insights, and patient-facing assistant.
+
+Post-core rules:
+
+- AI and patient-facing features must be added only after the transactional HMS workflows are trusted.
+- AI may draft, summarize, suggest, and assist, but clinicians and staff must approve final clinical, financial, and operational records.
+- Patient-facing booking must create real tenant appointments and respect provider availability, module entitlements, tenant status, and audit requirements.
+- Public discovery pages must not expose private tenant or patient data.
+- Every post-core module must follow the same completion standard: API, UI, RBAC, module entitlement, tenant isolation, audit, tests, and E2E proof.
+
 ## Public API Rules
 
 Every tenant endpoint must enforce:

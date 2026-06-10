@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { StaffService } from './staff.service';
 import { Ctx, RequirePermission } from '../common/decorators';
 import type { RequestContext } from '../common/types';
@@ -55,6 +56,8 @@ export class StaffController {
     return this.svc.reactivate(ctx, id);
   }
 
+  // Hits Firebase and emails a reset link — keep it tightly rate-limited.
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post(':id/reset-password')
   @RequirePermission(PERMISSIONS.STAFF_RESET_PASSWORD)
   resetPassword(@Ctx() ctx: RequestContext, @Param('id') id: string) {

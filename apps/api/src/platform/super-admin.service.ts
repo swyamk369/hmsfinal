@@ -66,8 +66,31 @@ export class SuperAdminService {
     return platformDb.plan.findMany({ where: { active: true }, orderBy: { priceInr: 'asc' } });
   }
 
-  async listAudit(limit = 100) {
-    return platformDb.platformAuditLog.findMany({ orderBy: { createdAt: 'desc' }, take: limit });
+  async listAudit(q: {
+    limit?: number;
+    action?: string;
+    entity?: string;
+    actorId?: string;
+    tenantId?: string;
+    from?: string;
+    to?: string;
+  } = {}) {
+    const where: any = {};
+    if (q.action) where.action = { contains: q.action, mode: 'insensitive' };
+    if (q.entity) where.entity = { contains: q.entity, mode: 'insensitive' };
+    if (q.actorId) where.actorId = q.actorId;
+    if (q.tenantId) where.tenantId = q.tenantId;
+    if (q.from || q.to) {
+      where.createdAt = {
+        ...(q.from ? { gte: new Date(q.from) } : {}),
+        ...(q.to ? { lte: new Date(q.to) } : {}),
+      };
+    }
+    return platformDb.platformAuditLog.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: Math.min(q.limit ?? 100, 500),
+    });
   }
 
   async getModules(id: string) {

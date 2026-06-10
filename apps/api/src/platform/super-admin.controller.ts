@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { SuperAdminService } from './super-admin.service';
 import { PlatformGuard } from '../common/guards/platform.guard';
 import { Ctx } from '../common/decorators';
@@ -26,8 +27,24 @@ export class SuperAdminController {
   }
 
   @Get('audit')
-  audit(@Query('limit') limit?: string) {
-    return this.svc.listAudit(limit ? Number(limit) : 100);
+  audit(
+    @Query('limit') limit?: string,
+    @Query('action') action?: string,
+    @Query('entity') entity?: string,
+    @Query('actorId') actorId?: string,
+    @Query('tenantId') tenantId?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ) {
+    return this.svc.listAudit({
+      limit: limit ? Number(limit) : 100,
+      action,
+      entity,
+      actorId,
+      tenantId,
+      from,
+      to,
+    });
   }
 
   @Get('tenants/:id')
@@ -55,6 +72,8 @@ export class SuperAdminController {
     return this.svc.activateTenant(ctx.userId!, id);
   }
 
+  // Creates Firebase users — keep it tightly rate-limited.
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('tenants/:id/invite-admin')
   inviteAdmin(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: InviteAdminDto) {
     return this.svc.inviteAdmin(ctx.userId!, id, dto);

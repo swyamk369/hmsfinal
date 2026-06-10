@@ -100,6 +100,34 @@ export interface AdminOverview {
 }
 
 // ── Catalog / ward enum option sets ─────────────────────────────
+export interface AuditRow {
+  id: string;
+  action: string;
+  entity: string;
+  entityId: string | null;
+  actorId: string | null;
+  actor: { id: string; fullName: string | null; email: string } | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+export interface AuditSearchResult {
+  total: number;
+  page: number;
+  pageSize: number;
+  rows: AuditRow[];
+}
+
+export interface AuditFilters {
+  action?: string;
+  entity?: string;
+  actorId?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 export const CATALOG_TYPES = ['CONSULTATION', 'PROCEDURE', 'LAB', 'BED', 'OTHER'] as const;
 export const WARD_TYPES = ['GENERAL', 'PRIVATE', 'ICU', 'HDU', 'MATERNITY', 'PEDIATRIC'] as const;
 export const BED_STATUSES = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE', 'RESERVED'] as const;
@@ -107,6 +135,15 @@ export const BED_STATUSES = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE', 'RESERVED']
 // ── API client (tenant-scoped via X-Tenant-Id) ──────────────────
 export const adminApi = {
   overview: (t: string) => apiGet<AdminOverview>('/admin/overview', t),
+
+  audit: (t: string, f: AuditFilters = {}) => {
+    const qs = new URLSearchParams();
+    for (const [k, v] of Object.entries(f)) {
+      if (v !== undefined && v !== null && v !== '') qs.set(k, String(v));
+    }
+    const suffix = qs.toString() ? `?${qs.toString()}` : '';
+    return apiGet<AuditSearchResult>(`/admin/audit${suffix}`, t);
+  },
 
   getProfile: (t: string) => apiGet<HospitalProfile>('/admin/profile', t),
   updateProfile: (t: string, body: Partial<HospitalProfile>) => apiPatch<HospitalProfile>('/admin/profile', body, t),

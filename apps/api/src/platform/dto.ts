@@ -1,3 +1,4 @@
+import { IsReason } from '../common/validation';
 import { IsBoolean, IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, Matches, MinLength } from 'class-validator';
 import { PLAN_CODES, ALL_MODULES } from '@hms/db';
 
@@ -40,7 +41,6 @@ export class ToggleModuleDto {
 }
 
 export class ReasonDto {
-  @IsString()
-  @IsNotEmpty({ message: 'reason is required' })
+  @IsReason()
   reason!: string;
 }

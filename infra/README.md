@@ -33,6 +33,21 @@ Ports 5433/6380 (and API/web on 4000/4001) are intentionally offset to avoid col
 
 `.github/workflows/ci.yml` runs install → build all packages → Prisma validate → migrate/rls/seed (ephemeral Postgres) → tests on every push/PR.
 
-## Production (Phase 18, not yet built)
+## Production (Phase 18)
 
-Managed Postgres, environment validation on boot (`requireEnv` + `firebaseConfigured`), CORS allow-list, rate limiting, backups, health checks (`GET /health`).
+- **Images:** `apps/api/Dockerfile`, `apps/web/Dockerfile` (multi-stage; web uses
+  Next standalone output). Build from the repo root.
+- **Compose:** `infra/docker-compose.prod.yml` — postgres + a one-shot
+  `migrate` job (`pnpm db:deploy` = migrate → RLS → canonical seed) + api + web.
+  Config from `infra/.env.production` (template: `infra/.env.production.example`).
+- **Boot guard:** the API runs `assertEnv()` on startup
+  (`apps/api/src/common/env.validation.ts`) and fails fast on missing DB/Firebase,
+  owner==app URL, or insecure production CORS / default app password / E2E throttle override.
+- **Ops scripts:** `infra/scripts/{backup,restore,smoke}.sh`.
+- **Runbooks:** `docs/deployment.md`, `docs/firebase-production.md`, `docs/rollback.md`,
+  plus `docs/support-access-policy.md` and `docs/data-export-offboarding.md` (Phase 16).
+- **Health:** `GET /health` (process + DB connectivity + Firebase config); both
+  images declare a Docker `HEALTHCHECK`.
+
+In real production prefer a **managed Postgres** and drop the `postgres` service
+from the compose, pointing `DATABASE_URL`/`APP_DATABASE_URL` at the managed instance.

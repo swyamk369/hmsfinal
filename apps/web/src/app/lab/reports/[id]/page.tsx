@@ -97,7 +97,9 @@ function ReportView({ id }: { id: string }) {
               return (
                 <tr key={r.id} className={abnormal ? 'bg-danger-bg/40' : undefined}>
                   <td className="py-3 pr-2 text-ink">{r.testName || item.testName}</td>
-                  <td className={abnormal ? 'py-3 pr-2 font-semibold text-danger-fg' : 'py-3 pr-2 font-medium text-ink'}>
+                  <td
+                    className={abnormal ? 'py-3 pr-2 font-semibold text-danger-fg' : 'py-3 pr-2 font-medium text-ink'}
+                  >
                     {r.value ?? '—'}
                   </td>
                   <td className="py-3 pr-2 text-ink-muted">{r.unit ?? '—'}</td>
@@ -148,7 +150,11 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 export default function LabReportPage() {
   const params = useParams<{ id: string }>();
   return (
-    <Protected requireModule="LAB" allowedRoles={['LAB_TECH', 'DOCTOR', 'NURSE', 'HOSPITAL_ADMIN']}>
+    <Protected
+      requireModule="LAB"
+      allowedRoles={['LAB_TECH', 'DOCTOR', 'NURSE', 'HOSPITAL_ADMIN']}
+      requirePermission={['lab.report.print', 'lab.read']}
+    >
       <ReportView id={params.id} />
     </Protected>
   );

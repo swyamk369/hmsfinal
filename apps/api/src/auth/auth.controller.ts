@@ -20,4 +20,10 @@ export class AuthController {
     // Firebase sessions are client-side; nothing to clear server-side yet.
     return { ok: true };
   }
+
+  @Post('password-changed')
+  passwordChanged(@Ctx() ctx: RequestContext) {
+    if (!ctx.userId) throw new UnauthorizedException();
+    return this.auth.markPasswordChanged(ctx.userId);
+  }
 }

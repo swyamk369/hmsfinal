@@ -3,6 +3,7 @@ import type { TenantClient } from '@hms/db';
 import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import type { RequestContext } from '../common/types';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   CollectSampleDto,
   CreateLabCatalogDto,
@@ -42,7 +43,7 @@ const TRANSITIONS: Record<string, string[]> = {
 
 @Injectable()
 export class LabService {
-  constructor(private readonly audit: AuditService) {}
+  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -129,7 +130,10 @@ export class LabService {
 
   async create(ctx: RequestContext, dto: CreateLabOrderDto) {
     const s = this.scope(ctx);
-    const patient = await s.db.patient.findFirst({ where: { id: dto.patientId, deletedAt: null }, select: { id: true } });
+    const patient = await s.db.patient.findFirst({
+      where: { id: dto.patientId, deletedAt: null },
+      select: { id: true },
+    });
     if (!patient) throw new BadRequestException('Patient not found');
     return this.createOrder(s, {
       patientId: dto.patientId,
@@ -289,6 +293,9 @@ export class LabService {
     const order = await s.db.labOrder.findFirst({ where: { id: orderId }, include: { items: true } });
     if (!order) throw new NotFoundException('Lab order not found');
     this.assertTransition(order.status, dto.status);
+    if (dto.status === 'CANCELLED' && !dto.reason?.trim()) {
+      throw new BadRequestException('reason is required to cancel a lab order');
+    }
 
     if (dto.status === 'PROCESSING') {
       await s.db.labOrderItem.updateMany({
@@ -383,6 +390,24 @@ export class LabService {
       }
     }
     await this.record(s, 'lab.result.verify', 'lab_result', resultId, { labOrderItemId: result.labOrderItemId });
+    if (orderId) {
+      const order = await s.db.labOrder.findFirst({ where: { id: orderId }, select: { providerId: true } });
+      const provider = order?.providerId
+        ? await s.db.provider.findFirst({ where: { id: order.providerId, active: true }, select: { userId: true } })
+        : null;
+      const abnormal = result.abnormalFlag !== 'NORMAL';
+      await this.notifications?.safeNotify(ctx, {
+        category: 'LAB',
+        type: abnormal ? 'lab.result.abnormal' : 'lab.result.ready',
+        severity: result.abnormalFlag === 'CRITICAL' ? 'CRITICAL' : abnormal ? 'WARNING' : 'INFO',
+        title: abnormal ? 'Abnormal lab result verified' : 'Lab result ready',
+        message: abnormal ? 'A verified lab result needs clinical review.' : 'A verified lab report is ready.',
+        actionUrl: `/lab/reports/${orderId}`,
+        metadata: { labOrderId: orderId, labResultId: resultId, abnormalFlag: result.abnormalFlag },
+        roleCodes: abnormal ? ['LAB_TECH', 'DOCTOR', 'HOSPITAL_ADMIN'] : ['LAB_TECH', 'HOSPITAL_ADMIN'],
+        userIds: provider?.userId ? [provider.userId] : [],
+      });
+    }
     return { result: updated, orderId };
   }
 

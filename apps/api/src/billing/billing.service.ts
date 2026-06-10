@@ -4,6 +4,7 @@ import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import { nextBillNumber } from '../common/sequences';
 import type { RequestContext } from '../common/types';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreateBillDto, PaymentDto } from './dto';
 
 interface Scope {
@@ -16,7 +17,7 @@ const PATIENT_SELECT = { select: { id: true, fullName: true, mrn: true, phone: t
 
 @Injectable()
 export class BillingService {
-  constructor(private readonly audit: AuditService) {}
+  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -109,6 +110,13 @@ export class BillingService {
         payments: { orderBy: { createdAt: 'desc' } },
         refunds: { orderBy: { createdAt: 'desc' } },
         patient: PATIENT_SELECT,
+        claims: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            patientPolicy: { include: { provider: true } },
+            settlements: { orderBy: { settledAt: 'desc' } },
+          },
+        },
       },
     });
     if (!bill) throw new NotFoundException('Bill not found');
@@ -151,6 +159,16 @@ export class BillingService {
       amount: dto.amount,
       method: dto.method,
     });
+    await this.notifications?.safeNotify(ctx, {
+      category: 'BILLING',
+      type: 'payment.receipt',
+      severity: 'SUCCESS',
+      title: 'Payment received',
+      message: 'A payment has been collected and the receipt is ready.',
+      actionUrl: `/billing/${id}`,
+      metadata: { billId: id, paymentId: payment.id, amount: dto.amount, method: dto.method },
+      roleCodes: ['BILLING', 'ACCOUNTANT', 'HOSPITAL_ADMIN'],
+    });
     return this.getById(ctx, id);
   }
 
@@ -184,6 +202,16 @@ export class BillingService {
     const status = this.status(bill.netAmount, paid, refunded + amount, false);
     await s.db.bill.update({ where: { id }, data: { status } });
     await this.record(s, 'payment.refund', 'refund', refund.id, { billId: id, amount, reason });
+    await this.notifications?.safeNotify(ctx, {
+      category: 'BILLING',
+      type: 'payment.refund',
+      severity: 'WARNING',
+      title: 'Refund processed',
+      message: 'A refund has been processed for a bill.',
+      actionUrl: `/billing/${id}`,
+      metadata: { billId: id, refundId: refund.id, amount },
+      roleCodes: ['BILLING', 'ACCOUNTANT', 'HOSPITAL_ADMIN'],
+    });
     return this.getById(ctx, id);
   }
 

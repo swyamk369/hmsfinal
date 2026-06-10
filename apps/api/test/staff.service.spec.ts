@@ -17,22 +17,25 @@ jest.mock('@hms/db', () => {
     createMany: jest.fn(),
     count: jest.fn(),
   });
+  const platformDb: Record<string, any> = {
+    tenantUser: model(),
+    user: model(),
+    role: model(),
+    rolePermission: model(),
+    userRole: model(),
+    provider: model(),
+    department: model(),
+    permission: model(),
+  };
+  platformDb.$transaction = jest.fn((ops: Promise<unknown>[]) => Promise.all(ops));
   return {
     __esModule: true,
     ...actual,
-    platformDb: {
-      tenantUser: model(),
-      user: model(),
-      role: model(),
-      userRole: model(),
-      provider: model(),
-      department: model(),
-      permission: model(),
-    },
+    platformDb,
   };
 });
 
-import { platformDb } from '@hms/db';
+import { PERMISSIONS, platformDb } from '@hms/db';
 import { StaffService } from '../src/staff/staff.service';
 import { AuditService } from '../src/common/audit.service';
 import { FirebaseService } from '../src/common/firebase.service';
@@ -67,6 +70,7 @@ const MEMBER = {
   id: 'tu9',
   userId: 'u9',
   active: true,
+  mustChangePassword: false,
   deactivatedAt: null,
   deactivationReason: null,
   createdAt: new Date(),
@@ -87,11 +91,14 @@ beforeEach(() => {
   db.user.update.mockResolvedValue({});
   db.userRole.deleteMany.mockResolvedValue({});
   db.userRole.createMany.mockResolvedValue({});
+  db.rolePermission.deleteMany.mockResolvedValue({});
+  db.rolePermission.createMany.mockResolvedValue({});
   db.provider.upsert.mockResolvedValue({});
   db.provider.updateMany.mockResolvedValue({});
   db.provider.findFirst.mockResolvedValue(null);
   db.department.findFirst.mockResolvedValue({ id: 'd1', tenantId: 't1' });
   db.department.findMany.mockResolvedValue([]);
+  db.permission.findMany.mockResolvedValue([]);
 });
 
 describe('StaffService.invite', () => {
@@ -142,6 +149,29 @@ describe('StaffService.invite', () => {
     await expect(
       svc.invite(ctx(), { fullName: 'Dup', email: 'jane@h.org', roles: ['RECEPTION'] }),
     ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('passes a temporary password to Firebase and flags the membership', async () => {
+    db.role.findMany.mockResolvedValue([{ id: 'r1', code: 'RECEPTION' }]);
+    const { svc, fb, audit } = makeService();
+
+    await svc.invite(ctx(), {
+      fullName: 'Temp User',
+      email: 'temp@h.org',
+      roles: ['RECEPTION'],
+      temporaryPassword: 'Aa1!temporary',
+    });
+
+    expect(fb.ensureUser).toHaveBeenCalledWith('temp@h.org', 'Temp User', 'Aa1!temporary');
+    expect(db.tenantUser.upsert.mock.calls[0][0].create.mustChangePassword).toBe(true);
+    expect(db.tenantUser.upsert.mock.calls[0][0].update.mustChangePassword).toBe(true);
+    expect(audit.log).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        action: 'staff.invite',
+        metadata: expect.objectContaining({ temporaryPasswordIssued: true }),
+      }),
+    );
   });
 });
 
@@ -212,6 +242,95 @@ describe('StaffService roles / lifecycle', () => {
     expect(fb.passwordResetLink).toHaveBeenCalledWith('jane@h.org');
     expect(res.resetLink).toBe('https://reset.example/abc');
     expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'staff.reset_password' }));
+  });
+
+  it('updates tenant role permissions and audits the diff', async () => {
+    const oldRole = {
+      id: 'role-doctor',
+      code: 'DOCTOR',
+      name: 'Doctor',
+      description: null,
+      systemRole: true,
+      permissions: [{ permission: { key: PERMISSIONS.PATIENT_READ } }, { permission: { key: PERMISSIONS.LAB_READ } }],
+      _count: { userRoles: 2 },
+    };
+    const newRole = {
+      ...oldRole,
+      permissions: [{ permission: { key: PERMISSIONS.PATIENT_READ } }, { permission: { key: PERMISSIONS.LAB_ORDER } }],
+    };
+    db.role.findFirst.mockResolvedValueOnce(oldRole).mockResolvedValueOnce(newRole);
+    db.permission.findMany.mockResolvedValue([
+      { id: 'perm-patient-read', key: PERMISSIONS.PATIENT_READ },
+      { id: 'perm-lab-order', key: PERMISSIONS.LAB_ORDER },
+    ]);
+    const { svc, audit } = makeService();
+
+    const out = await svc.updateRolePermissions(ctx(), 'role-doctor', {
+      permissions: [PERMISSIONS.PATIENT_READ, PERMISSIONS.LAB_ORDER],
+      reason: 'Hospital policy change',
+    });
+
+    expect(db.rolePermission.deleteMany).toHaveBeenCalledWith({ where: { roleId: 'role-doctor' } });
+    expect(db.rolePermission.createMany.mock.calls[0][0].data).toEqual(
+      expect.arrayContaining([
+        { roleId: 'role-doctor', permissionId: 'perm-patient-read' },
+        { roleId: 'role-doctor', permissionId: 'perm-lab-order' },
+      ]),
+    );
+    expect(audit.log).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        action: 'role.permissions.update',
+        metadata: expect.objectContaining({
+          roleCode: 'DOCTOR',
+          added: [PERMISSIONS.LAB_ORDER],
+          removed: [PERMISSIONS.LAB_READ],
+          reason: 'Hospital policy change',
+        }),
+      }),
+    );
+    expect(out.permissions).toEqual([PERMISSIONS.LAB_ORDER, PERMISSIONS.PATIENT_READ].sort());
+  });
+
+  it('blocks removing role management permissions from Hospital Admin', async () => {
+    db.role.findFirst.mockResolvedValue({
+      id: 'role-admin',
+      code: 'HOSPITAL_ADMIN',
+      name: 'Hospital Admin',
+      description: null,
+      systemRole: true,
+      permissions: [{ permission: { key: PERMISSIONS.ROLE_READ } }, { permission: { key: PERMISSIONS.ROLE_WRITE } }],
+      _count: { userRoles: 1 },
+    });
+    const { svc } = makeService();
+
+    await expect(
+      svc.updateRolePermissions(ctx(), 'role-admin', {
+        permissions: [PERMISSIONS.ROLE_READ, PERMISSIONS.PATIENT_READ],
+        reason: 'bad change',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(db.rolePermission.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('rejects platform permissions in tenant role updates', async () => {
+    db.role.findFirst.mockResolvedValue({
+      id: 'role-doctor',
+      code: 'DOCTOR',
+      name: 'Doctor',
+      description: null,
+      systemRole: true,
+      permissions: [],
+      _count: { userRoles: 0 },
+    });
+    const { svc } = makeService();
+
+    await expect(
+      svc.updateRolePermissions(ctx(), 'role-doctor', {
+        permissions: [PERMISSIONS.PLATFORM_TENANT_READ],
+        reason: 'bad change',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 });
 

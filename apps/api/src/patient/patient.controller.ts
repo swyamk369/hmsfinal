@@ -3,7 +3,16 @@ import { PatientService } from './patient.service';
 import { Ctx, RequireModule, RequirePermission } from '../common/decorators';
 import type { RequestContext } from '../common/types';
 import { MODULES, PERMISSIONS } from '@hms/db';
-import { AllergyDto, ArchivePatientDto, ConsentDto, CreatePatientDto, HistoryDto, UpdatePatientDto } from './dto';
+import {
+  AllergyDto,
+  ArchivePatientDto,
+  AttachPatientDocumentDto,
+  ConsentDto,
+  CreatePatientDto,
+  GeneratePatientSummaryDto,
+  HistoryDto,
+  UpdatePatientDto,
+} from './dto';
 
 @Controller('patients')
 @RequireModule(MODULES.PATIENT)
@@ -44,6 +53,28 @@ export class PatientController {
   @RequirePermission(PERMISSIONS.PATIENT_TIMELINE_READ)
   timeline(@Ctx() ctx: RequestContext, @Param('id') id: string) {
     return this.svc.timeline(ctx, id);
+  }
+
+  @Get(':id/documents')
+  @RequirePermission(PERMISSIONS.PATIENT_TIMELINE_READ)
+  documents(@Ctx() ctx: RequestContext, @Param('id') id: string) {
+    return this.svc.listDocuments(ctx, id);
+  }
+
+  @Post(':id/documents')
+  @RequirePermission(PERMISSIONS.PATIENT_WRITE)
+  attachDocument(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: AttachPatientDocumentDto) {
+    return this.svc.attachDocument(ctx, id, dto);
+  }
+
+  @Post(':id/documents/summary')
+  @RequirePermission(PERMISSIONS.PATIENT_WRITE)
+  generateSummaryDocument(
+    @Ctx() ctx: RequestContext,
+    @Param('id') id: string,
+    @Body() dto: GeneratePatientSummaryDto,
+  ) {
+    return this.svc.generateSummaryDocument(ctx, id, dto);
   }
 
   @Post(':id/consents')

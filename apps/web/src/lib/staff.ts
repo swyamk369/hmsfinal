@@ -24,6 +24,7 @@ export interface StaffMember {
   status: string;
   deactivatedAt: string | null;
   deactivationReason: string | null;
+  mustChangePassword: boolean;
   createdAt: string;
 }
 
@@ -65,6 +66,7 @@ export interface InviteStaffInput {
   departmentId?: string;
   speciality?: string;
   registrationNumber?: string;
+  temporaryPassword?: string;
 }
 
 export interface ResetPasswordResult {
@@ -94,6 +96,8 @@ export const staffApi = {
 
   listRoles: (t: string) => apiGet<RoleTemplate[]>('/roles', t),
   getRole: (t: string, id: string) => apiGet<RoleTemplate>(`/roles/${id}`, t),
+  updateRolePermissions: (t: string, id: string, body: { permissions: string[]; reason: string }) =>
+    apiPatch<RoleTemplate>(`/roles/${id}/permissions`, body, t),
   listPermissions: (t: string) => apiGet<PermissionRow[]>('/permissions', t),
 };
 

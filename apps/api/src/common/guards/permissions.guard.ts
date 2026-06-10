@@ -3,7 +3,12 @@ import { Reflector } from '@nestjs/core';
 import { PERMISSION_KEY } from '../decorators';
 import type { RequestContext } from '../types';
 
-/** Enforces @RequirePermission. Platform users bypass. */
+/**
+ * Enforces @RequirePermission. Platform users do NOT bypass: a Super Admin has
+ * no tenant permissions, so every permission-gated tenant route returns 403.
+ * Platform-only routes are gated by PlatformGuard and carry no
+ * @RequirePermission. (Spec rule 13: no casual tenant clinical access.)
+ */
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
@@ -17,7 +22,6 @@ export class PermissionsGuard implements CanActivate {
 
     const ctx: RequestContext = context.switchToHttp().getRequest().ctx;
     if (!ctx?.userId) throw new UnauthorizedException('Authentication required');
-    if (ctx.isPlatform) return true;
 
     const ok = required.some((p) => ctx.permissions.has(p));
     if (!ok) {

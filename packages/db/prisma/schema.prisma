@@ -201,10 +201,61 @@ enum AdmissionStatus {
 enum ClaimStatus {
   DRAFT
   SUBMITTED
+  UNDER_REVIEW
   APPROVED
   PARTIALLY_APPROVED
   REJECTED
   SETTLED
+  CANCELLED
+}
+
+enum NotificationCategory {
+  APPOINTMENT
+  LAB
+  BILLING
+  PHARMACY
+  INVENTORY
+  INSURANCE
+  IPD
+  SYSTEM
+}
+
+enum NotificationSeverity {
+  INFO
+  SUCCESS
+  WARNING
+  CRITICAL
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  WHATSAPP
+}
+
+enum NotificationDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum PatientDocumentCategory {
+  CLINICAL
+  BILLING
+  INSURANCE
+  CONSENT
+  LAB
+  DISCHARGE
+  GENERATED_REPORT
+  OTHER
+}
+
+enum PatientDocumentSource {
+  UPLOADED
+  EXTERNAL
+  GENERATED
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -312,6 +363,7 @@ model TenantUser {
   tenantId           String     @db.Uuid @map("tenant_id")
   userId             String     @db.Uuid
   active             Boolean    @default(true)
+  mustChangePassword Boolean    @default(false)
   createdAt          DateTime   @default(now())
   deactivatedAt      DateTime?
   deactivationReason String?
@@ -477,6 +529,7 @@ model Patient {
   labOrders             LabOrder[]
   admissions            Admission[]
   policies              PatientInsurancePolicy[]
+  documents             PatientDocument[]
 
   @@unique([tenantId, mrn])
   @@index([tenantId])
@@ -532,6 +585,26 @@ model Allergy {
 
   @@index([tenantId])
   @@map("allergy")
+}
+
+model PatientDocument {
+  id          String                  @id @default(uuid()) @db.Uuid
+  tenantId    String                  @db.Uuid @map("tenant_id")
+  patientId   String                  @db.Uuid
+  title       String
+  category    PatientDocumentCategory @default(OTHER)
+  source      PatientDocumentSource   @default(EXTERNAL)
+  mimeType    String?
+  fileName    String?
+  documentUrl String
+  notes       String?
+  createdById String?                 @db.Uuid
+  createdAt   DateTime                @default(now())
+  patient     Patient                 @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([patientId])
+  @@map("patient_document")
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1188,6 +1261,71 @@ model ClaimSettlement {
 
   @@index([tenantId])
   @@map("claim_settlement")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Notifications
+// ─────────────────────────────────────────────────────────────
+
+model Notification {
+  id               String                         @id @default(uuid()) @db.Uuid
+  tenantId         String                         @db.Uuid @map("tenant_id")
+  recipientUserId  String?                        @db.Uuid
+  tenantUserId     String?                        @db.Uuid
+  category         NotificationCategory
+  type             String
+  severity         NotificationSeverity           @default(INFO)
+  title            String
+  message          String
+  actionUrl        String?
+  metadata         Json?
+  readAt           DateTime?
+  archivedAt       DateTime?
+  createdById      String?                        @db.Uuid
+  createdAt        DateTime                       @default(now())
+  deliveryAttempts NotificationDeliveryAttempt[]
+
+  @@index([tenantId])
+  @@index([tenantId, recipientUserId, readAt])
+  @@index([tenantId, category])
+  @@map("notification")
+}
+
+model NotificationPreference {
+  id              String               @id @default(uuid()) @db.Uuid
+  tenantId        String               @db.Uuid @map("tenant_id")
+  userId          String               @db.Uuid
+  tenantUserId    String?              @db.Uuid
+  category        NotificationCategory
+  inAppEnabled    Boolean              @default(true)
+  emailEnabled    Boolean              @default(false)
+  smsEnabled      Boolean              @default(false)
+  whatsappEnabled Boolean              @default(false)
+  quietHoursStart String?
+  quietHoursEnd   String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@unique([tenantId, userId, category])
+  @@index([tenantId])
+  @@map("notification_preference")
+}
+
+model NotificationDeliveryAttempt {
+  id             String                     @id @default(uuid()) @db.Uuid
+  tenantId       String                     @db.Uuid @map("tenant_id")
+  notificationId String                     @db.Uuid
+  channel        NotificationChannel
+  status         NotificationDeliveryStatus @default(PENDING)
+  provider       String?
+  errorMessage   String?
+  attemptedAt    DateTime                   @default(now())
+  metadata       Json?
+  notification   Notification               @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([notificationId])
+  @@map("notification_delivery_attempt")
 }
 
 // ─────────────────────────────────────────────────────────────

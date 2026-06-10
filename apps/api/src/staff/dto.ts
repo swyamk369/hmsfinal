@@ -1,3 +1,4 @@
+import { IsReason } from '../common/validation';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -9,6 +10,7 @@ import {
   IsString,
   IsUUID,
   MaxLength,
+  MinLength,
 } from 'class-validator';
 import { TENANT_ROLE_DEFS } from '@hms/db';
 
@@ -47,6 +49,12 @@ export class InviteStaffDto {
   @IsString()
   @MaxLength(80)
   registrationNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(128)
+  temporaryPassword?: string;
 }
 
 export class UpdateStaffDto {
@@ -73,10 +81,18 @@ export class UpdateRolesDto {
   departmentId?: string;
 }
 
+export class UpdateRolePermissionsDto {
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  permissions!: string[];
+
+  @IsReason()
+  reason!: string;
+}
+
 export class DeactivateStaffDto {
-  @IsString()
-  @IsNotEmpty({ message: 'reason is required' })
-  @MaxLength(500)
+  @IsReason()
   reason!: string;
 }
 

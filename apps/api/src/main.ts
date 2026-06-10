@@ -4,23 +4,13 @@ import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { firebaseConfigured } from './common/firebase-credentials';
-
-function requireEnv(keys: string[]): void {
-  const missing = keys.filter((k) => !process.env[k]);
-  if (missing.length) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}.`);
-  }
-}
+import { GlobalHttpExceptionFilter } from './common/http-exception.filter';
+import { assertEnv } from './common/env.validation';
 
 async function bootstrap(): Promise<void> {
-  requireEnv(['DATABASE_URL', 'APP_DATABASE_URL']);
-  if (!firebaseConfigured()) {
-    throw new Error(
-      'Firebase Auth is mandatory but not configured. Provide a service-account JSON ' +
-        '(GOOGLE_APPLICATION_CREDENTIALS / firebase-service-account.json) or the FIREBASE_* env.',
-    );
-  }
+  // Fail fast on a misconfigured environment (missing DB/Firebase, insecure
+  // production CORS or default passwords). Never boot insecurely.
+  assertEnv();
 
   const app = await NestFactory.create(AppModule, { cors: false });
   app.use(helmet());
@@ -30,6 +20,7 @@ async function bootstrap(): Promise<void> {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id'],
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   const port = Number(process.env.API_PORT ?? 4000);
   await app.listen(port);

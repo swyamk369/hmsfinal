@@ -1,0 +1,11 @@
+import { Module } from '@nestjs/common';
+import { CommonModule } from '../common/common.module';
+import { InsuranceController } from './insurance.controller';
+import { InsuranceService } from './insurance.service';
+
+@Module({
+  imports: [CommonModule],
+  controllers: [InsuranceController],
+  providers: [InsuranceService],
+})
+export class InsuranceModule {}
