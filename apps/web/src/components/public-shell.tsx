@@ -9,28 +9,36 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-canvas">
       <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <Link href="/hospitals" className="flex items-center gap-2 font-semibold text-ink">
+          <Link href="/" className="flex items-center gap-2 text-headline-sm font-semibold text-primary">
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-white">
               <HeartPulse className="h-5 w-5" />
             </span>
             HealthConnect
           </Link>
-          <nav className="flex items-center gap-1 text-body-sm">
+          <nav className="hidden items-center gap-1 text-body-md md:flex">
             <Link href="/hospitals" className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink">
               Hospitals
             </Link>
             <Link href="/doctors" className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink">
               Doctors
             </Link>
-            <Link href="/login" className="ml-1 rounded-md border border-line px-3 py-1.5 font-medium text-ink hover:bg-canvas">
-              Staff login
-            </Link>
           </nav>
+          <div className="flex items-center gap-2">
+            <Link href="/patient/login" className="rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas">
+              Sign in
+            </Link>
+            <Link href="/doctors" className="rounded-lg bg-primary px-4 py-1.5 text-label-md font-medium text-white hover:bg-primary-700">
+              Book appointment
+            </Link>
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-      <footer className="mx-auto max-w-6xl px-4 py-8 text-center text-body-sm text-ink-soft">
-        Find hospitals and doctors, and book appointments online. © {new Date().getFullYear()} HealthConnect.
+      <footer className="mx-auto flex max-w-6xl flex-col items-center gap-1 px-4 py-8 text-center text-body-sm text-ink-soft">
+        <span>Find hospitals and doctors, and book appointments online. © {new Date().getFullYear()} HealthConnect.</span>
+        <Link href="/login" className="font-medium text-ink-muted hover:text-primary">
+          Hospital staff login
+        </Link>
       </footer>
     </div>
   );

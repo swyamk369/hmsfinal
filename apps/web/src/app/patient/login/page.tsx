@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { HeartPulse, AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowRight } from 'lucide-react';
 import { getFirebaseAuth } from '@/lib/firebase';
+import { AuthSplit, authInputCls } from '@/components/patient/auth-split';
 
 export default function PatientLoginPage() {
   const router = useRouter();
@@ -34,54 +35,45 @@ export default function PatientLoginPage() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-canvas px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-xl bg-primary text-white">
-            <HeartPulse className="h-8 w-8" />
-          </div>
-          <h1 className="text-display-lg text-ink">Patient Portal</h1>
-          <p className="mt-1 text-body-md text-ink-muted">Sign in to view your appointments, bills & reports.</p>
+    <AuthSplit title="Sign in to your patient portal" subtitle="Secure access to your appointments, bills, and medical records.">
+      {err && (
+        <div className="mb-5 flex items-start gap-3 rounded-md border border-danger/30 bg-danger-bg px-4 py-3">
+          <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-danger" />
+          <div className="text-body-sm text-danger-fg">{err}</div>
         </div>
-        <div className="card p-6 shadow-raised">
-          {err && (
-            <div className="mb-5 flex items-start gap-3 rounded-md border border-danger/30 bg-danger-bg px-4 py-3">
-              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-danger" />
-              <div className="text-body-sm text-danger-fg">{err}</div>
-            </div>
-          )}
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <label className="mb-1 block text-body-sm font-medium text-ink">Email</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={cls} placeholder="you@email.com" />
-            </div>
-            <div>
-              <label className="mb-1 block text-body-sm font-medium text-ink">Password</label>
-              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={cls} placeholder="••••••••" />
-            </div>
-            <button type="submit" disabled={busy} className="w-full rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90 disabled:opacity-50">
-              {busy ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-          <div className="mt-5 border-t border-line pt-4 text-center text-body-sm text-ink-muted">
-            New here?{' '}
-            <Link href="/patient/register" className="font-medium text-primary hover:underline">
-              Create an account
-            </Link>
-          </div>
+      )}
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-label-md text-ink">Email</label>
+          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={authInputCls} placeholder="you@email.com" />
         </div>
-        <p className="mt-6 text-center text-body-sm text-ink-soft">
-          Looking to book?{' '}
-          <Link href="/doctors" className="font-medium text-primary hover:underline">
-            Find a doctor
-          </Link>
-        </p>
+        <div>
+          <label className="mb-1.5 block text-label-md text-ink">Password</label>
+          <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={authInputCls} placeholder="••••••••" />
+        </div>
+        <button
+          type="submit"
+          disabled={busy}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-label-md font-medium text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+        >
+          {busy ? 'Signing in…' : 'Sign in'} {!busy && <ArrowRight className="h-4 w-4" />}
+        </button>
+      </form>
+      <div className="mt-6 border-t border-line pt-5 text-center text-body-sm text-ink-muted">
+        New here?{' '}
+        <Link href="/patient/register" className="font-medium text-primary hover:underline">
+          Create an account
+        </Link>
       </div>
-    </div>
+      <p className="mt-3 text-center text-body-sm text-ink-soft">
+        Looking to book?{' '}
+        <Link href="/doctors" className="font-medium text-primary hover:underline">
+          Find a doctor
+        </Link>
+      </p>
+    </AuthSplit>
   );
 }
-
-const cls = 'w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none';
 
 function friendly(raw: string): string {
   if (raw.includes('invalid-credential') || raw.includes('wrong-password') || raw.includes('user-not-found')) return 'Incorrect email or password.';
