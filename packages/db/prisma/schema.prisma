@@ -1584,11 +1584,136 @@ model PatientAuthUser {
   emailVerified   Boolean           @default(false)
   mobileVerified  Boolean           @default(false)
   status          PatientAuthStatus @default(ACTIVE)
+  // Phase 23 notification preferences (global, patient-owned).
+  notifyBookingUpdates Boolean      @default(true)
+  notifyDocuments      Boolean      @default(true)
+  notifyBilling        Boolean      @default(true)
+  notifyByEmail        Boolean      @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   lastLoginAt     DateTime?
 
+  // Phase 23 patient-owned, cross-hospital data (global, keyed by uid).
+  savedProviders  PatientSavedProvider[]
+  savedHospitals  PatientSavedHospital[]
+  familyMembers   PatientFamilyMember[]
+  notifications   PatientNotification[]
+
   @@map("patient_auth_user")
+}
+
+/// Phase 23 — patient's saved doctors (Care Team). GLOBAL, keyed by Firebase uid; NOT RLS-enrolled.
+/// Denormalized display fields are public-safe (mirror PublicSearchIndex), never private records.
+model PatientSavedProvider {
+  id           String          @id @default(uuid()) @db.Uuid
+  uid          String          @map("uid")
+  tenantId     String          @db.Uuid @map("tenant_id")
+  doctorId     String          @db.Uuid @map("doctor_id")
+  doctorSlug   String?
+  doctorName   String
+  specialty    String?
+  hospitalName String
+  photoUrl     String?
+  createdAt    DateTime        @default(now())
+
+  patientAuth  PatientAuthUser @relation(fields: [uid], references: [uid], onDelete: Cascade)
+
+  @@unique([uid, tenantId, doctorId])
+  @@index([uid])
+  @@map("patient_saved_provider")
+}
+
+/// Phase 23 — patient's saved hospitals. GLOBAL, keyed by Firebase uid; NOT RLS-enrolled.
+model PatientSavedHospital {
+  id           String          @id @default(uuid()) @db.Uuid
+  uid          String          @map("uid")
+  tenantId     String          @db.Uuid @map("tenant_id")
+  hospitalSlug String?
+  hospitalName String
+  city         String?
+  logoUrl      String?
+  createdAt    DateTime        @default(now())
+
+  patientAuth  PatientAuthUser @relation(fields: [uid], references: [uid], onDelete: Cascade)
+
+  @@unique([uid, tenantId])
+  @@index([uid])
+  @@map("patient_saved_hospital")
+}
+
+/// Phase 23 — patient's family/dependent profiles. GLOBAL, keyed by guardian Firebase uid.
+/// Cross-hospital dependent record aggregation is intentionally deferred; this stores the
+/// dependent's identity for "book on behalf" only.
+model PatientFamilyMember {
+  id           String          @id @default(uuid()) @db.Uuid
+  uid          String          @map("uid")
+  fullName     String
+  relationship String
+  dob          DateTime?
+  sex          String?
+  mobile       String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  patientAuth  PatientAuthUser @relation(fields: [uid], references: [uid], onDelete: Cascade)
+
+  @@index([uid])
+  @@map("patient_family_member")
+}
+
+/// Phase 23 — patient-facing notifications from REAL events (booking/document/billing/refill).
+/// GLOBAL, keyed by uid; optional tenantId for context. NOT the staff Notification model.
+model PatientNotification {
+  id        String                      @id @default(uuid()) @db.Uuid
+  uid       String                      @map("uid")
+  tenantId  String?                     @db.Uuid @map("tenant_id")
+  category  PatientNotificationCategory @default(GENERAL)
+  title     String
+  body      String?
+  actionUrl String?
+  readAt    DateTime?
+  createdAt DateTime                    @default(now())
+
+  patientAuth PatientAuthUser           @relation(fields: [uid], references: [uid], onDelete: Cascade)
+
+  @@index([uid])
+  @@index([uid, readAt])
+  @@map("patient_notification")
+}
+
+enum PatientNotificationCategory {
+  BOOKING
+  DOCUMENT
+  BILLING
+  REFILL
+  GENERAL
+}
+
+/// Phase 23 — prescription refill request. TENANT-SCOPED (RLS-enrolled): hospital-owned clinical
+/// workflow. Patient creates it via the portal (forTenant after the access check); staff action it
+/// from a permission-gated queue. `uid` records which portal identity raised it (to notify back).
+model PrescriptionRefillRequest {
+  id             String       @id @default(uuid()) @db.Uuid
+  tenantId       String       @db.Uuid @map("tenant_id")
+  patientId      String       @db.Uuid @map("patient_id")
+  prescriptionId String?      @db.Uuid @map("prescription_id")
+  uid            String // requesting patient's Firebase uid (for notify-back)
+  status         RefillStatus @default(REQUESTED)
+  note           String? // patient's note
+  staffNote      String? // staff response/reason
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, patientId])
+  @@map("prescription_refill_request")
+}
+
+enum RefillStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+  DISPENSED
 }
 
 /// Links a global patient login (uid) to a hospital-specific Patient record.

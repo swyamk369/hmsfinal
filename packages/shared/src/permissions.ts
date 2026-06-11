@@ -142,6 +142,9 @@ export const PERMISSIONS = {
   PATIENT_PORTAL_ACCESS_MANAGE: 'patient_portal.access.manage',
   PATIENT_DOCUMENT_PUBLISH: 'patient_document.publish',
   PATIENT_DOCUMENT_HIDE: 'patient_document.hide',
+  // Phase 23 — staff side of patient-initiated prescription refill requests.
+  PRESCRIPTION_REFILL_READ: 'prescription_refill.read',
+  PRESCRIPTION_REFILL_MANAGE: 'prescription_refill.manage',
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

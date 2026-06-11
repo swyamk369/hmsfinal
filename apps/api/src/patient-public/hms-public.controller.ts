@@ -12,6 +12,7 @@ import {
   HospitalProfileDto,
   LinkBookingPatientDto,
   PortalSettingsDto,
+  RefillStatusDto,
   RejectBookingDto,
   RescheduleBookingDto,
   UpdateAppointmentTypeDto,
@@ -237,5 +238,18 @@ export class HmsPublicController {
   @RequirePermission(P.PATIENT_PORTAL_ACCESS_MANAGE)
   approveAccessRequest(@Ctx() ctx: RequestContext, @Param('id') id: string) {
     return this.svc.approveAccessRequest(ctx, id);
+  }
+
+  // ── Prescription refill requests — staff queue (Phase 23) ─────
+  @Get('refill-requests')
+  @RequirePermission(P.PRESCRIPTION_REFILL_READ, P.PRESCRIPTION_REFILL_MANAGE)
+  listRefillRequests(@Ctx() ctx: RequestContext, @Query('status') status?: string) {
+    return this.svc.listRefillRequests(ctx, status);
+  }
+
+  @Patch('refill-requests/:id')
+  @RequirePermission(P.PRESCRIPTION_REFILL_MANAGE)
+  updateRefillStatus(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: RefillStatusDto) {
+    return this.svc.updateRefillStatus(ctx, id, dto);
   }
 }

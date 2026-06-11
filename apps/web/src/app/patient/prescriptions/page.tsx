@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Pill } from 'lucide-react';
+import { Pill, RefreshCw, Check } from 'lucide-react';
 import { usePortal } from '@/components/patient/portal-shell';
 import { useData, Loading, ErrorState, EmptyState, StatusBadge, SubTabs } from '@/components/patient/portal-ui';
 import { portalApi, type PortalPrescription } from '@/lib/patient-portal';
@@ -69,10 +69,50 @@ function Inner({ tenantId, tab, setTab }: { tenantId: string; tab: Filter; setTa
                   </li>
                 ))}
               </ul>
+              <div className="mt-3 flex justify-end border-t border-line pt-3">
+                <RefillButton tenantId={tenantId} prescriptionId={p.id} />
+              </div>
             </div>
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function RefillButton({ tenantId, prescriptionId }: { tenantId: string; prescriptionId: string }) {
+  const [state, setState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle');
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function request() {
+    setState('busy');
+    setMsg(null);
+    try {
+      await portalApi.createRefill({ tenantId, prescriptionId });
+      setState('done');
+    } catch (e) {
+      setState('error');
+      setMsg((e as Error).message);
+    }
+  }
+
+  if (state === 'done') {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-label-md font-medium text-success-fg">
+        <Check className="h-4 w-4" /> Refill requested — we’ve notified the clinic
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <button
+        onClick={request}
+        disabled={state === 'busy'}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas disabled:opacity-50"
+      >
+        <RefreshCw className={`h-4 w-4 ${state === 'busy' ? 'animate-spin' : ''}`} /> {state === 'busy' ? 'Requesting…' : 'Request refill'}
+      </button>
+      {msg && <span className="text-label-sm text-danger-fg">{msg}</span>}
     </div>
   );
 }

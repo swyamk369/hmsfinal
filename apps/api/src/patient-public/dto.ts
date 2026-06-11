@@ -191,3 +191,54 @@ export class RequestAccessDto {
   @IsOptional() @IsString() @MaxLength(40) phone?: string;
   @IsOptional() @IsDateString() dob?: string;
 }
+
+// ── Phase 23 — patient portal extras ────────────────────────────
+export class SaveProviderDto {
+  @IsUUID() tenantId!: string;
+  @IsUUID() doctorId!: string;
+  @IsOptional() @IsString() @MaxLength(120) doctorSlug?: string;
+  @IsString() @IsNotEmpty() @MaxLength(160) doctorName!: string;
+  @IsOptional() @IsString() @MaxLength(120) specialty?: string;
+  @IsString() @IsNotEmpty() @MaxLength(200) hospitalName!: string;
+  @IsOptional() @IsString() @MaxLength(500) photoUrl?: string;
+}
+
+export class SaveHospitalDto {
+  @IsUUID() tenantId!: string;
+  @IsOptional() @IsString() @MaxLength(120) hospitalSlug?: string;
+  @IsString() @IsNotEmpty() @MaxLength(200) hospitalName!: string;
+  @IsOptional() @IsString() @MaxLength(120) city?: string;
+  @IsOptional() @IsString() @MaxLength(500) logoUrl?: string;
+}
+
+export class FamilyMemberDto {
+  @IsString() @IsNotEmpty() @MaxLength(160) fullName!: string;
+  @IsString() @IsNotEmpty() @MaxLength(40) relationship!: string;
+  @IsOptional() @IsDateString() dob?: string;
+  @IsOptional() @IsString() @MaxLength(20) sex?: string;
+  @IsOptional() @IsString() @MaxLength(20) mobile?: string;
+}
+
+export class UpdateProfileDto {
+  @IsOptional() @IsString() @MaxLength(160) displayName?: string;
+  @IsOptional() @IsString() @MaxLength(20) mobile?: string;
+}
+
+export class NotificationPrefsDto {
+  @IsBoolean() notifyBookingUpdates!: boolean;
+  @IsBoolean() notifyDocuments!: boolean;
+  @IsBoolean() notifyBilling!: boolean;
+  @IsBoolean() notifyByEmail!: boolean;
+}
+
+export class CreateRefillDto {
+  @IsUUID() tenantId!: string;
+  @IsOptional() @IsUUID() prescriptionId?: string;
+  @IsOptional() @IsString() @MaxLength(500) note?: string;
+}
+
+// ── Phase 23 — staff refill queue ───────────────────────────────
+export class RefillStatusDto {
+  @IsIn(['APPROVED', 'REJECTED', 'DISPENSED']) status!: 'APPROVED' | 'REJECTED' | 'DISPENSED';
+  @IsOptional() @IsString() @MaxLength(500) staffNote?: string;
+}

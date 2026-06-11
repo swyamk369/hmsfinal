@@ -11,6 +11,11 @@ import {
   Pill,
   FileText,
   Building2,
+  Heart,
+  Users,
+  Bell,
+  Settings as SettingsIcon,
+  HelpCircle,
   LogOut,
   Plus,
   Search,
@@ -57,6 +62,11 @@ const NAV: { href: string; label: string; icon: typeof LayoutDashboard }[] = [
   { href: '/patient/prescriptions', label: 'Prescriptions', icon: Pill },
   { href: '/patient/documents', label: 'Documents', icon: FileText },
   { href: '/patient/hospitals', label: 'Hospitals', icon: Building2 },
+  { href: '/patient/care-team', label: 'Care Team', icon: Heart },
+  { href: '/patient/family', label: 'Family', icon: Users },
+  { href: '/patient/notifications', label: 'Notifications', icon: Bell },
+  { href: '/patient/settings', label: 'Settings', icon: SettingsIcon },
+  { href: '/patient/help', label: 'Help & Support', icon: HelpCircle },
 ];
 
 // Smaller set for the mobile bottom tab bar.

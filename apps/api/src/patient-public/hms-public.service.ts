@@ -4,6 +4,8 @@ import { AuditService } from '../common/audit.service';
 import { requireDb } from '../common/util';
 import type { RequestContext } from '../common/types';
 import { SearchIndexService } from './search-index.service';
+import { PatientNotifyService } from './patient-notify.service';
+import type { RefillStatusDto } from './dto';
 import type {
   CreateAppointmentTypeDto,
   CreateAvailabilityOverrideDto,
@@ -24,7 +26,11 @@ interface Scope {
 
 @Injectable()
 export class HmsPublicService {
-  constructor(private readonly audit: AuditService, private readonly index: SearchIndexService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly index: SearchIndexService,
+    private readonly notify: PatientNotifyService,
+  ) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -329,6 +335,13 @@ export class HmsPublicService {
     if (!doc) throw new NotFoundException('Document not found');
     const row = await s.db.patientDocument.update({ where: { id }, data: { visibleToPatient: true, publishedAt: new Date(), publishedById: s.actorId, hiddenAt: null, hiddenById: null } });
     await this.record(s, 'document.publish_to_patient', 'patient_document', id, { patientId: doc.patientId });
+    // Notify any linked portal identity that a new document is available (real event).
+    await this.notify.notifyPatientRecord(s.tenantId, doc.patientId, {
+      category: 'DOCUMENT',
+      title: 'New document shared',
+      body: doc.title ? `Your hospital shared "${doc.title}".` : 'Your hospital shared a new document.',
+      actionUrl: '/patient/documents',
+    });
     return row;
   }
 
@@ -338,6 +351,36 @@ export class HmsPublicService {
     if (!doc) throw new NotFoundException('Document not found');
     const row = await s.db.patientDocument.update({ where: { id }, data: { visibleToPatient: false, hiddenAt: new Date(), hiddenById: s.actorId } });
     await this.record(s, 'document.hide_from_patient', 'patient_document', id, { patientId: doc.patientId, reason });
+    return row;
+  }
+
+  // ── Prescription refill requests — staff queue (Phase 23) ─────
+  async listRefillRequests(ctx: RequestContext, status?: string) {
+    const s = this.scope(ctx);
+    const where: any = status ? { status } : {};
+    const rows = await s.db.prescriptionRefillRequest.findMany({ where, orderBy: { createdAt: 'desc' }, take: 200 });
+    const patientIds = [...new Set(rows.map((r) => r.patientId))];
+    const patients = patientIds.length ? await s.db.patient.findMany({ where: { id: { in: patientIds } }, select: { id: true, fullName: true, mrn: true } }) : [];
+    const byId = new Map(patients.map((p) => [p.id, p]));
+    return rows.map((r) => ({ ...r, patientName: byId.get(r.patientId)?.fullName ?? null, patientMrn: byId.get(r.patientId)?.mrn ?? null }));
+  }
+
+  async updateRefillStatus(ctx: RequestContext, id: string, dto: RefillStatusDto) {
+    const s = this.scope(ctx);
+    const req = await s.db.prescriptionRefillRequest.findFirst({ where: { id } });
+    if (!req) throw new NotFoundException('Refill request not found');
+    if (dto.status === 'REJECTED' && !dto.staffNote?.trim()) throw new BadRequestException('A reason is required to reject a refill request.');
+    const row = await s.db.prescriptionRefillRequest.update({ where: { id }, data: { status: dto.status, staffNote: dto.staffNote?.trim() || null } });
+    await this.record(s, 'prescription_refill.update', 'prescription_refill_request', id, { status: dto.status, reason: dto.staffNote ?? null });
+    // Notify the requesting patient of the outcome (real event).
+    const titles: Record<string, string> = { APPROVED: 'Refill approved', REJECTED: 'Refill request declined', DISPENSED: 'Refill ready' };
+    await this.notify.notifyUid(req.uid, {
+      category: 'REFILL',
+      title: titles[dto.status] ?? 'Refill updated',
+      body: dto.staffNote?.trim() || (dto.status === 'DISPENSED' ? 'Your refill is ready — please collect it from the pharmacy.' : undefined),
+      actionUrl: '/patient/prescriptions',
+      tenantId: s.tenantId,
+    });
     return row;
   }
 

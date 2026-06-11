@@ -50,13 +50,15 @@ const asAudit = (a: any) => a as unknown as AuditService;
 let d: Record<string, any>;
 let audit: { log: jest.Mock };
 let index: { syncHospital: jest.Mock; syncDoctor: jest.Mock };
+let notify: { notifyUid: jest.Mock; notifyPatientRecord: jest.Mock };
 let svc: HmsPublicService;
 
 beforeEach(() => {
   d = db();
   audit = { log: jest.fn().mockResolvedValue(undefined) };
   index = { syncHospital: jest.fn().mockResolvedValue(undefined), syncDoctor: jest.fn().mockResolvedValue(undefined) };
-  svc = new HmsPublicService(asAudit(audit), index as any);
+  notify = { notifyUid: jest.fn().mockResolvedValue(undefined), notifyPatientRecord: jest.fn().mockResolvedValue(undefined) };
+  svc = new HmsPublicService(asAudit(audit), index as any, notify as any);
 });
 
 describe('HMS public admin — gating & DTOs', () => {

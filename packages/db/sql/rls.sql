@@ -53,6 +53,10 @@ DECLARE
     'patient_portal_access', 'public_hospital_profile', 'public_doctor_profile',
     'hospital_location', 'appointment_type', 'availability_rule', 'availability_override',
     'patient_portal_settings', 'online_booking',
+    -- Phase 23 — patient-initiated refill request (tenant-scoped clinical workflow).
+    -- NOT enrolled (intentionally global, keyed by patient uid): patient_saved_provider,
+    -- patient_saved_hospital, patient_family_member, patient_notification.
+    'prescription_refill_request',
     'audit_log'
   ];
 BEGIN

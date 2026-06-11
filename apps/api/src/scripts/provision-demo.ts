@@ -168,7 +168,53 @@ async function seedPortalPatient(tenantId: string, doctorId?: string) {
     when.setHours(10, 0, 0, 0);
     await platformDb.appointment.create({ data: { tenantId, patientId: patient.id, providerId: doctorId, scheduledAt: when, status: 'SCHEDULED', reason: 'Follow-up', source: 'ADMIN', consultationType: 'IN_PERSON' } });
   }
-  console.log(`  ✓ portal patient: ${email} (pwd ${PASSWORD}) linked to Demo Hospital with a bill, document & appointment`);
+  // Phase 23 — Care Team, Family, Notifications, published lab report, refill request.
+  if (doctorId) {
+    const prof = await platformDb.publicDoctorProfile.findFirst({ where: { tenantId, doctorId } });
+    if (prof && !(await platformDb.patientSavedProvider.findFirst({ where: { uid, tenantId, doctorId } }))) {
+      await platformDb.patientSavedProvider.create({
+        data: {
+          uid, tenantId, doctorId, doctorSlug: prof.doctorSlug,
+          doctorName: prof.displayName, specialty: prof.specialty ?? null, hospitalName: 'Demo Hospital',
+        },
+      });
+    }
+  }
+  if (!(await platformDb.patientSavedHospital.findFirst({ where: { uid, tenantId } }))) {
+    await platformDb.patientSavedHospital.create({ data: { uid, tenantId, hospitalName: 'Demo Hospital', city: 'Pune' } });
+  }
+  if (!(await platformDb.patientFamilyMember.findFirst({ where: { uid, fullName: 'Aarav Patient' } }))) {
+    await platformDb.patientFamilyMember.create({ data: { uid, fullName: 'Aarav Patient', relationship: 'Child', dob: new Date('2016-08-20'), sex: 'MALE' } });
+  }
+  if ((await platformDb.patientNotification.count({ where: { uid } })) === 0) {
+    await platformDb.patientNotification.createMany({
+      data: [
+        { uid, tenantId, category: 'BOOKING', title: 'Appointment confirmed', body: 'Your follow-up at Demo Hospital is confirmed.', actionUrl: '/patient/appointments' },
+        { uid, tenantId, category: 'DOCUMENT', title: 'New document shared', body: 'Demo Hospital shared a document with you.', actionUrl: '/patient/documents' },
+      ],
+    });
+  }
+
+  // A published (COMPLETED + verified) lab report so the clinical-record screen has real data.
+  if (!(await platformDb.labOrder.findFirst({ where: { tenantId, patientId: patient.id } }))) {
+    const order = await platformDb.labOrder.create({ data: { tenantId, patientId: patient.id, status: 'COMPLETED', notes: 'Routine panel' } });
+    const item = await platformDb.labOrderItem.create({ data: { tenantId, labOrderId: order.id, testId: randomUUID(), testName: 'Complete Blood Count', status: 'COMPLETED' } });
+    await platformDb.labResult.createMany({
+      data: [
+        { tenantId, labOrderItemId: item.id, testName: 'Hemoglobin', value: '13.5', unit: 'g/dL', referenceRange: '12.0-15.5', abnormalFlag: 'NORMAL', isVerified: true, verifiedAt: new Date() },
+        { tenantId, labOrderItemId: item.id, testName: 'WBC', value: '11.8', unit: '10^3/uL', referenceRange: '4.0-11.0', abnormalFlag: 'HIGH', isVerified: true, verifiedAt: new Date() },
+      ],
+    });
+  }
+
+  // A pending refill request so the staff queue + patient prescriptions screen are demoable.
+  if (!(await platformDb.prescriptionRefillRequest.findFirst({ where: { tenantId, patientId: patient.id } }))) {
+    await platformDb.prescriptionRefillRequest.create({
+      data: { tenantId, patientId: patient.id, uid, status: 'REQUESTED', note: 'Please refill my blood-pressure medication.' },
+    });
+  }
+
+  console.log(`  ✓ portal patient: ${email} (pwd ${PASSWORD}) — bill, document, appointment, saved doctor/hospital, family, notifications, lab report & refill`);
 }
 
 async function main(): Promise<void> {
