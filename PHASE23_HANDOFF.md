@@ -24,14 +24,14 @@ Progress:
 | A1–A3 | Booking wizard, public home `/`, patient `/patient/login` + `/patient/register`, public nav | ✅ done (prior session, **committed** `1d9d207`) |
 | **A4** | `/doctors` + `/hospitals` reskin (filter sidebar w/ live counts, rich cards, mobile) | ✅ done this session (uncommitted) |
 | **A5** | `/doctors/[slug]` + `/hospitals/[slug]` profiles + sticky real-slot Book widget | ✅ done this session (uncommitted) |
-| **A6** | Portal sidebar shell + split routes `/patient/{dashboard,appointments,bills,prescriptions,documents,hospitals}` | 🚧 **not started** (one helper file pre-written, see §4) |
-| Part B | New backend (favorites, family, patient notifications, settings, refills) + screens + tests | ⏳ not started |
+| **A6** | Portal sidebar shell + split routes `/patient/{dashboard,appointments,bills,prescriptions,documents,hospitals}` | ✅ done this session (uncommitted) — see §4b |
+| Part B | New backend (favorites, family, patient notifications, settings, refills) + screens + tests | ⏳ **not started — next task** |
 | Enrich | `/public/doctors` & `/public/hospitals` return photo/logo/fees/next-slot | ⏳ not started |
 | Gates | api + web tests, full build gate, `provision:demo` smoke | ⏳ not started |
 
 **Safe checkpoint:** `pnpm --filter @hms/web exec tsc --noEmit` → **exit 0**. Nothing half-written.
-The existing single-page portal at `apps/web/src/app/patient/dashboard/page.tsx` is **untouched and
-still works** — A6 will replace it.
+A6 is complete: the single-page portal has been **replaced** by a persistent sidebar-shell +
+context + six split routes (see §4b). **Next task = Part B** (new backend + screens, §6).
 
 **Not committed.** Working tree has the A4/A5 changes + 2 new component files (below). Commit only
 when the human asks; if you do, branch first and end the message with the Co-Authored-By line.
@@ -156,7 +156,44 @@ All of the above: **`tsc --noEmit` clean.**
 
 ---
 
-## 5. A6 — the planned architecture (do this next)
+## 4b. A6 — what shipped this session (portal shell + split routes)
+
+Built exactly to the §5 architecture. `tsc --noEmit` clean. **Uncommitted.**
+
+New:
+- `apps/web/src/components/patient/portal-shell.tsx` — `PortalProvider`/`usePortal()` context +
+  chrome. Loads `me` + `linkedHospitals` **once** (Firebase auth gate via `getFirebaseAuth` +
+  `onAuthStateChanged`; redirects to `/patient/login` when signed out). Holds active `tenantId`
+  (localStorage `hms_portal_tenant`), hospital switcher (top-bar `<select>` when >1 linked),
+  `logout`, and the **`LinkHospitalModal`** (moved here from the old dashboard) exposed via
+  `openLinkModal()`. Desktop left sidebar (Dashboard/Appointments/Bills/Prescriptions/Documents/
+  Hospitals + pinned "New Booking" → `/doctors`), sticky top bar (page title from pathname +
+  switcher + sign-out), mobile drawer + bottom tab bar. Context shape:
+  `{ ready, me, hospitals, tenantId, current, setTenantId, refresh, logout, openLinkModal }`.
+- `apps/web/src/app/patient/layout.tsx` (`'use client'`) — renders `{children}` **bare** for
+  `/patient`, `/patient/login`, `/patient/register`; otherwise wraps in `<PortalShell>`.
+- Split routes (each `'use client'`, consume `usePortal()` + `portalApi` + `portal-ui.tsx`):
+  `dashboard/page.tsx` (**replaced** the 492-line monolith) — welcome hero + Quick Actions
+  (Find a Doctor, Link Hospital Record) + Upcoming/Latest-bill/Recent-doc/Your-record cards with
+  "View all" deep links + rich empty states; `appointments/page.tsx` — Upcoming/Past/Pending/
+  Cancelled `SubTabs`, real **Add-to-Calendar (.ics)** for upcoming, Directions (maps link from
+  `current.city`) — **Reschedule/Cancel deferred to Part B**; `bills/page.tsx` — Unpaid/Paid/All,
+  line items, honest "pay at clinic" notice (no fake pay); `prescriptions/page.tsx` — Active/
+  Completed/All — **Request Refill deferred to Part B**; `documents/page.tsx` — search + All/
+  Reports/Prescriptions/Bills/Referrals category filter + "only published" banner + view →
+  `markDocumentViewed`; `hospitals/page.tsx` — Choose-a-Hospital cards (`Avatar` logo/initials),
+  "Open Portal" (sets tenant → dashboard), "Link another record".
+
+**Honesty kept:** no fake payments/uploads/refills/reschedule; empty states say docs appear when a
+hospital shares them. **Not yet added (Part B):** notifications bell, Family/Settings/Care-Team/Help
+nav items, refill + reschedule/cancel actions.
+
+**Gates not yet run** beyond `tsc` (no full web build, no `web test`, no live smoke). Run those
+before/with Part B. The old single-page tabbed dashboard is fully replaced — verify live before commit.
+
+---
+
+## 5. A6 — the planned architecture (was: do this next — NOW DONE, see §4b)
 
 Goal: turn the single tabbed `apps/web/src/app/patient/dashboard/page.tsx` into a **persistent
 sidebar-shell + split routes**. Patient portal uses a **separate Firebase auth branch** — do NOT use
