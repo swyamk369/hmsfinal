@@ -48,6 +48,12 @@ export interface SearchRow {
   languages: string[];
   isBookable: boolean;
   profileUrl: string;
+  // Optional enrichment (populated by the search-index sync when available; the
+  // UI renders these only when present — never fabricates them).
+  photoUrl?: string | null;
+  logoUrl?: string | null;
+  fees?: number | null;
+  nextAvailableSlot?: string | null;
 }
 
 export interface PublicHospital {

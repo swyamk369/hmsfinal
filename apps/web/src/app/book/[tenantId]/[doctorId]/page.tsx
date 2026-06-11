@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowRight,
   ArrowLeft,
@@ -36,19 +36,26 @@ interface PatientForm {
   reasonForVisit: string;
 }
 
-export default function BookPage() {
+function BookPageInner() {
   const { tenantId, doctorId } = useParams<{ tenantId: string; doctorId: string }>();
   const router = useRouter();
+  const search = useSearchParams();
+
+  // Pre-selection passed from the doctor-profile sticky Book widget (A5).
+  const prefType = search.get('type') ?? '';
+  const prefConsult = search.get('consult') ?? '';
+  const prefDate = search.get('date') ?? '';
+  const prefTime = search.get('time') ?? '';
 
   const [opts, setOpts] = useState<BookingOptions | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [screen, setScreen] = useState<Screen>('choose');
 
-  const [typeId, setTypeId] = useState('');
-  const [consult, setConsult] = useState('IN_PERSON');
+  const [typeId, setTypeId] = useState(prefType);
+  const [consult, setConsult] = useState(prefConsult);
   const [slots, setSlots] = useState<DaySlots[] | null>(null);
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [date, setDate] = useState(prefDate);
+  const [time, setTime] = useState(prefTime);
   const [form, setForm] = useState<PatientForm>({ fullName: '', dateOfBirth: '', email: '', mobile: '', reasonForVisit: '' });
   const [consents, setConsents] = useState({ terms: false, records: false });
   const [busy, setBusy] = useState(false);
@@ -60,8 +67,9 @@ export default function BookPage() {
       .bookingOptions(tenantId, doctorId)
       .then((o) => {
         setOpts(o);
-        if (o.appointmentTypes[0]) setTypeId(o.appointmentTypes[0].id);
-        if (o.consultationTypes[0]) setConsult(o.consultationTypes[0]);
+        // Keep any pre-selection from the profile widget; else default to the first option.
+        if (o.appointmentTypes[0]) setTypeId((cur) => cur || o.appointmentTypes[0].id);
+        setConsult((cur) => cur || o.consultationTypes[0] || 'IN_PERSON');
       })
       .catch((e) => setLoadErr((e as Error).message));
   }, [tenantId, doctorId]);
@@ -602,4 +610,12 @@ function parseStart(dateIso: string, time: string): Date | null {
   const d = new Date(dateIso);
   d.setHours(h, min, 0, 0);
   return d;
+}
+
+export default function BookPage() {
+  return (
+    <Suspense fallback={<div className="grid min-h-screen place-items-center bg-canvas text-body-sm text-ink-soft">Loading booking…</div>}>
+      <BookPageInner />
+    </Suspense>
+  );
 }
