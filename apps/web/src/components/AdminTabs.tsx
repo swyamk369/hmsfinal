@@ -22,6 +22,7 @@ const TABS: Tab[] = [
   { label: 'Wards & Beds', href: '/admin/wards', module: 'IPD' },
   { label: 'Lab Tests', href: '/admin/lab-catalog', module: 'LAB' },
   { label: 'Insurance', href: '/admin/insurance', module: 'INSURANCE' },
+  { label: 'Public Site', href: '/admin/public-profile' },
   { label: 'Audit', href: '/admin/audit' },
 ];
 

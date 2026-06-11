@@ -832,6 +832,133 @@ Acceptance:
 - Re-posting the same source event does not create a duplicate charge.
 - The patient statement prints with aged outstanding buckets.
 
+## Phase 22 — Public Patient Booking Layer, Global Search & Multi-Hospital Patient Portal
+
+A HotDoc/Zocdoc-style **public, patient-facing layer** bolted onto the existing
+tenant-aware HMS — **search globally, book locally**. The HMS stays the private system
+of record; nothing existing is rewritten. Architected as three logical surfaces that can
+later split into `app.` (HMS), `book.` (public), and `patient.` (portal) on the **same**
+backend/DB — never a separate booking database.
+
+**Locked architecture decisions:**
+
+- **Reuse, don't duplicate.** The existing `Patient` model **is** the spec's
+  "TenantPatient" (hospital-owned record) — extended with `linkedPortalUid`. The
+  existing `Appointment` is extended with `source`/`appointmentTypeId`/`locationId`/
+  `consultationType` (all optional — existing flows untouched). `PatientDocument` is
+  extended with `visibleToPatient` + publish/hide audit fields (**default hidden**).
+- **Two identities.** Staff use `User`+`TenantUser` (unchanged). Patients use a new
+  **global** `PatientAuthUser` (Firebase login + basic profile, no medical data),
+  connected to each hospital's `Patient` via **`PatientPortalAccess`** (uid → tenantId →
+  patientId, with `accessStatus`). Hospital A and B keep separate patient records.
+- **Three access paths.** (a) **Staff/HMS** endpoints → tenant-scoped `ctx.db` (RLS) +
+  permission + module guards. (b) **Public** endpoints (search, profiles, slots, booking
+  create) → owner client with explicit `isPublic`/`PUBLISHED`/`bookingEnabled` filters
+  and **public-safe fields only**; booking writes into the chosen tenant via
+  `forTenant(tenantId)`. (c) **Patient portal** endpoints → Firebase patient → resolve
+  `PatientAuthUser` → `PatientPortalAccess (ACTIVE)` → records for the selected
+  tenant+patient, filtered to `visibleToPatient=true`. A patient-portal guard enforces
+  uid↔tenant↔patient; URL tampering is blocked server-side.
+- **Public search hits `PublicSearchIndex` only** (denormalized, public-safe; no patient/
+  staff/financial data) — never private tenant tables.
+- Patient-side "permissions" are enforced by the portal-access guard, **not** the tenant
+  RBAC Permission table.
+
+### Phase 22.1 — Data & Access Foundation ✅ DONE (2026-06-11)
+
+- Schema: extended `Patient`/`Appointment`/`PatientDocument`; new models
+  `PatientAuthUser`, `PatientPortalAccess`, `PublicHospitalProfile`, `PublicDoctorProfile`,
+  `HospitalLocation`, `AppointmentType`, `AvailabilityRule`, `AvailabilityOverride`,
+  `PatientPortalSettings`, `PublicSearchIndex`, `OnlineBooking` + 12 enums. Migration
+  `20260610222957_phase22_public_patient_layer`.
+- RLS: 9 new tenant-scoped tables enrolled; `patient_auth_user` + `public_search_index`
+  intentionally global. 15 new staff permissions registered (99→114) and wired to
+  HOSPITAL_ADMIN (all), RECEPTION, DOCTOR, HOSPITAL_MANAGER.
+- Gates green: db build, prisma validate, api 227 + web 276 tests, RLS applied. No
+  existing workflow touched.
+
+### Phase 22.2 — HMS Admin Controls ✅ DONE (2026-06-11)
+
+Backend `HmsPublicController`/`HmsPublicService` (permission-gated, tenant-scoped, audited):
+portal settings, hospital profile (publish/hide), doctor profiles (publish/hide), appointment
+types, availability rules/overrides, online-booking queue, document publish/hide, portal-access
+list/block/revoke/reactivate, + `SearchIndexService`. Frontend: consolidated `/admin/public-profile`
+(AdminTabs "Public Site") with sub-tabs Hospital Profile (edit + publish/hide), Portal & Booking
+(settings + approval mode + notice/advance), Appointment Types (CRUD), Doctors (list +
+publish/hide + add-from-provider). Proven live as demo admin (profile PUBLISHED, settings,
+3 types, 2 doctor profiles).
+
+`apps/api/src/patient-public/` (or a `hms-public` module): public-profile settings,
+patient-portal settings, public doctor profiles, appointment types, availability
+rules/overrides, online-booking queue (approve/reject/reschedule/link-or-create-patient),
+patient-portal access management, document publish/hide. All `@RequireModule` + permission
++ tenant-scoped + audited + reason-on-destructive. Routes under `/settings/public-profile`,
+`/settings/patient-portal`, `/doctors/[id]/public-profile`, `/doctors/[id]/availability`,
+`/settings/appointment-types`, `/appointments/online-bookings`, `/patients/[id]/portal-access`.
+Includes the `PublicSearchIndex` sync service (re-index on profile/availability/booking
+changes).
+
+### Phase 22.3 — Public Directory ✅ DONE (2026-06-11)
+
+Public (no-auth) endpoints `GET /public/hospitals|doctors|search|search/suggestions|
+hospitals/:slug|doctors/:slug` (`PublicController` `@Public` + `PublicService` via owner
+client, published-only, public-safe views). Public pages `/hospitals`, `/hospitals/[slug]`,
+`/doctors`, `/doctors/[slug]` with a standalone `PublicShell`, search/cards/profiles, and an
+honest "online booking launching soon" CTA (real flow lands in 22.4). Demo data seeded via
+`provision:demo`: Demo Hospital + Sunrise Clinic, both published & indexed (4 doctors). 7
+new API tests; gates green (api 246, web 276).
+
+### Phase 22.4 — Online Booking ✅ DONE (2026-06-11, core; staff queue + TZ = 22.4b)
+
+Proven live: a public no-auth booking writes a real Patient + Appointment
+(`source:ONLINE_BOOKING`) + OnlineBooking into the correct tenant, AUTOMATIC mode confirms,
+tenant-isolated, audited. Slot engine + booking service + `/book/[tenantId]/[doctorId]` UI
+done; 12 tests; api 258 / web 276. Remaining → 22.4b: staff online-booking queue
+(approve/reject/reschedule/link-patient) + hospital-timezone normalization.
+
+Slot generation from `AvailabilityRule` + overrides + existing appointments + appointment
+duration + portal settings (notice/advance windows). `POST /public/booking/create`:
+re-validate slot server-side (transactional, no double-book), create/link the tenant
+`Patient` (duplicate detection → flag, never auto-merge), create the real `Appointment`
+(`source: ONLINE_BOOKING`), create `OnlineBooking`, apply AUTOMATIC/MANUAL/HYBRID approval,
+return confirmed/pending. Surfaces in the HMS online-booking queue.
+
+### Phase 22.5 — Patient Portal ✅ DONE (2026-06-11, core)
+
+Proven live: patient signs in (Firebase, separate auth branch) → sees only their linked
+hospital → dashboard shows that hospital's appointment/bill/document scoped to their patient
+record; unlinked tenant → 403, no token → 401. Built: `PatientPortalService` (authUid +
+register PatientAuthUser, assertAccess uid↔tenant↔patient, me/linked-hospitals/dashboard/
+appointments/bills/reports/documents[visibleToPatient]/profile via forTenant RLS) +
+`PatientPortalController` @Public (verifies the patient's own token); web `lib/patient-portal.ts`,
+`/patient/login|register|dashboard` (hospital selector + tabs). Demo: patient@demo.local /
+Demo-2026! linked to Demo Hospital. 6 tests; api 268 / web 276. Remaining (22.6): switch-
+hospital cache-clear polish, document-view audit, request-access flow, prescriptions tab, TZ.
+
+Patient login/register, linked-hospital selector, switch-hospital (clears prior tenant
+context, always shows "viewing: Hospital X"), dashboard, and Appointments/Bills/Reports/
+Prescriptions/Documents/Profile — all scoped to the selected tenant+patient and filtered
+to `visibleToPatient`. Profile separates login identity from hospital record. Routes under
+`/patient/*`.
+
+### Phase 22.6 — Security, Audit, Testing ✅ DONE (2026-06-11, core)
+
+Done: @Public + manual-token patient guard; tenant-isolation + URL-tampering proven live
+(unlinked tenant → 403, no token → 401); document visibility default-false with staff
+publish/hide (reason) + audit; portal-access block/revoke/reactivate (reason) + audit;
+audit on booking/approve/reject/reschedule/link/doc-publish/doc-hide/portal-access; reasons
+on all destructive actions; error/empty/loading states across public + portal + admin;
+40 new tests (slot engine, booking create, public directory, portal auth/isolation, queue,
+doc-visibility/portal-access) — api 272 / web 276 green.
+
+**Phase 22 is functionally COMPLETE end-to-end** (search → book → tenant appointment →
+staff queue → patient portal → admin config). Minor polish remaining: timezone normalization
+(scheduledAt server-local), patient-initiated request-access flow, prescriptions tab,
+per-doctor availability UI (seed-managed today), document-view audit event.
+
+Original 22.6 scope below — patient-portal + public guards, tenant-isolation + URL-tampering +
+file-download validation, full audit coverage, error/empty/loading states, regression matrix.
+
 ## Future Direction — Post-Core Expansion After Phase 18
 
 These items are intentionally deferred until the production HMS core is complete, tested, deployed, and stable. They must not interrupt or reorder Phases 0-18.

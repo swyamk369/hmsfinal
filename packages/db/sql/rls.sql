@@ -48,6 +48,11 @@ DECLARE
     'ward', 'bed', 'admission', 'bed_transfer', 'ipd_round', 'ipd_charge', 'discharge_summary',
     'insurance_provider', 'patient_insurance_policy', 'insurance_claim', 'claim_settlement',
     'notification', 'notification_preference', 'notification_delivery_attempt',
+    -- Phase 22 — public patient booking layer (tenant-scoped). NOT enrolled:
+    -- patient_auth_user (global identity), public_search_index (public read).
+    'patient_portal_access', 'public_hospital_profile', 'public_doctor_profile',
+    'hospital_location', 'appointment_type', 'availability_rule', 'availability_override',
+    'patient_portal_settings', 'online_booking',
     'audit_log'
   ];
 BEGIN

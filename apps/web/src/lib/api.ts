@@ -88,6 +88,15 @@ export async function apiPatch<T = any>(path: string, body?: unknown, tenantId?:
   return handle(res);
 }
 
+export async function apiPut<T = any>(path: string, body?: unknown, tenantId?: string | null): Promise<T> {
+  const res = await fetchSafe(`${API}${path}`, {
+    method: 'PUT',
+    headers: await buildHeaders(tenantId, true),
+    body: JSON.stringify(body ?? {}),
+  });
+  return handle(res);
+}
+
 export async function apiDelete<T = any>(path: string, body?: unknown, tenantId?: string | null): Promise<T> {
   const res = await fetchSafe(`${API}${path}`, {
     method: 'DELETE',

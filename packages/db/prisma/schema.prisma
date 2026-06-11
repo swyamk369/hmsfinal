@@ -560,6 +560,8 @@ model Patient {
   emergencyContactPhone String?
   deletedAt             DateTime?
   archiveReason         String?
+  // Phase 22: link to the global patient login (PatientAuthUser.uid) for portal access.
+  linkedPortalUid       String?                  @map("linked_portal_uid")
   createdAt             DateTime                 @default(now())
   identifiers           PatientIdentifier[]
   consents              Consent[]
@@ -640,6 +642,13 @@ model PatientDocument {
   fileName    String?
   documentUrl String
   notes       String?
+  // Phase 22: patient-portal visibility. Default hidden — staff must publish.
+  visibleToPatient Boolean            @default(false) @map("visible_to_patient")
+  publishedAt DateTime?
+  publishedById String?               @db.Uuid
+  hiddenAt    DateTime?
+  hiddenById  String?                 @db.Uuid
+  patientViewedAt DateTime?
   createdById String?                 @db.Uuid
   createdAt   DateTime                @default(now())
   patient     Patient                 @relation(fields: [patientId], references: [id], onDelete: Cascade)
@@ -663,6 +672,11 @@ model Appointment {
   status             AppointmentStatus @default(SCHEDULED)
   reason             String?
   cancellationReason String?
+  // Phase 22: booking provenance + public-booking links (all optional, non-breaking).
+  source             AppointmentSource @default(ADMIN)
+  appointmentTypeId  String?           @db.Uuid @map("appointment_type_id")
+  locationId         String?           @db.Uuid @map("location_id")
+  consultationType   ConsultationType  @default(IN_PERSON) @map("consultation_type")
   createdAt          DateTime          @default(now())
   patient            Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
   encounters         Encounter[]
@@ -1473,4 +1487,379 @@ model AuditLog {
   @@index([tenantId])
   @@index([entity, entityId])
   @@map("audit_log")
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Phase 22 — Public Patient Booking Layer & Multi-Hospital Patient Portal
+// Global models (PatientAuthUser, PublicSearchIndex) are NOT RLS-enrolled:
+// patient identity is cross-tenant and the search index is public-read via
+// the owner client. All other new models are tenant-scoped (RLS).
+// ════════════════════════════════════════════════════════════════════
+
+enum AppointmentSource {
+  ADMIN
+  PHONE
+  WALK_IN
+  ONLINE_BOOKING
+}
+
+enum ConsultationType {
+  IN_PERSON
+  TELEHEALTH
+}
+
+enum AppointmentTypeConsult {
+  IN_PERSON
+  TELEHEALTH
+  BOTH
+}
+
+enum PublicProfileStatus {
+  DRAFT
+  PUBLISHED
+  HIDDEN
+}
+
+enum PortalAccessStatus {
+  ACTIVE
+  PENDING
+  BLOCKED
+  REVOKED
+}
+
+enum PortalVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum BookingApprovalMode {
+  AUTOMATIC
+  MANUAL
+  HYBRID
+}
+
+enum AvailabilityOverrideType {
+  UNAVAILABLE
+  EXTRA_AVAILABLE
+  BLOCKED
+}
+
+enum OnlineBookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  REJECTED
+  COMPLETED
+}
+
+enum OnlineBookingApproval {
+  AUTO_CONFIRMED
+  PENDING_STAFF_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+enum PatientAuthStatus {
+  ACTIVE
+  BLOCKED
+  PENDING
+}
+
+enum SearchIndexType {
+  HOSPITAL
+  DOCTOR
+  SERVICE
+}
+
+/// Global patient login identity (auth + basic profile only). No medical data.
+model PatientAuthUser {
+  id              String            @id @default(uuid()) @db.Uuid
+  uid             String            @unique // Firebase uid
+  email           String?           @unique
+  mobile          String?
+  displayName     String?
+  profilePhotoUrl String?
+  authProvider    String?
+  emailVerified   Boolean           @default(false)
+  mobileVerified  Boolean           @default(false)
+  status          PatientAuthStatus @default(ACTIVE)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  lastLoginAt     DateTime?
+
+  @@map("patient_auth_user")
+}
+
+/// Links a global patient login (uid) to a hospital-specific Patient record.
+model PatientPortalAccess {
+  id                  String                   @id @default(uuid()) @db.Uuid
+  tenantId            String                   @db.Uuid @map("tenant_id")
+  uid                 String // PatientAuthUser.uid
+  patientId           String                   @db.Uuid
+  hospitalDisplayName String?
+  email               String?
+  mobile              String?
+  verificationStatus  PortalVerificationStatus @default(PENDING)
+  accessStatus        PortalAccessStatus       @default(PENDING)
+  linkedById          String?                  @db.Uuid
+  linkedAt            DateTime?
+  blockReason         String?
+  revokeReason        String?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  @@unique([tenantId, uid, patientId])
+  @@index([tenantId])
+  @@index([uid])
+  @@map("patient_portal_access")
+}
+
+/// Tenant public hospital/clinic profile shown in global search & booking.
+model PublicHospitalProfile {
+  id                  String              @id @default(uuid()) @db.Uuid
+  tenantId            String              @unique @db.Uuid @map("tenant_id")
+  hospitalSlug        String              @unique
+  isPublic            Boolean             @default(false)
+  bookingEnabled      Boolean             @default(false)
+  hospitalDisplayName String
+  logoUrl             String?
+  coverImageUrl       String?
+  description         String?
+  address             String?
+  city                String?
+  state               String?
+  country             String?
+  postcode            String?
+  latitude            Float?
+  longitude           Float?
+  phone               String?
+  email               String?
+  website             String?
+  openingHours        Json?
+  facilities          String[]
+  specialties         String[]
+  services            String[]
+  consultationTypes   String[]
+  insuranceAccepted   String[]
+  languages           String[]
+  profileStatus       PublicProfileStatus @default(DRAFT)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  @@index([tenantId])
+  @@map("public_hospital_profile")
+}
+
+/// Public-safe doctor profile (one per Provider per tenant).
+model PublicDoctorProfile {
+  id                      String              @id @default(uuid()) @db.Uuid
+  tenantId                String              @db.Uuid @map("tenant_id")
+  doctorId                String              @db.Uuid // Provider.id
+  doctorSlug              String
+  isPublic                Boolean             @default(false)
+  bookingEnabled          Boolean             @default(false)
+  displayName             String
+  photoUrl                String?
+  specialty               String?
+  subSpecialties          String[]
+  qualifications          String?
+  registrationNumber      String?
+  bio                     String?
+  languages               String[]
+  gender                  String?
+  services                String[]
+  consultationTypes       String[]
+  locationIds             String[]
+  fees                    Json?
+  acceptsNewPatients      Boolean             @default(true)
+  acceptsExistingPatients Boolean             @default(true)
+  telehealthAvailable     Boolean             @default(false)
+  profileStatus           PublicProfileStatus @default(DRAFT)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  @@unique([tenantId, doctorId])
+  @@unique([tenantId, doctorSlug])
+  @@index([tenantId])
+  @@map("public_doctor_profile")
+}
+
+/// A bookable hospital location/branch.
+model HospitalLocation {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @db.Uuid @map("tenant_id")
+  name         String
+  address      String?
+  city         String?
+  state        String?
+  country      String?
+  postcode     String?
+  latitude     Float?
+  longitude    Float?
+  phone        String?
+  openingHours Json?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("hospital_location")
+}
+
+/// A bookable appointment type (duration, price, consultation type, approval).
+model AppointmentType {
+  id                           String                 @id @default(uuid()) @db.Uuid
+  tenantId                     String                 @db.Uuid @map("tenant_id")
+  name                         String
+  description                  String?
+  durationMinutes              Int                    @default(15)
+  price                        Int                    @default(0)
+  currency                     String                 @default("INR")
+  consultationType             AppointmentTypeConsult @default(IN_PERSON)
+  availableForNewPatients      Boolean                @default(true)
+  availableForExistingPatients Boolean                @default(true)
+  requiresApproval             Boolean                @default(false)
+  isPublic                     Boolean                @default(true)
+  isActive                     Boolean                @default(true)
+  createdAt                    DateTime               @default(now())
+  updatedAt                    DateTime               @updatedAt
+
+  @@index([tenantId])
+  @@map("appointment_type")
+}
+
+/// Recurring weekly availability for a doctor at a location.
+model AvailabilityRule {
+  id                  String   @id @default(uuid()) @db.Uuid
+  tenantId            String   @db.Uuid @map("tenant_id")
+  doctorId            String   @db.Uuid
+  locationId          String?  @db.Uuid
+  dayOfWeek           Int // 0=Sunday … 6=Saturday
+  startTime           String // "09:00"
+  endTime             String // "17:00"
+  slotDurationMinutes Int      @default(15)
+  bufferMinutes       Int      @default(0)
+  consultationTypes   String[]
+  appointmentTypeIds  String[]
+  maxBookingsPerSlot  Int      @default(1)
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([doctorId])
+  @@map("availability_rule")
+}
+
+/// One-off availability change (leave, holiday, extra slots) for a doctor.
+model AvailabilityOverride {
+  id         String                   @id @default(uuid()) @db.Uuid
+  tenantId   String                   @db.Uuid @map("tenant_id")
+  doctorId   String                   @db.Uuid
+  locationId String?                  @db.Uuid
+  date       DateTime                 @db.Date
+  type       AvailabilityOverrideType
+  startTime  String?
+  endTime    String?
+  reason     String?
+  createdAt  DateTime                 @default(now())
+  updatedAt  DateTime                 @updatedAt
+
+  @@index([tenantId])
+  @@index([doctorId])
+  @@map("availability_override")
+}
+
+/// Per-tenant patient-portal & online-booking configuration.
+model PatientPortalSettings {
+  id                           String              @id @default(uuid()) @db.Uuid
+  tenantId                     String              @unique @db.Uuid @map("tenant_id")
+  enabled                      Boolean             @default(false)
+  onlineBookingEnabled         Boolean             @default(false)
+  clinicDisplayName            String?
+  clinicLogoUrl                String?
+  primaryColor                 String?
+  publicContactNumber          String?
+  publicEmail                  String?
+  address                      String?
+  bookingTerms                 String?
+  cancellationPolicy           String?
+  privacyNotice                String?
+  allowNewPatientBookings      Boolean             @default(true)
+  allowExistingPatientBookings Boolean             @default(true)
+  bookingApprovalMode          BookingApprovalMode @default(MANUAL)
+  minimumBookingNoticeHours    Int                 @default(2)
+  maximumBookingAdvanceDays    Int                 @default(60)
+  timezone                     String              @default("Asia/Kolkata")
+  createdAt                    DateTime            @default(now())
+  updatedAt                    DateTime            @updatedAt
+
+  @@map("patient_portal_settings")
+}
+
+/// Public global search index. Public-safe fields ONLY — no patient/staff/financial data.
+model PublicSearchIndex {
+  id                String          @id @default(uuid()) @db.Uuid
+  type              SearchIndexType
+  tenantId          String          @db.Uuid @map("tenant_id")
+  doctorId          String?         @db.Uuid
+  hospitalSlug      String?
+  doctorSlug        String?
+  hospitalName      String
+  doctorName        String?
+  specialty         String?
+  services          String[]
+  location          String?
+  city              String?
+  state             String?
+  country           String?
+  consultationTypes String[]
+  languages         String[]
+  fees              Int?
+  nextAvailableSlot DateTime?
+  isBookable        Boolean         @default(false)
+  profileUrl        String?
+  searchKeywords    String?
+  updatedAt         DateTime        @updatedAt
+
+  @@index([type])
+  @@index([tenantId])
+  @@index([city])
+  @@map("public_search_index")
+}
+
+/// An online booking submitted from the public layer, before/after staff handling.
+model OnlineBooking {
+  id                       String                @id @default(uuid()) @db.Uuid
+  tenantId                 String                @db.Uuid @map("tenant_id")
+  patientId                String?               @db.Uuid
+  uid                      String?
+  doctorId                 String                @db.Uuid
+  locationId               String?               @db.Uuid
+  appointmentTypeId        String?               @db.Uuid
+  appointmentId            String?               @db.Uuid
+  appointmentDate          DateTime              @db.Date
+  appointmentTime          String
+  consultationType         ConsultationType      @default(IN_PERSON)
+  reasonForVisit           String?
+  fullName                 String
+  dateOfBirth              DateTime?
+  email                    String?
+  mobile                   String?
+  newOrExistingPatient     String                @default("NEW")
+  bookingStatus            OnlineBookingStatus   @default(PENDING)
+  approvalStatus           OnlineBookingApproval @default(PENDING_STAFF_APPROVAL)
+  source                   String                @default("ONLINE_BOOKING")
+  possibleDuplicatePatient Boolean               @default(false)
+  duplicatePatientIds      String[]
+  staffNotes               String?
+  rejectionReason          String?
+  cancellationReason       String?
+  createdAt                DateTime              @default(now())
+  updatedAt                DateTime              @updatedAt
+
+  @@index([tenantId])
+  @@index([bookingStatus])
+  @@map("online_booking")
 }

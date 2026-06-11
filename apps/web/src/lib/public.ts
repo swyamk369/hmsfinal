@@ -1,0 +1,146 @@
+// Public, no-auth API client for the patient-facing directory (Phase 22.3).
+// Plain fetch — no Firebase token, no tenant header.
+
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+function qs(params: Record<string, string | undefined>): string {
+  const e = Object.entries(params).filter(([, v]) => v);
+  return e.length ? `?${new URLSearchParams(Object.fromEntries(e as [string, string][])).toString()}` : '';
+}
+
+async function getPublic<T>(path: string): Promise<T> {
+  const res = await fetch(`${API}${path}`, { cache: 'no-store' });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message || 'Something went wrong. Please try again.');
+  }
+  return res.json();
+}
+
+async function postPublic<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${API}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const b = await res.json().catch(() => ({}));
+    throw new Error((Array.isArray(b.message) ? b.message.join(', ') : b.message) || 'Booking failed. Please try again.');
+  }
+  return res.json();
+}
+
+export interface SearchRow {
+  id: string;
+  type: 'HOSPITAL' | 'DOCTOR' | 'SERVICE';
+  tenantId: string;
+  doctorId: string | null;
+  hospitalSlug: string | null;
+  doctorSlug: string | null;
+  hospitalName: string;
+  doctorName: string | null;
+  specialty: string | null;
+  services: string[];
+  location: string | null;
+  city: string | null;
+  state: string | null;
+  consultationTypes: string[];
+  languages: string[];
+  isBookable: boolean;
+  profileUrl: string;
+}
+
+export interface PublicHospital {
+  tenantId: string;
+  slug: string;
+  name: string;
+  logoUrl: string | null;
+  coverImageUrl: string | null;
+  description: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  facilities: string[];
+  specialties: string[];
+  services: string[];
+  consultationTypes: string[];
+  insuranceAccepted?: string[];
+  languages: string[];
+  bookingEnabled: boolean;
+}
+
+export interface PublicDoctor {
+  tenantId: string;
+  doctorId: string;
+  slug: string;
+  name: string;
+  photoUrl: string | null;
+  specialty: string | null;
+  subSpecialties: string[];
+  qualifications: string | null;
+  registrationNumber?: string | null;
+  bio: string | null;
+  languages: string[];
+  gender?: string | null;
+  services: string[];
+  consultationTypes: string[];
+  fees: unknown;
+  acceptsNewPatients: boolean;
+  acceptsExistingPatients?: boolean;
+  telehealthAvailable: boolean;
+  bookingEnabled: boolean;
+}
+
+export interface PublicAppointmentType {
+  id: string;
+  name: string;
+  description: string | null;
+  durationMinutes: number;
+  price: number;
+  currency: string;
+  consultationType: string;
+}
+
+export interface BookingOptions {
+  doctor: string;
+  specialty: string | null;
+  hospital: string;
+  consultationTypes: string[];
+  appointmentTypes: { id: string; name: string; durationMinutes: number; price: number; currency: string; consultationType: string }[];
+}
+export interface DaySlots {
+  date: string;
+  slots: { time: string; available: boolean }[];
+}
+export interface BookingResult {
+  bookingId: string;
+  bookingStatus: string;
+  approvalStatus: string;
+  requiresApproval: boolean;
+  hospital: string;
+  doctor: string;
+  date: string;
+  time: string;
+  consultationType: string;
+}
+
+export const publicApi = {
+  hospitals: (q?: string, city?: string) => getPublic<SearchRow[]>(`/public/hospitals${qs({ q, city })}`),
+  hospital: (slug: string) =>
+    getPublic<{ hospital: PublicHospital; doctors: PublicDoctor[]; appointmentTypes: PublicAppointmentType[] }>(`/public/hospitals/${slug}`),
+  doctors: (q?: string, specialty?: string, city?: string) => getPublic<SearchRow[]>(`/public/doctors${qs({ q, specialty, city })}`),
+  doctor: (slug: string) =>
+    getPublic<{ doctor: PublicDoctor; hospital: PublicHospital | null; appointmentTypes: PublicAppointmentType[] }>(`/public/doctors/${slug}`),
+  search: (q?: string, type?: string) => getPublic<SearchRow[]>(`/public/search${qs({ q, type })}`),
+
+  bookingOptions: (tenantId: string, doctorId: string) => getPublic<BookingOptions>(`/public/booking/options${qs({ tenantId, doctorId })}`),
+  bookingSlots: (tenantId: string, doctorId: string, from?: string, days = 14, appointmentTypeId?: string) =>
+    getPublic<DaySlots[]>(`/public/booking/slots${qs({ tenantId, doctorId, from, days: String(days), appointmentTypeId })}`),
+  createBooking: (body: Record<string, unknown>) => postPublic<BookingResult>('/public/booking/create', body),
+};
+
+export const inr = (paise: number) => '₹' + (paise / 100).toLocaleString('en-IN');

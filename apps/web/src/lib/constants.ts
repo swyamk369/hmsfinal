@@ -71,6 +71,11 @@ export const NAV: NavItem[] = [
     roles: ['RECEPTION', 'DOCTOR', 'HOSPITAL_ADMIN'],
     permission: ['queue.read', 'encounter.read'],
   },
+  {
+    label: 'Online Bookings',
+    href: '/opd/online-bookings',
+    permission: ['online_booking.read', 'online_booking.manage'],
+  },
   { label: 'Patients', href: '/patients', module: 'PATIENT' },
   { label: 'Doctor', href: '/doctor', module: 'OPD', roles: ['DOCTOR', 'HOSPITAL_ADMIN'] },
   { label: 'Nursing', href: '/nursing', roles: ['NURSE', 'HOSPITAL_ADMIN'] },

@@ -27,6 +27,7 @@ import { FinanceModule } from './finance/finance.module';
 import { ReportsModule } from './reports/reports.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { OperationsModule } from './operations/operations.module';
+import { PatientPublicModule } from './patient-public/patient-public.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -57,6 +58,7 @@ import { HealthModule } from './health/health.module';
     ReportsModule,
     NotificationsModule,
     OperationsModule,
+    PatientPublicModule,
     HealthModule,
   ],
   providers: [

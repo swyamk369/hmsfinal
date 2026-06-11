@@ -122,6 +122,26 @@ export const PERMISSIONS = {
   REPORTS_OPERATIONAL_READ: 'reports.operational.read',
   REPORTS_CLINICAL_READ: 'reports.clinical.read',
   REPORTS_INVENTORY_READ: 'reports.inventory.read',
+
+  // ── Public patient booking layer (Phase 22) ───────────────
+  // Staff/HMS-side permissions only. Patient-side access (portal read,
+  // booking create) is enforced by the patient-portal access guard against
+  // PatientPortalAccess, NOT by these tenant RBAC keys.
+  PUBLIC_PROFILE_READ: 'public_profile.read',
+  PUBLIC_PROFILE_MANAGE: 'public_profile.manage',
+  DOCTOR_PUBLIC_PROFILE_MANAGE: 'doctor_public_profile.manage',
+  APPOINTMENT_TYPE_MANAGE: 'appointment_type.manage',
+  AVAILABILITY_MANAGE: 'availability.manage',
+  ONLINE_BOOKING_READ: 'online_booking.read',
+  ONLINE_BOOKING_MANAGE: 'online_booking.manage',
+  ONLINE_BOOKING_APPROVE: 'online_booking.approve',
+  ONLINE_BOOKING_REJECT: 'online_booking.reject',
+  ONLINE_BOOKING_RESCHEDULE: 'online_booking.reschedule',
+  PATIENT_PORTAL_SETTINGS_MANAGE: 'patient_portal.settings.manage',
+  PATIENT_PORTAL_ACCESS_READ: 'patient_portal.access.read',
+  PATIENT_PORTAL_ACCESS_MANAGE: 'patient_portal.access.manage',
+  PATIENT_DOCUMENT_PUBLISH: 'patient_document.publish',
+  PATIENT_DOCUMENT_HIDE: 'patient_document.hide',
 } as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
