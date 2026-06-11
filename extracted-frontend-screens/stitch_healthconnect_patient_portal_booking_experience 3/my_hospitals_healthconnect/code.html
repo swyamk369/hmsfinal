@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HealthConnect - Choose a Hospital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#0040a2",
+                    "outline": "#737685",
+                    "outline-variant": "#c3c6d6",
+                    "inverse-primary": "#b2c5ff",
+                    "tertiary": "#004e32",
+                    "surface-container-highest": "#d7e2ff",
+                    "surface-dim": "#cadaff",
+                    "tertiary-fixed": "#82f9be",
+                    "primary-fixed": "#dae2ff",
+                    "secondary-fixed-dim": "#bac9d3",
+                    "inverse-surface": "#1d3052",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#041b3c",
+                    "surface-container": "#e8edff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#d7e2ff",
+                    "surface-bright": "#f9f9ff",
+                    "surface-tint": "#0c56d0",
+                    "on-tertiary-container": "#72e9af",
+                    "surface-container-high": "#e0e8ff",
+                    "on-surface-variant": "#434654",
+                    "on-primary-container": "#c4d2ff",
+                    "tertiary-fixed-dim": "#65dca4",
+                    "error": "#ba1a1a",
+                    "primary": "#003d9b",
+                    "on-tertiary-fixed-variant": "#005235",
+                    "on-secondary-fixed-variant": "#3b4951",
+                    "on-secondary-container": "#56656e",
+                    "secondary-fixed": "#d6e5ef",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-tertiary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#edf0ff",
+                    "surface": "#f9f9ff",
+                    "secondary": "#526069",
+                    "primary-container": "#0052cc",
+                    "on-secondary-fixed": "#0f1d25",
+                    "secondary-container": "#d3e2ed",
+                    "on-primary-fixed": "#001848",
+                    "tertiary-container": "#006844",
+                    "background": "#f9f9ff",
+                    "on-tertiary-fixed": "#002113",
+                    "surface-container-low": "#f1f3ff",
+                    "on-error": "#ffffff",
+                    "on-background": "#041b3c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1200px",
+                    "xxl": "48px",
+                    "sm": "8px",
+                    "margin-desktop": "40px",
+                    "margin-mobile": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "unit": "4px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-xl-mobile": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="bg-surface dark:bg-on-background text-primary dark:text-primary-fixed font-body-md text-body-md docked full-width top-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16 md:h-20 bg-surface dark:bg-on-background">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined filled text-primary text-2xl">local_hospital</span>
+<span class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed">HealthConnect</span>
+</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 cursor-pointer active:opacity-80 transition-colors" href="#">Hospitals</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary-container dark:hover:text-primary-fixed-dim cursor-pointer active:opacity-80 transition-colors" href="#">Doctors</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary-container dark:hover:text-primary-fixed-dim cursor-pointer active:opacity-80 transition-colors" href="#">Services</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="hidden md:block px-4 py-2 text-primary hover:bg-surface-container-high rounded-lg transition-colors font-label-md text-label-md">Sign In</button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all font-label-md text-label-md">Book Appointment</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-xl md:py-xxl">
+<!-- Header Section -->
+<div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">Choose a Hospital</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Access your patient records, manage appointments, and connect with your care team by selecting one of your linked facilities.</p>
+</div>
+<div class="flex gap-sm">
+<button class="flex items-center gap-xs px-4 py-2 bg-surface-container-high text-primary rounded-lg hover:bg-surface-container-highest transition-colors font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add_link</span>
+                    Link another hospital record
+                </button>
+</div>
+</div>
+<!-- Hospital Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg mb-xxl">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-md flex flex-col hover:shadow-[0px_12px_24px_rgba(9,30,66,0.08)] transition-shadow duration-300 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-sm opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary bg-surface-container-low rounded-full p-2"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+<div class="flex items-center gap-md mb-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center shrink-0 overflow-hidden shadow-[0px_4px_12px_rgba(9,30,66,0.08)]">
+<img alt="Mercy General Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo7g5PWCt66rj7vZHYMHebz45wLp_vZO9D9T7HDAk_Gs9CH8q7T0K_wH0VPQmQZJe8TQSe-5hELNEvVcpSExMrG228W3a9shPKfjMoZC60_CCeRj4_Wbuboc0f4BcuMAu5I_mXeclA4bsrWfHEWux5WyBFAxrxRRlQZMw-asx1Br0dMFtf6tmx_lrxmK3Srt8McAVaIXibBPB2kzLHGTedD55d7awlmYUY9VcLHiCL-yjsO6ftz3MbUZcG6tSL67hOD5gK7lLl2Gw"/>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-unit">Mercy General Hospital</h2>
+<div class="flex items-center gap-unit text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Downtown Medical District</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-sm mb-md flex-grow">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-sm text-label-sm text-outline">Patient ID/MRN</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">MGH-8472-91A</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-outline">Last Visit</span>
+<span class="font-body-sm text-body-sm text-on-surface">Oct 12, 2023</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:bg-primary/90 transition-colors flex items-center justify-center gap-sm mt-auto">
+                    Open Portal
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-md flex flex-col hover:shadow-[0px_12px_24px_rgba(9,30,66,0.08)] transition-shadow duration-300 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-sm opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary bg-surface-container-low rounded-full p-2"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+<div class="flex items-center gap-md mb-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center shrink-0 overflow-hidden shadow-[0px_4px_12px_rgba(9,30,66,0.08)]">
+<img alt="Riverside Clinic Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVQeEay02W9vqWO6XS43GCpGWuAndfFh3rxIfCNuGyZWT2ncuxn-Hpj8hYSIBTd_OGRI_ayfXDUIOOxveYF5x3eDzCuLsJ6fKzpxHHqZNyytvLjp1dnAXfjbLkGJ5K-u2tGyNmaRwai_dH5npYa7RPA4HqyKRtWMsPZamwmrnoSyJYMuIsZHcPmFbU1zArYvUaBje_fMy04vraTdlqfeFcLZU9hHQSq1yuuyOdSRzjeDRovNhRUnmfSGRwBkkvVMUrX0rID-GMVhQ"/>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-unit">Riverside Specialized Clinic</h2>
+<div class="flex items-center gap-unit text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Westend Valley</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-sm mb-md flex-grow">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-sm text-label-sm text-outline">Patient ID/MRN</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">RIV-3391-B</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-outline">Last Visit</span>
+<span class="font-body-sm text-body-sm text-on-surface">Aug 05, 2023</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:bg-primary/90 transition-colors flex items-center justify-center gap-sm mt-auto">
+                    Open Portal
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-md flex flex-col hover:shadow-[0px_12px_24px_rgba(9,30,66,0.08)] transition-shadow duration-300 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-sm opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary bg-surface-container-low rounded-full p-2"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+<div class="flex items-center gap-md mb-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center shrink-0 overflow-hidden shadow-[0px_4px_12px_rgba(9,30,66,0.08)]">
+<img alt="St Judes Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUv30NzJeXSdkJnFnyE8Cjg4gmZbJas8E8gdkvdg0vinQIEI_Ugu1YcWLz4nBWxlT-rsZXMhqyXbQjtNPggaLXITOAmPWVbJ8lkx0dZ2AWdrMriv-OoB8aD7AaqKpa0Triu8R7rFb4DUckMKpt2Tgezdb9jhDme0XnQVaFVWyYTSV9outgG6Pukx7XoWsPRX_hknVQ8ZWz_AnSRqltU6FwVu3AKNsf6COC50la-Ro4xz7HQfmUpoa1s97b0qa6OPVykw3OwB5__a0"/>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-unit">St. Jude Children's Research</h2>
+<div class="flex items-center gap-unit text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Northside Campus</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-sm mb-md flex-grow">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-sm text-label-sm text-outline">Patient ID/MRN</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">SJC-1102-X</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-outline">Last Visit</span>
+<span class="font-body-sm text-body-sm text-on-surface">Jan 22, 2024</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:bg-primary/90 transition-colors flex items-center justify-center gap-sm mt-auto">
+                    Open Portal
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Global Action Section -->
+<div class="bg-secondary-container dark:bg-secondary-fixed rounded-xl p-lg md:p-xl flex flex-col md:flex-row items-center justify-between gap-lg border border-outline-variant/20 shadow-sm">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-on-secondary-container text-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-unit">Looking for a different facility?</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Find and book appointments with new healthcare providers in your network.</p>
+</div>
+</div>
+<button class="w-full md:w-auto px-lg py-3 bg-on-surface text-surface rounded-lg font-label-md text-label-md shadow-md hover:bg-on-surface/90 transition-colors whitespace-nowrap">
+                Book with a new hospital
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 md:hidden bg-surface dark:bg-on-background shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] docked full-width">
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined filled">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Docs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

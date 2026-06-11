@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HealthConnect - Doctor Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#0040a2",
+                        "outline": "#737685",
+                        "outline-variant": "#c3c6d6",
+                        "inverse-primary": "#b2c5ff",
+                        "tertiary": "#004e32",
+                        "surface-container-highest": "#d7e2ff",
+                        "surface-dim": "#cadaff",
+                        "tertiary-fixed": "#82f9be",
+                        "primary-fixed": "#dae2ff",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "inverse-surface": "#1d3052",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#041b3c",
+                        "surface-container": "#e8edff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#d7e2ff",
+                        "surface-bright": "#f9f9ff",
+                        "surface-tint": "#0c56d0",
+                        "on-tertiary-container": "#72e9af",
+                        "surface-container-high": "#e0e8ff",
+                        "on-surface-variant": "#434654",
+                        "on-primary-container": "#c4d2ff",
+                        "tertiary-fixed-dim": "#65dca4",
+                        "error": "#ba1a1a",
+                        "primary": "#003d9b",
+                        "on-tertiary-fixed-variant": "#005235",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "on-secondary-container": "#56656e",
+                        "secondary-fixed": "#d6e5ef",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface": "#f9f9ff",
+                        "secondary": "#526069",
+                        "primary-container": "#0052cc",
+                        "on-secondary-fixed": "#0f1d25",
+                        "secondary-container": "#d3e2ed",
+                        "on-primary-fixed": "#001848",
+                        "tertiary-container": "#006844",
+                        "background": "#f9f9ff",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-low": "#f1f3ff",
+                        "on-error": "#ffffff",
+                        "on-background": "#041b3c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "xxl": "48px",
+                        "sm": "8px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9f9ff; color: #041b3c; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(235, 236, 240, 0.5); }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased">
+<!-- Top Navigation (Shared Component JSON Blueprint) -->
+<nav class="bg-surface dark:bg-on-background flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16 md:h-20 flat no shadows docked full-width top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed tracking-tight font-extrabold">HealthConnect</span>
+</div>
+<!-- Desktop Nav Links -->
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors font-body-md text-body-md cursor-pointer active:opacity-80" href="#">Hospitals</a>
+<a class="text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors font-body-md text-body-md cursor-pointer active:opacity-80" href="#">Doctors</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors font-body-md text-body-md cursor-pointer active:opacity-80" href="#">Services</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block text-primary font-label-md text-label-md hover:bg-surface-container-high px-4 py-2 rounded-lg transition-colors">Sign In</button>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-2.5 rounded-lg hover:bg-primary-container transition-colors shadow-[0px_4px_12px_rgba(9,30,66,0.08)]">Book Appointment</button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column: Doctor Profile & Details -->
+<div class="md:col-span-8 space-y-lg">
+<!-- Hero Header Card -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-lg flex flex-col md:flex-row gap-lg">
+<div class="w-32 h-32 md:w-48 md:h-48 rounded-xl overflow-hidden flex-shrink-0 border border-outline-variant/20 shadow-sm">
+<img alt="Dr. Sarah Jenkins" class="w-full h-full object-cover" data-alt="A professional portrait of a confident female doctor in her mid-40s wearing a crisp white medical coat over a light blue shirt. She has a warm, welcoming smile and is standing in a brightly lit, modern medical clinic with subtle blue and white tones in the blurred background. The lighting is soft and natural, emphasizing trust, professionalism, and modern healthcare. The mood is calm and reassuring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeveEz-5TzDVk5vOKE3Edup2ZmyZL3x0wLK2E7ntpysle78te__z_n6NEz7DbGw7IxoGBvCqbP0RcePm52nHK3E-lwBWFkMaT8Y0O8lXVEInBOEDp68Eo6MAlo-qlfDzzIhipe2d1yC-DQoLxtGjyKHe9yV6VPjKuDN6rnGq8wp9Mns7jr2wyj6MG4LBW9NXsqA-fS3VPbOl5RJ1RagzI0htGzMK59OiLDoFM0sD_h9DPXsj-GjKIv8H1WwGOtlhyvw8v2y46byRs"/>
+</div>
+<div class="flex-1 space-y-sm">
+<div class="flex flex-wrap items-center gap-2 mb-2">
+<span class="inline-flex items-center gap-1 bg-tertiary-fixed/30 text-on-tertiary-fixed-variant px-3 py-1 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                            Accepting New Patients
+                        </span>
+<span class="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+                            Telehealth Available
+                        </span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Dr. Sarah Jenkins, MD</h1>
+<p class="font-body-lg text-body-lg text-primary font-medium">Cardiologist</p>
+<div class="flex items-center gap-4 text-on-surface-variant font-body-md text-body-md mt-4 pt-4 border-t border-outline-variant/20">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary">star</span>
+<span class="font-semibold text-on-surface">4.9</span>
+<span>(128 Reviews)</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline"></div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary">work</span>
+<span>15 Years Experience</span>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-lg">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-md">About Dr. Jenkins</h2>
+<div class="font-body-md text-body-md text-on-surface-variant space-y-4">
+<p>Dr. Sarah Jenkins is a board-certified cardiologist with over 15 years of experience in diagnosing and treating cardiovascular diseases. She is dedicated to providing compassionate, patient-centered care and specializes in preventive cardiology and heart failure management.</p>
+<p>Her approach combines the latest medical technology with a holistic view of patient lifestyle, ensuring comprehensive treatment plans tailored to individual needs.</p>
+</div>
+</section>
+<!-- Education & Credentials -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-lg">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-md">Education &amp; Credentials</h2>
+<ul class="space-y-4">
+<li class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">school</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Medical Degree</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Johns Hopkins University School of Medicine</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary">local_hospital</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface">Residency &amp; Fellowship</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Massachusetts General Hospital - Cardiology</p>
+</div>
+</li>
+</ul>
+</section>
+<!-- Services & Fees -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-lg">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-md">Services &amp; Fees</h2>
+<div class="space-y-sm divide-y divide-outline-variant/20">
+<div class="flex justify-between items-center py-sm">
+<div class="font-body-md text-body-md text-on-surface">Initial Consultation</div>
+<div class="font-label-md text-label-md text-primary">$250</div>
+</div>
+<div class="flex justify-between items-center py-sm">
+<div class="font-body-md text-body-md text-on-surface">Follow-up Visit</div>
+<div class="font-label-md text-label-md text-primary">$150</div>
+</div>
+<div class="flex justify-between items-center py-sm">
+<div class="font-body-md text-body-md text-on-surface">Echocardiogram</div>
+<div class="font-label-md text-label-md text-primary">$400</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sticky Booking Widget -->
+<div class="md:col-span-4 relative">
+<div class="sticky top-[100px] bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-lg shadow-[0px_12px_24px_rgba(9,30,66,0.15)] flex flex-col gap-lg">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Book an Appointment</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Select your preferences below</p>
+</div>
+<!-- Appointment Type Selector -->
+<div class="space-y-sm">
+<label class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Appointment Type</label>
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none cursor-pointer">
+<option>In-Person Visit</option>
+<option>Telehealth Video Call</option>
+</select>
+</div>
+<!-- Date Selector (Simplified Calendar view) -->
+<div class="space-y-sm">
+<label class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Select Date</label>
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="flex-shrink-0 w-16 h-20 rounded-lg border-2 border-primary bg-primary-fixed/20 flex flex-col items-center justify-center cursor-pointer transition-colors">
+<span class="font-label-sm text-label-sm text-primary uppercase">Mon</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-1">12</span>
+</button>
+<button class="flex-shrink-0 w-16 h-20 rounded-lg border border-outline-variant bg-surface flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Tue</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-1">13</span>
+</button>
+<button class="flex-shrink-0 w-16 h-20 rounded-lg border border-outline-variant bg-surface flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container transition-colors">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Wed</span>
+<span class="font-headline-sm text-headline-sm text-on-surface mt-1">14</span>
+</button>
+</div>
+</div>
+<!-- Time Slots -->
+<div class="space-y-sm">
+<label class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">Available Times</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="py-2 px-1 border border-outline-variant rounded-lg font-body-sm text-body-sm text-on-surface hover:bg-surface-container transition-colors">09:00 AM</button>
+<button class="py-2 px-1 border-2 border-primary bg-primary-fixed/20 rounded-lg font-body-sm text-body-sm text-primary font-medium transition-colors">09:30 AM</button>
+<button class="py-2 px-1 border border-outline-variant rounded-lg font-body-sm text-body-sm text-on-surface hover:bg-surface-container transition-colors">10:00 AM</button>
+<button class="py-2 px-1 border border-outline-variant rounded-lg font-body-sm text-body-sm text-on-surface hover:bg-surface-container transition-colors">11:00 AM</button>
+<button class="py-2 px-1 border border-outline-variant rounded-lg font-body-sm text-body-sm text-outline cursor-not-allowed bg-surface-container-low" disabled="">11:30 AM</button>
+<button class="py-2 px-1 border border-outline-variant rounded-lg font-body-sm text-body-sm text-on-surface hover:bg-surface-container transition-colors">01:00 PM</button>
+</div>
+</div>
+<div class="pt-sm border-t border-outline-variant/20 mt-2">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-4 rounded-lg shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:bg-primary-container transition-all active:scale-[0.98]">
+                        Confirm Appointment
+                    </button>
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant mt-3 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">lock</span> Secure Booking
+                    </p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Mobile Nav (Shared Component JSON Blueprint) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 md:hidden bg-surface dark:bg-on-background shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] docked full-width bottom-0">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-label-sm-mobile text-label-sm-mobile">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined mb-1">event_note</span>
+<span class="font-label-sm-mobile text-label-sm-mobile">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined mb-1">folder_shared</span>
+<span class="font-label-sm-mobile text-label-sm-mobile">Docs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple JS for interaction demonstration
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Ignore disabled buttons
+                if(this.hasAttribute('disabled')) return;
+                
+                // If it's a time slot button
+                if(this.parentElement.classList.contains('grid-cols-3')) {
+                    const siblings = this.parentElement.querySelectorAll('button');
+                    siblings.forEach(s => {
+                        if(!s.hasAttribute('disabled')) {
+                            s.className = "py-2 px-1 border border-outline-variant rounded-lg font-body-sm text-body-sm text-on-surface hover:bg-surface-container transition-colors";
+                        }
+                    });
+                    this.className = "py-2 px-1 border-2 border-primary bg-primary-fixed/20 rounded-lg font-body-sm text-body-sm text-primary font-medium transition-colors";
+                }
+            });
+        });
+    </script>
+</body></html>

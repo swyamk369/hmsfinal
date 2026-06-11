@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile &amp; Settings - HealthConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "error": "#ba1a1a",
+                        "primary": "#003d9b",
+                        "surface-tint": "#0c56d0",
+                        "secondary-container": "#d3e2ed",
+                        "on-tertiary-container": "#72e9af",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dae2ff",
+                        "outline-variant": "#c3c6d6",
+                        "on-primary-container": "#c4d2ff",
+                        "on-error": "#ffffff",
+                        "secondary": "#526069",
+                        "on-secondary-fixed": "#0f1d25",
+                        "background": "#f9f9ff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "surface-container-low": "#f1f3ff",
+                        "surface": "#f9f9ff",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#d7e2ff",
+                        "surface-container-highest": "#d7e2ff",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-high": "#e0e8ff",
+                        "on-surface": "#041b3c",
+                        "tertiary-container": "#006844",
+                        "surface-container": "#e8edff",
+                        "tertiary-fixed-dim": "#65dca4",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f9f9ff",
+                        "surface-dim": "#cadaff",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "on-background": "#041b3c",
+                        "primary-container": "#0052cc",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#001848",
+                        "outline": "#737685",
+                        "tertiary": "#004e32",
+                        "inverse-primary": "#b2c5ff",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#434654",
+                        "on-secondary-container": "#56656e",
+                        "inverse-surface": "#1d3052",
+                        "on-tertiary-fixed-variant": "#005235",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#edf0ff",
+                        "tertiary-fixed": "#82f9be",
+                        "secondary-fixed": "#d6e5ef"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "container-max": "1200px",
+                        "margin-mobile": "16px",
+                        "xxl": "48px",
+                        "unit": "4px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row antialiased">
+<!-- SideNavBar (Desktop) -->
+<nav aria-label="Main Navigation" class="bg-surface-container-low h-full w-64 hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-40 p-md">
+<div class="mb-lg">
+<h1 class="text-headline-sm font-headline-sm text-on-surface">HealthConnect</h1>
+</div>
+<div class="flex items-center gap-md mb-lg p-md rounded-lg bg-surface-container-highest">
+<img alt="Patient Profile" class="w-12 h-12 rounded-full object-cover" data-alt="A professional headshot of a female patient smiling gently. Soft, even lighting, modern clinical aesthetic, calm confidence, high quality photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmA7c3_3Q4Nkded4KN8SQLL81SSJWfafDGoow-kkhZD6ugWD1bAzx9apROxPbjk8oUI7s5syS6Y9eB8chxQU6eZGp18olZFkZLdVWbQFpPYmJGH_Il89eS2YULVitTDIovJTemqI6I1Ac4tkfLZUqLWUlpPHAAK1V86ZuDEs5PC4NHDHSZMF4OXMJaLGayXtqIvcLollF6h8vypAu6sO5LWBs5bisgexU_6V2aLCWOVmgnJAbGB5KDFN-Cy4gSKErDfcFsBjfzaAs"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Patient Portal</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage your healthcare</p>
+</div>
+</div>
+<ul class="flex flex-col gap-sm flex-grow">
+<li>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Documents</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="family_restroom">family_restroom</span>
+<span class="font-label-md text-label-md">Family</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-md rounded-lg text-primary font-bold bg-surface-container-highest transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined fill" data-icon="settings" data-weight="fill">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</li>
+</ul>
+<button class="mt-auto bg-primary text-on-primary py-md px-lg rounded-lg font-label-md text-label-md shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:shadow-[0px_12px_24px_rgba(9,30,66,0.15)] transition-shadow">
+            New Booking
+        </button>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface docked full-width top-0 z-30 hidden md:block">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16 md:h-20">
+<div class="flex items-center gap-lg">
+<!-- Search Bar on Left -->
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-xl pr-md py-sm rounded-lg border border-outline-variant bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors w-64 text-body-sm font-body-sm" placeholder="Search..." type="text"/>
+</div>
+</div>
+<nav class="hidden lg:flex items-center gap-lg font-body-md text-body-md">
+<a class="text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer active:opacity-80" href="#">Hospitals</a>
+<a class="text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer active:opacity-80" href="#">Doctors</a>
+<a class="text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer active:opacity-80" href="#">Services</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="text-primary font-label-md text-label-md hover:bg-surface-container-low px-md py-sm rounded-lg transition-colors">Sign In</button>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:shadow-md transition-shadow">Book Appointment</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full">
+<div class="mb-lg">
+<h2 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface">Profile &amp; Settings</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-sm">Manage your personal information, records, and security preferences.</p>
+</div>
+<div class="flex flex-col lg:flex-row gap-lg">
+<!-- Settings Sidebar Tabs (Inner) -->
+<div class="w-full lg:w-1/4">
+<ul class="flex flex-row lg:flex-col gap-sm overflow-x-auto pb-sm lg:pb-0 hide-scrollbar">
+<li>
+<a class="block px-md py-sm rounded-lg bg-surface-container-high text-primary font-label-md text-label-md whitespace-nowrap" href="#">Personal Info</a>
+</li>
+<li>
+<a class="block px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md whitespace-nowrap transition-colors" href="#">Hospital Records</a>
+</li>
+<li>
+<a class="block px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md whitespace-nowrap transition-colors" href="#">Security</a>
+</li>
+<li>
+<a class="block px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md text-label-md whitespace-nowrap transition-colors" href="#">Notifications</a>
+</li>
+</ul>
+</div>
+<!-- Settings Content Area -->
+<div class="w-full lg:w-3/4 flex flex-col gap-lg">
+<!-- Personal Info Section -->
+<section class="bg-surface-container-lowest border border-[#EBECF0] rounded-xl p-md md:p-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md">Personal Information</h3>
+<div class="flex items-center gap-lg mb-lg border-b border-[#EBECF0] pb-lg">
+<div class="relative">
+<img alt="Profile Photo" class="w-24 h-24 rounded-full object-cover border-4 border-surface" data-alt="A professional headshot of a female patient smiling gently. Soft, even lighting, modern clinical aesthetic, calm confidence, high quality photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrWr7e77l1-xCPdA8PgOWm_jML5CIFDlCRxW8OmjejKrEJ1a5KfjsiNBv7wfmE7KMb84giUMxgHcFfOuzSpFbh0NmdjtOl2VCw_UbEn2fXePL8wxK_LDHtaqdtJoHFi0GUGk8BLe8W5IFM_BkYEcKGzMD5Gq5Vyc4eJErZ5djfOGTDJeSdT6T0NV6dv2IRpDrzYSjz-PFOYB56JPnRZAsN7fJ7Lak20AdJ1AoGhuEnALnQPiDgJQ08OIwEjbDOmRf-7mcRD86FNgQ"/>
+<button aria-label="Upload new photo" class="absolute bottom-0 right-0 bg-primary text-on-primary rounded-full p-sm shadow-md hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="photo_camera">photo_camera</span>
+</button>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Profile Photo</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-sm">JPG, GIF or PNG. Max size of 800K</p>
+<div class="flex gap-sm">
+<button class="text-primary font-label-sm text-label-sm hover:underline">Upload</button>
+<span class="text-outline-variant">|</span>
+<button class="text-error font-label-sm text-label-sm hover:underline">Remove</button>
+</div>
+</div>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-x-lg gap-y-md">
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface" for="fullName">Full Name</label>
+<input class="border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="fullName" type="text" value="Sarah Jenkins"/>
+</div>
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<input class="border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="email" type="email" value="sarah.jenkins@example.com"/>
+</div>
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface" for="mobile">Mobile Number</label>
+<input class="border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="mobile" type="tel" value="+1 (555) 123-4567"/>
+</div>
+<div class="flex flex-col gap-sm">
+<label class="font-label-md text-label-md text-on-surface" for="dob">Date of Birth</label>
+<input class="border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-on-surface-variant" id="dob" type="date" value="1985-08-15"/>
+</div>
+<div class="flex flex-col gap-sm md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface" for="address">Residential Address</label>
+<input class="border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="address" type="text" value="123 Wellness Way, Suite 4B, Healthville, NY 10001"/>
+</div>
+<div class="md:col-span-2 flex justify-end mt-sm">
+<button class="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-md text-label-md shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:shadow-md transition-shadow" type="button">Save Changes</button>
+</div>
+</form>
+</section>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="bg-surface docked full-width bottom-0 md:hidden fixed left-0 w-full z-50 flex justify-around items-center px-2 py-3 shadow-[0px_-4px_12px_rgba(9,30,66,0.08)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Docs</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined fill" data-icon="person" data-weight="fill">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Profile</span>
+</a>
+</nav>
+<style>
+        /* Utility to hide scrollbar for horizontal scrolling tabs on mobile */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

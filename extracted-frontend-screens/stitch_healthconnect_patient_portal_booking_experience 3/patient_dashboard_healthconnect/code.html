@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HealthConnect - Patient Portal Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-primary-fixed-variant": "#0040a2",
+                            "outline": "#737685",
+                            "outline-variant": "#c3c6d6",
+                            "inverse-primary": "#b2c5ff",
+                            "tertiary": "#004e32",
+                            "surface-container-highest": "#d7e2ff",
+                            "surface-dim": "#cadaff",
+                            "tertiary-fixed": "#82f9be",
+                            "primary-fixed": "#dae2ff",
+                            "secondary-fixed-dim": "#bac9d3",
+                            "inverse-surface": "#1d3052",
+                            "error-container": "#ffdad6",
+                            "on-secondary": "#ffffff",
+                            "on-surface": "#041b3c",
+                            "surface-container": "#e8edff",
+                            "surface-container-lowest": "#ffffff",
+                            "on-primary": "#ffffff",
+                            "surface-variant": "#d7e2ff",
+                            "surface-bright": "#f9f9ff",
+                            "surface-tint": "#0c56d0",
+                            "on-tertiary-container": "#72e9af",
+                            "surface-container-high": "#e0e8ff",
+                            "on-surface-variant": "#434654",
+                            "on-primary-container": "#c4d2ff",
+                            "tertiary-fixed-dim": "#65dca4",
+                            "error": "#ba1a1a",
+                            "primary": "#003d9b",
+                            "on-tertiary-fixed-variant": "#005235",
+                            "on-secondary-fixed-variant": "#3b4951",
+                            "on-secondary-container": "#56656e",
+                            "secondary-fixed": "#d6e5ef",
+                            "primary-fixed-dim": "#b2c5ff",
+                            "on-tertiary": "#ffffff",
+                            "on-error-container": "#93000a",
+                            "inverse-on-surface": "#edf0ff",
+                            "surface": "#f9f9ff",
+                            "secondary": "#526069",
+                            "primary-container": "#0052cc",
+                            "on-secondary-fixed": "#0f1d25",
+                            "secondary-container": "#d3e2ed",
+                            "on-primary-fixed": "#001848",
+                            "tertiary-container": "#006844",
+                            "background": "#f9f9ff",
+                            "on-tertiary-fixed": "#002113",
+                            "surface-container-low": "#f1f3ff",
+                            "on-error": "#ffffff",
+                            "on-background": "#041b3c"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "container-max": "1200px",
+                            "xxl": "48px",
+                            "sm": "8px",
+                            "margin-desktop": "40px",
+                            "margin-mobile": "16px",
+                            "lg": "24px",
+                            "xl": "32px",
+                            "xs": "4px",
+                            "gutter": "24px",
+                            "unit": "4px",
+                            "md": "16px"
+                    },
+                    "fontFamily": {
+                            "headline-xl": ["Inter"],
+                            "label-md": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "body-md": ["Inter"],
+                            "label-sm": ["Inter"],
+                            "headline-xl-mobile": ["Inter"],
+                            "body-sm": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "headline-sm": ["Inter"],
+                            "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                            "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                            "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                            "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                            "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                            "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                            "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                            "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                            "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row antialiased">
+<!-- TopNavBar (Mobile) / Header (Desktop integrated with content) -->
+<header class="bg-surface dark:bg-on-background flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16 md:h-20 docked full-width top-0 z-30 md:hidden border-b border-[#EBECF0]">
+<div class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed">HealthConnect</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-container transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhGT9lfGVc3WwxklAXaRdmTtpEEx6gKpQSlymYeZ4jCnszmOtPmbDfP7h6XB8oOvYZmJotr5O46rgCHAtG24No5NFAqta94RZrCoho4FBAM-M7Fy5JvBHgoOVedHd5d3uKzOSa1K35B79QkWZrMF1M8-Gi3mg7W5xVS-ixEsa61_7w4iHIcxFBtk_x51QtelkDDnBIj5t6p-rDlzZcniSQW5mq9c0yA788Qm4AyaI542j-mKjkDRzu-FXZ5iHd3DJYzy0qg7Mryuw"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="bg-surface-container-low dark:bg-inverse-surface h-full w-64 hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-40 p-md border-r border-[#EBECF0]">
+<div class="flex items-center gap-sm mb-xl mt-sm">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary">
+<img alt="Patient Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-74-KrZX-34-rR7lwJiAdbIsZzJjuGVe1XSQTsmAkqyZ18wdFA7hLYtIQz_QImJMSLvxUDPK0aEA5dxClHTbhUqhLH0Kls0ZmU6LZOKt9nDPjOHExBtLZsE5XTj3RKV9X91Mrow6B0QHZWBNT6oxAsG4hQVHJnhMZObUhhcI2MpeaUryBDm-vgFOQ4iQX5A0vEkibzorUcAZvQesKkPNGIsq2kq4FXCHgPhoP36lgnu3lO3wJBTwcS_GoLFYoApvN_lZ1AQh01E4"/>
+</div>
+<div>
+<h2 class="text-label-md font-label-md text-on-surface dark:text-inverse-on-surface">Patient Portal</h2>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Manage your healthcare</p>
+</div>
+</div>
+<ul class="flex flex-col gap-sm flex-grow">
+<!-- Active Tab -->
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-primary dark:text-primary-fixed font-bold hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined fill" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Documents</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="family_restroom">family_restroom</span>
+<span class="font-label-md text-label-md">Family</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto pt-lg">
+<button class="w-full flex items-center justify-center gap-sm bg-primary text-on-primary py-sm px-md rounded-lg font-label-md hover:bg-primary-container transition-colors shadow-[0px_4px_12px_rgba(9,30,66,0.08)]">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                New Booking
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow md:ml-64 pb-24 md:pb-0">
+<!-- Desktop Header -->
+<header class="hidden md:flex justify-between items-center px-margin-desktop py-lg max-w-container-max mx-auto w-full">
+<div class="text-headline-lg font-headline-lg text-on-surface">Overview</div>
+<div class="flex items-center gap-lg">
+<button class="relative p-2 text-on-surface-variant hover:bg-surface-container-highest rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="flex items-center gap-sm cursor-pointer p-2 hover:bg-surface-container-highest rounded-lg transition-colors">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXqS87zzxIzRFSh45FkkqLTNQB1X4pgwG3pKWfZFiJdveH4B5uxghGjc5UZj3j_NKob26KL79pkUqsSc6UB6LC5bf1j4MmR4HpL47jaOo9e4VXTOIVqwRtfHSGYx7AfZfXd1-bQLEdtOSIUl-zkeq_dOJt5IhMncFKBg4f_d6NjBlI0uv9r3Ol-BuuKA_mPoTn1wGUqwzOpfzuUmNPem6HjWDa3Oa1ga3vEdT6GZS54YxykEMF1_-rYR1e3uGOIRbogePlo2EHSy0"/>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</header>
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto pt-lg md:pt-0 flex flex-col gap-lg">
+<!-- Welcome Hero -->
+<section class="bg-surface-container-lowest rounded-xl border border-[#EBECF0] p-lg md:p-xl relative overflow-hidden">
+<div class="relative z-10 max-w-2xl">
+<h1 class="text-headline-xl-mobile md:text-headline-xl font-headline-xl-mobile md:font-headline-xl text-on-surface mb-sm">Welcome to HealthConnect</h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant mb-lg">Your central hub for managing visits, accessing records, and coordinating care for you and your family.</p>
+<div class="flex flex-wrap gap-md">
+<button class="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-md hover:bg-primary-container transition-colors shadow-[0px_4px_12px_rgba(9,30,66,0.08)] flex items-center gap-sm">
+                            Complete Profile
+                            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Abstract decorative background shape -->
+<div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-primary-fixed-dim opacity-20 rounded-full blur-3xl pointer-events-none"></div>
+</section>
+<!-- Quick Actions Grid -->
+<section>
+<h2 class="text-headline-sm font-headline-sm text-on-surface mb-md">Quick Actions</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Action Card 1 -->
+<button class="bg-surface-container-lowest rounded-xl border border-[#EBECF0] p-lg text-left hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-all group flex flex-col gap-sm">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="stethoscope">stethoscope</span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-on-surface">Find a Doctor</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-xs">Search specialists in your network.</p>
+</div>
+</button>
+<!-- Action Card 2 -->
+<button class="bg-surface-container-lowest rounded-xl border border-[#EBECF0] p-lg text-left hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-all group flex flex-col gap-sm">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="local_hospital">local_hospital</span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-on-surface">Link Hospital Record</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-xs">Connect your previous medical history.</p>
+</div>
+</button>
+<!-- Action Card 3 -->
+<button class="bg-surface-container-lowest rounded-xl border border-[#EBECF0] p-lg text-left hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-all group flex flex-col gap-sm">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="group_add">group_add</span>
+</div>
+<div>
+<h3 class="text-label-md font-label-md text-on-surface">Add Family Member</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-xs">Manage care for dependents.</p>
+</div>
+</button>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<!-- Empty State: Appointments -->
+<section class="bg-surface-container-lowest rounded-xl border border-[#EBECF0] p-xl flex flex-col items-center justify-center text-center min-h-[320px]">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-outline mb-md">
+<span class="material-symbols-outlined text-[32px]">event_busy</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-xs">No upcoming appointments</h3>
+<p class="text-body-md font-body-md text-on-surface-variant mb-lg max-w-sm">When you book a visit with a doctor, the details will appear here.</p>
+<button class="bg-[#E3F2FD] text-primary px-md py-sm rounded-lg font-label-md hover:bg-primary-fixed-dim transition-colors">
+                        Book your first visit
+                    </button>
+</section>
+<!-- Empty State: Documents -->
+<section class="bg-surface-container-lowest rounded-xl border border-[#EBECF0] p-xl flex flex-col items-center justify-center text-center min-h-[320px]">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-outline mb-md">
+<span class="material-symbols-outlined text-[32px]">folder_open</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-xs">No documents yet</h3>
+<p class="text-body-md font-body-md text-on-surface-variant mb-lg max-w-sm">Upload past medical records or receive test results directly here.</p>
+<button class="bg-[#E3F2FD] text-primary px-md py-sm rounded-lg font-label-md hover:bg-primary-fixed-dim transition-colors">
+                        Upload Document
+                    </button>
+</section>
+</div>
+<!-- How it Works (Bento-style layout) -->
+<section class="mt-lg">
+<h2 class="text-headline-sm font-headline-sm text-on-surface mb-md">How HealthConnect Works</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container-low p-lg rounded-xl border border-[#EBECF0]">
+<div class="text-headline-md font-headline-md text-primary opacity-50 mb-sm">01</div>
+<h4 class="text-label-md font-label-md text-on-surface mb-xs">Build your profile</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Enter your basic health information to get personalized care recommendations.</p>
+</div>
+<div class="bg-surface-container-low p-lg rounded-xl border border-[#EBECF0]">
+<div class="text-headline-md font-headline-md text-primary opacity-50 mb-sm">02</div>
+<h4 class="text-label-md font-label-md text-on-surface mb-xs">Connect providers</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Search and link your existing doctors or find new specialists in network.</p>
+</div>
+<div class="bg-surface-container-low p-lg rounded-xl border border-[#EBECF0]">
+<div class="text-headline-md font-headline-md text-primary opacity-50 mb-sm">03</div>
+<h4 class="text-label-md font-label-md text-on-surface mb-xs">Manage care</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Book appointments, view test results, and communicate securely.</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="bg-surface dark:bg-on-background fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 md:hidden shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] border-t border-[#EBECF0]">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined fill" data-icon="home">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1 text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1 text-[10px]">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1 text-[10px]">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1 text-[10px]">Docs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1 text-[10px]">Profile</span>
+</a>
+</nav>
+</body></html>

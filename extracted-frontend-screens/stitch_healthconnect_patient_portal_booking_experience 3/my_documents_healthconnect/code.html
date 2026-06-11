@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Portal - Documents</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#0040a2",
+                        "outline": "#737685",
+                        "outline-variant": "#c3c6d6",
+                        "inverse-primary": "#b2c5ff",
+                        "tertiary": "#004e32",
+                        "surface-container-highest": "#d7e2ff",
+                        "surface-dim": "#cadaff",
+                        "tertiary-fixed": "#82f9be",
+                        "primary-fixed": "#dae2ff",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "inverse-surface": "#1d3052",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#041b3c",
+                        "surface-container": "#e8edff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#d7e2ff",
+                        "surface-bright": "#f9f9ff",
+                        "surface-tint": "#0c56d0",
+                        "on-tertiary-container": "#72e9af",
+                        "surface-container-high": "#e0e8ff",
+                        "on-surface-variant": "#434654",
+                        "on-primary-container": "#c4d2ff",
+                        "tertiary-fixed-dim": "#65dca4",
+                        "error": "#ba1a1a",
+                        "primary": "#003d9b",
+                        "on-tertiary-fixed-variant": "#005235",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "on-secondary-container": "#56656e",
+                        "secondary-fixed": "#d6e5ef",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface": "#f9f9ff",
+                        "secondary": "#526069",
+                        "primary-container": "#0052cc",
+                        "on-secondary-fixed": "#0f1d25",
+                        "secondary-container": "#d3e2ed",
+                        "on-primary-fixed": "#001848",
+                        "tertiary-container": "#006844",
+                        "background": "#f9f9ff",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-low": "#f1f3ff",
+                        "on-error": "#ffffff",
+                        "on-background": "#041b3c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "xxl": "48px",
+                        "sm": "8px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex">
+<!-- JSON Component: SideNavBar (Desktop Shell) -->
+<nav class="bg-surface-container-low h-full w-64 hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-40 p-md flat no shadows">
+<div class="flex items-center gap-sm mb-xl px-sm pt-sm">
+<span class="material-symbols-outlined icon-fill text-primary text-3xl">medical_services</span>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm text-on-surface">Patient Portal</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Manage your healthcare</span>
+</div>
+</div>
+<div class="flex flex-col gap-unit flex-1">
+<!-- Dashboard (Inactive) -->
+<a class="flex items-center gap-md px-sm py-md text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<!-- Appointments (Inactive) -->
+<a class="flex items-center gap-md px-sm py-md text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Appointments
+            </a>
+<!-- Documents (Active Tab) -->
+<a class="flex items-center gap-md px-sm py-md text-primary font-bold hover:bg-surface-container-highest rounded-lg transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined icon-fill">description</span>
+                Documents
+            </a>
+<!-- Family (Inactive) -->
+<a class="flex items-center gap-md px-sm py-md text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+                Family
+            </a>
+<!-- Settings (Inactive) -->
+<a class="flex items-center gap-md px-sm py-md text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-all duration-200 ease-in-out font-label-md text-label-md mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</div>
+<div class="mt-lg">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-sm px-md rounded-lg flex items-center justify-center gap-sm hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-shadow">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Booking
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-w-0 md:ml-64 pb-[80px] md:pb-0">
+<!-- Mobile Header -->
+<header class="md:hidden flex items-center justify-between px-margin-mobile py-md bg-surface-container-lowest sticky top-0 z-30">
+<h1 class="font-headline-sm text-headline-sm text-on-surface">Documents</h1>
+<button class="text-on-surface-variant h-10 w-10 flex items-center justify-center rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined">search</span>
+</button>
+</header>
+<div class="flex-1 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-lg flex flex-col gap-lg">
+<!-- Desktop Header -->
+<div class="hidden md:flex items-center justify-between">
+<h1 class="font-headline-xl text-headline-xl text-on-surface">Centralized Documents</h1>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest text-body-sm font-body-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all" placeholder="Search documents..." type="text"/>
+</div>
+</div>
+<!-- Information Note -->
+<div class="bg-surface-container flex items-start gap-sm p-md rounded-lg border border-surface-variant">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Only reports published by your hospital are shown here. External documents must be uploaded manually via settings.
+                </p>
+</div>
+<!-- Filter Chips -->
+<div class="flex items-center gap-sm overflow-x-auto pb-2 scrollbar-hide -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
+<button class="whitespace-nowrap px-4 py-1.5 rounded-lg font-label-sm text-label-sm bg-secondary-container text-on-secondary-container transition-colors">
+                    All
+                </button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-lg font-label-sm text-label-sm bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                    Reports
+                </button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-lg font-label-sm text-label-sm bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                    Prescriptions
+                </button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-lg font-label-sm text-label-sm bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                    Bills
+                </button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-lg font-label-sm text-label-sm bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                    Referrals
+                </button>
+</div>
+<!-- Document List (Cards Layout) -->
+<div class="flex flex-col gap-sm">
+<!-- Card 1: Report -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row gap-md sm:items-center hover:bg-surface-bright transition-colors cursor-pointer group">
+<div class="h-12 w-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[28px]">biotech</span>
+</div>
+<div class="flex-1 flex flex-col gap-xs">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Complete Blood Count (CBC)</h3>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">local_hospital</span> City General Hospital</span>
+<span class="hidden sm:inline text-outline-variant">•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> Oct 24, 2023</span>
+</div>
+<div class="font-label-sm text-label-sm text-secondary flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">person</span> Shared By: Dr. Sarah Jenkins
+                        </div>
+</div>
+<div class="flex items-center gap-sm mt-sm sm:mt-0 pt-sm sm:pt-0 border-t border-surface-variant sm:border-none">
+<button class="flex-1 sm:flex-none text-primary font-label-md text-label-md px-sm py-2 rounded-lg hover:bg-surface-container flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility</span> <span class="sm:hidden">View</span>
+</button>
+<button class="flex-1 sm:flex-none bg-surface-container text-primary font-label-md text-label-md px-sm py-2 rounded-lg hover:bg-surface-container-highest flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[20px]">download</span> <span class="sm:hidden">Download</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Prescription -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row gap-md sm:items-center hover:bg-surface-bright transition-colors cursor-pointer group">
+<div class="h-12 w-12 rounded-lg bg-secondary-container flex items-center justify-center shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[28px]">prescriptions</span>
+</div>
+<div class="flex-1 flex flex-col gap-xs">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Amoxicillin 500mg - 7 Days</h3>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">local_hospital</span> City General Hospital</span>
+<span class="hidden sm:inline text-outline-variant">•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> Oct 15, 2023</span>
+</div>
+<div class="font-label-sm text-label-sm text-secondary flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">person</span> Shared By: Dr. Marcus Thorne
+                        </div>
+</div>
+<div class="flex items-center gap-sm mt-sm sm:mt-0 pt-sm sm:pt-0 border-t border-surface-variant sm:border-none">
+<button class="flex-1 sm:flex-none text-primary font-label-md text-label-md px-sm py-2 rounded-lg hover:bg-surface-container flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility</span> <span class="sm:hidden">View</span>
+</button>
+<button class="flex-1 sm:flex-none bg-surface-container text-primary font-label-md text-label-md px-sm py-2 rounded-lg hover:bg-surface-container-highest flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[20px]">download</span> <span class="sm:hidden">Download</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Bill -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row gap-md sm:items-center hover:bg-surface-bright transition-colors cursor-pointer group">
+<div class="h-12 w-12 rounded-lg bg-error-container flex items-center justify-center shrink-0 text-error">
+<span class="material-symbols-outlined text-[28px]">receipt_long</span>
+</div>
+<div class="flex-1 flex flex-col gap-xs">
+<div class="flex items-center gap-2">
+<h3 class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Outpatient Consultation</h3>
+<span class="bg-surface-container-low text-on-surface-variant px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">Unpaid</span>
+</div>
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">account_balance</span> Billing Department</span>
+<span class="hidden sm:inline text-outline-variant">•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> Sep 28, 2023</span>
+</div>
+</div>
+<div class="flex items-center gap-sm mt-sm sm:mt-0 pt-sm sm:pt-0 border-t border-surface-variant sm:border-none">
+<button class="flex-1 sm:flex-none text-primary font-label-md text-label-md px-sm py-2 rounded-lg hover:bg-surface-container flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility</span> <span class="sm:hidden">View</span>
+</button>
+<button class="flex-1 sm:flex-none bg-surface-container text-primary font-label-md text-label-md px-sm py-2 rounded-lg hover:bg-surface-container-highest flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[20px]">download</span> <span class="sm:hidden">Download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- JSON Component: BottomNavBar (Mobile Shell) -->
+<nav class="bg-surface shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] shadow-md fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 md:hidden">
+<!-- Home -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Home</span>
+</button>
+<!-- Search -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Search</span>
+</button>
+<!-- Bookings -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Bookings</span>
+</button>
+<!-- Docs (Active) -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-95 duration-100 active:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined icon-fill">folder_shared</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1 font-semibold">Docs</span>
+</button>
+<!-- Profile -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 scale-95 duration-100 active:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Profile</span>
+</button>
+</nav>
+<script>
+        // Simple horizontal scroll for filter chips on mousewheel
+        document.querySelector('.scrollbar-hide').addEventListener('wheel', function(e) {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                this.scrollLeft += e.deltaY;
+            }
+        });
+    </script>
+</body></html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Help &amp; Support - HealthConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#f9f9ff",
+                      "on-tertiary-container": "#72e9af",
+                      "tertiary-fixed": "#82f9be",
+                      "primary": "#003d9b",
+                      "on-primary-container": "#c4d2ff",
+                      "primary-fixed-dim": "#b2c5ff",
+                      "on-tertiary-fixed-variant": "#005235",
+                      "on-secondary-fixed-variant": "#3b4951",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-primary": "#b2c5ff",
+                      "surface-container-low": "#f1f3ff",
+                      "on-tertiary-fixed": "#002113",
+                      "on-surface": "#041b3c",
+                      "surface-tint": "#0c56d0",
+                      "surface-bright": "#f9f9ff",
+                      "surface-container-high": "#e0e8ff",
+                      "surface-container": "#e8edff",
+                      "on-surface-variant": "#434654",
+                      "inverse-surface": "#1d3052",
+                      "surface-variant": "#d7e2ff",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-primary": "#ffffff",
+                      "outline": "#737685",
+                      "on-secondary-fixed": "#0f1d25",
+                      "tertiary-fixed-dim": "#65dca4",
+                      "primary-container": "#0052cc",
+                      "on-secondary-container": "#56656e",
+                      "on-background": "#041b3c",
+                      "on-primary-fixed-variant": "#0040a2",
+                      "background": "#f9f9ff",
+                      "tertiary": "#004e32",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#dae2ff",
+                      "tertiary-container": "#006844",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#001848",
+                      "inverse-on-surface": "#edf0ff",
+                      "surface-dim": "#cadaff",
+                      "surface-container-highest": "#d7e2ff",
+                      "secondary-fixed-dim": "#bac9d3",
+                      "secondary-fixed": "#d6e5ef",
+                      "error-container": "#ffdad6",
+                      "secondary": "#526069",
+                      "outline-variant": "#c3c6d6",
+                      "secondary-container": "#d3e2ed",
+                      "on-secondary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "md": "16px",
+                      "margin-desktop": "40px",
+                      "xxl": "48px",
+                      "sm": "8px",
+                      "gutter": "24px",
+                      "xl": "32px",
+                      "margin-mobile": "16px",
+                      "xs": "4px",
+                      "container-max": "1200px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "headline-xl": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-xl-mobile": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #F4F5F7; /* Level 0 Background per Style Guidance */
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Hide scrollbar for clean mobile look */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface antialiased pb-24 md:hidden">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 z-50 bg-surface-bright border-b border-outline-variant flex justify-between items-center px-margin-mobile py-sm">
+<button aria-label="Go back" class="flex items-center justify-center p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-100 text-primary">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-primary font-bold">Help &amp; Support</h1>
+<div class="w-10 h-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- Main Content -->
+<main class="px-margin-mobile py-md flex flex-col gap-lg">
+<!-- Search Section -->
+<section>
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-3 pl-12 pr-4 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim transition-all shadow-sm font-body-md text-on-surface placeholder:text-on-surface-variant" placeholder="Search for help..." type="text"/>
+</div>
+</section>
+<!-- Chat Support Card -->
+<section>
+<button class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center justify-between hover:bg-surface-container transition-colors shadow-sm active:scale-[0.98] duration-150">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined icon-fill" data-icon="forum">forum</span>
+</div>
+<div class="text-left">
+<h2 class="font-label-md text-label-md text-on-surface mb-1">Chat with Support</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Usually responds in a few minutes.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</section>
+<!-- Categories Bento Grid -->
+<section>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-md">Categories</h2>
+<div class="grid grid-cols-2 gap-md">
+<!-- Category Card 1 -->
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:bg-surface-container transition-colors shadow-sm active:scale-95 duration-150 aspect-square">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Booking Help</span>
+</button>
+<!-- Category Card 2 -->
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:bg-surface-container transition-colors shadow-sm active:scale-95 duration-150 aspect-square">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Account</span>
+</button>
+<!-- Category Card 3 -->
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:bg-surface-container transition-colors shadow-sm active:scale-95 duration-150 aspect-square">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Records</span>
+</button>
+<!-- Category Card 4 -->
+<button class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm hover:bg-surface-container transition-colors shadow-sm active:scale-95 duration-150 aspect-square">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface text-center">Billing</span>
+</button>
+</div>
+</section>
+<!-- Featured Articles List -->
+<section>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-md">Featured Articles</h2>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Article Item -->
+<a class="flex items-center justify-between p-md hover:bg-surface-container transition-colors border-b border-outline-variant last:border-b-0 active:bg-surface-container-high" href="#">
+<div class="flex items-center gap-sm w-full pr-4">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="article">article</span>
+<span class="font-body-md text-body-md text-on-surface truncate">How to cancel an appointment</span>
+</div>
+<span class="material-symbols-outlined text-outline shrink-0">chevron_right</span>
+</a>
+<!-- Article Item -->
+<a class="flex items-center justify-between p-md hover:bg-surface-container transition-colors border-b border-outline-variant last:border-b-0 active:bg-surface-container-high" href="#">
+<div class="flex items-center gap-sm w-full pr-4">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="article">article</span>
+<span class="font-body-md text-body-md text-on-surface truncate">Understanding your lab results</span>
+</div>
+<span class="material-symbols-outlined text-outline shrink-0">chevron_right</span>
+</a>
+<!-- Article Item -->
+<a class="flex items-center justify-between p-md hover:bg-surface-container transition-colors border-b border-outline-variant last:border-b-0 active:bg-surface-container-high" href="#">
+<div class="flex items-center gap-sm w-full pr-4">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="article">article</span>
+<span class="font-body-md text-body-md text-on-surface truncate">Updating your payment method</span>
+</div>
+<span class="material-symbols-outlined text-outline shrink-0">chevron_right</span>
+</a>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-lowest shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] flex justify-around items-center px-xs py-sm pb-safe md:hidden">
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 group">
+<div class="px-4 py-1 rounded-full group-hover:bg-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+</div>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 group">
+<div class="px-4 py-1 rounded-full group-hover:bg-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</div>
+<span class="font-label-sm text-label-sm mt-1">Search</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 group">
+<div class="px-4 py-1 rounded-full group-hover:bg-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+</div>
+<span class="font-label-sm text-label-sm mt-1">Bookings</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 group">
+<div class="px-4 py-1 rounded-full group-hover:bg-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<span class="font-label-sm text-label-sm mt-1">Documents</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined icon-fill" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</button>
+</nav>
+</body></html>

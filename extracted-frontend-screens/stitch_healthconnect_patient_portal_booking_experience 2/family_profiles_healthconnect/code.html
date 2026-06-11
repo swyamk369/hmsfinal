@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>HealthConnect - Family Profiles</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f9f9ff",
+                        "on-tertiary-container": "#72e9af",
+                        "tertiary-fixed": "#82f9be",
+                        "primary": "#003d9b",
+                        "on-primary-container": "#c4d2ff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-tertiary-fixed-variant": "#005235",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#b2c5ff",
+                        "surface-container-low": "#f1f3ff",
+                        "on-tertiary-fixed": "#002113",
+                        "on-surface": "#041b3c",
+                        "surface-tint": "#0c56d0",
+                        "surface-bright": "#f9f9ff",
+                        "surface-container-high": "#e0e8ff",
+                        "surface-container": "#e8edff",
+                        "on-surface-variant": "#434654",
+                        "inverse-surface": "#1d3052",
+                        "surface-variant": "#d7e2ff",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "outline": "#737685",
+                        "on-secondary-fixed": "#0f1d25",
+                        "tertiary-fixed-dim": "#65dca4",
+                        "primary-container": "#0052cc",
+                        "on-secondary-container": "#56656e",
+                        "on-background": "#041b3c",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "background": "#f9f9ff",
+                        "tertiary": "#004e32",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#dae2ff",
+                        "tertiary-container": "#006844",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#001848",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface-dim": "#cadaff",
+                        "surface-container-highest": "#d7e2ff",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "secondary-fixed": "#d6e5ef",
+                        "error-container": "#ffdad6",
+                        "secondary": "#526069",
+                        "outline-variant": "#c3c6d6",
+                        "secondary-container": "#d3e2ed",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "md": "16px",
+                        "margin-desktop": "40px",
+                        "xxl": "48px",
+                        "sm": "8px",
+                        "gutter": "24px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "container-max": "1200px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Base styles to ensure consistency with design system */
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Soft, airy shadows as per guidelines */
+        .ambient-shadow {
+            box-shadow: 0px 4px 12px rgba(9, 30, 66, 0.08);
+        }
+        .modal-shadow {
+            box-shadow: 0px 12px 24px rgba(9, 30, 66, 0.15);
+        }
+        /* Mobile specific bottom padding to account for nav bar */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 80px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col font-body-md">
+<!-- TopAppBar JSON Executed -->
+<header class="w-full sticky top-0 z-50 bg-surface-bright border-b border-outline-variant flex justify-between items-center px-margin-mobile py-sm">
+<button aria-label="Menu" class="flex items-center justify-center p-sm text-primary hover:bg-surface-container transition-colors active:scale-95 duration-100 rounded-full">
+<span class="material-symbols-outlined" data-icon="healing">healing</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">HealthConnect</h1>
+<button aria-label="Notifications" class="flex items-center justify-center p-sm text-primary hover:bg-surface-container transition-colors active:scale-95 duration-100 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile py-lg pb-[100px] w-full max-w-md mx-auto flex flex-col gap-lg">
+<!-- Page Header -->
+<section class="flex flex-col gap-sm">
+<h2 class="font-headline-xl-mobile text-headline-xl-mobile text-on-surface">Family Profiles</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage healthcare details and bookings for your dependents.</p>
+</section>
+<!-- Primary Action -->
+<button class="w-full bg-primary text-on-primary rounded-lg py-md px-md flex items-center justify-center gap-sm font-label-md text-label-md ambient-shadow active:scale-[0.98] transition-transform duration-200">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'wght' 400;">person_add</span>
+            Add Family Member
+        </button>
+<!-- Family Member List (Bento-inspired Cards) -->
+<section class="flex flex-col gap-md">
+<!-- Card 1: Self -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md hover:border-primary-fixed-dim transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-outline-variant bg-surface-container">
+<img alt="Sarah Jenkins Avatar" class="w-full h-full object-cover" data-alt="A high-quality, professional headshot of a young adult woman with a calm, confident expression. The lighting is soft and high-key, reflecting a modern, clinical yet compassionate light-mode UI aesthetic. The background is a minimalist, very light grey, fitting seamlessly into a clean corporate healthcare app design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUdkdVst0ErfYILMHzmopeRuZ6VKFzYwMRylmW9H65_GRmExvVDQANf1ufkgM2TU1wUYfDf0p4OZ0DaqPOxCFoU3ghMKijntDGEX6eTUvHvh80t3RGJGGQdBZri3aT_ZE1yTEKKUO3-M9fpI6Z3TfGIX_AJAhKTWqOKQCIkVD4BFnPwWzayt29W-VRLKooQ0THkwQOggoSvADmkAdyR-iDXsSixnWAaWwQ_C8IjNhMbCrn-O_R9jZ8W-gblICcliq_I7SvkLUqhsY"/>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Sarah Jenkins</h3>
+<div class="flex items-center mt-xs">
+<span class="bg-surface-container-high text-on-surface-variant px-2 py-xs rounded-full font-label-sm text-label-sm">Self</span>
+</div>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant"></div>
+<div class="flex gap-sm">
+<button class="flex-1 bg-surface text-primary border border-surface-variant hover:bg-surface-container rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                        Book
+                    </button>
+<button class="flex-1 bg-surface text-primary border border-surface-variant hover:bg-surface-container rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                        Records
+                    </button>
+</div>
+</article>
+<!-- Card 2: Child -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md hover:border-primary-fixed-dim transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-outline-variant bg-surface-container flex items-center justify-center">
+<!-- Using an icon if image fails or as placeholder, but image preferred based on prompt -->
+<img alt="Leo Jenkins Avatar" class="w-full h-full object-cover" data-alt="A bright, cheerful portrait of a young boy smiling gently. The image features soft, diffuse lighting typical of premium modern corporate photography. The background is a clean, minimal white to light grey gradient, perfectly matching a calm, trustworthy healthcare application interface in light mode." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQQXKZPw4VACN8IVWYVdIDVVLxvmwdU_8MqxQh6-sOe7cy5rf1IN5Jdr3wAQaqo4E10UCRtQUtPSHtTNH3aIBkaMvZyJ1jHPq-nWgtom4SIpDB7hBpnU_Hq29ivDnvXLZBnxI65x_eUnMnkhaEMx2nz538Fa38r2peAHZrZ7c--a-76tLasT7cUw0u2QFwZMFZDjpH07znaa9LvEF-OxCpRvp510TFfjGUt1yF7QsElURHJgXcNS6X48ouvr0DsacySy1DopLu-Gw"/>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Leo Jenkins</h3>
+<div class="flex items-center mt-xs">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-xs rounded-full font-label-sm text-label-sm">Child</span>
+</div>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant"></div>
+<div class="flex gap-sm">
+<button class="flex-1 bg-surface text-primary border border-surface-variant hover:bg-surface-container rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                        Book
+                    </button>
+<button class="flex-1 bg-surface text-primary border border-surface-variant hover:bg-surface-container rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                        Records
+                    </button>
+</div>
+</article>
+<!-- Card 3: Parent -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md hover:border-primary-fixed-dim transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-outline-variant bg-surface-container">
+<img alt="Martha Smith Avatar" class="w-full h-full object-cover" data-alt="A warm, dignified headshot of an elderly woman with silver hair, exhibiting a reassuring smile. The photography uses high-key, airy lighting appropriate for a minimalist health platform. The background is entirely neutral, reinforcing a sense of clinical safety, cleanliness, and modern digital care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4HhZyyFLZmAADFm7KTkDqJ80Ndsz-WZ--X2WrzDMM_UNeVRI8pBLVZvnCfqgxwEkQcDkAQty_2BlKxVyXa0muZTECWDq49JCPfVQ8UyxQv0zCF03Qac-SK4T2Kuf8SdOMEh-MXskX9jy79e_c43vsJCHZCyNyvIUtwN6l1Ary631e0exRSP9XSS3P2itBAwY3GApRkd0V4KBtDcxUPqL3_q3FsLM_FSfAqTrGI5zaKuWoeqrbLfuRd0I-ok1HkDL1xjDlFUZ3tE0"/>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Martha Smith</h3>
+<div class="flex items-center mt-xs">
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-2 py-xs rounded-full font-label-sm text-label-sm">Parent</span>
+</div>
+</div>
+</div>
+<div class="w-full h-px bg-outline-variant"></div>
+<div class="flex gap-sm">
+<button class="flex-1 bg-surface text-primary border border-surface-variant hover:bg-surface-container rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                        Book
+                    </button>
+<button class="flex-1 bg-surface text-primary border border-surface-variant hover:bg-surface-container rounded-lg py-sm font-label-md text-label-md flex items-center justify-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                        Records
+                    </button>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar JSON Executed -->
+<!-- Active State Logic applied to "Profile" (Index 4) based on semantics of viewing Family Profiles -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-lowest shadow-[0px_-4px_12px_rgba(9,30,66,0.08)]">
+<div class="flex justify-around items-center w-full px-xs py-sm pb-safe">
+<!-- Inactive: Home -->
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 rounded-lg group">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">home</span>
+<span class="font-label-sm text-label-sm group-hover:text-primary transition-colors">Home</span>
+</button>
+<!-- Inactive: Search -->
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 rounded-lg group">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">search</span>
+<span class="font-label-sm text-label-sm group-hover:text-primary transition-colors">Search</span>
+</button>
+<!-- Inactive: Bookings -->
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 rounded-lg group">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">calendar_month</span>
+<span class="font-label-sm text-label-sm group-hover:text-primary transition-colors">Bookings</span>
+</button>
+<!-- Inactive: Documents -->
+<button class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200 rounded-lg group">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">description</span>
+<span class="font-label-sm text-label-sm group-hover:text-primary transition-colors">Documents</span>
+</button>
+<!-- Active: Profile -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</button>
+</div>
+</nav>
+</body></html>

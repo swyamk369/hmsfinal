@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Family Members - HealthConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#0040a2",
+                    "outline": "#737685",
+                    "outline-variant": "#c3c6d6",
+                    "inverse-primary": "#b2c5ff",
+                    "tertiary": "#004e32",
+                    "surface-container-highest": "#d7e2ff",
+                    "surface-dim": "#cadaff",
+                    "tertiary-fixed": "#82f9be",
+                    "primary-fixed": "#dae2ff",
+                    "secondary-fixed-dim": "#bac9d3",
+                    "inverse-surface": "#1d3052",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#041b3c",
+                    "surface-container": "#e8edff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#d7e2ff",
+                    "surface-bright": "#f9f9ff",
+                    "surface-tint": "#0c56d0",
+                    "on-tertiary-container": "#72e9af",
+                    "surface-container-high": "#e0e8ff",
+                    "on-surface-variant": "#434654",
+                    "on-primary-container": "#c4d2ff",
+                    "tertiary-fixed-dim": "#65dca4",
+                    "error": "#ba1a1a",
+                    "primary": "#003d9b",
+                    "on-tertiary-fixed-variant": "#005235",
+                    "on-secondary-fixed-variant": "#3b4951",
+                    "on-secondary-container": "#56656e",
+                    "secondary-fixed": "#d6e5ef",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-tertiary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#edf0ff",
+                    "surface": "#f9f9ff",
+                    "secondary": "#526069",
+                    "primary-container": "#0052cc",
+                    "on-secondary-fixed": "#0f1d25",
+                    "secondary-container": "#d3e2ed",
+                    "on-primary-fixed": "#001848",
+                    "tertiary-container": "#006844",
+                    "background": "#f9f9ff",
+                    "on-tertiary-fixed": "#002113",
+                    "surface-container-low": "#f1f3ff",
+                    "on-error": "#ffffff",
+                    "on-background": "#041b3c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1200px",
+                    "xxl": "48px",
+                    "sm": "8px",
+                    "margin-desktop": "40px",
+                    "margin-mobile": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "unit": "4px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "headline-xl": [
+                            "Inter"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "headline-xl-mobile": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "headline-xl": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-xl-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-sm": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:flex-row">
+<!-- SideNavBar (Desktop) -->
+<nav class="bg-surface-container-low h-full w-64 hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-40 p-md border-r border-outline-variant">
+<div class="mb-lg">
+<h1 class="text-headline-sm font-headline-sm text-on-surface">HealthConnect</h1>
+</div>
+<div class="flex items-center gap-sm mb-xl">
+<img alt="Patient Profile" class="w-12 h-12 rounded-full object-cover border border-outline-variant" data-alt="A close-up portrait of a mature woman with a warm, reassuring smile. She has styled grey hair and is wearing a soft blue clinical-style blouse. The background is a gently blurred modern hospital corridor with light blue and white tones, creating a clean, trustworthy medical aesthetic. Lighting is soft, even, and professional, highlighting her approachability and confidence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt_JQdJFgoRKVsUO_yycvkfh8MN634fZ2PkVwSF1qozcZp7tE229w-9nF-FPE-PYPrdk9AKoNNxA07XI4g1l-Y9AjICoyPdEefsuo39k9qJjzkQ3VouP29GEeeF275QhZMKx9-7G_EhXWpi5J6Wwhc5GPFwBsJmlO3OMxWh5HAfeOmrNg9t4O5W2N_FqG95G0xd-UncEWXpixhfGzKVtBDuzphkdpzbOGSfJzCzm2rNEsb_jaBLE1MennrwiHLdZhOXU2n7r73jwQ"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Patient Portal</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage your healthcare</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary w-full py-2 rounded-lg font-label-md text-label-md mb-xl hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-shadow">
+            New Booking
+        </button>
+<ul class="flex-1 space-y-sm">
+<li>
+<a class="flex items-center gap-sm px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+                    Appointments
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">description</span>
+                    Documents
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-3 py-2 rounded-lg bg-surface-container-highest text-primary font-bold transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">family_restroom</span>
+                    Family
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- TopNavBar (Mobile Fallback for content, structural shell) -->
+<div class="md:hidden flex justify-between items-center w-full px-margin-mobile bg-surface h-16 border-b border-outline-variant sticky top-0 z-30">
+<h1 class="text-headline-sm font-headline-sm text-primary">HealthConnect</h1>
+<button class="text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full pb-24 md:pb-margin-desktop">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-md">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-xs">Family Members</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage healthcare profiles for your dependents and loved ones.</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md flex items-center gap-sm hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-all" onclick="document.getElementById('addFamilyModal').classList.remove('hidden')">
+<span class="material-symbols-outlined">add</span>
+                Add Family Member
+            </button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Primary Profile (Myself) -->
+<div class="lg:col-span-1 flex flex-col gap-lg">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md shadow-[0px_4px_12px_rgba(9,30,66,0.02)]">
+<div class="flex items-start justify-between mb-md">
+<div class="flex items-center gap-sm">
+<img alt="Sarah Jenkins Profile" class="w-16 h-16 rounded-full object-cover border border-outline-variant" data-alt="A close-up portrait of a mature woman with a warm, reassuring smile. She has styled grey hair and is wearing a soft blue clinical-style blouse. The background is a gently blurred modern hospital corridor with light blue and white tones, creating a clean, trustworthy medical aesthetic. Lighting is soft, even, and professional, highlighting her approachability and confidence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa1AC9PrnIt12uQfrGDBu2zxpFGVVmxYqEqOPNRn2w3b7APaxlMoDdpsXd1MQ0AntM7Q2kAAQGh6sosgG2mqQqKE3L-sUbUvBlnGrDFMairtYqzjlwc0YjIZcAPh07Hvm1LB2nT1x9e_RNQkvEqe5dGKsblKKBz3Buity_U7u3BzqrPvsiAqCJOFD7mzYQINzJe0dauf6Og8q1LAayEWxQGZIyT1dA-WATxgwZ3eAm61GeXJV88oKk7UmTOYwsvaXpLfPapdtxOP0"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Sarah Jenkins</h3>
+<div class="inline-flex items-center gap-xs bg-surface-container-low px-2 py-1 rounded-full mt-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">person</span>
+<span class="font-label-sm text-label-sm text-primary">Myself (Primary)</span>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-sm mb-md">
+<div class="flex justify-between items-center py-2 border-b border-surface-container-highest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">DOB</span>
+<span class="font-body-md text-body-md text-on-surface">Oct 12, 1982</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-surface-container-highest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Records</span>
+<span class="font-body-md text-body-md text-on-surface">42 Linked</span>
+</div>
+</div>
+<div class="flex flex-col gap-sm">
+<button class="w-full bg-secondary-container text-on-secondary-container py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container-highest transition-colors">
+                            Edit Profile
+                        </button>
+<button class="w-full bg-transparent border border-outline-variant text-on-surface py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+                            View Records
+                        </button>
+</div>
+</div>
+</div>
+<!-- Family Members Grid -->
+<div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Family Member Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md shadow-[0px_4px_12px_rgba(9,30,66,0.02)] hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-shadow">
+<div class="flex items-start justify-between mb-md">
+<div class="flex items-center gap-sm">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-headline-md text-headline-md">
+                                M
+                            </div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Marcus Jenkins</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Child</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="space-y-sm mb-md">
+<div class="flex justify-between items-center py-2 border-b border-surface-container-highest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">DOB</span>
+<span class="font-body-md text-body-md text-on-surface">May 04, 2012</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-surface-container-highest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Records</span>
+<span class="font-body-md text-body-md text-on-surface">15 Linked</span>
+</div>
+</div>
+<div class="flex flex-col gap-sm">
+<button class="w-full bg-surface-container-high text-primary py-2 rounded-lg font-label-md text-label-md hover:bg-secondary-container transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">event</span>
+                            Book for this person
+                        </button>
+<div class="flex gap-sm">
+<button class="flex-1 bg-transparent border border-outline-variant text-on-surface py-2 rounded-lg font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
+                                Edit Profile
+                            </button>
+<button class="flex-1 bg-transparent border border-outline-variant text-on-surface py-2 rounded-lg font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
+                                View Records
+                            </button>
+</div>
+</div>
+</div>
+<!-- Family Member Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-md shadow-[0px_4px_12px_rgba(9,30,66,0.02)] hover:shadow-[0px_4px_12px_rgba(9,30,66,0.08)] transition-shadow">
+<div class="flex items-start justify-between mb-md">
+<div class="flex items-center gap-sm">
+<img alt="Arthur Jenkins Profile" class="w-12 h-12 rounded-full object-cover border border-outline-variant" data-alt="A warm, well-lit portrait of an elderly man with silver hair and a kind expression. He is wearing a comfortable, neutral-toned sweater. The background is a clean, modern clinical setting with soft, diffused lighting that conveys a sense of professional care and compassion. The overall mood is dignified and reassuring, typical of a high-quality medical portal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBt_SRxSa41l9392aYfIeANdjqE_pJDZhxCMq57VGM-nxvn4ZJ5Bnzx8rP4_uCiyKEqXaobzpnUaE6CQ_AIUQecw8xTzxeBc3TEa-tFrB8OCG44Ondlvt4lpPTMQ8SbX9F5Q0Bz8gG1a1mkkw98uFFsSF-Ik7DXZclBtVy24jQ5rWcGcfvh7wMeg9YAl8F9w34YPQJyIUyd5LSn1FJJeAeH1DSCeJdXtWM4weE83nPAVz60nulKytovCFDGHOXeqEFPwdQoMw-70M"/>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Arthur Jenkins</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Parent</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="space-y-sm mb-md">
+<div class="flex justify-between items-center py-2 border-b border-surface-container-highest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">DOB</span>
+<span class="font-body-md text-body-md text-on-surface">Nov 22, 1950</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-surface-container-highest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Records</span>
+<span class="font-body-md text-body-md text-on-surface">87 Linked</span>
+</div>
+</div>
+<div class="flex flex-col gap-sm">
+<button class="w-full bg-surface-container-high text-primary py-2 rounded-lg font-label-md text-label-md hover:bg-secondary-container transition-colors flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">event</span>
+                            Book for this person
+                        </button>
+<div class="flex gap-sm">
+<button class="flex-1 bg-transparent border border-outline-variant text-on-surface py-2 rounded-lg font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
+                                Edit Profile
+                            </button>
+<button class="flex-1 bg-transparent border border-outline-variant text-on-surface py-2 rounded-lg font-label-sm text-label-sm hover:bg-surface-container-low transition-colors">
+                                View Records
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface border-t border-outline-variant md:hidden shadow-[0px_-4px_12px_rgba(9,30,66,0.08)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Docs</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Profile</span>
+</a>
+</nav>
+<!-- Add Family Member Modal -->
+<div class="fixed inset-0 z-50 hidden bg-on-background/40 flex items-center justify-center p-margin-mobile backdrop-blur-sm" id="addFamilyModal">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_12px_24px_rgba(9,30,66,0.15)] w-full max-w-md flex flex-col max-h-[921px]">
+<div class="flex justify-between items-center p-md border-b border-outline-variant">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Add Family Member</h3>
+<button class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-1 transition-colors" onclick="document.getElementById('addFamilyModal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-md overflow-y-auto space-y-md">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-xs">Full Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline rounded-lg px-3 py-2 font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-shadow" placeholder="e.g., John Doe" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-xs">Relationship</label>
+<select class="w-full bg-surface-container-lowest border border-outline rounded-lg px-3 py-2 font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-shadow">
+<option value="">Select relationship</option>
+<option value="child">Child</option>
+<option value="parent">Parent</option>
+<option value="spouse">Spouse</option>
+<option value="sibling">Sibling</option>
+<option value="other">Other</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-xs">Date of Birth</label>
+<input class="w-full bg-surface-container-lowest border border-outline rounded-lg px-3 py-2 font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-shadow" type="date"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-xs">Gender</label>
+<div class="flex gap-sm">
+<label class="flex-1 flex items-center gap-2 p-2 border border-outline rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+<input class="text-primary focus:ring-primary" name="gender" type="radio"/>
+<span class="font-body-sm text-body-sm">Male</span>
+</label>
+<label class="flex-1 flex items-center gap-2 p-2 border border-outline rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors">
+<input class="text-primary focus:ring-primary" name="gender" type="radio"/>
+<span class="font-body-sm text-body-sm">Female</span>
+</label>
+</div>
+</div>
+</div>
+<div class="p-md border-t border-outline-variant flex justify-end gap-sm bg-surface">
+<button class="px-4 py-2 text-primary font-label-md text-label-md hover:bg-surface-container-highest rounded-lg transition-colors" onclick="document.getElementById('addFamilyModal').classList.add('hidden')">
+                    Cancel
+                </button>
+<button class="px-4 py-2 bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-[0px_4px_12px_rgba(9,30,66,0.08)] hover:bg-primary-container transition-colors">
+                    Save Member
+                </button>
+</div>
+</div>
+</div>
+</body></html>

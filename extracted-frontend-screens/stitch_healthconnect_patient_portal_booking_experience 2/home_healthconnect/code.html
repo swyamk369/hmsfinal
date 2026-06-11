@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HealthConnect - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f9f9ff",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "on-secondary-fixed": "#0f1d25",
+                        "outline": "#737685",
+                        "outline-variant": "#c3c6d6",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed-variant": "#005235",
+                        "on-tertiary-fixed": "#002113",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#edf0ff",
+                        "secondary-fixed": "#d6e5ef",
+                        "on-primary-container": "#c4d2ff",
+                        "on-tertiary-container": "#72e9af",
+                        "background": "#f9f9ff",
+                        "surface-variant": "#d7e2ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#001848",
+                        "surface-tint": "#0c56d0",
+                        "surface-container-low": "#f1f3ff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "primary": "#003d9b",
+                        "on-secondary-container": "#56656e",
+                        "on-surface": "#041b3c",
+                        "inverse-primary": "#b2c5ff",
+                        "surface-container-high": "#e0e8ff",
+                        "surface-dim": "#cadaff",
+                        "on-surface-variant": "#434654",
+                        "on-error-container": "#93000a",
+                        "surface": "#f9f9ff",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "surface-container-highest": "#d7e2ff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#004e32",
+                        "on-background": "#041b3c",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#0052cc",
+                        "inverse-surface": "#1d3052",
+                        "secondary-container": "#d3e2ed",
+                        "tertiary-fixed": "#82f9be",
+                        "surface-container": "#e8edff",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#526069",
+                        "tertiary-container": "#006844",
+                        "tertiary-fixed-dim": "#65dca4",
+                        "primary-fixed": "#dae2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "unit": "4px",
+                        "md": "16px",
+                        "container-max": "1200px",
+                        "gutter": "24px",
+                        "xxl": "48px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "lg": "24px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F4F5F7; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .card-shadow { box-shadow: 0px 4px 12px rgba(9, 30, 66, 0.08); }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased pb-24 md:pb-0">
+<!-- TopAppBar (Mobile & Desktop) -->
+<header class="w-full sticky top-0 z-50 bg-surface-bright border-b border-outline-variant flex justify-between items-center px-margin-mobile py-sm">
+<button class="text-primary hover:bg-surface-container active:scale-95 duration-100 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="healing">healing</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">HealthConnect</h1>
+<button class="text-primary hover:bg-surface-container active:scale-95 duration-100 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="max-w-container-max mx-auto md:px-margin-desktop md:grid md:grid-cols-12 md:gap-gutter">
+<!-- Hero Section -->
+<section class="md:col-span-12 px-margin-mobile pt-lg pb-md">
+<div class="relative rounded-xl overflow-hidden bg-primary-container text-on-primary p-lg md:p-xxl flex flex-col items-center text-center shadow-lg">
+<div class="absolute inset-0 bg-gradient-to-br from-primary to-surface-tint opacity-90 z-0"></div>
+<div class="relative z-10 space-y-sm">
+<h2 class="font-headline-xl-mobile text-headline-xl-mobile md:font-headline-xl md:text-headline-xl mb-xs">Find and book healthcare appointments online</h2>
+<p class="font-body-lg text-body-lg text-inverse-primary max-w-2xl mx-auto">Search doctors, hospitals, and clinics near you.</p>
+</div>
+</div>
+</section>
+<!-- Search Stack -->
+<section class="md:col-span-8 md:col-start-3 px-margin-mobile pb-lg">
+<div class="bg-surface-container-lowest rounded-xl p-md border border-outline-variant card-shadow space-y-md">
+<div class="space-y-sm relative">
+<label class="font-label-md text-label-md text-on-surface-variant block">Search specialty, doctor, or clinic</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-body-md text-body-md placeholder-outline-variant" placeholder="e.g. Cardiologist" type="text"/>
+</div>
+</div>
+<div class="space-y-sm relative">
+<label class="font-label-md text-label-md text-on-surface-variant block">Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">location_on</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-body-md text-body-md placeholder-outline-variant" placeholder="Current Location" type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-primary p-1 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">my_location</span>
+</button>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md text-label-md hover:bg-surface-tint active:scale-[0.98] transition-all card-shadow flex items-center justify-center gap-xs">
+                    Search Now
+                </button>
+</div>
+</section>
+<!-- Quick Services Horizontal Scroll -->
+<section class="md:col-span-12 pl-margin-mobile pr-0 py-md md:px-margin-desktop">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-md">Quick Services</h3>
+<div class="flex overflow-x-auto hide-scrollbar gap-sm pb-2 pr-margin-mobile">
+<button class="flex-shrink-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-xs min-w-[100px] hover:bg-surface-container-low transition-colors card-shadow group">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">stethoscope</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface text-center">GP</span>
+</button>
+<button class="flex-shrink-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-xs min-w-[100px] hover:bg-surface-container-low transition-colors card-shadow group">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">dentistry</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Dentist</span>
+</button>
+<button class="flex-shrink-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-xs min-w-[100px] hover:bg-surface-container-low transition-colors card-shadow group">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">dermatology</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Dermatology</span>
+</button>
+<button class="flex-shrink-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-xs min-w-[100px] hover:bg-surface-container-low transition-colors card-shadow group">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">cardiology</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Cardiology</span>
+</button>
+<button class="flex-shrink-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-xs min-w-[100px] hover:bg-surface-container-low transition-colors card-shadow group">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">pediatrics</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Pediatrics</span>
+</button>
+</div>
+</section>
+<!-- Trust Cards (Bento-ish layout for Desktop) -->
+<section class="md:col-span-12 px-margin-mobile py-lg grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center gap-md card-shadow hover:shadow-lg transition-shadow">
+<div class="w-14 h-14 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_clock</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">24/7 Booking</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Book appointments anytime, anywhere, at your convenience.</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center gap-md card-shadow hover:shadow-lg transition-shadow">
+<div class="w-14 h-14 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Verified Hospitals</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Access a network of trusted, top-rated medical facilities.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-lowest shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] flex justify-around items-center px-xs py-sm pb-safe">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Search -->
+<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-sm text-label-sm mt-1">Search</span>
+</a>
+<!-- Bookings -->
+<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-sm text-label-sm mt-1">Bookings</span>
+</a>
+<!-- Documents -->
+<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-sm text-label-sm mt-1">Documents</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant p-2 hover:bg-surface-container-high transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Care Team &amp; Saved Providers</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#0040a2",
+                    "outline": "#737685",
+                    "outline-variant": "#c3c6d6",
+                    "inverse-primary": "#b2c5ff",
+                    "tertiary": "#004e32",
+                    "surface-container-highest": "#d7e2ff",
+                    "surface-dim": "#cadaff",
+                    "tertiary-fixed": "#82f9be",
+                    "primary-fixed": "#dae2ff",
+                    "secondary-fixed-dim": "#bac9d3",
+                    "inverse-surface": "#1d3052",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#041b3c",
+                    "surface-container": "#e8edff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-variant": "#d7e2ff",
+                    "surface-bright": "#f9f9ff",
+                    "surface-tint": "#0c56d0",
+                    "on-tertiary-container": "#72e9af",
+                    "surface-container-high": "#e0e8ff",
+                    "on-surface-variant": "#434654",
+                    "on-primary-container": "#c4d2ff",
+                    "tertiary-fixed-dim": "#65dca4",
+                    "error": "#ba1a1a",
+                    "primary": "#003d9b",
+                    "on-tertiary-fixed-variant": "#005235",
+                    "on-secondary-fixed-variant": "#3b4951",
+                    "on-secondary-container": "#56656e",
+                    "secondary-fixed": "#d6e5ef",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-tertiary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#edf0ff",
+                    "surface": "#f9f9ff",
+                    "secondary": "#526069",
+                    "primary-container": "#0052cc",
+                    "on-secondary-fixed": "#0f1d25",
+                    "secondary-container": "#d3e2ed",
+                    "on-primary-fixed": "#001848",
+                    "tertiary-container": "#006844",
+                    "background": "#f9f9ff",
+                    "on-tertiary-fixed": "#002113",
+                    "surface-container-low": "#f1f3ff",
+                    "on-error": "#ffffff",
+                    "on-background": "#041b3c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1200px",
+                    "xxl": "48px",
+                    "sm": "8px",
+                    "margin-desktop": "40px",
+                    "margin-mobile": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "unit": "4px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "headline-xl": [
+                            "Inter"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "headline-xl-mobile": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "headline-xl": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-xl-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-sm": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Ambient shadows from design system */
+        .shadow-ambient-2 {
+            box-shadow: 0px 4px 12px rgba(9, 30, 66, 0.08);
+        }
+        .shadow-ambient-3 {
+            box-shadow: 0px 12px 24px rgba(9, 30, 66, 0.15);
+        }
+        
+        /* Card styles */
+        .medical-card {
+            background-color: theme('colors.surface-container-lowest');
+            border: 1px solid #EBECF0;
+            border-radius: theme('borderRadius.xl');
+            transition: all 0.2s ease-in-out;
+        }
+        .medical-card:hover {
+            box-shadow: 0px 4px 12px rgba(9, 30, 66, 0.08);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-on-background font-body-md text-body-md docked full-width top-0 bg-surface dark:bg-on-background flat no shadows">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto h-16 md:h-20">
+<!-- Brand -->
+<div class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed flex items-center gap-sm">
+<span class="material-symbols-outlined fill text-primary">local_hospital</span>
+                HealthConnect
+            </div>
+<!-- Navigation Links (Hidden on Mobile) -->
+<div class="hidden md:flex gap-lg">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors cursor-pointer active:opacity-80" href="#">Hospitals</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors cursor-pointer active:opacity-80" href="#">Doctors</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary-container dark:hover:text-primary-fixed-dim transition-colors cursor-pointer active:opacity-80" href="#">Services</a>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-md">
+<button class="hidden md:flex items-center text-primary dark:text-primary-fixed font-label-md text-label-md hover:text-primary-container transition-colors">
+                    Sign In
+                </button>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-ambient-2">
+                    Book Appointment
+                </button>
+</div>
+</div>
+</nav>
+<!-- SideNavBar (Desktop Only) -->
+<aside class="bg-surface-container-low dark:bg-inverse-surface h-full w-64 hidden md:flex flex-col bg-surface-container-low dark:bg-inverse-surface flat no shadows fixed left-0 top-0 bottom-0 z-40 p-md">
+<!-- Header -->
+<div class="mb-xl flex flex-col items-center text-center mt-xl">
+<div class="w-24 h-24 rounded-full bg-surface-container-highest overflow-hidden mb-md border-2 border-primary-fixed">
+<img alt="Patient Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgusZzVQUv758TCqgxFMJKQ9X7Aa9mt7JKIruErV0wv-8OCdHyI82e1FjSob4Lji_6QplnZfjgtgceoEJVX0dEKXhIPWeBBeGokjt4byM5hZcT_AzW1xGdHdUJbw6SOKf73d7XOe7rrXN3kEkTaHA03Ovboiq_0n9BevjDOKiQj2w780Htd-76NYii3Tz-qpZ5Ml4mp7uOcHy7NW0Eg6DAAH5pPlAIzaqJqUFo0w31DPsP0JlnkvwRLcRuLHMbY6Mi9n0OG3YgdEQ"/>
+</div>
+<h2 class="text-headline-sm font-headline-sm text-on-surface dark:text-inverse-on-surface">Patient Portal</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage your healthcare</p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 flex flex-col gap-sm">
+<a class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                Appointments
+            </a>
+<a class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                Documents
+            </a>
+<a class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-primary dark:text-primary-fixed font-bold bg-surface-container-highest dark:bg-surface-variant rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined fill" data-icon="family_restroom">family_restroom</span>
+                Family
+            </a>
+<a class="flex items-center gap-md px-md py-sm font-label-md text-label-md text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<!-- CTA -->
+<div class="mt-auto">
+<button class="w-full bg-secondary-container text-on-secondary-container py-sm rounded-lg font-label-md text-label-md hover:bg-surface-container-highest transition-colors flex justify-center items-center gap-sm">
+<span class="material-symbols-outlined">add</span>
+                New Booking
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-4 md:pt-8 pb-32 md:pb-16 px-margin-mobile md:px-margin-desktop max-w-[1200px] mx-auto min-h-screen">
+<!-- Page Header -->
+<div class="mb-xl flex flex-col md:flex-row justify-between items-start md:items-end gap-md">
+<div>
+<h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-background mb-xs">Care Team</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage your saved providers and frequently visited facilities.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm bg-surface-container-highest text-primary font-label-md text-label-md rounded-lg flex items-center gap-sm hover:bg-surface-dim transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+                    Filter
+                </button>
+</div>
+</div>
+<!-- Section 1: Saved Doctors (Bento Grid Style) -->
+<section class="mb-xxl">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">stethoscope</span>
+                Saved Doctors
+            </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Doctor Card 1 -->
+<article class="medical-card p-md flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-sm">
+<button aria-label="Remove" class="text-outline-variant hover:text-error transition-colors p-xs">
+<span class="material-symbols-outlined">bookmark_remove</span>
+</button>
+</div>
+<div class="flex gap-md mb-md">
+<div class="w-16 h-16 rounded-full overflow-hidden shrink-0 border-2 border-surface-container-highest">
+<img alt="A professional headshot of a female doctor wearing a white coat over a blue scrub top, smiling warmly. The background is a brightly lit, modern clinical office setting. The lighting is soft and flattering, emphasizing a trustworthy and capable demeanor." class="w-full h-full object-cover" data-alt="A professional headshot of a female doctor wearing a white coat over a blue scrub top, smiling warmly. The background is a brightly lit, modern clinical office setting. The lighting is soft and flattering, emphasizing a trustworthy and capable demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkxs1ywF5_-ZqpRuOR2KLgD6sPfdm3ui-yuWn1egsi7ZdsHGGGKalGu37ZtQHzKLzpBazgIfiJPPZW8JJ7MQAty2FChE0vCIwWD5Ffh172taNjXiqpblLPBCo033Fv0i7SKhqLtQEGTdiV9XQQbhzxcAjnMohw_G4EUSKpWv6hfVBxn5D3JeQS8L22nbs9DTRajN4npwCJfhcWza8lA9lfJpJI0b275txnMJZ_4lkesTgIcTrMxx5KB-KSOWJVCeIuk12zutmY9-A"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Dr. Sarah Jenkins</h3>
+<p class="font-body-sm text-body-sm text-primary">Cardiology</p>
+<div class="flex items-center gap-xs mt-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>Mercy General Hospital</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-sm mb-md flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Next Available:</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Tomorrow, 10:30 AM</span>
+</div>
+<div class="mt-auto pt-sm flex gap-sm">
+<button class="flex-1 bg-primary text-on-primary py-xs rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-ambient-2">
+                            Book Again
+                        </button>
+</div>
+</article>
+<!-- Doctor Card 2 -->
+<article class="medical-card p-md flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-sm">
+<button aria-label="Remove" class="text-outline-variant hover:text-error transition-colors p-xs">
+<span class="material-symbols-outlined">bookmark_remove</span>
+</button>
+</div>
+<div class="flex gap-md mb-md">
+<div class="w-16 h-16 rounded-full overflow-hidden shrink-0 border-2 border-surface-container-highest">
+<img alt="A professional headshot of a male doctor with short dark hair and glasses, wearing a white lab coat over a light blue collared shirt. He has a slight, reassuring smile. The setting is a clean, modern medical examination room with soft, diffused lighting." class="w-full h-full object-cover" data-alt="A professional headshot of a male doctor with short dark hair and glasses, wearing a white lab coat over a light blue collared shirt. He has a slight, reassuring smile. The setting is a clean, modern medical examination room with soft, diffused lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7UQJ-SoNKJ2kW33vXeBufhorIgXmkol-ML5lUqViNSVr93G--dZzQXNsofSn4dTxZoje1yfMTdN-ZyM0Zph4QtNnGv3ZhCJ6XWdPgWYgdymXQXUABQnxoeQerMAW9w_7eEiWJV5lZhLHSZbPzBMRqqrGmjHpDOc9_0R5_Lw3AXfc02SSgOEbVOaam5dKD-hAQXAMb8h_VkeDnJ5mZu3NNh87EnNt14Ao76iNkJ4VRfBw7LyWWt4XfWfuQqOCqScaCbNJNXpPXFwY"/>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Dr. Michael Chen</h3>
+<p class="font-body-sm text-body-sm text-primary">Neurology</p>
+<div class="flex items-center gap-xs mt-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span>City Medical Center</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-sm mb-md flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-error-container"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Next Available:</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Oct 14, 2:00 PM</span>
+</div>
+<div class="mt-auto pt-sm flex gap-sm">
+<button class="flex-1 bg-primary text-on-primary py-xs rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors shadow-ambient-2">
+                            Book Again
+                        </button>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="bg-surface dark:bg-on-background font-label-sm-mobile text-label-sm-mobile docked full-width bottom-0 md:hidden bg-surface dark:bg-on-background shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] shadow-md fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+            Search
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+            Bookings
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+            Docs
+        </a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined fill" data-icon="person">person</span>
+            Profile
+        </a>
+</nav>
+</body></html>

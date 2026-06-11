@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Confirmation - HealthConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#0040a2",
+                      "outline": "#737685",
+                      "outline-variant": "#c3c6d6",
+                      "inverse-primary": "#b2c5ff",
+                      "tertiary": "#004e32",
+                      "surface-container-highest": "#d7e2ff",
+                      "surface-dim": "#cadaff",
+                      "tertiary-fixed": "#82f9be",
+                      "primary-fixed": "#dae2ff",
+                      "secondary-fixed-dim": "#bac9d3",
+                      "inverse-surface": "#1d3052",
+                      "error-container": "#ffdad6",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#041b3c",
+                      "surface-container": "#e8edff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#d7e2ff",
+                      "surface-bright": "#f9f9ff",
+                      "surface-tint": "#0c56d0",
+                      "on-tertiary-container": "#72e9af",
+                      "surface-container-high": "#e0e8ff",
+                      "on-surface-variant": "#434654",
+                      "on-primary-container": "#c4d2ff",
+                      "tertiary-fixed-dim": "#65dca4",
+                      "error": "#ba1a1a",
+                      "primary": "#003d9b",
+                      "on-tertiary-fixed-variant": "#005235",
+                      "on-secondary-fixed-variant": "#3b4951",
+                      "on-secondary-container": "#56656e",
+                      "secondary-fixed": "#d6e5ef",
+                      "primary-fixed-dim": "#b2c5ff",
+                      "on-tertiary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#edf0ff",
+                      "surface": "#f9f9ff",
+                      "secondary": "#526069",
+                      "primary-container": "#0052cc",
+                      "on-secondary-fixed": "#0f1d25",
+                      "secondary-container": "#d3e2ed",
+                      "on-primary-fixed": "#001848",
+                      "tertiary-container": "#006844",
+                      "background": "#f9f9ff",
+                      "on-tertiary-fixed": "#002113",
+                      "surface-container-low": "#f1f3ff",
+                      "on-error": "#ffffff",
+                      "on-background": "#041b3c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1200px",
+                      "xxl": "48px",
+                      "sm": "8px",
+                      "margin-desktop": "40px",
+                      "margin-mobile": "16px",
+                      "lg": "24px",
+                      "xl": "32px",
+                      "xs": "4px",
+                      "gutter": "24px",
+                      "unit": "4px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "headline-xl": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-xl-mobile": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                      "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                      "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                      "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                      "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                      "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                      "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                      "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 16px;
+            background-color: var(--confetti-color);
+            opacity: 0;
+            animation: fall 3s ease-in-out forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .success-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                box-shadow: 0 0 0 0 rgba(0, 78, 50, 0.4);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 15px rgba(0, 78, 50, 0);
+            }
+            100% {
+                transform: scale(0.8);
+                box-shadow: 0 0 0 0 rgba(0, 78, 50, 0);
+            }
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md relative overflow-x-hidden">
+<!-- Confetti Container -->
+<div class="fixed inset-0 pointer-events-none z-50 overflow-hidden" id="confetti-container"></div>
+<!-- Header (Suppressed navigation, brand only for transactional page) -->
+<header class="w-full bg-surface-container-lowest border-b border-outline-variant py-md px-margin-mobile md:px-margin-desktop flex justify-center items-center h-16 md:h-20 shadow-sm sticky top-0 z-40">
+<div class="text-headline-sm font-headline-sm text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+            HealthConnect
+        </div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full relative z-10">
+<!-- Success State Container -->
+<section class="max-w-2xl w-full flex flex-col items-center animate-[fadeIn_0.5s_ease-out]">
+<!-- Icon & Headline -->
+<div class="flex flex-col items-center text-center mb-xl relative">
+<div class="w-24 h-24 bg-tertiary-fixed rounded-full flex items-center justify-center mb-lg relative success-pulse">
+<span class="material-symbols-outlined text-headline-xl font-headline-xl text-tertiary" style="font-size: 48px; font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h1 class="text-headline-xl-mobile md:text-headline-xl font-headline-xl-mobile md:font-headline-xl text-on-surface mb-sm">
+                    Your appointment is confirmed
+                </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-md">
+                    We've sent a confirmation email to your registered address with all the details.
+                </p>
+</div>
+<!-- Booking Details Card (Bento/Glassmorphism inspired) -->
+<div class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-[0px_12px_24px_rgba(9,30,66,0.08)] mb-xl relative overflow-hidden group">
+<!-- Decorative subtle gradient bg -->
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container-low to-surface-container-lowest opacity-50 z-0 pointer-events-none transition-opacity duration-500 group-hover:opacity-100"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-center border-b border-outline-variant pb-md mb-md">
+<span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Reference ID</span>
+<span class="text-label-md font-label-md text-primary bg-primary-fixed px-sm py-xs rounded">#HC-8924-VL</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Provider Info -->
+<div class="flex items-start gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden flex-shrink-0 border border-outline-variant">
+<img alt="Doctor Portrait" class="w-full h-full object-cover" data-alt="A professional headshot of a female doctor wearing a white coat and stethoscope, set against a bright, modern clinic background. The lighting is soft and flattering, emphasizing a clean, clinical yet compassionate aesthetic. The color palette focuses on crisp whites, soft blues, and natural skin tones to evoke trust and high-end medical care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9E3BsOo9X7bg_-RcCUKk9auViAgyaFklfUGSYBv0dn0a9cUI-WHIoQop6n63f1qrr18EV7UeaFNke9XN4SjtncWrDcHG6923u_cuTVS93MX7BIm-OqWC8NiNR4JtHJskZeybwW0Id06lzEO3WQeRA0F_Q-NPRyCAg4NmXHpiG77D20pnqetkB12-dSW8NIk6dfRPE3bGN9QDU4yS__9eY_2S6mJq_n_n-B-d8ft78NVT-GJLSeSsTsDnraJ-a77Y-AFFb6Pidzlc"/>
+</div>
+<div>
+<h3 class="text-body-lg font-body-lg text-on-surface font-semibold mb-xs">Dr. Sarah Jenkins</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">medical_services</span>
+                                    Cardiology Specialist
+                                </p>
+</div>
+</div>
+<!-- Time & Date -->
+<div class="flex items-start gap-md bg-surface p-sm rounded-lg border border-outline-variant/50">
+<div class="w-10 h-10 rounded bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</div>
+<div>
+<h3 class="text-body-md font-body-md text-on-surface font-semibold">Thursday, Oct 24</h3>
+<p class="text-body-sm font-body-sm text-primary flex items-center gap-xs font-medium">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                    10:00 AM - 10:45 AM
+                                </p>
+</div>
+</div>
+</div>
+<!-- Location / Map Link -->
+<div class="mt-lg pt-lg border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-on-surface-variant mt-1">location_on</span>
+<div>
+<p class="text-body-md font-body-md text-on-surface font-medium">Mercy General Hospital</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">1240 Healthway Blvd, Suite 300<br/>Metropolis, NY 10001</p>
+</div>
+</div>
+<a class="hidden md:flex items-center justify-center w-12 h-12 bg-surface-container border border-outline-variant rounded-full text-primary hover:bg-surface-container-high transition-colors" href="#" title="Get Directions">
+<span class="material-symbols-outlined">directions</span>
+</a>
+</div>
+<a class="md:hidden mt-md flex w-full items-center justify-center gap-sm bg-surface-container border border-outline-variant py-sm rounded-lg text-primary hover:bg-surface-container-high transition-colors font-label-md text-label-md" href="#" title="Get Directions">
+<span class="material-symbols-outlined text-[20px]">directions</span> Get Directions
+                    </a>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-md w-full justify-center">
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-sm bg-primary text-on-primary px-lg py-md rounded-lg font-label-md text-label-md hover:shadow-[0px_4px_12px_rgba(9,30,66,0.15)] transition-all hover:bg-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[20px]">event_upcoming</span>
+                    Add to Calendar
+                </button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-sm bg-secondary-container text-on-secondary-container px-lg py-md rounded-lg font-label-md text-label-md hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[20px]">list_alt</span>
+                    View Appointments
+                </button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-sm bg-transparent border border-outline-variant text-primary px-lg py-md rounded-lg font-label-md text-label-md hover:bg-surface transition-colors">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    Go to Dashboard
+                </button>
+</div>
+<!-- Secondary Pending State Example (Visually separated for demonstration if needed, usually an alternate view) -->
+<div class="mt-xxl pt-lg border-t border-outline-variant w-full opacity-60 hover:opacity-100 transition-opacity">
+<h4 class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wide mb-md text-center">Alternative State Example (Pending)</h4>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-md flex items-center gap-md max-w-md mx-auto">
+<div class="w-10 h-10 rounded-full bg-[#FFF8E1] border border-[#FFE082] flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[#F57F17]" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+</div>
+<div>
+<p class="text-body-sm font-body-sm text-on-surface font-semibold">Booking request sent</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">The clinic will review and confirm shortly.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Simple Confetti Micro-interaction
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#003d9b', '#b2c5ff', '#82f9be', '#72e9af', '#0c56d0']; // Theme colors
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti-piece');
+                
+                // Randomize properties
+                const left = Math.random() * 100;
+                const animDuration = Math.random() * 2 + 2;
+                const animDelay = Math.random() * 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                confetti.style.left = `${left}vw`;
+                confetti.style.setProperty('--confetti-color', color);
+                confetti.style.animationDuration = `${animDuration}s`;
+                confetti.style.animationDelay = `${animDelay}s`;
+                
+                container.appendChild(confetti);
+            }
+            
+            // Cleanup
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        });
+    </script>
+</body></html>

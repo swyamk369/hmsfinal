@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Appointments - HealthConnect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#0040a2",
+                        "outline": "#737685",
+                        "outline-variant": "#c3c6d6",
+                        "inverse-primary": "#b2c5ff",
+                        "tertiary": "#004e32",
+                        "surface-container-highest": "#d7e2ff",
+                        "surface-dim": "#cadaff",
+                        "tertiary-fixed": "#82f9be",
+                        "primary-fixed": "#dae2ff",
+                        "secondary-fixed-dim": "#bac9d3",
+                        "inverse-surface": "#1d3052",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#041b3c",
+                        "surface-container": "#e8edff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#d7e2ff",
+                        "surface-bright": "#f9f9ff",
+                        "surface-tint": "#0c56d0",
+                        "on-tertiary-container": "#72e9af",
+                        "surface-container-high": "#e0e8ff",
+                        "on-surface-variant": "#434654",
+                        "on-primary-container": "#c4d2ff",
+                        "tertiary-fixed-dim": "#65dca4",
+                        "error": "#ba1a1a",
+                        "primary": "#003d9b",
+                        "on-tertiary-fixed-variant": "#005235",
+                        "on-secondary-fixed-variant": "#3b4951",
+                        "on-secondary-container": "#56656e",
+                        "secondary-fixed": "#d6e5ef",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#edf0ff",
+                        "surface": "#f9f9ff",
+                        "secondary": "#526069",
+                        "primary-container": "#0052cc",
+                        "on-secondary-fixed": "#0f1d25",
+                        "secondary-container": "#d3e2ed",
+                        "on-primary-fixed": "#001848",
+                        "tertiary-container": "#006844",
+                        "background": "#f9f9ff",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-container-low": "#f1f3ff",
+                        "on-error": "#ffffff",
+                        "on-background": "#041b3c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "xxl": "48px",
+                        "sm": "8px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #F4F5F7; }
+        .tab-active { border-bottom: 2px solid #003d9b; color: #003d9b; font-weight: 600; }
+        .tab-inactive { color: #434654; }
+        .tab-inactive:hover { color: #003d9b; }
+        
+        .card-shadow { box-shadow: 0px 4px 12px rgba(9, 30, 66, 0.08); }
+        .card-hover:hover { box-shadow: 0px 12px 24px rgba(9, 30, 66, 0.12); transform: translateY(-2px); transition: all 0.2s ease; }
+    </style>
+</head>
+<body class="font-body-md text-on-background flex h-screen overflow-hidden">
+<!-- SideNavBar (Desktop) -->
+<nav class="h-full w-64 hidden md:flex flex-col bg-surface-container-low dark:bg-inverse-surface z-40 p-md border-r border-outline-variant/30 shrink-0">
+<div class="mb-xl flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<span class="text-headline-sm font-headline-sm text-on-surface dark:text-inverse-on-surface tracking-tight">Patient Portal</span>
+</div>
+<div class="flex items-center gap-md mb-lg p-sm bg-surface-container-highest rounded-lg">
+<img alt="Patient Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-surface" data-alt="A close-up portrait of a relaxed, professional individual with a warm smile, serving as a patient avatar. The lighting is soft and natural, emphasizing a calm and approachable demeanor. The background is a very subtle, light, out-of-focus gray, ensuring the subject stands out cleanly. The overall aesthetic is modern, clean, and perfectly suited for a trusted healthcare digital portal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu5MdGBCb_ArhzrpVJfQ7hk0AOE6SVW8YtGA4U7RFkcgaCiXDjy0x-8ZL4BUi9gke-z-pG_KQ-LO2kTBWTfLQVyp7eSHTb8t_lIbUGU9lS5Udi-LoTKGai7wh815vX-BG2kMS1H2BgVqq-AYBkR754-kklhXp9DyOnZSm6XoSW88CEYcteqw0qq1-U-Sg9oWWS6cAHWq8WAoo2WC7I6-GFL9RfwF2cD42QqYk1dZbUqjADhaKvUm1tY5VyitJX-fqiEtfp-OWWmSU"/>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Jane Doe</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Manage your healthcare</p>
+</div>
+</div>
+<ul class="flex-1 space-y-sm">
+<li>
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-sm rounded-lg text-primary dark:text-primary-fixed font-bold bg-surface-container-highest dark:bg-surface-variant transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-label-md text-label-md">Appointments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Documents</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+<span class="font-label-md text-label-md">Family</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md p-sm rounded-lg text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-surface-variant transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</li>
+</ul>
+<button class="w-full py-sm bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-colors mt-auto flex justify-center items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">add</span> New Booking
+        </button>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-background relative">
+<!-- Top App Bar (Mobile Only for Nav, but using a Header here for context) -->
+<header class="bg-surface dark:bg-on-background px-margin-mobile md:px-margin-desktop py-md flex items-center justify-between z-10 sticky top-0 border-b border-outline-variant/20 md:hidden">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<span class="text-headline-sm font-headline-sm text-primary dark:text-primary-fixed tracking-tight">HealthConnect</span>
+</div>
+<button class="text-on-surface-variant">
+<img alt="Patient Avatar" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A close-up portrait of a relaxed, professional individual with a warm smile, serving as a patient avatar. The lighting is soft and natural, emphasizing a calm and approachable demeanor. The background is a very subtle, light, out-of-focus gray, ensuring the subject stands out cleanly. The overall aesthetic is modern, clean, and perfectly suited for a trusted healthcare digital portal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqUOkfOo5SUswrXu7C44EKzeyZbaLrXYl7S_ypL92DewkBb6s1Sfui70uVE2hzfJp_7ucMfBpr3E8u75aDDDILtLYMdj4LlkZ_WVF7NyRREgQNSCgJnD_997UnCKe0Ig02qzaQcME_9qdCrbyrzjjLq_mKdCc_0wrNmJYDdp0fxVZ5pCwO1ZjubPeSDHi56j1xUlIkkFKNYh7JcuAVq01bz6nyRBIKdRiF3u9RUSGvalm2TS_ASe7qUBrpmTbd3XbfyeOAB3eB0Q0"/>
+</button>
+</header>
+<div class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop">
+<div class="max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-headline-xl-mobile md:font-headline-xl text-headline-xl-mobile md:text-headline-xl text-on-surface mb-xs">My Appointments</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your scheduled visits and telehealth consultations.</p>
+</div>
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant/30 overflow-x-auto no-scrollbar pb-[1px]">
+<button class="px-md py-sm font-label-md text-label-md whitespace-nowrap tab-active" onclick="switchTab('upcoming')">Upcoming</button>
+<button class="px-md py-sm font-label-md text-label-md whitespace-nowrap tab-inactive" onclick="switchTab('past')">Past</button>
+<button class="px-md py-sm font-label-md text-label-md whitespace-nowrap tab-inactive" onclick="switchTab('pending')">Pending</button>
+<button class="px-md py-sm font-label-md text-label-md whitespace-nowrap tab-inactive" onclick="switchTab('cancelled')">Cancelled</button>
+</div>
+</div>
+<!-- Tab Content: Upcoming -->
+<div class="space-y-lg" id="tab-upcoming">
+<!-- Card 1 -->
+<div class="bg-surface rounded-xl border border-outline-variant/30 p-md card-shadow card-hover flex flex-col md:flex-row gap-lg">
+<!-- Info Section -->
+<div class="flex gap-md flex-1">
+<img alt="Dr. Sarah Jenkins" class="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover" data-alt="A professional headshot of a female doctor wearing a white coat and a stethoscope around her neck. She has a warm, reassuring smile. The background is a clean, softly lit, out-of-focus clinical setting. The lighting is bright and even, conveying a modern, trustworthy medical professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPNIDk6eP8Te7kXWTz_UZ7PqkTwIThbBA0FemKlu9qA00tu8tRp7ZmiAi8QEAeZsNt2EPyYVSbf6TLSXB_QC4ujWJjIutNHf7NCZnTyGDry_DBqxoKX4LHFH2Dt86f7bZXnQJ5q3h5UUU1k85D_zUl-QiAeJRw7rw2g7x8WFudJPe7xS4rm-WXxFmJPGc5DBptRzvru5lTPNi9SrY-oxhz5vJKlDqTGDj62L_97qbrnj3_obPtpl5wmnNHaWoYAjUP2cAdMcfLxow"/>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Dr. Sarah Jenkins</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cardiologist • City General Hospital</p>
+</div>
+<span class="hidden md:inline-flex items-center gap-xs px-2 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">video_camera_front</span> Telehealth
+                                    </span>
+</div>
+<div class="mt-sm flex flex-wrap items-center gap-x-md gap-y-xs">
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">event</span>
+<span class="font-label-md text-label-md">Oct 24, 2023</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+<span class="font-label-md text-label-md">10:00 AM</span>
+</div>
+<span class="md:hidden inline-flex items-center gap-xs px-2 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">video_camera_front</span> Telehealth
+                                    </span>
+</div>
+</div>
+</div>
+<!-- Status & Actions -->
+<div class="flex flex-col justify-between items-start md:items-end border-t md:border-t-0 md:border-l border-outline-variant/30 pt-md md:pt-0 md:pl-md gap-md md:w-64 shrink-0">
+<div class="flex items-center gap-xs bg-tertiary-fixed/30 text-tertiary font-label-sm text-label-sm px-2 py-1 rounded-full w-fit">
+<span class="w-2 h-2 rounded-full bg-tertiary block"></span> Confirmed
+                            </div>
+<div class="flex flex-wrap md:flex-col gap-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-xs px-sm py-[6px] bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors">
+                                    View Details
+                                </button>
+<button class="flex-1 md:flex-none flex items-center justify-center gap-xs px-sm py-[6px] bg-surface-container text-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_add_on</span> Add to Calendar
+                                </button>
+</div>
+<div class="flex gap-sm w-full md:justify-end mt-auto pt-sm">
+<button class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors underline decoration-outline-variant underline-offset-2">Reschedule</button>
+<span class="text-outline-variant">•</span>
+<button class="text-error font-label-sm text-label-sm hover:text-on-error-container transition-colors underline decoration-error/50 underline-offset-2">Cancel</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface rounded-xl border border-outline-variant/30 p-md card-shadow card-hover flex flex-col md:flex-row gap-lg">
+<!-- Info Section -->
+<div class="flex gap-md flex-1">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl text-primary">person</span>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Dr. Michael Chen</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">General Practice • Westside Clinic</p>
+</div>
+<span class="hidden md:inline-flex items-center gap-xs px-2 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">local_hospital</span> In-person
+                                    </span>
+</div>
+<div class="mt-sm flex flex-wrap items-center gap-x-md gap-y-xs">
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">event</span>
+<span class="font-label-md text-label-md">Nov 02, 2023</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary">schedule</span>
+<span class="font-label-md text-label-md">2:15 PM</span>
+</div>
+<span class="md:hidden inline-flex items-center gap-xs px-2 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">local_hospital</span> In-person
+                                    </span>
+</div>
+</div>
+</div>
+<!-- Status & Actions -->
+<div class="flex flex-col justify-between items-start md:items-end border-t md:border-t-0 md:border-l border-outline-variant/30 pt-md md:pt-0 md:pl-md gap-md md:w-64 shrink-0">
+<div class="flex items-center gap-xs bg-tertiary-fixed/30 text-tertiary font-label-sm text-label-sm px-2 py-1 rounded-full w-fit">
+<span class="w-2 h-2 rounded-full bg-tertiary block"></span> Confirmed
+                            </div>
+<div class="flex flex-wrap md:flex-col gap-sm w-full md:w-auto">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-xs px-sm py-[6px] bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors">
+                                    View Details
+                                </button>
+<button class="flex-1 md:flex-none flex items-center justify-center gap-xs px-sm py-[6px] bg-surface-container text-primary rounded-lg font-label-md text-label-md hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">directions</span> Directions
+                                </button>
+</div>
+<div class="flex gap-sm w-full md:justify-end mt-auto pt-sm">
+<button class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors underline decoration-outline-variant underline-offset-2">Reschedule</button>
+<span class="text-outline-variant">•</span>
+<button class="text-error font-label-sm text-label-sm hover:text-on-error-container transition-colors underline decoration-error/50 underline-offset-2">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Content: Past (Empty State Example) -->
+<div class="hidden py-xl flex flex-col items-center justify-center text-center" id="tab-past">
+<div class="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-4xl text-outline-variant">history</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">No Past Appointments</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto">Your past appointment history will appear here once you've completed a visit.</p>
+</div>
+<!-- Tab Content: Pending (Empty State Example) -->
+<div class="hidden py-xl flex flex-col items-center justify-center text-center" id="tab-pending">
+<div class="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-4xl text-outline-variant">pending_actions</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">No Pending Requests</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto">You don't have any appointment requests awaiting approval right now.</p>
+</div>
+<!-- Tab Content: Cancelled (Empty State Example) -->
+<div class="hidden py-xl flex flex-col items-center justify-center text-center" id="tab-cancelled">
+<div class="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-4xl text-outline-variant">event_busy</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-xs">No Cancelled Appointments</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto">Record of cancelled appointments will be shown here.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-surface dark:bg-on-background shadow-[0px_-4px_12px_rgba(9,30,66,0.08)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-full" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-full" href="#">
+<span class="material-symbols-outlined text-2xl">search</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 active:bg-surface-container-high scale-95 duration-100" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-full" href="#">
+<span class="material-symbols-outlined text-2xl">folder_shared</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Docs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 active:bg-surface-container-high scale-95 duration-100 rounded-full" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        function switchTab(tabId) {
+            // Hide all tabs
+            ['upcoming', 'past', 'pending', 'cancelled'].forEach(id => {
+                document.getElementById('tab-' + id).classList.add('hidden');
+            });
+            // Show selected tab
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            // Update tab styles
+            const buttons = document.querySelectorAll('.overflow-x-auto button');
+            buttons.forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('tab-inactive');
+                if(btn.textContent.toLowerCase() === tabId) {
+                     btn.classList.add('tab-active');
+                     btn.classList.remove('tab-inactive');
+                }
+            });
+        }
+    </script>
+</body></html>
