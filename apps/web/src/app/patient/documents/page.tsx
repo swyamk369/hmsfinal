@@ -25,13 +25,32 @@ export default function DocumentsPage() {
         icon={FileText}
         title="Link a hospital to see documents"
         body="Reports and documents your hospital shares appear once you've linked a record."
-        action={<button onClick={openLinkModal} className="rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90">Link a record</button>}
+        action={
+          <button
+            onClick={openLinkModal}
+            className="rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90"
+          >
+            Link a record
+          </button>
+        }
       />
     );
   return <Inner tenantId={tenantId} tab={tab} setTab={setTab} q={q} setQ={setQ} />;
 }
 
-function Inner({ tenantId, tab, setTab, q, setQ }: { tenantId: string; tab: Filter; setTab: (f: Filter) => void; q: string; setQ: (s: string) => void }) {
+function Inner({
+  tenantId,
+  tab,
+  setTab,
+  q,
+  setQ,
+}: {
+  tenantId: string;
+  tab: Filter;
+  setTab: (f: Filter) => void;
+  q: string;
+  setQ: (s: string) => void;
+}) {
   const { data, err } = useData<PortalDocument[]>(() => portalApi.documents(tenantId), [tenantId]);
 
   const filtered = useMemo(() => {
@@ -52,7 +71,8 @@ function Inner({ tenantId, tab, setTab, q, setQ }: { tenantId: string; tab: Filt
     <div>
       <div className="mb-4 flex items-start gap-2 rounded-lg border border-primary-100 bg-primary-50 px-4 py-3 text-body-sm text-primary-700">
         <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0" />
-        Only documents a hospital has chosen to publish to you are shown here. They cannot be edited or deleted from the portal.
+        Only documents a hospital has chosen to publish to you are shown here. They cannot be edited or deleted from the
+        portal.
       </div>
 
       <div className="relative mb-4">
@@ -78,7 +98,15 @@ function Inner({ tenantId, tab, setTab, q, setQ }: { tenantId: string; tab: Filt
       />
 
       {filtered.length === 0 ? (
-        <EmptyState icon={FileText} title="No documents" body={data.length === 0 ? 'Documents appear here when a hospital shares them with you.' : 'No documents match this filter.'} />
+        <EmptyState
+          icon={FileText}
+          title="No documents"
+          body={
+            data.length === 0
+              ? 'Documents appear here when a hospital shares them with you.'
+              : 'No documents match this filter.'
+          }
+        />
       ) : (
         <div className="space-y-2">
           {filtered.map((d) => (
@@ -96,7 +124,9 @@ function Inner({ tenantId, tab, setTab, q, setQ }: { tenantId: string; tab: Filt
                 </span>
                 <div>
                   <div className="font-medium text-ink">{d.title}</div>
-                  <div className="text-label-sm text-ink-soft">{d.category || 'Document'} · {new Date(d.publishedAt).toLocaleDateString()}</div>
+                  <div className="text-label-sm text-ink-soft">
+                    {d.category || 'Document'} · {new Date(d.publishedAt).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
               <span className="text-body-sm font-medium text-primary">View</span>

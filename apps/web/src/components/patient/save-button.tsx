@@ -37,10 +37,7 @@ async function ensureLoaded() {
     try {
       const auth = getFirebaseAuth();
       if (!auth?.currentUser) return;
-      const [providers, hospitals] = await Promise.all([
-        portalApi.savedProviders(),
-        portalApi.savedHospitals(),
-      ]);
+      const [providers, hospitals] = await Promise.all([portalApi.savedProviders(), portalApi.savedHospitals()]);
       _savedDoctorIds = new Set(providers.map((p) => `${p.tenantId}:${p.doctorId}`));
       _savedHospitalTenants = new Set(hospitals.map((h) => h.tenantId));
     } catch {
@@ -55,7 +52,9 @@ function useSavedState() {
   useEffect(() => {
     void ensureLoaded().then(() => setTick((t) => t + 1));
     const unsubscribe = subscribe(() => setTick((t) => t + 1));
-    return () => { unsubscribe(); };
+    return () => {
+      unsubscribe();
+    };
   }, []);
   return { doctors: _savedDoctorIds, hospitals: _savedHospitalTenants };
 }
@@ -143,9 +142,7 @@ export function SaveDoctorButton({
         disabled={busy}
         aria-label={isSaved ? 'Remove from care team' : 'Save to care team'}
         className={`rounded-full p-1.5 transition-all ${
-          isSaved
-            ? 'text-red-500 hover:text-red-600'
-            : 'text-ink-soft hover:text-red-400'
+          isSaved ? 'text-red-500 hover:text-red-600' : 'text-ink-soft hover:text-red-400'
         } ${busy ? 'opacity-50' : ''}`}
       >
         <Heart className={`h-5 w-5 transition-all ${isSaved ? 'fill-current' : ''}`} />
@@ -234,9 +231,7 @@ export function SaveHospitalButton({
         disabled={busy}
         aria-label={isSaved ? 'Remove from saved hospitals' : 'Save hospital'}
         className={`rounded-full p-1.5 transition-all ${
-          isSaved
-            ? 'text-red-500 hover:text-red-600'
-            : 'text-ink-soft hover:text-red-400'
+          isSaved ? 'text-red-500 hover:text-red-600' : 'text-ink-soft hover:text-red-400'
         } ${busy ? 'opacity-50' : ''}`}
       >
         <Heart className={`h-5 w-5 transition-all ${isSaved ? 'fill-current' : ''}`} />

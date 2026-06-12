@@ -4,12 +4,15 @@ import type { RequestContext } from '../common/types';
 
 @Injectable()
 export class CostEstimateService {
-  async createEstimate(ctx: RequestContext, data: { patientId: string; notes?: string; validUntil?: Date; items: any[] }) {
+  async createEstimate(
+    ctx: RequestContext,
+    data: { patientId: string; notes?: string; validUntil?: Date; items: any[] },
+  ) {
     const db = requireDb(ctx);
     let totalAmount = 0;
     let totalTax = 0;
 
-    data.items.forEach(i => {
+    data.items.forEach((i) => {
       i.total = i.quantity * i.unitPrice;
       totalAmount += i.total;
       totalTax += Math.round((i.total * i.taxRate) / 10000); // taxRate is in basis points
@@ -29,7 +32,7 @@ export class CostEstimateService {
         netAmount,
         createdById: ctx.userId,
         items: {
-          create: data.items.map(i => ({
+          create: data.items.map((i) => ({
             tenantId: ctx.tenantId!,
             catalogId: i.catalogId,
             packageId: i.packageId,
@@ -38,24 +41,24 @@ export class CostEstimateService {
             unitPrice: i.unitPrice,
             taxRate: i.taxRate,
             total: i.total,
-          }))
-        }
+          })),
+        },
       },
       include: {
         items: true,
-      }
+      },
     });
   }
 
   async listEstimates(ctx: RequestContext, patientId?: string) {
     const db = requireDb(ctx);
     return db.costEstimate.findMany({
-      where: { 
+      where: {
         tenantId: ctx.tenantId!,
-        ...(patientId ? { patientId } : {})
+        ...(patientId ? { patientId } : {}),
       },
       orderBy: { createdAt: 'desc' },
-      include: { patient: true }
+      include: { patient: true },
     });
   }
 

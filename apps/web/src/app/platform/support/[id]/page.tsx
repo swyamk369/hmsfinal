@@ -1,52 +1,43 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { formatDistanceToNow } from 'date-fns';
-import { ArrowLeft, UserSquare2, MessageSquare, Send } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Send } from 'lucide-react';
 import Protected from '@/components/Protected';
-import {
-  Button,
-  Card,
-  Input,
-  Select,
-  PageHeader,
-  StatusChip,
-  Badge,
-  ErrorState,
-} from '@/components/ui';
+import { formatDateTime } from '@/lib/format';
+import { Button, Card, Input, Select, PageHeader, StatusChip, Badge, ErrorState } from '@/components/ui';
+import { useToast } from '@/components/toast';
 import { supportApi, type SupportTicket } from '@/lib/support-api';
-import { useAuth } from '@/lib/auth-context';
 
 function TicketDetailInner() {
   const router = useRouter();
   const { id } = useParams() as { id: string };
-  const { setActiveTenant } = useAuth();
-  
+  const toast = useToast();
+
   const [ticket, setTicket] = useState<SupportTicket | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [reply, setReply] = useState('');
   const [busy, setBusy] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     setErr(null);
     try {
       setTicket(await supportApi.getTicket(id));
     } catch (e) {
       setErr((e as Error).message);
     }
-  }
+  }, [id]);
 
   useEffect(() => {
     void load();
-  }, [id]);
+  }, [load]);
 
   async function handleStatusChange(status: string) {
     try {
       await supportApi.updateStatus(id, status);
       await load();
     } catch (e) {
-      alert((e as Error).message);
+      toast.error((e as Error).message);
     }
   }
 
@@ -54,20 +45,14 @@ function TicketDetailInner() {
     if (!reply.trim()) return;
     setBusy(true);
     try {
-      await supportApi.addComment(id, reply, false);
+      await supportApi.addComment(id, reply);
       setReply('');
       await load();
     } catch (e) {
-      alert((e as Error).message);
+      toast.error((e as Error).message);
     } finally {
       setBusy(false);
     }
-  }
-
-  function handleImpersonate() {
-    if (!ticket?.tenantId) return;
-    setActiveTenant(ticket.tenantId);
-    router.push('/dashboard'); // Go to the hospital dashboard as impersonator
   }
 
   if (err) return <ErrorState message={err} />;
@@ -86,12 +71,12 @@ function TicketDetailInner() {
           <Card className="p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h1 className="text-title-lg font-bold text-ink mb-1">{ticket.subject}</h1>
+                <h1 className="text-title-lg font-bold text-ink mb-1">{ticket.title}</h1>
                 <p className="text-body-sm text-ink-soft font-mono">ID: {ticket.id}</p>
               </div>
               <StatusChip status={ticket.status} />
             </div>
-            
+
             <div className="bg-canvas rounded-lg p-4 mb-6">
               <p className="text-body-md text-ink whitespace-pre-wrap">{ticket.description}</p>
             </div>
@@ -99,15 +84,20 @@ function TicketDetailInner() {
             <h3 className="text-title-md font-semibold text-ink mb-4 flex items-center gap-2">
               <MessageSquare className="h-5 w-5" /> Activity
             </h3>
-            
+
             <div className="space-y-4 mb-6">
               {ticket.comments.map((c) => (
-                <div key={c.id} className={`flex ${c.userId === ticket.userId ? 'justify-start' : 'justify-end'}`}>
-                  <div className={`max-w-[80%] rounded-lg p-4 ${c.userId === ticket.userId ? 'bg-canvas text-ink' : 'bg-primary-50 text-primary-900 border border-primary-100'}`}>
+                <div
+                  key={c.id}
+                  className={`flex ${c.authorId === ticket.reporterId ? 'justify-start' : 'justify-end'}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-lg p-4 ${c.authorId === ticket.reporterId ? 'bg-canvas text-ink' : 'bg-primary-50 text-primary-900 border border-primary-100'}`}
+                  >
                     <div className="text-body-md mb-2">{c.content}</div>
                     <div className="text-label-sm text-ink-soft flex items-center gap-2">
-                      {c.isInternal && <Badge variant="neutral">Internal</Badge>}
-                      {formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}
+                      <Badge tone="slate">{c.authorType}</Badge>
+                      {formatDateTime(c.createdAt)}
                     </div>
                   </div>
                 </div>
@@ -118,10 +108,10 @@ function TicketDetailInner() {
             </div>
 
             <div className="flex gap-2">
-              <Input 
-                value={reply} 
-                onChange={(e) => setReply(e.target.value)} 
-                placeholder="Type your reply..." 
+              <Input
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+                placeholder="Type your reply..."
                 className="flex-1"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleReply();
@@ -137,7 +127,7 @@ function TicketDetailInner() {
         <div className="w-full md:w-80 space-y-4">
           <Card className="p-4">
             <h3 className="text-title-md font-semibold text-ink mb-4">Details</h3>
-            
+
             <div className="space-y-3 text-body-sm">
               <div>
                 <div className="text-ink-soft mb-1">Status</div>
@@ -148,42 +138,33 @@ function TicketDetailInner() {
                   <option value="CLOSED">Closed</option>
                 </Select>
               </div>
-              
+
               <div>
                 <div className="text-ink-soft mb-1">Priority</div>
-                <Badge variant={ticket.priority === 'URGENT' || ticket.priority === 'HIGH' ? 'danger' : 'neutral'}>
+                <Badge
+                  tone={
+                    ticket.priority === 'URGENT' || ticket.priority === 'HIGH'
+                      ? 'danger'
+                      : ticket.priority === 'MEDIUM'
+                        ? 'warning'
+                        : 'slate'
+                  }
+                >
                   {ticket.priority}
                 </Badge>
               </div>
 
               <div>
-                <div className="text-ink-soft mb-1">Category</div>
-                <Badge variant="neutral">{ticket.category}</Badge>
+                <div className="text-ink-soft mb-1">Created</div>
+                <div>{formatDateTime(ticket.createdAt)}</div>
               </div>
 
-              <div>
-                <div className="text-ink-soft mb-1">Created</div>
-                <div>{new Date(ticket.createdAt).toLocaleString()}</div>
-              </div>
-              
               <div>
                 <div className="text-ink-soft mb-1">Tenant ID</div>
                 <div className="font-mono">{ticket.tenantId || 'Global'}</div>
               </div>
             </div>
           </Card>
-
-          {ticket.tenantId && (
-            <Card className="p-4 bg-primary-50 border-primary-100">
-              <h3 className="text-title-md font-semibold text-primary-900 mb-2">Tenant Actions</h3>
-              <p className="text-body-sm text-primary-800 mb-4">
-                You can impersonate this hospital to troubleshoot issues directly.
-              </p>
-              <Button onClick={handleImpersonate} className="w-full" icon={UserSquare2}>
-                Impersonate Admin
-              </Button>
-            </Card>
-          )}
         </div>
       </div>
     </>

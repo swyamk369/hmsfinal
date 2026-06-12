@@ -64,15 +64,13 @@ function OrderDetail({ id }: { id: string }) {
       const next: Record<string, Entry> = {};
       for (const item of order.items) {
         const ex = item.results[0];
-        next[item.id] =
-          prev[item.id] ??
-          {
-            value: ex?.value ?? '',
-            unit: ex?.unit ?? '',
-            range: ex?.referenceRange ?? '',
-            flag: ex?.abnormalFlag ?? 'NORMAL',
-            notes: ex?.notes ?? '',
-          };
+        next[item.id] = prev[item.id] ?? {
+          value: ex?.value ?? '',
+          unit: ex?.unit ?? '',
+          range: ex?.referenceRange ?? '',
+          flag: ex?.abnormalFlag ?? 'NORMAL',
+          notes: ex?.notes ?? '',
+        };
       }
       return next;
     });
@@ -122,7 +120,9 @@ function OrderDetail({ id }: { id: string }) {
       toast.error('Enter at least one result value first.');
       return;
     }
-    await run(`Saved ${toSave.length} result${toSave.length === 1 ? '' : 's'}.`, () => labApi.enterResults(t, order!.id, toSave));
+    await run(`Saved ${toSave.length} result${toSave.length === 1 ? '' : 's'}.`, () =>
+      labApi.enterResults(t, order!.id, toSave),
+    );
   }
 
   return (
@@ -147,7 +147,11 @@ function OrderDetail({ id }: { id: string }) {
               </Link>
             )}
             {has('lab.sample.collect') && order.status === 'ORDERED' && (
-              <Button icon={Beaker} loading={busy} onClick={() => run('Sample collected.', () => labApi.collectSample(t, order.id))}>
+              <Button
+                icon={Beaker}
+                loading={busy}
+                onClick={() => run('Sample collected.', () => labApi.collectSample(t, order.id))}
+              >
                 Collect sample
               </Button>
             )}
@@ -157,7 +161,11 @@ function OrderDetail({ id }: { id: string }) {
               </Button>
             )}
             {canVerify && unverifiedCount > 0 && order.status !== 'CANCELLED' && (
-              <Button icon={CheckCircle2} loading={busy} onClick={() => run('Results verified.', () => labApi.verifyAll(t, order.id))}>
+              <Button
+                icon={CheckCircle2}
+                loading={busy}
+                onClick={() => run('Results verified.', () => labApi.verifyAll(t, order.id))}
+              >
                 Verify all &amp; complete
               </Button>
             )}
@@ -182,7 +190,8 @@ function OrderDetail({ id }: { id: string }) {
 
       {order.status === 'ORDERED' && (
         <div className="mb-5 rounded-md border border-line bg-canvas px-4 py-3 text-body-sm text-ink-muted">
-          Collect the sample to start entering results — then fill the whole panel and use <strong>Save all results</strong>.
+          Collect the sample to start entering results — then fill the whole panel and use{' '}
+          <strong>Save all results</strong>.
         </div>
       )}
 
@@ -218,13 +227,23 @@ function OrderDetail({ id }: { id: string }) {
               <TimelineRow label="Ordered" at={order.createdAt} done />
               <TimelineRow
                 label="Sample collected"
-                at={order.items.flatMap((i) => i.samples).map((s) => s.collectedAt).filter(Boolean)[0] ?? null}
+                at={
+                  order.items
+                    .flatMap((i) => i.samples)
+                    .map((s) => s.collectedAt)
+                    .filter(Boolean)[0] ?? null
+                }
                 done={['SAMPLE_COLLECTED', 'PROCESSING', 'COMPLETED'].includes(order.status)}
               />
               <TimelineRow label="Processing" at={null} done={['PROCESSING', 'COMPLETED'].includes(order.status)} />
               <TimelineRow
                 label="Completed / verified"
-                at={order.items.flatMap((i) => i.results).map((r) => r.verifiedAt).filter(Boolean)[0] ?? null}
+                at={
+                  order.items
+                    .flatMap((i) => i.results)
+                    .map((r) => r.verifiedAt)
+                    .filter(Boolean)[0] ?? null
+                }
                 done={order.status === 'COMPLETED'}
               />
             </ul>
@@ -244,7 +263,9 @@ function OrderDetail({ id }: { id: string }) {
 function TimelineRow({ label, at, done }: { label: string; at: string | null; done: boolean }) {
   return (
     <li className="flex items-start gap-3">
-      <span className={done ? 'mt-1 h-2.5 w-2.5 rounded-full bg-success' : 'mt-1 h-2.5 w-2.5 rounded-full bg-slate-300'} />
+      <span
+        className={done ? 'mt-1 h-2.5 w-2.5 rounded-full bg-success' : 'mt-1 h-2.5 w-2.5 rounded-full bg-slate-300'}
+      />
       <div>
         <div className={done ? 'text-ink' : 'text-ink-soft'}>{label}</div>
         {at && <div className="text-label-sm text-ink-soft">{formatDateTime(at)}</div>}
@@ -309,7 +330,8 @@ function ResultCard({
               {existing.referenceRange && <span className="text-ink-soft">Ref: {existing.referenceRange}</span>}
               {verified && (
                 <span className="inline-flex items-center gap-1 text-success-fg">
-                  <CheckCircle2 className="h-4 w-4" /> Verified {existing.verifiedAt ? formatDateTime(existing.verifiedAt) : ''}
+                  <CheckCircle2 className="h-4 w-4" /> Verified{' '}
+                  {existing.verifiedAt ? formatDateTime(existing.verifiedAt) : ''}
                 </span>
               )}
             </div>

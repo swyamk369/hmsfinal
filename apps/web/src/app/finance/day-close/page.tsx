@@ -7,7 +7,20 @@ import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
 import { financeApi, type DayCloseSummary } from '@/lib/finance';
 import { formatDateTime, money } from '@/lib/format';
-import { Button, EmptyState, ErrorState, FormField, Input, PageHeader, ReasonModal, Section, Spinner, StatCard, StatusChip, Textarea } from '@/components/ui';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  FormField,
+  Input,
+  PageHeader,
+  ReasonModal,
+  Section,
+  Spinner,
+  StatCard,
+  StatusChip,
+  Textarea,
+} from '@/components/ui';
 import { FinanceShell } from '../finance-ui';
 
 function DayCloseInner() {
@@ -52,7 +65,15 @@ function DayCloseInner() {
 
   return (
     <>
-      <PageHeader title="Day Close" subtitle="Daily collection, refund, cancellation, and net settlement review" action={<Button variant="ghost" onClick={load}>Refresh</Button>} />
+      <PageHeader
+        title="Day Close"
+        subtitle="Daily collection, refund, cancellation, and net settlement review"
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
+      />
       <FinanceShell>
         <div className="space-y-6">
           <Section title="Business date">
@@ -61,7 +82,9 @@ function DayCloseInner() {
                 <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
               </FormField>
               <div className="flex items-end">
-                <Button variant="dark" onClick={load}>Load</Button>
+                <Button variant="dark" onClick={load}>
+                  Load
+                </Button>
               </div>
             </div>
           </Section>
@@ -107,12 +130,16 @@ function DayCloseInner() {
               <div className="grid gap-6 xl:grid-cols-2">
                 <Section title="Payments">
                   {data.payments.length === 0 ? (
-                    <div className="p-5"><EmptyState title="No payments for this date" /></div>
+                    <div className="p-5">
+                      <EmptyState title="No payments for this date" />
+                    </div>
                   ) : (
                     <ul className="divide-y divide-line">
                       {data.payments.slice(0, 12).map((p: any) => (
                         <li key={p.id} className="flex items-center justify-between px-5 py-3 text-body-sm">
-                          <span className="text-ink">{p.method.replace(/_/g, ' ')} · {formatDateTime(p.createdAt)}</span>
+                          <span className="text-ink">
+                            {p.method.replace(/_/g, ' ')} · {formatDateTime(p.createdAt)}
+                          </span>
                           <span className="font-medium text-success-fg">{money(p.amount)}</span>
                         </li>
                       ))}
@@ -122,11 +149,16 @@ function DayCloseInner() {
 
                 <Section title="Close records">
                   {data.closes.length === 0 ? (
-                    <div className="p-5"><EmptyState title="No close record yet" /></div>
+                    <div className="p-5">
+                      <EmptyState title="No close record yet" />
+                    </div>
                   ) : (
                     <ul className="divide-y divide-line">
                       {data.closes.map((close: any) => (
-                        <li key={close.id} className="flex flex-col gap-2 px-5 py-3 text-body-sm sm:flex-row sm:items-center sm:justify-between">
+                        <li
+                          key={close.id}
+                          className="flex flex-col gap-2 px-5 py-3 text-body-sm sm:flex-row sm:items-center sm:justify-between"
+                        >
                           <div>
                             <div className="font-medium text-ink">{formatDateTime(close.closedAt)}</div>
                             <div className="text-label-sm text-ink-soft">{close.notes ?? 'No notes'}</div>
@@ -181,7 +213,10 @@ function CloseMetric({ label, value }: { label: string; value: number }) {
 
 export default function DayClosePage() {
   return (
-    <Protected requireModule="BILLING" requirePermission={['finance.day_close', 'finance.reconcile', 'reports.financial.read']}>
+    <Protected
+      requireModule="BILLING"
+      requirePermission={['finance.day_close', 'finance.reconcile', 'reports.financial.read']}
+    >
       <DayCloseInner />
     </Protected>
   );

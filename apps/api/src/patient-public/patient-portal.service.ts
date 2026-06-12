@@ -1,8 +1,15 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { platformDb, forTenant } from '@hms/db';
 import { FirebaseService } from '../common/firebase.service';
 import { AuditService } from '../common/audit.service';
 import type { RequestAccessDto } from './dto';
+import { registerPatientAuthUser } from './patient-auth';
 
 /**
  * Phase 22.5 — Patient portal. A SEPARATE auth branch from staff: the patient logs in
@@ -27,18 +34,16 @@ export class PatientPortalService {
     // Prevent staff users from logging into the patient portal
     const staffUser = await platformDb.user.findFirst({ where: { firebaseUid: v.uid } });
     if (staffUser) throw new UnauthorizedException('Staff accounts cannot access the patient portal.');
-    await platformDb.patientAuthUser.upsert({
-      where: { uid: v.uid },
-      create: { uid: v.uid, email: v.email ?? null, status: 'ACTIVE', lastLoginAt: new Date() },
-      update: { lastLoginAt: new Date(), email: v.email ?? undefined },
-    });
+    await registerPatientAuthUser(v);
     return v;
   }
 
   /** Enforce uid ↔ tenant ↔ patient access. Throws 403 on any mismatch (URL tampering). */
   private async assertAccess(uid: string, tenantId: string): Promise<string> {
     if (!tenantId) throw new ForbiddenException('Select a hospital to continue.');
-    const access = await platformDb.patientPortalAccess.findFirst({ where: { uid, tenantId, accessStatus: 'ACTIVE' as any } });
+    const access = await platformDb.patientPortalAccess.findFirst({
+      where: { uid, tenantId, accessStatus: 'ACTIVE' as any },
+    });
     if (!access) throw new ForbiddenException("You don't have access to this hospital's records.");
     return access.patientId;
   }
@@ -46,7 +51,13 @@ export class PatientPortalService {
   async me(authHeader?: string) {
     const { uid } = await this.authUid(authHeader);
     const u = await platformDb.patientAuthUser.findUnique({ where: { uid } });
-    return { uid, email: u?.email ?? null, displayName: u?.displayName ?? null, mobile: u?.mobile ?? null, profilePhotoUrl: u?.profilePhotoUrl ?? null };
+    return {
+      uid,
+      email: u?.email ?? null,
+      displayName: u?.displayName ?? null,
+      mobile: u?.mobile ?? null,
+      profilePhotoUrl: u?.profilePhotoUrl ?? null,
+    };
   }
 
   async linkedHospitals(authHeader?: string) {
@@ -54,7 +65,10 @@ export class PatientPortalService {
     const access = await platformDb.patientPortalAccess.findMany({ where: { uid, accessStatus: 'ACTIVE' as any } });
     const tenantIds = [...new Set(access.map((a) => a.tenantId))];
     const hps = tenantIds.length
-      ? await platformDb.publicHospitalProfile.findMany({ where: { tenantId: { in: tenantIds } }, select: { tenantId: true, hospitalDisplayName: true, logoUrl: true, city: true } })
+      ? await platformDb.publicHospitalProfile.findMany({
+          where: { tenantId: { in: tenantIds } },
+          select: { tenantId: true, hospitalDisplayName: true, logoUrl: true, city: true },
+        })
       : [];
     const byTenant = new Map(hps.map((h) => [h.tenantId, h]));
     return access.map((a) => ({
@@ -73,7 +87,10 @@ export class PatientPortalService {
     const now = new Date();
     const [patient, upcoming, recentBill, recentDoc, hp] = await Promise.all([
       db.patient.findFirst({ where: { id: patientId }, select: { fullName: true, mrn: true } }),
-      db.appointment.findFirst({ where: { patientId, scheduledAt: { gte: now }, status: { notIn: ['CANCELLED'] as any } }, orderBy: { scheduledAt: 'asc' } }),
+      db.appointment.findFirst({
+        where: { patientId, scheduledAt: { gte: now }, status: { notIn: ['CANCELLED'] as any } },
+        orderBy: { scheduledAt: 'asc' },
+      }),
       db.bill.findFirst({ where: { patientId }, orderBy: { createdAt: 'desc' }, include: { payments: true } }),
       db.patientDocument.findFirst({ where: { patientId, visibleToPatient: true }, orderBy: { createdAt: 'desc' } }),
       platformDb.publicHospitalProfile.findFirst({ where: { tenantId } }),
@@ -87,19 +104,43 @@ export class PatientPortalService {
     const db = forTenant(tenantId);
     const appts = await db.appointment.findMany({ where: { patientId }, orderBy: { scheduledAt: 'desc' }, take: 100 });
     const docIds = [...new Set(appts.map((a: any) => a.providerId).filter(Boolean))];
-    const docs = docIds.length ? await db.provider.findMany({ where: { id: { in: docIds } }, include: { user: { select: { fullName: true } } } }) : [];
+    const docs = docIds.length
+      ? await db.provider.findMany({ where: { id: { in: docIds } }, include: { user: { select: { fullName: true } } } })
+      : [];
     const byDoc = new Map(docs.map((d: any) => [d.id, d.user?.fullName ?? null]));
-    return appts.map((a: any) => ({ id: a.id, scheduledAt: a.scheduledAt, status: a.status, reason: a.reason, consultationType: a.consultationType, source: a.source, doctorName: a.providerId ? byDoc.get(a.providerId) ?? null : null }));
+    return appts.map((a: any) => ({
+      id: a.id,
+      scheduledAt: a.scheduledAt,
+      status: a.status,
+      reason: a.reason,
+      consultationType: a.consultationType,
+      source: a.source,
+      doctorName: a.providerId ? (byDoc.get(a.providerId) ?? null) : null,
+    }));
   }
 
   async bills(authHeader: string | undefined, tenantId: string) {
     const { uid } = await this.authUid(authHeader);
     const patientId = await this.assertAccess(uid, tenantId);
     const db = forTenant(tenantId);
-    const bills = await db.bill.findMany({ where: { patientId }, include: { payments: true, items: true }, orderBy: { createdAt: 'desc' }, take: 100 });
+    const bills = await db.bill.findMany({
+      where: { patientId },
+      include: { payments: true, items: true },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
     return bills.map((b: any) => {
       const paid = b.payments.reduce((s: number, p: any) => s + p.amount, 0);
-      return { id: b.id, billNumber: b.billNumber, netAmount: b.netAmount, status: b.status, createdAt: b.createdAt, paid, due: Math.max(0, b.netAmount - paid), items: b.items.map((i: any) => ({ name: i.name, quantity: i.quantity, total: i.total })) };
+      return {
+        id: b.id,
+        billNumber: b.billNumber,
+        netAmount: b.netAmount,
+        status: b.status,
+        createdAt: b.createdAt,
+        paid,
+        due: Math.max(0, b.netAmount - paid),
+        items: b.items.map((i: any) => ({ name: i.name, quantity: i.quantity, total: i.total })),
+      };
     });
   }
 
@@ -107,8 +148,20 @@ export class PatientPortalService {
     const { uid } = await this.authUid(authHeader);
     const patientId = await this.assertAccess(uid, tenantId);
     const db = forTenant(tenantId);
-    const docs = await db.patientDocument.findMany({ where: { patientId, visibleToPatient: true }, orderBy: { createdAt: 'desc' }, take: 100 });
-    return docs.map((d: any) => ({ id: d.id, title: d.title, category: d.category, fileName: d.fileName, documentUrl: d.documentUrl, mimeType: d.mimeType, publishedAt: d.publishedAt ?? d.createdAt }));
+    const docs = await db.patientDocument.findMany({
+      where: { patientId, visibleToPatient: true },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+    return docs.map((d: any) => ({
+      id: d.id,
+      title: d.title,
+      category: d.category,
+      fileName: d.fileName,
+      documentUrl: d.documentUrl,
+      mimeType: d.mimeType,
+      publishedAt: d.publishedAt ?? d.createdAt,
+    }));
   }
 
   async reports(authHeader: string | undefined, tenantId: string) {
@@ -124,7 +177,15 @@ export class PatientPortalService {
     return orders.map((o: any) => ({
       id: o.id,
       createdAt: o.createdAt,
-      tests: o.items.map((i: any) => ({ testName: i.testName, results: i.results.map((r: any) => ({ value: r.value, unit: r.unit, referenceRange: r.referenceRange, abnormalFlag: r.abnormalFlag })) })),
+      tests: o.items.map((i: any) => ({
+        testName: i.testName,
+        results: i.results.map((r: any) => ({
+          value: r.value,
+          unit: r.unit,
+          referenceRange: r.referenceRange,
+          abnormalFlag: r.abnormalFlag,
+        })),
+      })),
     }));
   }
 
@@ -139,8 +200,15 @@ export class PatientPortalService {
     return {
       login: { displayName: login?.displayName ?? null, email: login?.email ?? null, mobile: login?.mobile ?? null },
       hospital: {
-        mrn: patient.mrn, fullName: patient.fullName, dob: patient.dob, sex: patient.sex, phone: patient.phone, email: patient.email, address: patient.address,
-        emergencyContactName: patient.emergencyContactName, emergencyContactPhone: patient.emergencyContactPhone,
+        mrn: patient.mrn,
+        fullName: patient.fullName,
+        dob: patient.dob,
+        sex: patient.sex,
+        phone: patient.phone,
+        email: patient.email,
+        address: patient.address,
+        emergencyContactName: patient.emergencyContactName,
+        emergencyContactPhone: patient.emergencyContactPhone,
       },
     };
   }
@@ -159,7 +227,13 @@ export class PatientPortalService {
       id: p.id,
       status: p.status,
       date: p.finalizedAt ?? p.createdAt,
-      items: p.items.map((i: any) => ({ drugName: i.drugName, dosage: i.dosage, frequency: i.frequency, duration: i.duration, instructions: i.instructions })),
+      items: p.items.map((i: any) => ({
+        drugName: i.drugName,
+        dosage: i.dosage,
+        frequency: i.frequency,
+        duration: i.duration,
+        instructions: i.instructions,
+      })),
     }));
   }
 
@@ -170,8 +244,16 @@ export class PatientPortalService {
     const db = forTenant(tenantId);
     const doc = await db.patientDocument.findFirst({ where: { id: docId, patientId, visibleToPatient: true } });
     if (!doc) throw new NotFoundException('Document not found');
-    if (!doc.patientViewedAt) await db.patientDocument.update({ where: { id: docId }, data: { patientViewedAt: new Date() } });
-    await this.audit.log(db, { tenantId, actorId: null, action: 'patient.document_view', entity: 'patient_document', entityId: docId, metadata: { uid } });
+    if (!doc.patientViewedAt)
+      await db.patientDocument.update({ where: { id: docId }, data: { patientViewedAt: new Date() } });
+    await this.audit.log(db, {
+      tenantId,
+      actorId: null,
+      action: 'patient.document_view',
+      entity: 'patient_document',
+      entityId: docId,
+      metadata: { uid },
+    });
     return { ok: true };
   }
 
@@ -189,18 +271,49 @@ export class PatientPortalService {
     if (!ors.length) throw new BadRequestException('Enter your MRN or the mobile number registered with the hospital.');
 
     let patient = await db.patient.findFirst({ where: { deletedAt: null, OR: ors } });
-    if (patient && dto.dob && patient.dob && new Date(dto.dob).toISOString().slice(0, 10) !== new Date(patient.dob).toISOString().slice(0, 10)) patient = null;
+    if (
+      patient &&
+      dto.dob &&
+      patient.dob &&
+      new Date(dto.dob).toISOString().slice(0, 10) !== new Date(patient.dob).toISOString().slice(0, 10)
+    )
+      patient = null;
     if (!patient) return { status: 'no_match' as const };
 
-    const existing = await platformDb.patientPortalAccess.findFirst({ where: { tenantId: dto.tenantId, uid, patientId: patient.id } });
+    const existing = await platformDb.patientPortalAccess.findFirst({
+      where: { tenantId: dto.tenantId, uid, patientId: patient.id },
+    });
     if (existing?.accessStatus === 'ACTIVE') return { status: 'already_linked' as const };
-    const hp = await platformDb.publicHospitalProfile.findFirst({ where: { tenantId: dto.tenantId }, select: { hospitalDisplayName: true } });
+    const hp = await platformDb.publicHospitalProfile.findFirst({
+      where: { tenantId: dto.tenantId },
+      select: { hospitalDisplayName: true },
+    });
     if (existing) {
-      await platformDb.patientPortalAccess.update({ where: { id: existing.id }, data: { accessStatus: 'PENDING', verificationStatus: 'PENDING', email: email ?? existing.email } });
+      await platformDb.patientPortalAccess.update({
+        where: { id: existing.id },
+        data: { accessStatus: 'PENDING', verificationStatus: 'PENDING', email: email ?? existing.email },
+      });
     } else {
-      await platformDb.patientPortalAccess.create({ data: { tenantId: dto.tenantId, uid, patientId: patient.id, email, hospitalDisplayName: hp?.hospitalDisplayName, accessStatus: 'PENDING', verificationStatus: 'PENDING' } });
+      await platformDb.patientPortalAccess.create({
+        data: {
+          tenantId: dto.tenantId,
+          uid,
+          patientId: patient.id,
+          email,
+          hospitalDisplayName: hp?.hospitalDisplayName,
+          accessStatus: 'PENDING',
+          verificationStatus: 'PENDING',
+        },
+      });
     }
-    await this.audit.log(db, { tenantId: dto.tenantId, actorId: null, action: 'patient_portal_access.requested', entity: 'patient_portal_access', entityId: patient.id, metadata: { uid } });
+    await this.audit.log(db, {
+      tenantId: dto.tenantId,
+      actorId: null,
+      action: 'patient_portal_access.requested',
+      entity: 'patient_portal_access',
+      entityId: patient.id,
+      metadata: { uid },
+    });
     return { status: 'requested' as const };
   }
 }

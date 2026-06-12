@@ -3,7 +3,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { AlertTriangle, ArrowLeft, ArrowRight, Pencil, Archive, Plus, FileText, Upload, ExternalLink, Wand2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  Pencil,
+  Archive,
+  Plus,
+  FileText,
+  Upload,
+  ExternalLink,
+  Wand2,
+} from 'lucide-react';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
@@ -405,12 +416,17 @@ function PatientDetail({ id }: { id: string }) {
           ) : (
             <ul className="divide-y divide-line">
               {data.documents.map((doc) => (
-                <li key={doc.id} className="flex flex-col gap-3 px-5 py-4 md:flex-row md:items-center md:justify-between">
+                <li
+                  key={doc.id}
+                  className="flex flex-col gap-3 px-5 py-4 md:flex-row md:items-center md:justify-between"
+                >
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <FileText className="h-4 w-4 text-ink-soft" />
                       <span className="font-medium text-ink">{doc.title}</span>
-                      <Badge tone={doc.source === 'GENERATED' ? 'primary' : 'slate'}>{doc.category.replace(/_/g, ' ')}</Badge>
+                      <Badge tone={doc.source === 'GENERATED' ? 'primary' : 'slate'}>
+                        {doc.category.replace(/_/g, ' ')}
+                      </Badge>
                     </div>
                     <div className="mt-1 text-label-sm text-ink-soft">
                       {[doc.fileName, doc.mimeType, formatDateTime(doc.createdAt)].filter(Boolean).join(' · ')}
@@ -510,7 +526,9 @@ function JourneyStrip({ journey }: { journey: PatientJourney }) {
             <StatusChip status={journey.current.status} />
           </div>
           <div className="mt-3 text-title-lg text-ink">{journey.current.label}</div>
-          {journey.current.location && <div className="mt-1 text-body-sm text-ink-muted">{journey.current.location}</div>}
+          {journey.current.location && (
+            <div className="mt-1 text-body-sm text-ink-muted">{journey.current.location}</div>
+          )}
           <Link
             href={journey.current.href}
             className="mt-3 inline-flex items-center gap-1.5 text-body-sm font-medium text-primary hover:underline"
@@ -521,14 +539,24 @@ function JourneyStrip({ journey }: { journey: PatientJourney }) {
         <div className="grid gap-3 sm:grid-cols-2">
           <JourneyMetric label="Lab pending" value={journey.pendingLabOrders.length} />
           <JourneyMetric label="Pharmacy pending" value={journey.pendingPrescriptions.length} />
-          <JourneyMetric label="Pending charges" value={(journey.pendingCharges ?? []).length} hint={pendingChargeTotal ? money(pendingChargeTotal) : undefined} />
-          <JourneyMetric label="Open bills" value={journey.openBills.length} hint={billTotal ? money(billTotal) : undefined} />
+          <JourneyMetric
+            label="Pending charges"
+            value={(journey.pendingCharges ?? []).length}
+            hint={pendingChargeTotal ? money(pendingChargeTotal) : undefined}
+          />
+          <JourneyMetric
+            label="Open bills"
+            value={journey.openBills.length}
+            hint={billTotal ? money(billTotal) : undefined}
+          />
           <JourneyMetric label="Documents" value={journey.documentCount} />
         </div>
       </div>
       <div className="border-t border-line px-5 py-4">
         {journey.blockers.length === 0 ? (
-          <p className="text-body-sm text-ink-muted">No active blockers. Keep documents and timeline up to date as care continues.</p>
+          <p className="text-body-sm text-ink-muted">
+            No active blockers. Keep documents and timeline up to date as care continues.
+          </p>
         ) : (
           <div className="grid gap-2 md:grid-cols-2">
             {journey.blockers.map((b) => (
@@ -774,15 +802,7 @@ function AddSubModal({
   );
 }
 
-const DOCUMENT_CATEGORIES = [
-  'CLINICAL',
-  'BILLING',
-  'INSURANCE',
-  'CONSENT',
-  'LAB',
-  'DISCHARGE',
-  'OTHER',
-] as const;
+const DOCUMENT_CATEGORIES = ['CLINICAL', 'BILLING', 'INSURANCE', 'CONSENT', 'LAB', 'DISCHARGE', 'OTHER'] as const;
 
 function DocumentModal({
   open,
@@ -872,7 +892,11 @@ function DocumentModal({
       }
     >
       <div className="space-y-4">
-        {error && <div className="rounded-md border border-danger/30 bg-danger-bg px-3 py-2 text-body-sm text-danger-fg">{error}</div>}
+        {error && (
+          <div className="rounded-md border border-danger/30 bg-danger-bg px-3 py-2 text-body-sm text-danger-fg">
+            {error}
+          </div>
+        )}
         <FormField label="Title" required>
           <Input
             value={title}
@@ -882,7 +906,10 @@ function DocumentModal({
           />
         </FormField>
         <FormField label="Category">
-          <Select value={category} onChange={(e) => setCategory(e.target.value as (typeof DOCUMENT_CATEGORIES)[number])}>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value as (typeof DOCUMENT_CATEGORIES)[number])}
+          >
             {DOCUMENT_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {c.replace(/_/g, ' ')}

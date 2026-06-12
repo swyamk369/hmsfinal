@@ -13,7 +13,15 @@ import { useToast } from '@/components/toast';
 import { Badge, Button, EmptyState, ErrorState, PageHeader, Section, Spinner, StatCard } from '@/components/ui';
 import { FinanceShell, FINANCE_PERMS } from '../finance-ui';
 
-function LeakageTable({ category, canAccrue, onAccrued }: { category: LeakageCategory; canAccrue: boolean; onAccrued: () => Promise<void> }) {
+function LeakageTable({
+  category,
+  canAccrue,
+  onAccrued,
+}: {
+  category: LeakageCategory;
+  canAccrue: boolean;
+  onAccrued: () => Promise<void>;
+}) {
   const { activeTenantId } = useAuth();
   const toast = useToast();
   const [busy, setBusy] = useState<string | null>(null);
@@ -54,14 +62,24 @@ function LeakageTable({ category, canAccrue, onAccrued }: { category: LeakageCat
                 </td>
                 <td className="px-5 py-3 text-ink-muted">{row.label}</td>
                 <td className="px-5 py-3 text-ink-soft">{formatDateTime(row.occurredAt)}</td>
-                <td className="px-5 py-3 text-right font-medium text-ink">{row.estimated != null ? money(row.estimated) : '—'}</td>
+                <td className="px-5 py-3 text-right font-medium text-ink">
+                  {row.estimated != null ? money(row.estimated) : '—'}
+                </td>
                 <td className="px-5 py-3 text-right">
                   {category.actionable && canAccrue && row.admissionId ? (
-                    <Button size="sm" variant="ghost" loading={busy === row.admissionId} onClick={() => accrue(row.admissionId!)}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      loading={busy === row.admissionId}
+                      onClick={() => accrue(row.admissionId!)}
+                    >
                       Accrue
                     </Button>
                   ) : (
-                    <Link href={row.href} className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
+                    <Link
+                      href={row.href}
+                      className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline"
+                    >
                       Open <ArrowUpRight className="h-3.5 w-3.5" />
                     </Link>
                   )}
@@ -104,13 +122,22 @@ function RevenueLeakageInner() {
       <PageHeader
         title="Revenue Leakage"
         subtitle="Clinical events that should have been billed but weren't — the #1 source of lost hospital revenue"
-        action={<Button variant="ghost" onClick={load}>Refresh</Button>}
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
       />
       <FinanceShell>
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard label="Open issues" value={report?.totalCount ?? '—'} icon={AlertTriangle} />
-            <StatCard label="Est. recoverable" value={report ? money(report.estimatedRecoverable) : '—'} icon={IndianRupee} hint="Bed-day estimates only" />
+            <StatCard
+              label="Est. recoverable"
+              value={report ? money(report.estimatedRecoverable) : '—'}
+              icon={IndianRupee}
+              hint="Bed-day estimates only"
+            />
             <StatCard label="Categories affected" value={nonEmpty.length} />
             <StatCard label="Last scanned" value={report ? formatDateTime(report.generatedAt) : '—'} />
           </div>
@@ -118,7 +145,10 @@ function RevenueLeakageInner() {
           {!report ? (
             <Spinner label="Scanning for unbilled clinical events..." />
           ) : nonEmpty.length === 0 ? (
-            <EmptyState title="No revenue leakage detected" hint="Every completed lab order, dispense, consultation, and admitted bed-day has a matching charge." />
+            <EmptyState
+              title="No revenue leakage detected"
+              hint="Every completed lab order, dispense, consultation, and admitted bed-day has a matching charge."
+            />
           ) : (
             <>
               <div className="flex flex-wrap gap-2">

@@ -47,8 +47,16 @@ function FinancialReportPageInner() {
     <>
       <PageHeader
         title="Financial Report"
-        subtitle={data ? `Billing, payments, refunds, receivables, and insurance · updated ${formatDateTime(data.generatedAt)}` : 'Billing, payments, refunds, receivables, and insurance'}
-        action={<Button variant="ghost" onClick={load}>Refresh</Button>}
+        subtitle={
+          data
+            ? `Billing, payments, refunds, receivables, and insurance · updated ${formatDateTime(data.generatedAt)}`
+            : 'Billing, payments, refunds, receivables, and insurance'
+        }
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
       />
 
       <div className="space-y-6">
@@ -99,7 +107,12 @@ function FinancialReportPageInner() {
                 { label: 'Collected', value: money(data.totals.totalCollected ?? 0), icon: CreditCard },
                 { label: 'Outstanding', value: money(data.totals.outstandingReceivables ?? 0), icon: Banknote },
                 { label: 'Refunds', value: money(data.totals.refunds ?? 0), icon: FileText },
-                { label: 'Insurance approved', value: money(data.totals.insuranceApproved ?? 0), hint: `${money(data.totals.insuranceSettled ?? 0)} settled`, icon: ShieldCheck },
+                {
+                  label: 'Insurance approved',
+                  value: money(data.totals.insuranceApproved ?? 0),
+                  hint: `${money(data.totals.insuranceSettled ?? 0)} settled`,
+                  icon: ShieldCheck,
+                },
               ]}
             />
 
@@ -149,7 +162,11 @@ function FinancialReportPageInner() {
 
 export default function FinancialReportPage() {
   return (
-    <Protected requireModule="REPORTS" allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER', 'ACCOUNTANT', 'BILLING']} requirePermission={['reports.read', 'reports.financial.read', 'bill.read']}>
+    <Protected
+      requireModule="REPORTS"
+      allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER', 'ACCOUNTANT', 'BILLING']}
+      requirePermission={['reports.read', 'reports.financial.read', 'bill.read']}
+    >
       <FinancialReportPageInner />
     </Protected>
   );

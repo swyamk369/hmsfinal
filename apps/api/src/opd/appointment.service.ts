@@ -16,7 +16,10 @@ const PATIENT_SELECT = { select: { id: true, fullName: true, mrn: true, phone: t
 
 @Injectable()
 export class AppointmentService {
-  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly notifications?: NotificationsService,
+  ) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -87,7 +90,10 @@ export class AppointmentService {
 
   private async providerUserIds(s: Scope, providerId?: string | null) {
     if (!providerId) return [];
-    const provider = await s.db.provider.findFirst({ where: { id: providerId, active: true }, select: { userId: true } });
+    const provider = await s.db.provider.findFirst({
+      where: { id: providerId, active: true },
+      select: { userId: true },
+    });
     return provider?.userId ? [provider.userId] : [];
   }
 

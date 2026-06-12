@@ -73,7 +73,7 @@ const NAV: { href: string; label: string; icon: typeof LayoutDashboard }[] = [
 ];
 
 // Smaller set for the mobile bottom tab bar.
-const MOBILE_NAV = [NAV[0], NAV[1], NAV[2], NAV[4], NAV[5]];
+const MOBILE_NAV = [NAV[0], NAV[1], NAV[2], NAV[4], NAV[5], { ...NAV[10], label: 'Help' }];
 
 function titleFor(pathname: string): string {
   return NAV.find((n) => pathname.startsWith(n.href))?.label ?? 'Patient Portal';
@@ -158,7 +158,19 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
   }
 
   const current = hospitals.find((h) => h.tenantId === tenantId) ?? null;
-  const ctx: PortalCtx = { ready, me, hospitals, tenantId, current, unreadCount, setTenantId, refresh: load, refreshNotifications: loadNotifications, logout, openLinkModal: () => setShowLink(true) };
+  const ctx: PortalCtx = {
+    ready,
+    me,
+    hospitals,
+    tenantId,
+    current,
+    unreadCount,
+    setTenantId,
+    refresh: load,
+    refreshNotifications: loadNotifications,
+    logout,
+    openLinkModal: () => setShowLink(true),
+  };
 
   if (!ready) {
     return (
@@ -208,7 +220,10 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
         {mobileNav && (
           <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setMobileNav(false)}>
             <div className="absolute inset-0 bg-black/40" />
-            <aside className="absolute inset-y-0 left-0 flex w-72 flex-col bg-surface px-4 py-5" onClick={(e) => e.stopPropagation()}>
+            <aside
+              className="absolute inset-y-0 left-0 flex w-72 flex-col bg-surface px-4 py-5"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="mb-2 flex items-center justify-between">
                 <SidebarHeader me={me} />
                 <button onClick={() => setMobileNav(false)} className="text-ink-soft hover:text-ink">
@@ -216,7 +231,10 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
               {NavList}
-              <Link href="/doctors" className="mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90">
+              <Link
+                href="/doctors"
+                className="mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90"
+              >
                 <Plus className="h-4 w-4" /> New Booking
               </Link>
             </aside>
@@ -247,7 +265,23 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
                     ))}
                   </select>
                 )}
-                <Link href="/patient/notifications" className="relative rounded-md p-2 text-ink-muted hover:bg-canvas hover:text-ink" aria-label="Notifications">
+                <Link
+                  href="/patient/help"
+                  className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-body-sm font-medium ${
+                    pathname.startsWith('/patient/help')
+                      ? 'border-primary/30 bg-primary-50 text-primary-700'
+                      : 'border-line text-ink-muted hover:bg-canvas hover:text-ink'
+                  }`}
+                  aria-label="Help and support"
+                >
+                  <HelpCircle className="h-4 w-4" />
+                  <span className="hidden sm:inline">Support</span>
+                </Link>
+                <Link
+                  href="/patient/notifications"
+                  className="relative rounded-md p-2 text-ink-muted hover:bg-canvas hover:text-ink"
+                  aria-label="Notifications"
+                >
                   <Bell className="h-5 w-5" />
                   {unreadCount > 0 && (
                     <span className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white">
@@ -255,7 +289,10 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
                     </span>
                   )}
                 </Link>
-                <button onClick={logout} className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-body-sm font-medium text-ink hover:bg-canvas">
+                <button
+                  onClick={logout}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-body-sm font-medium text-ink hover:bg-canvas"
+                >
                   <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Sign out</span>
                 </button>
               </div>
@@ -263,17 +300,25 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           </header>
 
           <main className="mx-auto max-w-5xl px-4 pb-24 pt-6 sm:px-6 lg:pb-10">
-            {err && <div className="mb-4 rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">{err}</div>}
+            {err && (
+              <div className="mb-4 rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">
+                {err}
+              </div>
+            )}
             {children}
           </main>
         </div>
 
         {/* Mobile bottom tab bar */}
-        <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface lg:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-line bg-surface lg:hidden">
           {MOBILE_NAV.map(({ href, label, icon: Icon }) => {
             const active = pathname.startsWith(href);
             return (
-              <Link key={href} href={href} className={`flex flex-col items-center gap-0.5 py-2 text-label-sm ${active ? 'text-primary' : 'text-ink-soft'}`}>
+              <Link
+                key={href}
+                href={href}
+                className={`flex flex-col items-center gap-0.5 py-2 text-label-sm ${active ? 'text-primary' : 'text-ink-soft'}`}
+              >
                 <Icon className="h-5 w-5" /> {label}
               </Link>
             );
@@ -324,8 +369,13 @@ function LinkHospitalModal({ onClose, onLinked }: { onClose: () => void; onLinke
     setBusy(true);
     setMsg(null);
     try {
-      const out = await portalApi.requestAccess({ tenantId: picked.tenantId, mrn: mrn.trim() || undefined, phone: phone.trim() || undefined });
-      if (out.status === 'requested') setMsg({ tone: 'ok', text: 'Request sent. The hospital will review and link your records.' });
+      const out = await portalApi.requestAccess({
+        tenantId: picked.tenantId,
+        mrn: mrn.trim() || undefined,
+        phone: phone.trim() || undefined,
+      });
+      if (out.status === 'requested')
+        setMsg({ tone: 'ok', text: 'Request sent. The hospital will review and link your records.' });
       else if (out.status === 'already_linked') {
         setMsg({ tone: 'ok', text: 'You are already linked to this hospital.' });
         onLinked();
@@ -339,47 +389,102 @@ function LinkHospitalModal({ onClose, onLinked }: { onClose: () => void; onLinke
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl border border-line bg-surface p-6" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="w-full max-w-md rounded-xl border border-line bg-surface p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="mb-1 text-title-lg font-semibold text-ink">Link an existing hospital record</h2>
-        <p className="mb-4 text-body-sm text-ink-muted">Find a hospital where you already have records, then verify with your MRN or registered mobile.</p>
+        <p className="mb-4 text-body-sm text-ink-muted">
+          Find a hospital where you already have records, then verify with your MRN or registered mobile.
+        </p>
 
         {!picked ? (
           <>
-            <form onSubmit={(e) => { e.preventDefault(); search(); }} className="flex gap-2">
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Hospital name or city" className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none" />
-              <button type="submit" className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 font-medium text-white"><Search className="h-4 w-4" /></button>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                search();
+              }}
+              className="flex gap-2"
+            >
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Hospital name or city"
+                className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-2 font-medium text-white"
+              >
+                <Search className="h-4 w-4" />
+              </button>
             </form>
             <div className="mt-3 max-h-56 space-y-1.5 overflow-y-auto">
               {results?.map((h) => (
-                <button key={h.id} onClick={() => setPicked(h)} className="flex w-full items-center gap-2 rounded-lg border border-line p-2.5 text-left hover:border-primary">
+                <button
+                  key={h.id}
+                  onClick={() => setPicked(h)}
+                  className="flex w-full items-center gap-2 rounded-lg border border-line p-2.5 text-left hover:border-primary"
+                >
                   <Building2 className="h-4 w-4 text-primary" />
-                  <span><span className="font-medium text-ink">{h.hospitalName}</span>{h.location && <span className="block text-label-sm text-ink-soft">{h.location}</span>}</span>
+                  <span>
+                    <span className="font-medium text-ink">{h.hospitalName}</span>
+                    {h.location && <span className="block text-label-sm text-ink-soft">{h.location}</span>}
+                  </span>
                 </button>
               ))}
-              {results && results.length === 0 && <p className="py-3 text-center text-body-sm text-ink-soft">No hospitals found.</p>}
+              {results && results.length === 0 && (
+                <p className="py-3 text-center text-body-sm text-ink-soft">No hospitals found.</p>
+              )}
             </div>
           </>
         ) : (
           <>
             <div className="mb-3 flex items-center gap-2 rounded-lg border border-line bg-canvas p-2.5">
-              <Building2 className="h-4 w-4 text-primary" /> <span className="font-medium text-ink">{picked.hospitalName}</span>
-              <button onClick={() => { setPicked(null); setMsg(null); }} className="ml-auto text-label-sm text-primary">Change</button>
+              <Building2 className="h-4 w-4 text-primary" />{' '}
+              <span className="font-medium text-ink">{picked.hospitalName}</span>
+              <button
+                onClick={() => {
+                  setPicked(null);
+                  setMsg(null);
+                }}
+                className="ml-auto text-label-sm text-primary"
+              >
+                Change
+              </button>
             </div>
             <label className="mb-1 block text-body-sm font-medium text-ink">MRN (if known)</label>
-            <input value={mrn} onChange={(e) => setMrn(e.target.value)} className="mb-3 w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none" />
+            <input
+              value={mrn}
+              onChange={(e) => setMrn(e.target.value)}
+              className="mb-3 w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none"
+            />
             <label className="mb-1 block text-body-sm font-medium text-ink">Registered mobile</label>
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none" />
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none"
+            />
             {msg && (
-              <div className={`mt-3 flex items-start gap-2 rounded-lg px-3 py-2 text-body-sm ${msg.tone === 'ok' ? 'bg-success-bg text-success-fg' : 'bg-warning-bg text-warning-fg'}`}>
+              <div
+                className={`mt-3 flex items-start gap-2 rounded-lg px-3 py-2 text-body-sm ${msg.tone === 'ok' ? 'bg-success-bg text-success-fg' : 'bg-warning-bg text-warning-fg'}`}
+              >
                 {msg.tone === 'ok' ? <CheckCircle2 className="mt-0.5 h-4 w-4" /> : null} {msg.text}
               </div>
             )}
-            <button onClick={submit} disabled={busy || (!mrn.trim() && !phone.trim())} className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90 disabled:opacity-50">
+            <button
+              onClick={submit}
+              disabled={busy || (!mrn.trim() && !phone.trim())}
+              className="mt-4 w-full rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90 disabled:opacity-50"
+            >
               {busy ? 'Sending…' : 'Request access'}
             </button>
           </>
         )}
-        <button onClick={onClose} className="mt-3 w-full text-body-sm font-medium text-ink-muted hover:text-ink">Close</button>
+        <button onClick={onClose} className="mt-3 w-full text-body-sm font-medium text-ink-muted hover:text-ink">
+          Close
+        </button>
       </div>
     </div>
   );

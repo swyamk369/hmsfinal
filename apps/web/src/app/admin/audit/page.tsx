@@ -118,7 +118,12 @@ function AuditInner() {
             </thead>
             <tbody>
               {data.rows.map((r: AuditRow) => (
-                <Row key={r.id} row={r} expanded={expanded === r.id} onToggle={() => setExpanded(expanded === r.id ? null : r.id)} />
+                <Row
+                  key={r.id}
+                  row={r}
+                  expanded={expanded === r.id}
+                  onToggle={() => setExpanded(expanded === r.id ? null : r.id)}
+                />
               ))}
             </tbody>
           </table>
@@ -147,7 +152,7 @@ function Row({ row, expanded, onToggle }: { row: AuditRow; expanded: boolean; on
     <>
       <tr className="cursor-pointer border-b border-line last:border-0 hover:bg-surface-muted" onClick={onToggle}>
         <td className="px-3 py-2.5 text-ink-soft">
-          {hasMeta ? (expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />) : null}
+          {hasMeta ? expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" /> : null}
         </td>
         <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">{formatWhen(row.createdAt)}</td>
         <td className="px-4 py-2.5">{row.actor ? (row.actor.fullName ?? row.actor.email) : '—'}</td>

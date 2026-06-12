@@ -16,7 +16,9 @@ function AccountsInner() {
   const { activeTenantId, profile } = useAuth();
   const t = activeTenantId!;
   const membership = getActiveMembership(profile, activeTenantId);
-  const hasInsurance = Boolean(membership?.modules.includes('INSURANCE') && membership?.permissions.includes('insurance.read'));
+  const hasInsurance = Boolean(
+    membership?.modules.includes('INSURANCE') && membership?.permissions.includes('insurance.read'),
+  );
   const [billing, setBilling] = useState<BillingStats | null>(null);
   const [receivables, setReceivables] = useState<InsuranceReceivables | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -41,7 +43,10 @@ function AccountsInner() {
   }, [load]);
 
   const openClaims = useMemo(
-    () => (receivables?.claims ?? []).filter((c) => ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'PARTIALLY_APPROVED'].includes(c.status)),
+    () =>
+      (receivables?.claims ?? []).filter((c) =>
+        ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'PARTIALLY_APPROVED'].includes(c.status),
+      ),
     [receivables],
   );
 
@@ -92,7 +97,10 @@ function AccountsInner() {
             <Spinner label="Loading insurance receivables…" />
           ) : openClaims.length === 0 ? (
             <div className="px-5 py-8">
-              <EmptyState title="No open insurance receivables" hint="Approved and submitted claims appear here for follow-up." />
+              <EmptyState
+                title="No open insurance receivables"
+                hint="Approved and submitted claims appear here for follow-up."
+              />
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -114,7 +122,10 @@ function AccountsInner() {
                     return (
                       <tr key={claim.id} className="hover:bg-canvas">
                         <td className="px-5 py-3">
-                          <Link href={`/insurance/claims/${claim.id}`} className="font-medium text-primary hover:underline">
+                          <Link
+                            href={`/insurance/claims/${claim.id}`}
+                            className="font-medium text-primary hover:underline"
+                          >
                             {claim.bill?.billNumber ?? claim.id.slice(0, 8)}
                           </Link>
                           <div className="text-label-sm text-ink-soft">{formatDateTime(claim.createdAt)}</div>
@@ -125,7 +136,9 @@ function AccountsInner() {
                         </td>
                         <td className="px-5 py-3 text-ink-muted">{claim.patientPolicy?.provider?.name ?? '—'}</td>
                         <td className="px-5 py-3 text-right text-ink-muted">{money(approved)}</td>
-                        <td className="px-5 py-3 text-right font-medium text-ink">{money(Math.max(0, approved - settled))}</td>
+                        <td className="px-5 py-3 text-right font-medium text-ink">
+                          {money(Math.max(0, approved - settled))}
+                        </td>
                         <td className="px-5 py-3">
                           <StatusChip status={claim.status} />
                         </td>
@@ -144,7 +157,11 @@ function AccountsInner() {
 
 export default function AccountsPage() {
   return (
-    <Protected requireModule="BILLING" allowedRoles={['ACCOUNTANT', 'HOSPITAL_ADMIN']} requirePermission={['reports.financial.read']}>
+    <Protected
+      requireModule="BILLING"
+      allowedRoles={['ACCOUNTANT', 'HOSPITAL_ADMIN']}
+      requirePermission={['reports.financial.read']}
+    >
       <AccountsInner />
     </Protected>
   );

@@ -51,15 +51,35 @@ export default function PatientRegisterPage() {
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="mb-1.5 block text-label-md text-ink">Full name</label>
-          <input required value={name} onChange={(e) => setName(e.target.value)} className={authInputCls} placeholder="Your name" />
+          <input
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={authInputCls}
+            placeholder="Your name"
+          />
         </div>
         <div>
           <label className="mb-1.5 block text-label-md text-ink">Email</label>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={authInputCls} placeholder="you@email.com" />
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={authInputCls}
+            placeholder="you@email.com"
+          />
         </div>
         <div>
           <label className="mb-1.5 block text-label-md text-ink">Password</label>
-          <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={authInputCls} placeholder="At least 6 characters" />
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={authInputCls}
+            placeholder="At least 6 characters"
+          />
         </div>
         <button
           type="submit"

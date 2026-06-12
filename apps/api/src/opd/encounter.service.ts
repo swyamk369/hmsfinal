@@ -34,7 +34,10 @@ const TRANSITIONS: Record<string, string[]> = {
 
 @Injectable()
 export class EncounterService {
-  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly notifications?: NotificationsService,
+  ) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -145,7 +148,12 @@ export class EncounterService {
     allowMissingDefault = false,
   ) {
     const duplicate = await s.db.billableCharge.findFirst({
-      where: { encounterId, sourceModule: 'OPD' as any, sourceType: 'CONSULTATION', status: { in: ['PENDING', 'BILLED'] as any } },
+      where: {
+        encounterId,
+        sourceModule: 'OPD' as any,
+        sourceType: 'CONSULTATION',
+        status: { in: ['PENDING', 'BILLED'] as any },
+      },
     });
     if (duplicate) return duplicate;
 

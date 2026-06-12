@@ -60,7 +60,15 @@ export class PublicService {
   }
 
   private typeView(t: any) {
-    return { id: t.id, name: t.name, description: t.description, durationMinutes: t.durationMinutes, price: t.price, currency: t.currency, consultationType: t.consultationType };
+    return {
+      id: t.id,
+      name: t.name,
+      description: t.description,
+      durationMinutes: t.durationMinutes,
+      price: t.price,
+      currency: t.currency,
+      consultationType: t.consultationType,
+    };
   }
 
   // ── Search (unified) ──────────────────────────────────────────
@@ -70,17 +78,36 @@ export class PublicService {
     if (params.city) where.city = { equals: params.city, mode: 'insensitive' };
     if (params.specialty) where.specialty = { contains: params.specialty, mode: 'insensitive' };
     if (params.q) where.searchKeywords = { contains: params.q.toLowerCase() };
-    return platformDb.publicSearchIndex.findMany({ where, orderBy: [{ type: 'asc' }, { hospitalName: 'asc' }], take: 100 });
+    return platformDb.publicSearchIndex.findMany({
+      where,
+      orderBy: [{ type: 'asc' }, { hospitalName: 'asc' }],
+      take: 100,
+    });
   }
 
   async suggestions(q: string) {
     if (!q || q.length < 2) return [];
     const rows = await platformDb.publicSearchIndex.findMany({
       where: { searchKeywords: { contains: q.toLowerCase() } },
-      select: { type: true, hospitalName: true, doctorName: true, specialty: true, profileUrl: true, photoUrl: true, logoUrl: true },
+      select: {
+        type: true,
+        hospitalName: true,
+        doctorName: true,
+        specialty: true,
+        profileUrl: true,
+        photoUrl: true,
+        logoUrl: true,
+      },
       take: 8,
     });
-    return rows.map((r) => ({ type: r.type, label: r.doctorName ?? r.hospitalName, sub: r.specialty ?? r.hospitalName, href: r.profileUrl, photoUrl: r.photoUrl, logoUrl: r.logoUrl }));
+    return rows.map((r) => ({
+      type: r.type,
+      label: r.doctorName ?? r.hospitalName,
+      sub: r.specialty ?? r.hospitalName,
+      href: r.profileUrl,
+      photoUrl: r.photoUrl,
+      logoUrl: r.logoUrl,
+    }));
   }
 
   // ── Hospitals ─────────────────────────────────────────────────
@@ -92,13 +119,25 @@ export class PublicService {
   }
 
   async hospitalBySlug(slug: string) {
-    const hp = await platformDb.publicHospitalProfile.findFirst({ where: { hospitalSlug: slug, isPublic: true, profileStatus: 'PUBLISHED' as any } });
+    const hp = await platformDb.publicHospitalProfile.findFirst({
+      where: { hospitalSlug: slug, isPublic: true, profileStatus: 'PUBLISHED' as any },
+    });
     if (!hp) throw new NotFoundException('Hospital not found or not published');
     const [doctors, types] = await Promise.all([
-      platformDb.publicDoctorProfile.findMany({ where: { tenantId: hp.tenantId, isPublic: true, profileStatus: 'PUBLISHED' as any }, orderBy: { displayName: 'asc' } }),
-      platformDb.appointmentType.findMany({ where: { tenantId: hp.tenantId, isPublic: true, isActive: true }, orderBy: { name: 'asc' } }),
+      platformDb.publicDoctorProfile.findMany({
+        where: { tenantId: hp.tenantId, isPublic: true, profileStatus: 'PUBLISHED' as any },
+        orderBy: { displayName: 'asc' },
+      }),
+      platformDb.appointmentType.findMany({
+        where: { tenantId: hp.tenantId, isPublic: true, isActive: true },
+        orderBy: { name: 'asc' },
+      }),
     ]);
-    return { hospital: this.hospitalView(hp), doctors: doctors.map((d) => this.doctorView(d)), appointmentTypes: types.map((t) => this.typeView(t)) };
+    return {
+      hospital: this.hospitalView(hp),
+      doctors: doctors.map((d) => this.doctorView(d)),
+      appointmentTypes: types.map((t) => this.typeView(t)),
+    };
   }
 
   // ── Doctors ───────────────────────────────────────────────────
@@ -111,12 +150,23 @@ export class PublicService {
   }
 
   async doctorBySlug(slug: string) {
-    const dp = await platformDb.publicDoctorProfile.findFirst({ where: { doctorSlug: slug, isPublic: true, profileStatus: 'PUBLISHED' as any } });
+    const dp = await platformDb.publicDoctorProfile.findFirst({
+      where: { doctorSlug: slug, isPublic: true, profileStatus: 'PUBLISHED' as any },
+    });
     if (!dp) throw new NotFoundException('Doctor not found or not published');
     const [hp, types] = await Promise.all([
-      platformDb.publicHospitalProfile.findFirst({ where: { tenantId: dp.tenantId, isPublic: true, profileStatus: 'PUBLISHED' as any } }),
-      platformDb.appointmentType.findMany({ where: { tenantId: dp.tenantId, isPublic: true, isActive: true }, orderBy: { name: 'asc' } }),
+      platformDb.publicHospitalProfile.findFirst({
+        where: { tenantId: dp.tenantId, isPublic: true, profileStatus: 'PUBLISHED' as any },
+      }),
+      platformDb.appointmentType.findMany({
+        where: { tenantId: dp.tenantId, isPublic: true, isActive: true },
+        orderBy: { name: 'asc' },
+      }),
     ]);
-    return { doctor: this.doctorView(dp), hospital: hp ? this.hospitalView(hp) : null, appointmentTypes: types.map((t) => this.typeView(t)) };
+    return {
+      doctor: this.doctorView(dp),
+      hospital: hp ? this.hospitalView(hp) : null,
+      appointmentTypes: types.map((t) => this.typeView(t)),
+    };
   }
 }

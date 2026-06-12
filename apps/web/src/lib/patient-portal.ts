@@ -29,7 +29,11 @@ async function ppost<T>(path: string, opts: { tenantId?: string; body?: unknown 
   return res.json();
 }
 
-async function pmutate<T>(method: 'PATCH' | 'DELETE', path: string, opts: { tenantId?: string; body?: unknown } = {}): Promise<T> {
+async function pmutate<T>(
+  method: 'PATCH' | 'DELETE',
+  path: string,
+  opts: { tenantId?: string; body?: unknown } = {},
+): Promise<T> {
   const token = await getFirebaseIdToken();
   const url = `${API}${path}${opts.tenantId ? `?tenantId=${opts.tenantId}` : ''}`;
   const res = await fetch(url, {
@@ -89,7 +93,10 @@ export interface PortalDocument {
 export interface PortalReport {
   id: string;
   createdAt: string;
-  tests: { testName: string; results: { value: string | null; unit: string | null; referenceRange: string | null; abnormalFlag: string }[] }[];
+  tests: {
+    testName: string;
+    results: { value: string | null; unit: string | null; referenceRange: string | null; abnormalFlag: string }[];
+  }[];
 }
 export interface PortalDashboard {
   hospitalName: string;
@@ -103,7 +110,13 @@ export interface PortalPrescription {
   id: string;
   status: string;
   date: string;
-  items: { drugName: string; dosage: string | null; frequency: string | null; duration: string | null; instructions: string | null }[];
+  items: {
+    drugName: string;
+    dosage: string | null;
+    frequency: string | null;
+    duration: string | null;
+    instructions: string | null;
+  }[];
 }
 
 // ── Phase 23: Care Team / Family / Notifications / Settings / Refills ──
@@ -170,7 +183,15 @@ export interface ReportDetail {
   status: string;
   tests: {
     testName: string;
-    results: { testName: string; value: string | null; unit: string | null; referenceRange: string | null; abnormalFlag: string; notes: string | null; recordedAt: string }[];
+    results: {
+      testName: string;
+      value: string | null;
+      unit: string | null;
+      referenceRange: string | null;
+      abnormalFlag: string;
+      notes: string | null;
+      recordedAt: string;
+    }[];
   }[];
 }
 
@@ -184,27 +205,44 @@ export const portalApi = {
   prescriptions: (t: string) => pget<PortalPrescription[]>('/patient-portal/prescriptions', t),
   documents: (t: string) => pget<PortalDocument[]>('/patient-portal/documents', t),
   profile: (t: string) =>
-    pget<{ login: { displayName: string | null; email: string | null; mobile: string | null }; hospital: Record<string, any> }>('/patient-portal/profile', t),
+    pget<{
+      login: { displayName: string | null; email: string | null; mobile: string | null };
+      hospital: Record<string, any>;
+    }>('/patient-portal/profile', t),
   markDocumentViewed: (t: string, id: string) => ppost(`/patient-portal/documents/${id}/viewed`, { tenantId: t }),
   requestAccess: (body: { tenantId: string; mrn?: string; phone?: string; dob?: string }) =>
     ppost<{ status: 'requested' | 'no_match' | 'already_linked' }>('/patient-portal/request-access', { body }),
 
   // Care Team (saved providers / hospitals) — uid-scoped, no tenant
   savedProviders: () => pget<SavedProvider[]>('/patient-portal/saved-providers'),
-  saveProvider: (body: { tenantId: string; doctorId: string; doctorSlug?: string; doctorName: string; specialty?: string; hospitalName: string; photoUrl?: string }) =>
-    ppost<SavedProvider>('/patient-portal/saved-providers', { body }),
+  saveProvider: (body: {
+    tenantId: string;
+    doctorId: string;
+    doctorSlug?: string;
+    doctorName: string;
+    specialty?: string;
+    hospitalName: string;
+    photoUrl?: string;
+  }) => ppost<SavedProvider>('/patient-portal/saved-providers', { body }),
   removeSavedProvider: (id: string) => pmutate<{ ok: boolean }>('DELETE', `/patient-portal/saved-providers/${id}`),
   savedHospitals: () => pget<SavedHospital[]>('/patient-portal/saved-hospitals'),
-  saveHospital: (body: { tenantId: string; hospitalSlug?: string; hospitalName: string; city?: string; logoUrl?: string }) =>
-    ppost<SavedHospital>('/patient-portal/saved-hospitals', { body }),
+  saveHospital: (body: {
+    tenantId: string;
+    hospitalSlug?: string;
+    hospitalName: string;
+    city?: string;
+    logoUrl?: string;
+  }) => ppost<SavedHospital>('/patient-portal/saved-hospitals', { body }),
   removeSavedHospital: (id: string) => pmutate<{ ok: boolean }>('DELETE', `/patient-portal/saved-hospitals/${id}`),
 
   // Family
   family: () => pget<FamilyMember[]>('/patient-portal/family'),
   addFamily: (body: { fullName: string; relationship: string; dob?: string; sex?: string; mobile?: string }) =>
     ppost<FamilyMember>('/patient-portal/family', { body }),
-  updateFamily: (id: string, body: { fullName: string; relationship: string; dob?: string; sex?: string; mobile?: string }) =>
-    pmutate<FamilyMember>('PATCH', `/patient-portal/family/${id}`, { body }),
+  updateFamily: (
+    id: string,
+    body: { fullName: string; relationship: string; dob?: string; sex?: string; mobile?: string },
+  ) => pmutate<FamilyMember>('PATCH', `/patient-portal/family/${id}`, { body }),
   removeFamily: (id: string) => pmutate<{ ok: boolean }>('DELETE', `/patient-portal/family/${id}`),
 
   // Notifications
@@ -215,7 +253,9 @@ export const portalApi = {
   // Settings
   settings: () => pget<PortalSettings>('/patient-portal/settings'),
   updateProfile: (body: { displayName?: string; mobile?: string }) =>
-    pmutate<{ displayName: string | null; mobile: string | null }>('PATCH', '/patient-portal/settings/profile', { body }),
+    pmutate<{ displayName: string | null; mobile: string | null }>('PATCH', '/patient-portal/settings/profile', {
+      body,
+    }),
   updateNotificationPrefs: (body: NotificationPrefs) =>
     pmutate<NotificationPrefs>('PATCH', '/patient-portal/settings/notifications', { body }),
 

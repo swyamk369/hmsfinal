@@ -5,7 +5,16 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Building2, MapPin, Video, CalendarCheck } from 'lucide-react';
 import { PublicShell, SearchBar } from '@/components/public-shell';
-import { Avatar, CheckRow, FilterGroup, Pagination, ResultsLayout, SortSelect, Tag, Toggle } from '@/components/patient/directory-ui';
+import {
+  Avatar,
+  CheckRow,
+  FilterGroup,
+  Pagination,
+  ResultsLayout,
+  SortSelect,
+  Tag,
+  Toggle,
+} from '@/components/patient/directory-ui';
 import { SaveHospitalButton } from '@/components/patient/save-button';
 import { publicApi, type SearchRow } from '@/lib/public';
 
@@ -14,7 +23,9 @@ const PAGE_SIZE = 8;
 function tally(rows: SearchRow[], pick: (r: SearchRow) => (string | null)[]): { value: string; count: number }[] {
   const m = new Map<string, number>();
   for (const r of rows) for (const v of pick(r)) if (v) m.set(v, (m.get(v) ?? 0) + 1);
-  return [...m.entries()].map(([value, count]) => ({ value, count })).sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
+  return [...m.entries()]
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
 }
 
 function HospitalsInner() {
@@ -101,7 +112,13 @@ function HospitalsInner() {
       {cityCounts.length > 0 && (
         <FilterGroup title="City">
           {cityCounts.map((c) => (
-            <CheckRow key={c.value} checked={cities.has(c.value)} onChange={(on) => toggleSet(cities, setCities, c.value, on)} label={c.value} count={c.count} />
+            <CheckRow
+              key={c.value}
+              checked={cities.has(c.value)}
+              onChange={(on) => toggleSet(cities, setCities, c.value, on)}
+              label={c.value}
+              count={c.count}
+            />
           ))}
         </FilterGroup>
       )}
@@ -109,7 +126,13 @@ function HospitalsInner() {
         <FilterGroup title="Services">
           <div className="max-h-56 overflow-y-auto pr-1">
             {serviceCounts.map((s) => (
-              <CheckRow key={s.value} checked={services.has(s.value)} onChange={(on) => toggleSet(services, setServices, s.value, on)} label={s.value} count={s.count} />
+              <CheckRow
+                key={s.value}
+                checked={services.has(s.value)}
+                onChange={(on) => toggleSet(services, setServices, s.value, on)}
+                label={s.value}
+                count={s.count}
+              />
             ))}
           </div>
         </FilterGroup>
@@ -121,20 +144,32 @@ function HospitalsInner() {
     <PublicShell>
       <div className="mb-5">
         <h1 className="text-headline-md font-semibold text-ink">Find a hospital or clinic</h1>
-        <p className="mt-1 text-body-md text-ink-muted">Browse hospitals and clinics, then book an appointment online.</p>
+        <p className="mt-1 text-body-md text-ink-muted">
+          Browse hospitals and clinics, then book an appointment online.
+        </p>
       </div>
       <div className="mb-6">
-        <SearchBar value={q} onChange={setQ} onSubmit={() => setPage(1)} placeholder="Hospital name, city, or service…" />
+        <SearchBar
+          value={q}
+          onChange={setQ}
+          onSubmit={() => setPage(1)}
+          placeholder="Hospital name, city, or service…"
+        />
       </div>
 
-      {err && <div className="rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">{err}</div>}
+      {err && (
+        <div className="rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">
+          {err}
+        </div>
+      )}
       {!all && !err && <p className="py-10 text-center text-body-sm text-ink-soft">Loading hospitals…</p>}
 
       {all && !err && (
         <ResultsLayout filters={filters} activeCount={activeFilters} onClearFilters={clearAll}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-body-md text-ink">
-              <span className="font-semibold">{filtered.length}</span> {filtered.length === 1 ? 'result' : 'results'} found
+              <span className="font-semibold">{filtered.length}</span> {filtered.length === 1 ? 'result' : 'results'}{' '}
+              found
             </p>
             <SortSelect value={sort} onChange={setSort} options={[{ value: 'name', label: 'Name' }]} />
           </div>
@@ -148,11 +183,17 @@ function HospitalsInner() {
           ) : (
             <div className="space-y-4">
               {pageRows.map((h) => (
-                <article key={h.id} className="relative flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row">
+                <article
+                  key={h.id}
+                  className="relative flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row"
+                >
                   <div className="flex flex-grow gap-4">
                     <Avatar name={h.hospitalName} url={h.logoUrl} shape="square" />
                     <div className="min-w-0">
-                      <Link href={`/hospitals/${h.hospitalSlug}`} className="text-title-lg font-semibold text-ink hover:text-primary">
+                      <Link
+                        href={`/hospitals/${h.hospitalSlug}`}
+                        className="text-title-lg font-semibold text-ink hover:text-primary"
+                      >
                         {h.hospitalName}
                       </Link>
                       {h.location && (
@@ -209,7 +250,13 @@ function HospitalsInner() {
 
 export default function HospitalsPage() {
   return (
-    <Suspense fallback={<PublicShell><p className="py-10 text-center text-body-sm text-ink-soft">Loading…</p></PublicShell>}>
+    <Suspense
+      fallback={
+        <PublicShell>
+          <p className="py-10 text-center text-body-sm text-ink-soft">Loading…</p>
+        </PublicShell>
+      }
+    >
       <HospitalsInner />
     </Suspense>
   );

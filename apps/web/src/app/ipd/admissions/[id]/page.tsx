@@ -23,7 +23,18 @@ import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { getActiveMembership } from '@/lib/access';
 import { useToast } from '@/components/toast';
-import { ipdApi, type AdmissionDetail, type Bed, type BedChargePreview, type Charge, type MedAdmin, type NursingNote, type Round, type Transfer, type Vitals } from '@/lib/ipd';
+import {
+  ipdApi,
+  type AdmissionDetail,
+  type Bed,
+  type BedChargePreview,
+  type Charge,
+  type MedAdmin,
+  type NursingNote,
+  type Round,
+  type Transfer,
+  type Vitals,
+} from '@/lib/ipd';
 import { ageFromDob, formatDate, formatDateTime, money, toMinor } from '@/lib/format';
 import {
   Badge,
@@ -58,7 +69,10 @@ function AdmissionDetailPageInner({ id }: { id: string }) {
   const { activeTenantId, profile } = useAuth();
   const t = activeTenantId!;
   const toast = useToast();
-  const perms = useMemo(() => new Set(getActiveMembership(profile, activeTenantId)?.permissions ?? []), [profile, activeTenantId]);
+  const perms = useMemo(
+    () => new Set(getActiveMembership(profile, activeTenantId)?.permissions ?? []),
+    [profile, activeTenantId],
+  );
 
   const [admission, setAdmission] = useState<AdmissionDetail | null>(null);
   const [beds, setBeds] = useState<Bed[]>([]);
@@ -99,7 +113,10 @@ function AdmissionDetailPageInner({ id }: { id: string }) {
 
   return (
     <>
-      <Link href="/ipd" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+      <Link
+        href="/ipd"
+        className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to IPD
       </Link>
 
@@ -138,10 +155,22 @@ function AdmissionDetailPageInner({ id }: { id: string }) {
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <InfoCard label="Admission status" value={<StatusChip status={admission.status} />} hint={`Admitted ${formatDateTime(admission.admittedAt)}`} />
-        <InfoCard label="Bed status" value={`${admission.bed.ward.name} / ${admission.bed.bedNumber}`} hint={admission.bed.ward.type} />
+        <InfoCard
+          label="Admission status"
+          value={<StatusChip status={admission.status} />}
+          hint={`Admitted ${formatDateTime(admission.admittedAt)}`}
+        />
+        <InfoCard
+          label="Bed status"
+          value={`${admission.bed.ward.name} / ${admission.bed.bedNumber}`}
+          hint={admission.bed.ward.type}
+        />
         <InfoCard label="Attending doctor" value={admission.providerName ?? 'Unassigned'} hint="Primary IPD provider" />
-        <InfoCard label="Billing balance" value={admission.bill ? money(balance) : 'No bill'} hint={admission.bill?.billNumber ?? 'Charges create an IPD bill'} />
+        <InfoCard
+          label="Billing balance"
+          value={admission.bill ? money(balance) : 'No bill'}
+          hint={admission.bill?.billNumber ?? 'Charges create an IPD bill'}
+        />
       </div>
 
       <div className="mb-5 overflow-x-auto border-b border-line">
@@ -170,7 +199,11 @@ function AdmissionDetailPageInner({ id }: { id: string }) {
       {tab === 'charges' && (
         <div className="space-y-4">
           <BedChargeCard admission={admission} canCharge={canCharge} onPosted={load} />
-          <Charges charges={admission.charges} currency="INR" onAdd={canCharge ? () => setChargeOpen(true) : undefined} />
+          <Charges
+            charges={admission.charges}
+            currency="INR"
+            onAdd={canCharge ? () => setChargeOpen(true) : undefined}
+          />
         </div>
       )}
       {tab === 'transfers' && <Transfers transfers={admission.transfers} beds={beds} />}
@@ -227,7 +260,8 @@ function Overview({ admission, latestVitals }: { admission: AdmissionDetail; lat
               <div className="flex flex-wrap gap-1.5">
                 {admission.patient.allergies.map((a) => (
                   <Badge key={a.id} tone="danger">
-                    {a.substance}{a.severity ? ` - ${a.severity}` : ''}
+                    {a.substance}
+                    {a.severity ? ` - ${a.severity}` : ''}
                   </Badge>
                 ))}
               </div>
@@ -240,19 +274,35 @@ function Overview({ admission, latestVitals }: { admission: AdmissionDetail; lat
 
       <Section title="Clinical snapshot" className="lg:col-span-2">
         <div className="grid gap-4 p-5 sm:grid-cols-2">
-          <InfoCard label="Latest BP" value={latestVitals ? `${latestVitals.systolicBp ?? '-'} / ${latestVitals.diastolicBp ?? '-'}` : '-'} />
-          <InfoCard label="Pulse / SpO2" value={latestVitals ? `${latestVitals.pulse ?? '-'} bpm / ${latestVitals.spo2 ?? '-'}%` : '-'} />
+          <InfoCard
+            label="Latest BP"
+            value={latestVitals ? `${latestVitals.systolicBp ?? '-'} / ${latestVitals.diastolicBp ?? '-'}` : '-'}
+          />
+          <InfoCard
+            label="Pulse / SpO2"
+            value={latestVitals ? `${latestVitals.pulse ?? '-'} bpm / ${latestVitals.spo2 ?? '-'}%` : '-'}
+          />
           <InfoCard label="Temperature" value={latestVitals?.temperature ? `${latestVitals.temperature} C` : '-'} />
           <InfoCard label="Respiratory rate" value={latestVitals?.respiratoryRate ?? '-'} />
         </div>
         <div className="border-t border-line p-5">
           <Timeline
             rows={[
-              { label: 'Admission created', at: admission.admittedAt, body: `${admission.bed.ward.name} / ${admission.bed.bedNumber}` },
-              ...admission.transfers.map((tr) => ({ label: 'Bed transfer', at: tr.transferredAt, body: tr.reason ?? 'No reason recorded' })),
+              {
+                label: 'Admission created',
+                at: admission.admittedAt,
+                body: `${admission.bed.ward.name} / ${admission.bed.bedNumber}`,
+              },
+              ...admission.transfers.map((tr) => ({
+                label: 'Bed transfer',
+                at: tr.transferredAt,
+                body: tr.reason ?? 'No reason recorded',
+              })),
               ...admission.rounds.map((r) => ({ label: 'Doctor round', at: r.createdAt, body: r.notes })),
               ...admission.charges.map((c) => ({ label: 'IPD charge', at: c.createdAt, body: c.description })),
-              ...(admission.dischargedAt ? [{ label: 'Discharged', at: admission.dischargedAt, body: admission.dischargeReason ?? '' }] : []),
+              ...(admission.dischargedAt
+                ? [{ label: 'Discharged', at: admission.dischargedAt, body: admission.dischargeReason ?? '' }]
+                : []),
             ]}
           />
         </div>
@@ -263,7 +313,16 @@ function Overview({ admission, latestVitals }: { admission: AdmissionDetail; lat
 
 function Rounds({ rounds, onAdd }: { rounds: Round[]; onAdd?: () => void }) {
   return (
-    <Section title="Doctor rounds" action={onAdd ? <Button size="sm" icon={Plus} onClick={onAdd}>Add round</Button> : undefined}>
+    <Section
+      title="Doctor rounds"
+      action={
+        onAdd ? (
+          <Button size="sm" icon={Plus} onClick={onAdd}>
+            Add round
+          </Button>
+        ) : undefined
+      }
+    >
       {rounds.length === 0 ? (
         <EmptyInline text="No doctor rounds have been recorded for this admission." />
       ) : (
@@ -305,12 +364,16 @@ function Nursing({ admission }: { admission: AdmissionDetail }) {
                 {admission.vitals.map((v) => (
                   <tr key={v.id}>
                     <td className="px-5 py-3 text-ink-muted">{formatDateTime(v.recordedAt)}</td>
-                    <td className="px-5 py-3">{v.systolicBp ?? '-'} / {v.diastolicBp ?? '-'}</td>
+                    <td className="px-5 py-3">
+                      {v.systolicBp ?? '-'} / {v.diastolicBp ?? '-'}
+                    </td>
                     <td className="px-5 py-3">{v.pulse ?? '-'}</td>
                     <td className="px-5 py-3">{v.spo2 ?? '-'}</td>
                     <td className="px-5 py-3">{v.temperature ?? '-'}</td>
                     <td className="px-5 py-3">{v.respiratoryRate ?? '-'}</td>
-                    <td className="px-5 py-3">{v.weightKg ?? '-'} / {v.heightCm ?? '-'}</td>
+                    <td className="px-5 py-3">
+                      {v.weightKg ?? '-'} / {v.heightCm ?? '-'}
+                    </td>
                     <td className="px-5 py-3 text-ink-muted">{v.notes ?? '-'}</td>
                   </tr>
                 ))}
@@ -346,7 +409,9 @@ function Medications({ meds }: { meds: MedAdmin[] }) {
               {meds.map((m) => (
                 <tr key={m.id}>
                   <td className="px-5 py-3 text-ink-muted">{formatDateTime(m.administeredAt)}</td>
-                  <td className="px-5 py-3"><StatusChip status={m.status} /></td>
+                  <td className="px-5 py-3">
+                    <StatusChip status={m.status} />
+                  </td>
                   <td className="px-5 py-3 text-ink-muted">{m.prescriptionItemId ?? '-'}</td>
                   <td className="px-5 py-3 text-ink-muted">{m.notes ?? '-'}</td>
                 </tr>
@@ -367,7 +432,11 @@ function LabOrders({ orders }: { orders: AdmissionDetail['labOrders'] }) {
       ) : (
         <div className="divide-y divide-line">
           {orders.map((o) => (
-            <Link key={o.id} href={`/lab/orders/${o.id}`} className="flex items-center justify-between px-5 py-4 hover:bg-canvas">
+            <Link
+              key={o.id}
+              href={`/lab/orders/${o.id}`}
+              className="flex items-center justify-between px-5 py-4 hover:bg-canvas"
+            >
               <div>
                 <div className="font-medium text-ink">Order {o.id.slice(0, 8)}</div>
                 <div className="text-label-sm text-ink-soft">{formatDateTime(o.createdAt)}</div>
@@ -381,7 +450,15 @@ function LabOrders({ orders }: { orders: AdmissionDetail['labOrders'] }) {
   );
 }
 
-function BedChargeCard({ admission, canCharge, onPosted }: { admission: AdmissionDetail; canCharge: boolean; onPosted: () => Promise<void> }) {
+function BedChargeCard({
+  admission,
+  canCharge,
+  onPosted,
+}: {
+  admission: AdmissionDetail;
+  canCharge: boolean;
+  onPosted: () => Promise<void>;
+}) {
   const { activeTenantId } = useAuth();
   const toast = useToast();
   const [preview, setPreview] = useState<BedChargePreview | null>(null);
@@ -415,7 +492,9 @@ function BedChargeCard({ admission, canCharge, onPosted }: { admission: Admissio
     setBusy(true);
     try {
       const res = await ipdApi.accrueBedCharges(activeTenantId, admission.id);
-      toast.success(res.posted ? `Posted ${res.plan.totalUnits} bed-day(s) to the bill.` : 'No completed days to bill yet.');
+      toast.success(
+        res.posted ? `Posted ${res.plan.totalUnits} bed-day(s) to the bill.` : 'No completed days to bill yet.',
+      );
       await onPosted();
       await loadPreview();
     } catch (e) {
@@ -457,7 +536,8 @@ function BedChargeCard({ admission, canCharge, onPosted }: { admission: Admissio
             </span>
             {active && (
               <span className="text-ink-muted">
-                If discharged now: <span className="font-medium text-ink">{money(preview!.projected.totalAmount)}</span> ({preview!.projected.totalUnits} day
+                If discharged now: <span className="font-medium text-ink">{money(preview!.projected.totalAmount)}</span>{' '}
+                ({preview!.projected.totalUnits} day
                 {preview!.projected.totalUnits === 1 ? '' : 's'})
               </span>
             )}
@@ -476,7 +556,10 @@ function BedChargeCard({ admission, canCharge, onPosted }: { admission: Admissio
                 {pending.map((l) => (
                   <tr key={l.wardId + l.fromDate} className="border-t border-line">
                     <td className="py-1.5">
-                      {l.wardName} <span className="ml-1 text-ink-soft">{l.fromDate}…{l.toDate}</span>
+                      {l.wardName}{' '}
+                      <span className="ml-1 text-ink-soft">
+                        {l.fromDate}…{l.toDate}
+                      </span>
                     </td>
                     <td>{l.units}</td>
                     <td>{money(l.unitPrice)}</td>
@@ -509,7 +592,18 @@ function BedChargeCard({ admission, canCharge, onPosted }: { admission: Admissio
 function Charges({ charges, currency, onAdd }: { charges: Charge[]; currency: string; onAdd?: () => void }) {
   const total = charges.reduce((sum, c) => sum + c.quantity * c.unitPrice, 0);
   return (
-    <Section title="IPD charges" action={onAdd ? <Button size="sm" icon={Plus} onClick={onAdd}>Add charge</Button> : <Badge>{money(total, currency)}</Badge>}>
+    <Section
+      title="IPD charges"
+      action={
+        onAdd ? (
+          <Button size="sm" icon={Plus} onClick={onAdd}>
+            Add charge
+          </Button>
+        ) : (
+          <Badge>{money(total, currency)}</Badge>
+        )
+      }
+    >
       {charges.length === 0 ? (
         <EmptyInline text="No IPD charges have been posted." />
       ) : (
@@ -556,8 +650,12 @@ function Transfers({ transfers, beds }: { transfers: Transfer[]; beds: Bed[] }) 
         <div className="divide-y divide-line">
           {transfers.map((tr) => (
             <div key={tr.id} className="px-5 py-4 text-body-sm">
-              <div className="font-medium text-ink">{nameFor(tr.fromBedId)} &rarr; {nameFor(tr.toBedId)}</div>
-              <div className="mt-1 text-ink-muted">{formatDateTime(tr.transferredAt)} - {tr.reason ?? 'No reason recorded'}</div>
+              <div className="font-medium text-ink">
+                {nameFor(tr.fromBedId)} &rarr; {nameFor(tr.toBedId)}
+              </div>
+              <div className="mt-1 text-ink-muted">
+                {formatDateTime(tr.transferredAt)} - {tr.reason ?? 'No reason recorded'}
+              </div>
             </div>
           ))}
         </div>
@@ -581,7 +679,9 @@ function Billing({ admission, paid }: { admission: AdmissionDetail; paid: number
       title="Billing"
       action={
         <Link href={`/billing/${bill.id}`}>
-          <Button size="sm" variant="ghost" icon={FileText}>Open bill</Button>
+          <Button size="sm" variant="ghost" icon={FileText}>
+            Open bill
+          </Button>
         </Link>
       }
     >
@@ -615,7 +715,17 @@ function Billing({ admission, paid }: { admission: AdmissionDetail; paid: number
   );
 }
 
-function TransferModal({ open, onClose, beds, onSubmit }: { open: boolean; onClose: () => void; beds: Bed[]; onSubmit: (toBedId: string, reason: string) => Promise<void> }) {
+function TransferModal({
+  open,
+  onClose,
+  beds,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  beds: Bed[];
+  onSubmit: (toBedId: string, reason: string) => Promise<void>;
+}) {
   const [toBedId, setToBedId] = useState('');
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
@@ -652,8 +762,12 @@ function TransferModal({ open, onClose, beds, onSubmit }: { open: boolean; onClo
       title="Transfer bed"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button icon={Repeat2} onClick={submit} loading={busy} disabled={!toBedId || !reason.trim()}>Transfer</Button>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button icon={Repeat2} onClick={submit} loading={busy} disabled={!toBedId || !reason.trim()}>
+            Transfer
+          </Button>
         </>
       }
     >
@@ -662,19 +776,34 @@ function TransferModal({ open, onClose, beds, onSubmit }: { open: boolean; onClo
           <Select value={toBedId} onChange={(e) => setToBedId(e.target.value)}>
             <option value="">Select bed...</option>
             {beds.map((b) => (
-              <option key={b.id} value={b.id}>{b.ward?.name ?? 'Ward'} / {b.bedNumber}</option>
+              <option key={b.id} value={b.id}>
+                {b.ward?.name ?? 'Ward'} / {b.bedNumber}
+              </option>
             ))}
           </Select>
         </FormField>
         <FormField label="Transfer reason" required error={err}>
-          <Textarea rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Clinical, operational, or patient-care reason" />
+          <Textarea
+            rows={3}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Clinical, operational, or patient-care reason"
+          />
         </FormField>
       </div>
     </Modal>
   );
 }
 
-function RoundModal({ open, onClose, onSubmit }: { open: boolean; onClose: () => void; onSubmit: (notes: string) => Promise<void> }) {
+function RoundModal({
+  open,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (notes: string) => Promise<void>;
+}) {
   const [notes, setNotes] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -703,15 +832,43 @@ function RoundModal({ open, onClose, onSubmit }: { open: boolean; onClose: () =>
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add doctor round" footer={<><Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button><Button icon={NotebookPen} onClick={submit} loading={busy} disabled={!notes.trim()}>Save round</Button></>}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Add doctor round"
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button icon={NotebookPen} onClick={submit} loading={busy} disabled={!notes.trim()}>
+            Save round
+          </Button>
+        </>
+      }
+    >
       <FormField label="Round notes" required error={err}>
-        <Textarea rows={5} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Assessment, plan, orders, and follow-up" autoFocus />
+        <Textarea
+          rows={5}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Assessment, plan, orders, and follow-up"
+          autoFocus
+        />
       </FormField>
     </Modal>
   );
 }
 
-function ChargeModal({ open, onClose, onSubmit }: { open: boolean; onClose: () => void; onSubmit: (body: { description: string; quantity?: number; unitPrice: number; notes?: string }) => Promise<void> }) {
+function ChargeModal({
+  open,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (body: { description: string; quantity?: number; unitPrice: number; notes?: string }) => Promise<void>;
+}) {
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [unitPrice, setUnitPrice] = useState('');
@@ -739,7 +896,12 @@ function ChargeModal({ open, onClose, onSubmit }: { open: boolean; onClose: () =
     }
     setBusy(true);
     try {
-      await onSubmit({ description: description.trim(), quantity: qty, unitPrice: price, notes: notes.trim() || undefined });
+      await onSubmit({
+        description: description.trim(),
+        quantity: qty,
+        unitPrice: price,
+        notes: notes.trim() || undefined,
+      });
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -748,11 +910,30 @@ function ChargeModal({ open, onClose, onSubmit }: { open: boolean; onClose: () =
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add IPD charge" footer={<><Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button><Button icon={CreditCard} onClick={submit} loading={busy} disabled={!description.trim() || !unitPrice}>Add charge</Button></>}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Add IPD charge"
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button icon={CreditCard} onClick={submit} loading={busy} disabled={!description.trim() || !unitPrice}>
+            Add charge
+          </Button>
+        </>
+      }
+    >
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <FormField label="Description" required>
-            <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Room charge, procedure, equipment..." autoFocus />
+            <Input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Room charge, procedure, equipment..."
+              autoFocus
+            />
           </FormField>
         </div>
         <FormField label="Quantity" required>
@@ -763,7 +944,12 @@ function ChargeModal({ open, onClose, onSubmit }: { open: boolean; onClose: () =
         </FormField>
         <div className="sm:col-span-2">
           <FormField label="Notes">
-            <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional billing note" />
+            <Textarea
+              rows={2}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Optional billing note"
+            />
           </FormField>
         </div>
       </div>
@@ -818,7 +1004,9 @@ function Timeline({ rows }: { rows: { label: string; at: string | null; body: st
           <div className="mt-1 h-2.5 w-2.5 rounded-full bg-primary" />
           <div>
             <div className="text-body-sm font-medium text-ink">{r.label}</div>
-            <div className="text-label-sm text-ink-soft">{formatDateTime(r.at)} - {r.body}</div>
+            <div className="text-label-sm text-ink-soft">
+              {formatDateTime(r.at)} - {r.body}
+            </div>
           </div>
         </div>
       ))}
@@ -833,7 +1021,11 @@ function totalPayments(admission: AdmissionDetail): number {
 export default function AdmissionPage() {
   const params = useParams<{ id: string }>();
   return (
-    <Protected requireModule="IPD" allowedRoles={['DOCTOR', 'NURSE', 'HOSPITAL_ADMIN']} requirePermission={['ipd.read']}>
+    <Protected
+      requireModule="IPD"
+      allowedRoles={['DOCTOR', 'NURSE', 'HOSPITAL_ADMIN']}
+      requirePermission={['ipd.read']}
+    >
       <AdmissionDetailPageInner id={params.id} />
     </Protected>
   );

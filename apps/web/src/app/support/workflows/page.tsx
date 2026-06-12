@@ -5,13 +5,31 @@ import { HelpTip } from '@/components/operations';
 import { PageHeader, Section } from '@/components/ui';
 
 const WORKFLOWS = [
-  ['Reception', 'Search patient, register only if no match, book or check in, confirm department/provider, issue token.'],
-  ['OPD doctor', 'Start checked-in encounter, record vitals/notes/diagnosis, add prescription or lab order, finalize consultation.'],
+  [
+    'Reception',
+    'Search patient, register only if no match, book or check in, confirm department/provider, issue token.',
+  ],
+  [
+    'OPD doctor',
+    'Start checked-in encounter, record vitals/notes/diagnosis, add prescription or lab order, finalize consultation.',
+  ],
   ['Lab', 'Collect sample, move to processing, enter result, verify abnormal values, print or share report.'],
-  ['Pharmacy', 'Open finalized prescription, check available stock, dispense FEFO batches, mark partial only when stock is missing.'],
-  ['Inventory', 'Create supplier/item, raise PO, receive goods into batches, review low stock and expiry, adjust with reason only.'],
-  ['IPD and nursing', 'Admit to available bed, record rounds/vitals/notes/MAR, post charges, discharge and print summary.'],
-  ['Billing', 'Create bill from services or workflow charges, collect payment, print invoice/receipt, refund/cancel with reason.'],
+  [
+    'Pharmacy',
+    'Open finalized prescription, check available stock, dispense FEFO batches, mark partial only when stock is missing.',
+  ],
+  [
+    'Inventory',
+    'Create supplier/item, raise PO, receive goods into batches, review low stock and expiry, adjust with reason only.',
+  ],
+  [
+    'IPD and nursing',
+    'Admit to available bed, record rounds/vitals/notes/MAR, post charges, discharge and print summary.',
+  ],
+  [
+    'Billing',
+    'Create bill from services or workflow charges, collect payment, print invoice/receipt, refund/cancel with reason.',
+  ],
   ['Insurance', 'Attach patient policy, create claim from bill, submit/review/approve/reject, settle approved claim.'],
 ];
 

@@ -2,7 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AlertTriangle, Banknote, ClipboardCheck, CreditCard, FileText, LayoutDashboard, ListChecks, Receipt, ShieldCheck, Users, Wallet } from 'lucide-react';
+import {
+  AlertTriangle,
+  Banknote,
+  ClipboardCheck,
+  CreditCard,
+  FileText,
+  LayoutDashboard,
+  ListChecks,
+  Receipt,
+  ShieldCheck,
+  Users,
+  Wallet,
+} from 'lucide-react';
 import { getActiveMembership } from '@/lib/access';
 import { useAuth } from '@/lib/auth-context';
 import { money, formatDateTime } from '@/lib/format';
@@ -16,15 +28,69 @@ const TABS = [
   { href: '/finance', label: 'Dashboard', icon: LayoutDashboard, permission: FINANCE_PERMS },
   { href: '/finance/cashier', label: 'Cashier', icon: CreditCard, permission: ['finance.cashier', 'payment.collect'] },
   { href: '/finance/bills', label: 'Bills', icon: Receipt, permission: ['finance.read', 'bill.read'] },
-  { href: '/finance/patient-accounts', label: 'Patient Accounts', icon: Wallet, permission: ['finance.patient_account.read', 'bill.read'] },
-  { href: '/finance/pending-charges', label: 'Pending Charges', icon: ListChecks, permission: ['finance.charge.manage', 'bill.write'] },
+  {
+    href: '/finance/patient-accounts',
+    label: 'Patient Accounts',
+    icon: Wallet,
+    permission: ['finance.patient_account.read', 'bill.read'],
+  },
+  {
+    href: '/finance/pending-charges',
+    label: 'Pending Charges',
+    icon: ListChecks,
+    permission: ['finance.charge.manage', 'bill.write'],
+  },
+  {
+    href: '/finance/deposits',
+    label: 'Deposits',
+    icon: Wallet,
+    permission: ['finance.patient_account.read', 'finance.cashier', 'payment.collect'],
+  },
+  {
+    href: '/finance/estimates',
+    label: 'Estimates',
+    icon: FileText,
+    permission: ['finance.read', 'bill.read', 'finance.charge.manage', 'bill.write'],
+  },
+  {
+    href: '/finance/tariffs',
+    label: 'Tariffs',
+    icon: Banknote,
+    permission: ['finance.charge.manage', 'bill.write', 'settings.manage'],
+  },
+  {
+    href: '/finance/packages',
+    label: 'Packages',
+    icon: Receipt,
+    permission: ['finance.charge.manage', 'bill.write', 'settings.manage'],
+  },
   { href: '/finance/leakage', label: 'Revenue Leakage', icon: AlertTriangle, permission: FINANCE_PERMS },
-  { href: '/finance/payments', label: 'Payments', icon: Banknote, permission: ['finance.reconcile', 'reports.financial.read', 'finance.read'] },
+  {
+    href: '/finance/payments',
+    label: 'Payments',
+    icon: Banknote,
+    permission: ['finance.reconcile', 'reports.financial.read', 'finance.read'],
+  },
   { href: '/finance/refunds', label: 'Refunds', icon: FileText, permission: ['payment.refund', 'finance.reconcile'] },
-  { href: '/finance/insurance-receivables', label: 'Insurance', icon: ShieldCheck, permission: ['insurance.read', 'reports.financial.read'] },
-  { href: '/finance/day-close', label: 'Day Close', icon: ClipboardCheck, permission: ['finance.day_close', 'finance.reconcile'] },
+  {
+    href: '/finance/insurance-receivables',
+    label: 'Insurance',
+    icon: ShieldCheck,
+    permission: ['insurance.read', 'reports.financial.read'],
+  },
+  {
+    href: '/finance/day-close',
+    label: 'Day Close',
+    icon: ClipboardCheck,
+    permission: ['finance.day_close', 'finance.reconcile'],
+  },
   { href: '/finance/approvals', label: 'Approvals', icon: Users, permission: ['finance.approval.manage'] },
-  { href: '/finance/reports', label: 'Reports', icon: FileText, permission: ['reports.financial.read', 'finance.reconcile', 'finance.read'] },
+  {
+    href: '/finance/reports',
+    label: 'Reports',
+    icon: FileText,
+    permission: ['reports.financial.read', 'finance.reconcile', 'finance.read'],
+  },
 ];
 
 export function FinanceTabs() {
@@ -166,16 +232,24 @@ export function FinanceQuickActions() {
     <Section title="Quick actions">
       <div className="flex flex-wrap gap-2 p-5">
         <Link href="/finance/cashier">
-          <Button variant="ghost" icon={CreditCard}>Collect payment</Button>
+          <Button variant="ghost" icon={CreditCard}>
+            Collect payment
+          </Button>
         </Link>
         <Link href="/finance/pending-charges">
-          <Button variant="ghost" icon={ListChecks}>Create bill from charges</Button>
+          <Button variant="ghost" icon={ListChecks}>
+            Create bill from charges
+          </Button>
         </Link>
         <Link href="/finance/day-close">
-          <Button variant="ghost" icon={ClipboardCheck}>Close day</Button>
+          <Button variant="ghost" icon={ClipboardCheck}>
+            Close day
+          </Button>
         </Link>
         <Link href="/finance/approvals">
-          <Button variant="ghost" icon={Users}>Approvals</Button>
+          <Button variant="ghost" icon={Users}>
+            Approvals
+          </Button>
         </Link>
       </div>
     </Section>

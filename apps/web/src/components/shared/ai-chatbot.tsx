@@ -1,28 +1,60 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { useState, useRef, useEffect } from 'react';
+import { DefaultChatTransport, type UIMessage, isTextUIPart } from 'ai';
+import { useMemo, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { MessageCircle, X, Send } from 'lucide-react';
 
 import { getFirebaseIdToken } from '@/lib/firebase';
+import { useAuth } from '@/lib/auth-context';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const PATIENT_TENANT_STORE = 'hms_portal_tenant';
+
+function messageText(message: UIMessage): string {
+  return message.parts
+    .filter(isTextUIPart)
+    .map((part) => part.text)
+    .join('');
+}
 
 export function AiChatbot() {
+  const { activeTenantId } = useAuth();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: `${API_URL}/ai/chat`,
-    fetch: async (url, options) => {
-      const token = await getFirebaseIdToken().catch(() => null);
-      const headers = new Headers(options?.headers);
-      if (token) headers.set('Authorization', `Bearer ${token}`);
-      
-      const tenantId = typeof window !== 'undefined' ? localStorage.getItem('hms_tenant') : null;
-      if (tenantId) headers.set('X-Tenant-Id', tenantId);
+  const [input, setInput] = useState('');
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: `${API_URL}/ai/chat`,
+        fetch: async (url, options) => {
+          const token = await getFirebaseIdToken().catch(() => null);
+          const headers = new Headers(options?.headers);
+          if (token) headers.set('Authorization', `Bearer ${token}`);
+          const patientTenantId =
+            !activeTenantId && pathname?.startsWith('/patient') && typeof window !== 'undefined'
+              ? window.localStorage.getItem(PATIENT_TENANT_STORE)
+              : null;
+          const tenantId = activeTenantId || patientTenantId;
+          if (tenantId) headers.set('X-Tenant-Id', tenantId);
+          if (pathname) headers.set('X-HMS-Path', pathname);
 
-      return fetch(url, { ...options, headers });
-    }
-  });
+          return fetch(url, { ...options, headers });
+        },
+      }),
+    [activeTenantId, pathname],
+  );
+  const { messages, sendMessage, status, error } = useChat({ transport });
+  const isLoading = status === 'submitted' || status === 'streaming';
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || isLoading) return;
+    setInput('');
+    await sendMessage({ text });
+  }
 
   if (!isOpen) {
     return (
@@ -68,7 +100,7 @@ export function AiChatbot() {
                       : 'bg-gray-100 text-gray-900 rounded-bl-none'
                   }`}
                 >
-                  {m.content}
+                  {messageText(m)}
                 </div>
               </div>
             ))
@@ -80,19 +112,20 @@ export function AiChatbot() {
               </div>
             </div>
           )}
+          {error && <div className="text-xs text-danger">{error.message}</div>}
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="p-3 border-t bg-gray-50 flex gap-2">
         <input
-          value={input || ''}
-          onChange={handleInputChange}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
           className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
         />
         <button
           type="submit"
-          disabled={isLoading || !input?.trim()}
+          disabled={isLoading || !input.trim()}
           className="bg-primary text-white p-2 rounded-md hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center"
         >
           <Send className="h-4 w-4" />

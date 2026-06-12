@@ -35,14 +35,19 @@ export default function ReportDetailPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/patient/documents" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+      <Link
+        href="/patient/documents"
+        className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to documents
       </Link>
 
       <div className="rounded-xl border border-line bg-surface p-6">
         <div className="mb-5 flex items-start justify-between border-b border-line pb-4">
           <div>
-            <h1 className="flex items-center gap-2 text-headline-md text-ink"><FlaskConical className="h-6 w-6 text-primary" /> Lab report</h1>
+            <h1 className="flex items-center gap-2 text-headline-md text-ink">
+              <FlaskConical className="h-6 w-6 text-primary" /> Lab report
+            </h1>
             <p className="mt-1 text-body-sm text-ink-muted">
               {current?.hospitalName ?? 'Hospital'} · {new Date(report.createdAt).toLocaleDateString()}
             </p>
@@ -51,7 +56,11 @@ export default function ReportDetailPage() {
         </div>
 
         {!hasResults ? (
-          <EmptyState icon={AlertTriangle} title="No verified results yet" body="Results will appear here once the lab has verified them." />
+          <EmptyState
+            icon={AlertTriangle}
+            title="No verified results yet"
+            body="Results will appear here once the lab has verified them."
+          />
         ) : (
           <div className="space-y-6">
             {report.tests.map((t, i) => (
@@ -78,7 +87,11 @@ export default function ReportDetailPage() {
                             </td>
                             <td className="px-4 py-2.5 text-ink-muted">{r.referenceRange ?? '—'}</td>
                             <td className="px-4 py-2.5 text-right">
-                              {abnormal ? <StatusBadge status={r.abnormalFlag} /> : <span className="text-ink-soft">Normal</span>}
+                              {abnormal ? (
+                                <StatusBadge status={r.abnormalFlag} />
+                              ) : (
+                                <span className="text-ink-soft">Normal</span>
+                              )}
                             </td>
                           </tr>
                         );
@@ -92,7 +105,8 @@ export default function ReportDetailPage() {
         )}
 
         <p className="mt-6 border-t border-line pt-4 text-label-sm text-ink-soft">
-          This report is provided by {current?.hospitalName ?? 'your hospital'}. For interpretation, please consult your doctor.
+          This report is provided by {current?.hospitalName ?? 'your hospital'}. For interpretation, please consult your
+          doctor.
         </p>
       </div>
     </div>

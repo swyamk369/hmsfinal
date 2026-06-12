@@ -79,7 +79,12 @@ function DoctorInner() {
               Open in-progress consultations first, then longest-waiting checked-in patients. Lab/IPD items appear here
               when a result, round, or inpatient action needs your attention.
             </HelpTip>
-            <WorkQueuePanel title="Clinical work queue" modules={['OPD', 'SCHEDULING', 'LAB', 'IPD']} limit={6} compact />
+            <WorkQueuePanel
+              title="Clinical work queue"
+              modules={['OPD', 'SCHEDULING', 'LAB', 'IPD']}
+              limit={6}
+              compact
+            />
           </div>
 
           <div className="mb-6 grid gap-4 sm:grid-cols-3">

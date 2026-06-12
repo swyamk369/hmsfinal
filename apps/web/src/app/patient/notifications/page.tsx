@@ -72,14 +72,22 @@ export default function NotificationsPage() {
       </div>
 
       {items.length === 0 ? (
-        <EmptyState icon={Bell} title="No notifications yet" body="Updates about your bookings, documents, and refills will appear here." />
+        <EmptyState
+          icon={Bell}
+          title="No notifications yet"
+          body="Updates about your bookings, documents, and refills will appear here."
+        />
       ) : (
         <ul className="space-y-2">
           {items.map((n) => {
             const Icon = ICON[n.category] ?? Bell;
             const inner = (
-              <div className={`flex items-start gap-3 rounded-xl border p-4 ${n.readAt ? 'border-line bg-surface' : 'border-primary/30 bg-primary-50'}`}>
-                <span className={`mt-0.5 grid h-9 w-9 flex-shrink-0 place-items-center rounded-full ${n.readAt ? 'bg-canvas text-ink-soft' : 'bg-primary-100 text-primary-700'}`}>
+              <div
+                className={`flex items-start gap-3 rounded-xl border p-4 ${n.readAt ? 'border-line bg-surface' : 'border-primary/30 bg-primary-50'}`}
+              >
+                <span
+                  className={`mt-0.5 grid h-9 w-9 flex-shrink-0 place-items-center rounded-full ${n.readAt ? 'bg-canvas text-ink-soft' : 'bg-primary-100 text-primary-700'}`}
+                >
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">

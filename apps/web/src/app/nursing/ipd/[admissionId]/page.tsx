@@ -10,7 +10,20 @@ import { useToast } from '@/components/toast';
 import { MED_ADMIN_STATUSES, type AdmissionDetail, type MedAdmin, type NursingNote, type Vitals } from '@/lib/ipd';
 import { nursingApi } from '@/lib/nursing';
 import { ageFromDob, formatDateTime } from '@/lib/format';
-import { Badge, Button, ErrorState, FormField, Input, Modal, PageHeader, Section, Select, Spinner, StatusChip, Textarea } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  ErrorState,
+  FormField,
+  Input,
+  Modal,
+  PageHeader,
+  Section,
+  Select,
+  Spinner,
+  StatusChip,
+  Textarea,
+} from '@/components/ui';
 
 function NursingAdmissionInner({ admissionId }: { admissionId: string }) {
   const { activeTenantId } = useAuth();
@@ -39,7 +52,12 @@ function NursingAdmissionInner({ admissionId }: { admissionId: string }) {
     return [
       ...admission.vitals.map((v) => ({ id: v.id, at: v.recordedAt, label: 'Vitals recorded', body: vitalsLine(v) })),
       ...admission.nursingNotes.map((n) => ({ id: n.id, at: n.createdAt, label: 'Nursing note', body: n.note })),
-      ...admission.medications.map((m) => ({ id: m.id, at: m.administeredAt, label: `Medication ${m.status.toLowerCase()}`, body: m.notes ?? m.prescriptionItemId ?? 'Medication administration' })),
+      ...admission.medications.map((m) => ({
+        id: m.id,
+        at: m.administeredAt,
+        label: `Medication ${m.status.toLowerCase()}`,
+        body: m.notes ?? m.prescriptionItemId ?? 'Medication administration',
+      })),
     ].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
   }, [admission]);
 
@@ -50,7 +68,10 @@ function NursingAdmissionInner({ admissionId }: { admissionId: string }) {
 
   return (
     <>
-      <Link href="/nursing" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+      <Link
+        href="/nursing"
+        className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to nursing
       </Link>
 
@@ -61,10 +82,26 @@ function NursingAdmissionInner({ admissionId }: { admissionId: string }) {
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Info label="Patient" value={`${ageFromDob(admission.patient.dob)} / ${admission.patient.sex ?? '-'}`} hint={admission.patient.phone ?? ''} />
-        <Info label="Bed" value={`${admission.bed.ward.name} / ${admission.bed.bedNumber}`} hint={admission.bed.ward.type} />
-        <Info label="Admitted" value={formatDateTime(admission.admittedAt)} hint={admission.providerName ?? 'No provider assigned'} />
-        <Info label="Alerts" value={admission.patient.allergies.length ? `${admission.patient.allergies.length} allergy` : 'None'} hint={admission.patient.allergies.map((a) => a.substance).join(', ')} />
+        <Info
+          label="Patient"
+          value={`${ageFromDob(admission.patient.dob)} / ${admission.patient.sex ?? '-'}`}
+          hint={admission.patient.phone ?? ''}
+        />
+        <Info
+          label="Bed"
+          value={`${admission.bed.ward.name} / ${admission.bed.bedNumber}`}
+          hint={admission.bed.ward.type}
+        />
+        <Info
+          label="Admitted"
+          value={formatDateTime(admission.admittedAt)}
+          hint={admission.providerName ?? 'No provider assigned'}
+        />
+        <Info
+          label="Alerts"
+          value={admission.patient.allergies.length ? `${admission.patient.allergies.length} allergy` : 'None'}
+          hint={admission.patient.allergies.map((a) => a.substance).join(', ')}
+        />
       </div>
 
       {!active && (
@@ -75,27 +112,46 @@ function NursingAdmissionInner({ admissionId }: { admissionId: string }) {
 
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
-          <Section title="Record vitals" action={<Badge tone={active ? 'success' : 'slate'}>{active ? 'Active' : 'Read only'}</Badge>}>
-            <VitalsForm disabled={!active} onSave={async (body) => {
-              await nursingApi.addVitals(t, admissionId, body);
-              toast.success('Vitals recorded.');
-              await load();
-            }} />
+          <Section
+            title="Record vitals"
+            action={<Badge tone={active ? 'success' : 'slate'}>{active ? 'Active' : 'Read only'}</Badge>}
+          >
+            <VitalsForm
+              disabled={!active}
+              onSave={async (body) => {
+                await nursingApi.addVitals(t, admissionId, body);
+                toast.success('Vitals recorded.');
+                await load();
+              }}
+            />
           </Section>
 
           <Section title="Nursing note">
-            <NoteForm disabled={!active} onSave={async (note) => {
-              await nursingApi.addNote(t, admissionId, note);
-              toast.success('Nursing note added.');
-              await load();
-            }} />
+            <NoteForm
+              disabled={!active}
+              onSave={async (note) => {
+                await nursingApi.addNote(t, admissionId, note);
+                toast.success('Nursing note added.');
+                await load();
+              }}
+            />
           </Section>
 
           <Section
             title="Medication administration chart"
-            action={active ? <Button size="sm" icon={Plus} onClick={() => setMedModal({ mode: 'add' })}>Administer</Button> : undefined}
+            action={
+              active ? (
+                <Button size="sm" icon={Plus} onClick={() => setMedModal({ mode: 'add' })}>
+                  Administer
+                </Button>
+              ) : undefined
+            }
           >
-            <MedicationTable meds={admission.medications} disabled={!active} onEdit={(med) => setMedModal({ mode: 'edit', med })} />
+            <MedicationTable
+              meds={admission.medications}
+              disabled={!active}
+              onEdit={(med) => setMedModal({ mode: 'edit', med })}
+            />
           </Section>
         </div>
 
@@ -143,7 +199,17 @@ function NursingAdmissionInner({ admissionId }: { admissionId: string }) {
 }
 
 function VitalsForm({ disabled, onSave }: { disabled: boolean; onSave: (body: Partial<Vitals>) => Promise<void> }) {
-  const [form, setForm] = useState({ systolicBp: '', diastolicBp: '', pulse: '', temperature: '', spo2: '', respiratoryRate: '', weightKg: '', heightCm: '', notes: '' });
+  const [form, setForm] = useState({
+    systolicBp: '',
+    diastolicBp: '',
+    pulse: '',
+    temperature: '',
+    spo2: '',
+    respiratoryRate: '',
+    weightKg: '',
+    heightCm: '',
+    notes: '',
+  });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -171,7 +237,17 @@ function VitalsForm({ disabled, onSave }: { disabled: boolean; onSave: (body: Pa
     setErr(null);
     try {
       await onSave(body);
-      setForm({ systolicBp: '', diastolicBp: '', pulse: '', temperature: '', spo2: '', respiratoryRate: '', weightKg: '', heightCm: '', notes: '' });
+      setForm({
+        systolicBp: '',
+        diastolicBp: '',
+        pulse: '',
+        temperature: '',
+        spo2: '',
+        respiratoryRate: '',
+        weightKg: '',
+        heightCm: '',
+        notes: '',
+      });
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -184,10 +260,20 @@ function VitalsForm({ disabled, onSave }: { disabled: boolean; onSave: (body: Pa
       {err && <ErrorState message={err} />}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <FormField label="Systolic BP">
-          <Input type="number" value={form.systolicBp} onChange={(e) => set('systolicBp', e.target.value)} disabled={disabled} />
+          <Input
+            type="number"
+            value={form.systolicBp}
+            onChange={(e) => set('systolicBp', e.target.value)}
+            disabled={disabled}
+          />
         </FormField>
         <FormField label="Diastolic BP">
-          <Input type="number" value={form.diastolicBp} onChange={(e) => set('diastolicBp', e.target.value)} disabled={disabled} />
+          <Input
+            type="number"
+            value={form.diastolicBp}
+            onChange={(e) => set('diastolicBp', e.target.value)}
+            disabled={disabled}
+          />
         </FormField>
         <FormField label="Pulse">
           <Input type="number" value={form.pulse} onChange={(e) => set('pulse', e.target.value)} disabled={disabled} />
@@ -196,23 +282,54 @@ function VitalsForm({ disabled, onSave }: { disabled: boolean; onSave: (body: Pa
           <Input type="number" value={form.spo2} onChange={(e) => set('spo2', e.target.value)} disabled={disabled} />
         </FormField>
         <FormField label="Temperature">
-          <Input type="number" step="0.1" value={form.temperature} onChange={(e) => set('temperature', e.target.value)} disabled={disabled} />
+          <Input
+            type="number"
+            step="0.1"
+            value={form.temperature}
+            onChange={(e) => set('temperature', e.target.value)}
+            disabled={disabled}
+          />
         </FormField>
         <FormField label="Resp. rate">
-          <Input type="number" value={form.respiratoryRate} onChange={(e) => set('respiratoryRate', e.target.value)} disabled={disabled} />
+          <Input
+            type="number"
+            value={form.respiratoryRate}
+            onChange={(e) => set('respiratoryRate', e.target.value)}
+            disabled={disabled}
+          />
         </FormField>
         <FormField label="Weight kg">
-          <Input type="number" step="0.1" value={form.weightKg} onChange={(e) => set('weightKg', e.target.value)} disabled={disabled} />
+          <Input
+            type="number"
+            step="0.1"
+            value={form.weightKg}
+            onChange={(e) => set('weightKg', e.target.value)}
+            disabled={disabled}
+          />
         </FormField>
         <FormField label="Height cm">
-          <Input type="number" step="0.1" value={form.heightCm} onChange={(e) => set('heightCm', e.target.value)} disabled={disabled} />
+          <Input
+            type="number"
+            step="0.1"
+            value={form.heightCm}
+            onChange={(e) => set('heightCm', e.target.value)}
+            disabled={disabled}
+          />
         </FormField>
       </div>
       <FormField label="Notes">
-        <Textarea rows={2} value={form.notes} onChange={(e) => set('notes', e.target.value)} disabled={disabled} placeholder="Pain score, mobility, oxygen, intake/output notes" />
+        <Textarea
+          rows={2}
+          value={form.notes}
+          onChange={(e) => set('notes', e.target.value)}
+          disabled={disabled}
+          placeholder="Pain score, mobility, oxygen, intake/output notes"
+        />
       </FormField>
       <div className="flex justify-end">
-        <Button icon={HeartPulse} onClick={submit} loading={busy} disabled={disabled}>Record vitals</Button>
+        <Button icon={HeartPulse} onClick={submit} loading={busy} disabled={disabled}>
+          Record vitals
+        </Button>
       </div>
     </div>
   );
@@ -244,18 +361,36 @@ function NoteForm({ disabled, onSave }: { disabled: boolean; onSave: (note: stri
     <div className="space-y-3 p-5">
       {err && <ErrorState message={err} />}
       <FormField label="Note" required>
-        <Textarea rows={4} value={note} onChange={(e) => setNote(e.target.value)} disabled={disabled} placeholder="Clinical observation, intervention, response, escalation" />
+        <Textarea
+          rows={4}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          disabled={disabled}
+          placeholder="Clinical observation, intervention, response, escalation"
+        />
       </FormField>
       <div className="flex justify-end">
-        <Button icon={NotebookPen} onClick={submit} loading={busy} disabled={disabled || !note.trim()}>Add nursing note</Button>
+        <Button icon={NotebookPen} onClick={submit} loading={busy} disabled={disabled || !note.trim()}>
+          Add nursing note
+        </Button>
       </div>
     </div>
   );
 }
 
-function MedicationTable({ meds, disabled, onEdit }: { meds: MedAdmin[]; disabled: boolean; onEdit: (med: MedAdmin) => void }) {
+function MedicationTable({
+  meds,
+  disabled,
+  onEdit,
+}: {
+  meds: MedAdmin[];
+  disabled: boolean;
+  onEdit: (med: MedAdmin) => void;
+}) {
   if (meds.length === 0) {
-    return <p className="px-5 py-8 text-center text-body-sm text-ink-soft">No medication administrations recorded yet.</p>;
+    return (
+      <p className="px-5 py-8 text-center text-body-sm text-ink-soft">No medication administrations recorded yet.</p>
+    );
   }
   return (
     <div className="overflow-x-auto">
@@ -273,11 +408,15 @@ function MedicationTable({ meds, disabled, onEdit }: { meds: MedAdmin[]; disable
           {meds.map((m) => (
             <tr key={m.id}>
               <td className="px-5 py-3 text-ink-muted">{formatDateTime(m.administeredAt)}</td>
-              <td className="px-5 py-3"><StatusChip status={m.status} /></td>
+              <td className="px-5 py-3">
+                <StatusChip status={m.status} />
+              </td>
               <td className="px-5 py-3 text-ink-muted">{m.prescriptionItemId ?? '-'}</td>
               <td className="px-5 py-3 text-ink-muted">{m.notes ?? '-'}</td>
               <td className="px-5 py-3 text-right">
-                <Button size="sm" variant="ghost" onClick={() => onEdit(m)} disabled={disabled}>Update</Button>
+                <Button size="sm" variant="ghost" onClick={() => onEdit(m)} disabled={disabled}>
+                  Update
+                </Button>
               </td>
             </tr>
           ))}
@@ -287,7 +426,15 @@ function MedicationTable({ meds, disabled, onEdit }: { meds: MedAdmin[]; disable
   );
 }
 
-function MedicationModal({ state, onClose, onSubmit }: { state: { mode: 'add' } | { mode: 'edit'; med: MedAdmin } | null; onClose: () => void; onSubmit: (body: { prescriptionItemId?: string; status?: string; notes?: string }) => Promise<void> }) {
+function MedicationModal({
+  state,
+  onClose,
+  onSubmit,
+}: {
+  state: { mode: 'add' } | { mode: 'edit'; med: MedAdmin } | null;
+  onClose: () => void;
+  onSubmit: (body: { prescriptionItemId?: string; status?: string; notes?: string }) => Promise<void>;
+}) {
   const open = !!state;
   const [prescriptionItemId, setPrescriptionItemId] = useState('');
   const [status, setStatus] = useState('ADMINISTERED');
@@ -297,9 +444,9 @@ function MedicationModal({ state, onClose, onSubmit }: { state: { mode: 'add' } 
 
   useEffect(() => {
     if (!state) return;
-    setPrescriptionItemId(state.mode === 'edit' ? state.med.prescriptionItemId ?? '' : '');
+    setPrescriptionItemId(state.mode === 'edit' ? (state.med.prescriptionItemId ?? '') : '');
     setStatus(state.mode === 'edit' ? state.med.status : 'ADMINISTERED');
-    setNotes(state.mode === 'edit' ? state.med.notes ?? '' : '');
+    setNotes(state.mode === 'edit' ? (state.med.notes ?? '') : '');
     setErr(null);
     setBusy(false);
   }, [state]);
@@ -327,8 +474,12 @@ function MedicationModal({ state, onClose, onSubmit }: { state: { mode: 'add' } 
       title={state?.mode === 'edit' ? 'Update medication administration' : 'Administer medication'}
       footer={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button icon={CheckCircle2} onClick={submit} loading={busy}>Save</Button>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button icon={CheckCircle2} onClick={submit} loading={busy}>
+            Save
+          </Button>
         </>
       }
     >
@@ -336,16 +487,29 @@ function MedicationModal({ state, onClose, onSubmit }: { state: { mode: 'add' } 
         {err && <ErrorState message={err} />}
         {state?.mode === 'add' && (
           <FormField label="Prescription item ID" hint="Optional link to a prescription item if available.">
-            <Input value={prescriptionItemId} onChange={(e) => setPrescriptionItemId(e.target.value)} placeholder="Optional UUID" />
+            <Input
+              value={prescriptionItemId}
+              onChange={(e) => setPrescriptionItemId(e.target.value)}
+              placeholder="Optional UUID"
+            />
           </FormField>
         )}
         <FormField label="Administration status" required>
           <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-            {MED_ADMIN_STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
+            {MED_ADMIN_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s.replace(/_/g, ' ')}
+              </option>
+            ))}
           </Select>
         </FormField>
         <FormField label="Notes">
-          <Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Dose, route, reason for refusal/hold, response" />
+          <Textarea
+            rows={3}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Dose, route, reason for refusal/hold, response"
+          />
         </FormField>
       </div>
     </Modal>

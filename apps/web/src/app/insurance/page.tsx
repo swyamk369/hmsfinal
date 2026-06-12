@@ -95,9 +95,14 @@ function InsuranceInner() {
   const stats = useMemo(() => {
     const rows = claims ?? [];
     return {
-      open: rows.filter((c) => ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'PARTIALLY_APPROVED'].includes(c.status)).length,
-      submitted: rows.filter((c) => c.status === 'SUBMITTED' || c.status === 'UNDER_REVIEW').reduce((s, c) => s + c.claimAmount, 0),
-      approved: rows.filter((c) => c.status === 'APPROVED' || c.status === 'PARTIALLY_APPROVED').reduce((s, c) => s + (c.approvedAmount ?? c.claimAmount), 0),
+      open: rows.filter((c) => ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'PARTIALLY_APPROVED'].includes(c.status))
+        .length,
+      submitted: rows
+        .filter((c) => c.status === 'SUBMITTED' || c.status === 'UNDER_REVIEW')
+        .reduce((s, c) => s + c.claimAmount, 0),
+      approved: rows
+        .filter((c) => c.status === 'APPROVED' || c.status === 'PARTIALLY_APPROVED')
+        .reduce((s, c) => s + (c.approvedAmount ?? c.claimAmount), 0),
       settled: rows.filter((c) => c.status === 'SETTLED').reduce((s, c) => s + (c.approvedAmount ?? c.claimAmount), 0),
     };
   }, [claims]);
@@ -137,8 +142,8 @@ function InsuranceInner() {
 
       <div className="mb-6 space-y-6">
         <HelpTip title="Insurance flow">
-          Claims should move from draft to submitted, review, approval or rejection, then settlement. Rejected claims and
-          approved-but-unsettled claims stay visible until resolved.
+          Claims should move from draft to submitted, review, approval or rejection, then settlement. Rejected claims
+          and approved-but-unsettled claims stay visible until resolved.
         </HelpTip>
         <WorkQueuePanel title="Insurance work queue" modules={['INSURANCE']} limit={6} compact />
       </div>
@@ -229,7 +234,13 @@ function InsuranceInner() {
 function ClaimsTable({ claims }: { claims: InsuranceClaim[] | null }) {
   if (!claims) return <Spinner label="Loading claims…" />;
   if (claims.length === 0) {
-    return <EmptyState icon={FileCheck2} title="No claims found" hint="Create a claim from an eligible bill or adjust filters." />;
+    return (
+      <EmptyState
+        icon={FileCheck2}
+        title="No claims found"
+        hint="Create a claim from an eligible bill or adjust filters."
+      />
+    );
   }
   return (
     <Section title={`Claims · ${claims.length}`}>
@@ -263,7 +274,9 @@ function ClaimsTable({ claims }: { claims: InsuranceClaim[] | null }) {
                   <div className="text-label-sm">{claim.patientPolicy?.policyNumber ?? '—'}</div>
                 </td>
                 <td className="px-5 py-3 text-right font-medium text-ink">{money(claim.claimAmount)}</td>
-                <td className="px-5 py-3 text-right text-ink-muted">{claim.approvedAmount ? money(claim.approvedAmount) : '—'}</td>
+                <td className="px-5 py-3 text-right text-ink-muted">
+                  {claim.approvedAmount ? money(claim.approvedAmount) : '—'}
+                </td>
                 <td className="px-5 py-3">
                   <StatusChip status={claim.status} />
                 </td>
@@ -303,7 +316,9 @@ function PoliciesTable({ policies, canManage }: { policies: PatientInsurancePoli
                 <td className="px-5 py-3 text-ink-muted">{policy.provider?.name ?? '—'}</td>
                 <td className="px-5 py-3">
                   <div className="font-medium text-ink">{policy.policyNumber}</div>
-                  <div className="text-label-sm text-ink-soft">{policy.coverage?.memberId ?? policy.coverage?.planName ?? '—'}</div>
+                  <div className="text-label-sm text-ink-soft">
+                    {policy.coverage?.memberId ?? policy.coverage?.planName ?? '—'}
+                  </div>
                 </td>
                 <td className="px-5 py-3 text-ink-muted">
                   {formatDate(policy.coverage?.validFrom)} - {formatDate(policy.coverage?.validTo)}
@@ -313,7 +328,9 @@ function PoliciesTable({ policies, canManage }: { policies: PatientInsurancePoli
                 </td>
                 <td className="px-5 py-3">
                   <StatusChip status={policy.active ? 'ACTIVE' : 'INACTIVE'} />
-                  {canManage && <div className="mt-1 text-label-sm text-ink-soft">{policy._count?.claims ?? 0} claims</div>}
+                  {canManage && (
+                    <div className="mt-1 text-label-sm text-ink-soft">{policy._count?.claims ?? 0} claims</div>
+                  )}
                 </td>
               </tr>
             ))}
@@ -324,9 +341,20 @@ function PoliciesTable({ policies, canManage }: { policies: PatientInsurancePoli
   );
 }
 
-function BillsTable({ bills, canClaim, onClaim }: { bills: Bill[] | null; canClaim: boolean; onClaim: (id: string) => void }) {
+function BillsTable({
+  bills,
+  canClaim,
+  onClaim,
+}: {
+  bills: Bill[] | null;
+  canClaim: boolean;
+  onClaim: (id: string) => void;
+}) {
   if (!bills) return <Spinner label="Loading eligible bills…" />;
-  if (bills.length === 0) return <EmptyState title="No eligible bills" hint="Bills appear here once they are created for insured patients." />;
+  if (bills.length === 0)
+    return (
+      <EmptyState title="No eligible bills" hint="Bills appear here once they are created for insured patients." />
+    );
   return (
     <Section title={`Eligible bills · ${bills.length}`}>
       <div className="overflow-x-auto">
@@ -450,7 +478,7 @@ function PolicyModal({
         coverageType: form.coverageType.trim() || undefined,
         validFrom: form.validFrom || undefined,
         validTo: form.validTo || undefined,
-        coverageLimit: form.coverageLimit ? toMinor(form.coverageLimit) ?? undefined : undefined,
+        coverageLimit: form.coverageLimit ? (toMinor(form.coverageLimit) ?? undefined) : undefined,
         patientSharePercent: form.patientSharePercent ? Number(form.patientSharePercent) : undefined,
         notes: form.notes.trim() || undefined,
       });
@@ -481,7 +509,11 @@ function PolicyModal({
     >
       <div className="space-y-4">
         <FormField label="Find patient" required>
-          <Input value={patientQuery} onChange={(e) => setPatientQuery(e.target.value)} placeholder="Search name, MRN, phone" />
+          <Input
+            value={patientQuery}
+            onChange={(e) => setPatientQuery(e.target.value)}
+            placeholder="Search name, MRN, phone"
+          />
         </FormField>
         {patients.length > 0 && (
           <div className="max-h-32 overflow-auto rounded-md border border-line">
@@ -508,7 +540,10 @@ function PolicyModal({
             </Select>
           </FormField>
           <FormField label="Policy number" required>
-            <Input value={form.policyNumber} onChange={(e) => setForm((f) => ({ ...f, policyNumber: e.target.value }))} />
+            <Input
+              value={form.policyNumber}
+              onChange={(e) => setForm((f) => ({ ...f, policyNumber: e.target.value }))}
+            />
           </FormField>
           <FormField label="Member ID">
             <Input value={form.memberId} onChange={(e) => setForm((f) => ({ ...f, memberId: e.target.value }))} />
@@ -517,16 +552,34 @@ function PolicyModal({
             <Input value={form.planName} onChange={(e) => setForm((f) => ({ ...f, planName: e.target.value }))} />
           </FormField>
           <FormField label="Valid from">
-            <Input type="date" value={form.validFrom} onChange={(e) => setForm((f) => ({ ...f, validFrom: e.target.value }))} />
+            <Input
+              type="date"
+              value={form.validFrom}
+              onChange={(e) => setForm((f) => ({ ...f, validFrom: e.target.value }))}
+            />
           </FormField>
           <FormField label="Valid to">
-            <Input type="date" value={form.validTo} onChange={(e) => setForm((f) => ({ ...f, validTo: e.target.value }))} />
+            <Input
+              type="date"
+              value={form.validTo}
+              onChange={(e) => setForm((f) => ({ ...f, validTo: e.target.value }))}
+            />
           </FormField>
           <FormField label="Coverage limit">
-            <Input inputMode="decimal" value={form.coverageLimit} onChange={(e) => setForm((f) => ({ ...f, coverageLimit: e.target.value }))} />
+            <Input
+              inputMode="decimal"
+              value={form.coverageLimit}
+              onChange={(e) => setForm((f) => ({ ...f, coverageLimit: e.target.value }))}
+            />
           </FormField>
           <FormField label="Patient share %">
-            <Input type="number" min={0} max={100} value={form.patientSharePercent} onChange={(e) => setForm((f) => ({ ...f, patientSharePercent: e.target.value }))} />
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              value={form.patientSharePercent}
+              onChange={(e) => setForm((f) => ({ ...f, patientSharePercent: e.target.value }))}
+            />
           </FormField>
         </div>
         <FormField label="Notes">
@@ -574,9 +627,15 @@ function ClaimModal({
   }, [open, prefillBillId, bills]);
 
   const selectedBill = bills.find((b) => b.id === billId);
-  const policyOptions = selectedBill ? policies.filter((p) => p.patientId === selectedBill.patientId && p.active) : [];
+  const policyOptions = useMemo(
+    () => (selectedBill ? policies.filter((p) => p.patientId === selectedBill.patientId && p.active) : []),
+    [policies, selectedBill],
+  );
   const selectedPolicy = policies.find((p) => p.id === policyId);
-  const autoShare = selectedBill && selectedPolicy ? Math.round((selectedBill.netAmount * (selectedPolicy.coverage?.patientSharePercent ?? 0)) / 100) : 0;
+  const autoShare =
+    selectedBill && selectedPolicy
+      ? Math.round((selectedBill.netAmount * (selectedPolicy.coverage?.patientSharePercent ?? 0)) / 100)
+      : 0;
   const autoClaim =
     selectedBill && selectedPolicy
       ? Math.min(
@@ -601,8 +660,8 @@ function ClaimModal({
       await insuranceApi.createClaim(tenantId, {
         billId,
         patientPolicyId: policyId,
-        claimAmount: claimAmount ? toMinor(claimAmount) ?? undefined : undefined,
-        patientShare: patientShare ? toMinor(patientShare) ?? undefined : undefined,
+        claimAmount: claimAmount ? (toMinor(claimAmount) ?? undefined) : undefined,
+        patientShare: patientShare ? (toMinor(patientShare) ?? undefined) : undefined,
         notes: notes.trim() || undefined,
         submit: submitNow,
       });
@@ -660,17 +719,28 @@ function ClaimModal({
         )}
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField label="Claim amount override">
-            <Input inputMode="decimal" value={claimAmount} onChange={(e) => setClaimAmount(e.target.value)} placeholder={money(autoClaim)} />
+            <Input
+              inputMode="decimal"
+              value={claimAmount}
+              onChange={(e) => setClaimAmount(e.target.value)}
+              placeholder={money(autoClaim)}
+            />
           </FormField>
           <FormField label="Patient share override">
-            <Input inputMode="decimal" value={patientShare} onChange={(e) => setPatientShare(e.target.value)} placeholder={money(autoShare)} />
+            <Input
+              inputMode="decimal"
+              value={patientShare}
+              onChange={(e) => setPatientShare(e.target.value)}
+              placeholder={money(autoShare)}
+            />
           </FormField>
         </div>
         <FormField label="Notes">
           <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
         </FormField>
         <label className="flex items-center gap-2 text-body-sm text-ink-muted">
-          <input type="checkbox" checked={submitNow} onChange={(e) => setSubmitNow(e.target.checked)} /> Submit claim immediately
+          <input type="checkbox" checked={submitNow} onChange={(e) => setSubmitNow(e.target.checked)} /> Submit claim
+          immediately
         </label>
       </div>
     </Modal>

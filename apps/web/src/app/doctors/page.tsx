@@ -5,7 +5,16 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Stethoscope, Building2, Video, User, CalendarCheck, Globe } from 'lucide-react';
 import { PublicShell, SearchBar } from '@/components/public-shell';
-import { Avatar, CheckRow, FilterGroup, Pagination, ResultsLayout, SortSelect, Tag, Toggle } from '@/components/patient/directory-ui';
+import {
+  Avatar,
+  CheckRow,
+  FilterGroup,
+  Pagination,
+  ResultsLayout,
+  SortSelect,
+  Tag,
+  Toggle,
+} from '@/components/patient/directory-ui';
 import { SaveDoctorButton } from '@/components/patient/save-button';
 import { publicApi, type SearchRow } from '@/lib/public';
 
@@ -14,7 +23,9 @@ const PAGE_SIZE = 8;
 function tally(rows: SearchRow[], pick: (r: SearchRow) => (string | null)[]): { value: string; count: number }[] {
   const m = new Map<string, number>();
   for (const r of rows) for (const v of pick(r)) if (v) m.set(v, (m.get(v) ?? 0) + 1);
-  return [...m.entries()].map(([value, count]) => ({ value, count })).sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
+  return [...m.entries()]
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
 }
 
 function DoctorsInner() {
@@ -71,7 +82,11 @@ function DoctorsInner() {
     const needle = q.trim().toLowerCase();
     if (!needle) return rows;
     return rows.filter((r) =>
-      [r.doctorName, r.specialty, r.hospitalName, ...(r.services ?? [])].filter(Boolean).join(' ').toLowerCase().includes(needle),
+      [r.doctorName, r.specialty, r.hospitalName, ...(r.services ?? [])]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(needle),
     );
   }, [all, q]);
 
@@ -146,17 +161,27 @@ function DoctorsInner() {
         <p className="mt-1 text-body-md text-ink-muted">Search by name, specialty, or hospital — and book online.</p>
       </div>
       <div className="mb-6">
-        <SearchBar value={q} onChange={setQ} onSubmit={() => setPage(1)} placeholder="Doctor name, specialty, or hospital…" />
+        <SearchBar
+          value={q}
+          onChange={setQ}
+          onSubmit={() => setPage(1)}
+          placeholder="Doctor name, specialty, or hospital…"
+        />
       </div>
 
-      {err && <div className="rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">{err}</div>}
+      {err && (
+        <div className="rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">
+          {err}
+        </div>
+      )}
       {!all && !err && <p className="py-10 text-center text-body-sm text-ink-soft">Loading doctors…</p>}
 
       {all && !err && (
         <ResultsLayout filters={filters} activeCount={activeFilters} onClearFilters={clearAll}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-body-md text-ink">
-              <span className="font-semibold">{filtered.length}</span> {filtered.length === 1 ? 'doctor' : 'doctors'} found
+              <span className="font-semibold">{filtered.length}</span> {filtered.length === 1 ? 'doctor' : 'doctors'}{' '}
+              found
             </p>
             <SortSelect
               value={sort}
@@ -177,11 +202,17 @@ function DoctorsInner() {
           ) : (
             <div className="space-y-4">
               {pageRows.map((d) => (
-                <article key={d.id} className="relative flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row">
+                <article
+                  key={d.id}
+                  className="relative flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row"
+                >
                   <div className="flex flex-grow gap-4">
                     <Avatar name={d.doctorName ?? 'Doctor'} url={d.photoUrl} />
                     <div className="min-w-0">
-                      <Link href={`/doctors/${d.doctorSlug}`} className="text-title-lg font-semibold text-ink hover:text-primary">
+                      <Link
+                        href={`/doctors/${d.doctorSlug}`}
+                        className="text-title-lg font-semibold text-ink hover:text-primary"
+                      >
                         {d.doctorName}
                       </Link>
                       {d.specialty && <div className="text-body-md font-medium text-primary">{d.specialty}</div>}
@@ -258,7 +289,13 @@ function DoctorsInner() {
 
 export default function DoctorsPage() {
   return (
-    <Suspense fallback={<PublicShell><p className="py-10 text-center text-body-sm text-ink-soft">Loading…</p></PublicShell>}>
+    <Suspense
+      fallback={
+        <PublicShell>
+          <p className="py-10 text-center text-body-sm text-ink-soft">Loading…</p>
+        </PublicShell>
+      }
+    >
       <DoctorsInner />
     </Suspense>
   );

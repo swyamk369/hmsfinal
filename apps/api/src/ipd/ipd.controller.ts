@@ -3,7 +3,18 @@ import { IpdService } from './ipd.service';
 import { Ctx, RequireModule, RequirePermission } from '../common/decorators';
 import type { RequestContext } from '../common/types';
 import { MODULES, PERMISSIONS } from '@hms/db';
-import { AccrueBedChargesDto, ChargeDto, CreateAdmissionDto, CreateBedDto, CreateWardDto, DischargeDto, RoundDto, TransferDto, UpdateBedDto, UpdateWardDto } from './dto';
+import {
+  AccrueBedChargesDto,
+  ChargeDto,
+  CreateAdmissionDto,
+  CreateBedDto,
+  CreateWardDto,
+  DischargeDto,
+  RoundDto,
+  TransferDto,
+  UpdateBedDto,
+  UpdateWardDto,
+} from './dto';
 
 @Controller('ipd')
 @RequireModule(MODULES.IPD)
@@ -58,7 +69,12 @@ export class IpdController {
   // Admissions
   @Get('admissions')
   @RequirePermission(PERMISSIONS.IPD_READ)
-  listAdmissions(@Ctx() ctx: RequestContext, @Query('status') status?: string, @Query('wardId') wardId?: string, @Query('q') q?: string) {
+  listAdmissions(
+    @Ctx() ctx: RequestContext,
+    @Query('status') status?: string,
+    @Query('wardId') wardId?: string,
+    @Query('q') q?: string,
+  ) {
     return this.svc.listAdmissions(ctx, { status, wardId, q });
   }
 

@@ -106,8 +106,8 @@ function LabDashboard() {
 
       <div className="mb-6 space-y-6">
         <HelpTip title="Lab flow">
-          Keep orders moving in order: collect sample, process, enter result, verify, then print the report. Critical and
-          abnormal results remain visible until verification.
+          Keep orders moving in order: collect sample, process, enter result, verify, then print the report. Critical
+          and abnormal results remain visible until verification.
         </HelpTip>
         <WorkQueuePanel title="Lab work queue" modules={['LAB']} limit={6} compact />
       </div>

@@ -4,7 +4,10 @@ import type { RequestContext } from '../common/types';
 
 @Injectable()
 export class ServicePackageService {
-  async create(ctx: RequestContext, data: { code: string; name: string; description?: string; fixedPrice: number; active?: boolean }) {
+  async create(
+    ctx: RequestContext,
+    data: { code: string; name: string; description?: string; fixedPrice: number; active?: boolean },
+  ) {
     const db = requireDb(ctx);
     return db.servicePackage.create({
       data: {
@@ -42,7 +45,11 @@ export class ServicePackageService {
     return pkg;
   }
 
-  async update(ctx: RequestContext, id: string, data: { name?: string; description?: string; fixedPrice?: number; active?: boolean }) {
+  async update(
+    ctx: RequestContext,
+    id: string,
+    data: { name?: string; description?: string; fixedPrice?: number; active?: boolean },
+  ) {
     const db = requireDb(ctx);
     return db.servicePackage.update({
       where: { id, tenantId: ctx.tenantId! },
@@ -53,7 +60,7 @@ export class ServicePackageService {
   async setItem(ctx: RequestContext, packageId: string, data: { catalogId: string }) {
     const db = requireDb(ctx);
     await this.findOne(ctx, packageId);
-    
+
     return db.servicePackageItem.upsert({
       where: {
         tenantId_packageId_catalogId: {

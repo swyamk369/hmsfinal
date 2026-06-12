@@ -7,7 +7,21 @@ import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
 import { financeApi, type FinanceApproval } from '@/lib/finance';
 import { formatDateTime, money, toMinor } from '@/lib/format';
-import { Button, EmptyState, ErrorState, FormField, Input, Modal, PageHeader, ReasonModal, Section, Select, Spinner, StatusChip, Textarea } from '@/components/ui';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  FormField,
+  Input,
+  Modal,
+  PageHeader,
+  ReasonModal,
+  Section,
+  Select,
+  Spinner,
+  StatusChip,
+  Textarea,
+} from '@/components/ui';
 import { FinanceShell } from '../finance-ui';
 
 const APPROVAL_TYPES = ['REFUND', 'DISCOUNT', 'WRITE_OFF', 'BILL_CANCEL', 'DAY_CLOSE_REOPEN', 'DISCHARGE_OVERRIDE'];
@@ -43,8 +57,12 @@ function ApprovalsInner() {
         subtitle="Refund exceptions, bill cancellations, write-offs, and reopen requests"
         action={
           <div className="flex flex-wrap gap-2">
-            <Button variant="ghost" onClick={load}>Refresh</Button>
-            <Button icon={Plus} onClick={() => setRequestOpen(true)}>Request approval</Button>
+            <Button variant="ghost" onClick={load}>
+              Refresh
+            </Button>
+            <Button icon={Plus} onClick={() => setRequestOpen(true)}>
+              Request approval
+            </Button>
           </div>
         }
       />
@@ -61,7 +79,9 @@ function ApprovalsInner() {
                 </Select>
               </FormField>
               <div className="flex items-end">
-                <Button variant="dark" onClick={load}>Apply</Button>
+                <Button variant="dark" onClick={load}>
+                  Apply
+                </Button>
               </div>
             </div>
           </Section>
@@ -96,16 +116,35 @@ function ApprovalsInner() {
                           {row.entityId && <div className="text-label-sm">{row.entityId.slice(0, 8)}</div>}
                         </td>
                         <td className="px-5 py-3 text-ink-muted">{row.reason}</td>
-                        <td className="px-5 py-3 text-right font-medium text-ink">{row.amount != null ? money(row.amount) : '-'}</td>
-                        <td className="px-5 py-3"><StatusChip status={row.status} /></td>
+                        <td className="px-5 py-3 text-right font-medium text-ink">
+                          {row.amount != null ? money(row.amount) : '-'}
+                        </td>
+                        <td className="px-5 py-3">
+                          <StatusChip status={row.status} />
+                        </td>
                         <td className="px-5 py-3">
                           {row.status === 'PENDING' ? (
                             <div className="flex justify-end gap-2">
-                              <Button size="sm" icon={Check} onClick={() => setDecision({ id: row.id, action: 'approve' })}>Approve</Button>
-                              <Button size="sm" variant="danger" icon={X} onClick={() => setDecision({ id: row.id, action: 'reject' })}>Reject</Button>
+                              <Button
+                                size="sm"
+                                icon={Check}
+                                onClick={() => setDecision({ id: row.id, action: 'approve' })}
+                              >
+                                Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="danger"
+                                icon={X}
+                                onClick={() => setDecision({ id: row.id, action: 'reject' })}
+                              >
+                                Reject
+                              </Button>
                             </div>
                           ) : (
-                            <div className="text-right text-label-sm text-ink-soft">{row.decisionReason ?? 'Decided'}</div>
+                            <div className="text-right text-label-sm text-ink-soft">
+                              {row.decisionReason ?? 'Decided'}
+                            </div>
                           )}
                         </td>
                       </tr>
@@ -142,7 +181,15 @@ function ApprovalsInner() {
   );
 }
 
-function RequestApprovalModal({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => Promise<void> }) {
+function RequestApprovalModal({
+  open,
+  onClose,
+  onSaved,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSaved: () => Promise<void>;
+}) {
   const { activeTenantId } = useAuth();
   const toast = useToast();
   const [type, setType] = useState('WRITE_OFF');
@@ -193,8 +240,12 @@ function RequestApprovalModal({ open, onClose, onSaved }: { open: boolean; onClo
       title="Request finance approval"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button onClick={submit} loading={busy} disabled={!reason.trim() || !entity.trim()}>Request</Button>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button onClick={submit} loading={busy} disabled={!reason.trim() || !entity.trim()}>
+            Request
+          </Button>
         </>
       }
     >
@@ -202,7 +253,11 @@ function RequestApprovalModal({ open, onClose, onSaved }: { open: boolean; onClo
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField label="Type" required>
             <Select value={type} onChange={(e) => setType(e.target.value)}>
-              {APPROVAL_TYPES.map((x) => <option key={x} value={x}>{x.replace(/_/g, ' ')}</option>)}
+              {APPROVAL_TYPES.map((x) => (
+                <option key={x} value={x}>
+                  {x.replace(/_/g, ' ')}
+                </option>
+              ))}
             </Select>
           </FormField>
           <FormField label="Amount">
@@ -210,7 +265,11 @@ function RequestApprovalModal({ open, onClose, onSaved }: { open: boolean; onClo
           </FormField>
         </div>
         <FormField label="Entity" required>
-          <Input value={entity} onChange={(e) => setEntity(e.target.value)} placeholder="bill, refund, finance_day_close..." />
+          <Input
+            value={entity}
+            onChange={(e) => setEntity(e.target.value)}
+            placeholder="bill, refund, finance_day_close..."
+          />
         </FormField>
         <FormField label="Entity ID">
           <Input value={entityId} onChange={(e) => setEntityId(e.target.value)} />

@@ -247,7 +247,12 @@ export class PatientService {
       s.db.patientDocument.count({ where: { patientId: id } }),
     ]);
 
-    const blockers: Array<{ type: string; message: string; href: string; priority: 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL' }> = [];
+    const blockers: Array<{
+      type: string;
+      message: string;
+      href: string;
+      priority: 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
+    }> = [];
     if (pendingLabOrders.length > 0) {
       blockers.push({
         type: 'LAB',
@@ -288,7 +293,10 @@ export class PatientService {
         priority: 'HIGH',
       });
     }
-    if (activeAdmission?.expectedDischargeAt && new Date(activeAdmission.expectedDischargeAt).getTime() < now.getTime()) {
+    if (
+      activeAdmission?.expectedDischargeAt &&
+      new Date(activeAdmission.expectedDischargeAt).getTime() < now.getTime()
+    ) {
       blockers.push({
         type: 'IPD',
         message: 'Expected discharge date has passed',
@@ -297,57 +305,59 @@ export class PatientService {
       });
     }
 
-    const current =
-      activeAdmission
+    const current = activeAdmission
+      ? {
+          status: 'ADMITTED',
+          module: 'IPD',
+          location: `${activeAdmission.bed?.ward?.name ?? 'Ward'} / ${activeAdmission.bed?.bedNumber ?? 'Bed'}`,
+          href: `/ipd/admissions/${activeAdmission.id}`,
+          label: 'Patient is admitted',
+        }
+      : activeEncounter
         ? {
-            status: 'ADMITTED',
-            module: 'IPD',
-            location: `${activeAdmission.bed?.ward?.name ?? 'Ward'} / ${activeAdmission.bed?.bedNumber ?? 'Bed'}`,
+            status: activeEncounter.status,
+            module: 'OPD',
+            location: activeEncounter.status === 'IN_PROGRESS' ? 'Doctor consultation' : 'OPD queue',
+            href: activeEncounter.status === 'IN_PROGRESS' ? `/doctor/consult/${activeEncounter.id}` : '/doctor',
+            label: activeEncounter.status === 'IN_PROGRESS' ? 'Consultation in progress' : 'Waiting for consultation',
+          }
+        : activeAppointment
+          ? {
+              status: activeAppointment.status,
+              module: 'SCHEDULING',
+              location: activeAppointment.scheduledAt ? new Date(activeAppointment.scheduledAt).toISOString() : null,
+              href: '/opd/appointments',
+              label: activeAppointment.status === 'CHECKED_IN' ? 'Checked in for appointment' : 'Appointment scheduled',
+            }
+          : blockers.length > 0
+            ? {
+                status: 'ATTENTION_NEEDED',
+                module: blockers[0].type,
+                location: null,
+                href: blockers[0].href,
+                label: blockers[0].message,
+              }
+            : {
+                status: 'STABLE',
+                module: 'PATIENT',
+                location: null,
+                href: `/patients/${id}`,
+                label: 'No active workflow blockers',
+              };
+
+    const nextRecommendedAction = blockers[0]
+      ? { label: blockers[0].message, href: blockers[0].href, priority: blockers[0].priority }
+      : activeAdmission
+        ? {
+            label: 'Continue IPD care plan',
             href: `/ipd/admissions/${activeAdmission.id}`,
-            label: 'Patient is admitted',
+            priority: 'NORMAL' as const,
           }
         : activeEncounter
-          ? {
-              status: activeEncounter.status,
-              module: 'OPD',
-              location: activeEncounter.status === 'IN_PROGRESS' ? 'Doctor consultation' : 'OPD queue',
-              href: activeEncounter.status === 'IN_PROGRESS' ? `/doctor/consult/${activeEncounter.id}` : '/doctor',
-              label: activeEncounter.status === 'IN_PROGRESS' ? 'Consultation in progress' : 'Waiting for consultation',
-            }
+          ? { label: 'Continue OPD workflow', href: current.href, priority: 'NORMAL' as const }
           : activeAppointment
-            ? {
-                status: activeAppointment.status,
-                module: 'SCHEDULING',
-                location: activeAppointment.scheduledAt ? new Date(activeAppointment.scheduledAt).toISOString() : null,
-                href: '/opd/appointments',
-                label: activeAppointment.status === 'CHECKED_IN' ? 'Checked in for appointment' : 'Appointment scheduled',
-              }
-            : blockers.length > 0
-              ? {
-                  status: 'ATTENTION_NEEDED',
-                  module: blockers[0].type,
-                  location: null,
-                  href: blockers[0].href,
-                  label: blockers[0].message,
-                }
-              : {
-                  status: 'STABLE',
-                  module: 'PATIENT',
-                  location: null,
-                  href: `/patients/${id}`,
-                  label: 'No active workflow blockers',
-                };
-
-    const nextRecommendedAction =
-      blockers[0]
-        ? { label: blockers[0].message, href: blockers[0].href, priority: blockers[0].priority }
-        : activeAdmission
-          ? { label: 'Continue IPD care plan', href: `/ipd/admissions/${activeAdmission.id}`, priority: 'NORMAL' as const }
-          : activeEncounter
-            ? { label: 'Continue OPD workflow', href: current.href, priority: 'NORMAL' as const }
-            : activeAppointment
-              ? { label: 'Check in or update appointment', href: '/opd/appointments', priority: 'NORMAL' as const }
-              : { label: 'Review patient timeline', href: `/patients/${id}`, priority: 'LOW' as const };
+            ? { label: 'Check in or update appointment', href: '/opd/appointments', priority: 'NORMAL' as const }
+            : { label: 'Review patient timeline', href: `/patients/${id}`, priority: 'LOW' as const };
 
     return {
       patientId: patient.id,
@@ -547,7 +557,8 @@ export class PatientService {
         <h2>${this.escapeHtml(title)}</h2>
         ${body || '<p class="muted">No records.</p>'}
       </section>`;
-    const list = (items: string[]) => (items.length ? `<ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul>` : '');
+    const list = (items: string[]) =>
+      items.length ? `<ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul>` : '';
 
     return `<!doctype html>
 <html>
@@ -576,7 +587,9 @@ export class PatientService {
   <table>
     <tbody>
       ${rows
-        .map(([label, value]) => `<tr><th>${this.escapeHtml(label)}</th><td>${this.escapeHtml(String(value))}</td></tr>`)
+        .map(
+          ([label, value]) => `<tr><th>${this.escapeHtml(label)}</th><td>${this.escapeHtml(String(value))}</td></tr>`,
+        )
         .join('')}
     </tbody>
   </table>
@@ -637,7 +650,11 @@ export class PatientService {
   )}
   ${section(
     'Allergies',
-    list(allergies.map((a: any) => `${this.escapeHtml(a.substance)} ${a.severity ? `(${this.escapeHtml(a.severity)})` : ''}`)),
+    list(
+      allergies.map(
+        (a: any) => `${this.escapeHtml(a.substance)} ${a.severity ? `(${this.escapeHtml(a.severity)})` : ''}`,
+      ),
+    ),
   )}
   ${section('Medical History', list(histories.map((h: any) => `${this.escapeHtml(h.type)} - ${this.escapeHtml(h.description)}`)))}
   ${section('Consents', list(consents.map((c: any) => `${this.escapeHtml(c.purpose)} - ${this.escapeHtml(new Date(c.grantedAt).toLocaleDateString())}`)))}

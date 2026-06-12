@@ -62,6 +62,7 @@ export interface NavItem {
 
 export const NAV: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Support', href: '/support' },
   { label: 'Manager', href: '/manager', roles: ['HOSPITAL_MANAGER', 'HOSPITAL_ADMIN'] },
   { label: 'Reception', href: '/reception', module: 'OPD', roles: ['RECEPTION', 'HOSPITAL_ADMIN'] },
   {
@@ -120,6 +121,7 @@ export const NAV: NavItem[] = [
 // Platform (Super Admin) navigation — never shown to tenant users.
 export const PLATFORM_NAV: NavItem[] = [
   { label: 'Tenants', href: '/platform' },
+  { label: 'Support', href: '/platform/support' },
   { label: 'Plans', href: '/platform/plans' },
   { label: 'Audit Log', href: '/platform/audit' },
 ];

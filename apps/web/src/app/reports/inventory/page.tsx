@@ -45,8 +45,16 @@ function InventoryReportPageInner() {
     <>
       <PageHeader
         title="Inventory Report"
-        subtitle={data ? `Stock value, expiry, low-stock risk, procurement, and ledger · updated ${formatDateTime(data.generatedAt)}` : 'Stock value, expiry, low-stock risk, procurement, and ledger'}
-        action={<Button variant="ghost" onClick={load}>Refresh</Button>}
+        subtitle={
+          data
+            ? `Stock value, expiry, low-stock risk, procurement, and ledger · updated ${formatDateTime(data.generatedAt)}`
+            : 'Stock value, expiry, low-stock risk, procurement, and ledger'
+        }
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
       />
 
       <div className="space-y-6">
@@ -84,7 +92,12 @@ function InventoryReportPageInner() {
               items={[
                 { label: 'Items', value: data.totals.itemCount ?? 0, icon: Boxes },
                 { label: 'Stock value', value: money(data.totals.stockValue ?? 0), icon: Warehouse },
-                { label: 'Low stock', value: data.totals.lowStock ?? 0, hint: `${data.totals.expiring ?? 0} expiring batches`, icon: AlertTriangle },
+                {
+                  label: 'Low stock',
+                  value: data.totals.lowStock ?? 0,
+                  hint: `${data.totals.expiring ?? 0} expiring batches`,
+                  icon: AlertTriangle,
+                },
                 { label: 'Expired batches', value: data.totals.expired ?? 0, icon: PackageSearch },
                 { label: 'Pending POs', value: data.totals.pendingPurchases ?? 0, icon: ClipboardList },
               ]}
@@ -153,7 +166,11 @@ function InventoryReportPageInner() {
 
 export default function InventoryReportPage() {
   return (
-    <Protected requireModule="REPORTS" allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER', 'INVENTORY_MGR']} requirePermission={['reports.read', 'reports.inventory.read', 'inventory.reports.read', 'inventory.read']}>
+    <Protected
+      requireModule="REPORTS"
+      allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER', 'INVENTORY_MGR']}
+      requirePermission={['reports.read', 'reports.inventory.read', 'inventory.reports.read', 'inventory.read']}
+    >
       <InventoryReportPageInner />
     </Protected>
   );

@@ -20,9 +20,28 @@ export function useData<T>(fn: () => Promise<T>, deps: unknown[]) {
   return { data, err, reload: load };
 }
 
-const POSITIVE = ['PAID', 'CONFIRMED', 'COMPLETED', 'SCHEDULED', 'ACTIVE', 'VERIFIED', 'APPROVED', 'FINALIZED', 'NORMAL'];
+const POSITIVE = [
+  'PAID',
+  'CONFIRMED',
+  'COMPLETED',
+  'SCHEDULED',
+  'ACTIVE',
+  'VERIFIED',
+  'APPROVED',
+  'FINALIZED',
+  'NORMAL',
+];
 const NEGATIVE = ['CANCELLED', 'REJECTED', 'CRITICAL', 'HIGH', 'LOW', 'UNPAID', 'NO_SHOW', 'BLOCKED'];
-const PENDINGY = ['PENDING', 'PARTIAL', 'DUE', 'UNDER_REVIEW', 'PENDING_STAFF_APPROVAL', 'DRAFT', 'IN_PROGRESS', 'CHECKED_IN'];
+const PENDINGY = [
+  'PENDING',
+  'PARTIAL',
+  'DUE',
+  'UNDER_REVIEW',
+  'PENDING_STAFF_APPROVAL',
+  'DRAFT',
+  'IN_PROGRESS',
+  'CHECKED_IN',
+];
 
 export function StatusBadge({ status }: { status: string }) {
   const s = status.toUpperCase();
@@ -33,7 +52,11 @@ export function StatusBadge({ status }: { status: string }) {
       : PENDINGY.includes(s)
         ? 'bg-warning-bg text-warning-fg'
         : 'bg-canvas text-ink-muted';
-  return <span className={`inline-block rounded-full px-2.5 py-0.5 text-label-sm font-medium ${tone}`}>{prettyStatus(status)}</span>;
+  return (
+    <span className={`inline-block rounded-full px-2.5 py-0.5 text-label-sm font-medium ${tone}`}>
+      {prettyStatus(status)}
+    </span>
+  );
 }
 
 export function prettyStatus(s: string): string {
@@ -51,7 +74,17 @@ export function Loading({ label = 'Loading…' }: { label?: string }) {
   );
 }
 
-export function EmptyState({ icon: Icon, title, body, action }: { icon: React.ComponentType<{ className?: string }>; title: string; body?: string; action?: React.ReactNode }) {
+export function EmptyState({
+  icon: Icon,
+  title,
+  body,
+  action,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  body?: string;
+  action?: React.ReactNode;
+}) {
   return (
     <div className="rounded-xl border border-line bg-surface px-6 py-12 text-center">
       <span className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-canvas text-ink-soft">
@@ -65,11 +98,21 @@ export function EmptyState({ icon: Icon, title, body, action }: { icon: React.Co
 }
 
 export function ErrorState({ msg }: { msg: string }) {
-  return <div className="rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">{msg}</div>;
+  return (
+    <div className="rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">{msg}</div>
+  );
 }
 
 /** Underline sub-tabs (Upcoming / Past, Unpaid / Paid, etc.). */
-export function SubTabs<T extends string>({ tabs, value, onChange }: { tabs: { key: T; label: string; count?: number }[]; value: T; onChange: (t: T) => void }) {
+export function SubTabs<T extends string>({
+  tabs,
+  value,
+  onChange,
+}: {
+  tabs: { key: T; label: string; count?: number }[];
+  value: T;
+  onChange: (t: T) => void;
+}) {
   return (
     <div className="mb-5 flex gap-1 overflow-x-auto border-b border-line">
       {tabs.map((t) => (

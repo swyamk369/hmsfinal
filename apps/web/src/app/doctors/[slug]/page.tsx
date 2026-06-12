@@ -20,22 +20,38 @@ import {
 import { PublicShell } from '@/components/public-shell';
 import { Avatar, Tag } from '@/components/patient/directory-ui';
 import { SaveDoctorButton } from '@/components/patient/save-button';
-import { publicApi, inr, type PublicDoctor, type PublicHospital, type PublicAppointmentType, type DaySlots } from '@/lib/public';
+import {
+  publicApi,
+  inr,
+  type PublicDoctor,
+  type PublicHospital,
+  type PublicAppointmentType,
+  type DaySlots,
+} from '@/lib/public';
 
 function DoctorProfileInner() {
   const { slug } = useParams<{ slug: string }>();
-  const [data, setData] = useState<{ doctor: PublicDoctor; hospital: PublicHospital | null; appointmentTypes: PublicAppointmentType[] } | null>(null);
+  const [data, setData] = useState<{
+    doctor: PublicDoctor;
+    hospital: PublicHospital | null;
+    appointmentTypes: PublicAppointmentType[];
+  } | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    publicApi.doctor(slug).then(setData).catch((e) => setErr((e as Error).message));
+    publicApi
+      .doctor(slug)
+      .then(setData)
+      .catch((e) => setErr((e as Error).message));
   }, [slug]);
 
   if (err) {
     return (
       <PublicShell>
         <BackLink />
-        <div className="rounded-xl border border-line bg-surface px-6 py-12 text-center text-body-md text-ink-muted">{err}</div>
+        <div className="rounded-xl border border-line bg-surface px-6 py-12 text-center text-body-md text-ink-muted">
+          {err}
+        </div>
       </PublicShell>
     );
   }
@@ -79,7 +95,10 @@ function DoctorProfileInner() {
                   </div>
                 )}
                 {h && (
-                  <Link href={`/hospitals/${h.slug}`} className="mt-1 inline-flex items-center gap-1.5 text-body-sm text-ink-muted hover:text-primary">
+                  <Link
+                    href={`/hospitals/${h.slug}`}
+                    className="mt-1 inline-flex items-center gap-1.5 text-body-sm text-ink-muted hover:text-primary"
+                  >
                     <Building2 className="h-4 w-4 flex-shrink-0" /> {h.name}
                     {h.city && (
                       <>
@@ -129,7 +148,8 @@ function DoctorProfileInner() {
                 )}
                 {d.registrationNumber && (
                   <li className="flex items-start gap-2">
-                    <BadgeCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /> Registration: {d.registrationNumber}
+                    <BadgeCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /> Registration:{' '}
+                    {d.registrationNumber}
                   </li>
                 )}
                 {(d.subSpecialties?.length ?? 0) > 0 && (
@@ -186,7 +206,13 @@ function DoctorProfileInner() {
 
 export default function DoctorProfilePage() {
   return (
-    <Suspense fallback={<PublicShell><p className="py-10 text-center text-body-sm text-ink-soft">Loading…</p></PublicShell>}>
+    <Suspense
+      fallback={
+        <PublicShell>
+          <p className="py-10 text-center text-body-sm text-ink-soft">Loading…</p>
+        </PublicShell>
+      }
+    >
       <DoctorProfileInner />
     </Suspense>
   );
@@ -309,7 +335,9 @@ function BookingWidget({
                     sel ? 'border-primary bg-primary text-white' : 'border-line text-ink hover:border-primary'
                   }`}
                 >
-                  <span className={`text-label-sm uppercase ${sel ? 'text-white/80' : 'text-ink-soft'}`}>{dt.toLocaleDateString(undefined, { weekday: 'short' })}</span>
+                  <span className={`text-label-sm uppercase ${sel ? 'text-white/80' : 'text-ink-soft'}`}>
+                    {dt.toLocaleDateString(undefined, { weekday: 'short' })}
+                  </span>
                   <span className="text-title-lg font-semibold">{dt.getDate()}</span>
                 </button>
               );
@@ -332,7 +360,9 @@ function BookingWidget({
                     key={s.time}
                     onClick={() => setTime(s.time)}
                     className={`rounded-lg border px-2 py-2 text-label-md transition-all ${
-                      sel ? 'border-2 border-primary bg-primary text-white' : 'border-line text-ink hover:border-primary hover:bg-primary-50'
+                      sel
+                        ? 'border-2 border-primary bg-primary text-white'
+                        : 'border-line text-ink hover:border-primary hover:bg-primary-50'
                     }`}
                   >
                     {s.time}
@@ -366,7 +396,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function BackLink() {
   return (
-    <Link href="/doctors" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+    <Link
+      href="/doctors"
+      className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+    >
       <ArrowLeft className="h-4 w-4" /> All doctors
     </Link>
   );

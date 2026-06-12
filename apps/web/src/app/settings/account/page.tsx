@@ -69,7 +69,11 @@ function AccountSettingsInner() {
           </div>
         )}
         {err && <ErrorState message={err} />}
-        {message && <div className="rounded-md border border-success/30 bg-success-bg px-4 py-3 text-body-sm text-success-fg">{message}</div>}
+        {message && (
+          <div className="rounded-md border border-success/30 bg-success-bg px-4 py-3 text-body-sm text-success-fg">
+            {message}
+          </div>
+        )}
 
         <Section
           title="Password"

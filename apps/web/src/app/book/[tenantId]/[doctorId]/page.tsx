@@ -18,12 +18,7 @@ import {
   User,
   Video,
 } from 'lucide-react';
-import {
-  BookingChrome,
-  ProviderCard,
-  ServiceOption,
-  groupByPartOfDay,
-} from '@/components/patient/booking-ui';
+import { BookingChrome, ProviderCard, ServiceOption, groupByPartOfDay } from '@/components/patient/booking-ui';
 import { publicApi, inr, type BookingOptions, type DaySlots, type BookingResult } from '@/lib/public';
 
 type Screen = 'choose' | 'auth' | 'details' | 'review' | 'confirmed';
@@ -58,7 +53,13 @@ function BookPageInner() {
   const [slots, setSlots] = useState<DaySlots[] | null>(null);
   const [date, setDate] = useState(prefDate);
   const [time, setTime] = useState(prefTime);
-  const [form, setForm] = useState<PatientForm>({ fullName: bookForName, dateOfBirth: '', email: '', mobile: '', reasonForVisit: '' });
+  const [form, setForm] = useState<PatientForm>({
+    fullName: bookForName,
+    dateOfBirth: '',
+    email: '',
+    mobile: '',
+    reasonForVisit: '',
+  });
   const [consents, setConsents] = useState({ terms: false, records: false });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -85,7 +86,12 @@ function BookPageInner() {
             try {
               const { portalApi } = await import('@/lib/patient-portal');
               const me = await portalApi.me();
-              setForm((f) => ({ ...f, fullName: me.displayName || f.fullName, email: me.email || f.email, mobile: me.mobile || f.mobile }));
+              setForm((f) => ({
+                ...f,
+                fullName: me.displayName || f.fullName,
+                email: me.email || f.email,
+                mobile: me.mobile || f.mobile,
+              }));
             } catch {}
           }
         });
@@ -126,7 +132,8 @@ function BookPageInner() {
   const selectedType = useMemo(() => opts?.appointmentTypes.find((t) => t.id === typeId), [opts, typeId]);
   const datesWithSlots = useMemo(() => (slots ?? []).filter((d) => d.slots.some((s) => s.available)), [slots]);
   const activeDay = useMemo(() => datesWithSlots.find((d) => d.date === date) ?? null, [datesWithSlots, date]);
-  const stepperCurrent = screen === 'choose' ? (time ? 2 : 1) : (screen === 'auth' || screen === 'details') ? 3 : screen === 'review' ? 4 : 5;
+  const stepperCurrent =
+    screen === 'choose' ? (time ? 2 : 1) : screen === 'auth' || screen === 'details' ? 3 : screen === 'review' ? 4 : 5;
 
   async function confirm() {
     setBusy(true);
@@ -222,13 +229,19 @@ function BookPageInner() {
           </>
         ) : screen === 'auth' ? (
           <>
-            <button onClick={() => setScreen('choose')} className="inline-flex items-center gap-1.5 text-label-md text-ink-muted hover:text-ink">
+            <button
+              onClick={() => setScreen('choose')}
+              className="inline-flex items-center gap-1.5 text-label-md text-ink-muted hover:text-ink"
+            >
               <ArrowLeft className="h-4 w-4" /> Back
             </button>
           </>
         ) : screen === 'details' ? (
           <>
-            <button onClick={() => setScreen('choose')} className="inline-flex items-center gap-1.5 text-label-md text-ink-muted hover:text-ink">
+            <button
+              onClick={() => setScreen('choose')}
+              className="inline-flex items-center gap-1.5 text-label-md text-ink-muted hover:text-ink"
+            >
               <ArrowLeft className="h-4 w-4" /> Back
             </button>
             <button
@@ -241,7 +254,10 @@ function BookPageInner() {
           </>
         ) : (
           <>
-            <button onClick={() => setScreen('details')} className="inline-flex items-center gap-1.5 text-label-md text-ink-muted hover:text-ink">
+            <button
+              onClick={() => setScreen('details')}
+              className="inline-flex items-center gap-1.5 text-label-md text-ink-muted hover:text-ink"
+            >
               <ArrowLeft className="h-4 w-4" /> Back
             </button>
             <button
@@ -256,7 +272,9 @@ function BookPageInner() {
       }
     >
       {err && (
-        <div className="mb-4 rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">{err}</div>
+        <div className="mb-4 rounded-lg border border-danger/30 bg-danger-bg px-4 py-3 text-body-sm text-danger-fg">
+          {err}
+        </div>
       )}
 
       {screen === 'choose' && (
@@ -290,7 +308,9 @@ function BookPageInner() {
                         key={c}
                         onClick={() => setConsult(c)}
                         className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 py-2.5 text-body-sm transition-colors ${
-                          consult === c ? 'border-primary bg-primary-50 text-primary' : 'border-line text-ink-muted hover:border-primary'
+                          consult === c
+                            ? 'border-primary bg-primary-50 text-primary'
+                            : 'border-line text-ink-muted hover:border-primary'
                         }`}
                       >
                         {c === 'TELEHEALTH' ? <Video className="h-4 w-4" /> : <User className="h-4 w-4" />}
@@ -310,7 +330,9 @@ function BookPageInner() {
                 <h3 className="text-headline-sm text-ink">Pick a date</h3>
                 {!slots && <p className="mt-3 text-body-sm text-ink-soft">Finding available days…</p>}
                 {slots && datesWithSlots.length === 0 && (
-                  <p className="mt-3 text-body-sm text-ink-muted">No availability in the next two weeks. Please contact the clinic.</p>
+                  <p className="mt-3 text-body-sm text-ink-muted">
+                    No availability in the next two weeks. Please contact the clinic.
+                  </p>
                 )}
                 {datesWithSlots.length > 0 && (
                   <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
@@ -389,13 +411,19 @@ function BookPageInner() {
           </div>
           <div className="mb-6 flex overflow-hidden rounded-lg border border-line p-1">
             <button
-              onClick={() => { setAuthMode('register'); setAuthErr(null); }}
+              onClick={() => {
+                setAuthMode('register');
+                setAuthErr(null);
+              }}
               className={`flex-1 rounded-md py-2 text-label-sm transition-colors ${authMode === 'register' ? 'bg-primary text-white' : 'text-ink-muted hover:text-ink'}`}
             >
               New Patient
             </button>
             <button
-              onClick={() => { setAuthMode('login'); setAuthErr(null); }}
+              onClick={() => {
+                setAuthMode('login');
+                setAuthErr(null);
+              }}
               className={`flex-1 rounded-md py-2 text-label-sm transition-colors ${authMode === 'login' ? 'bg-primary text-white' : 'text-ink-muted hover:text-ink'}`}
             >
               Existing Patient
@@ -410,8 +438,9 @@ function BookPageInner() {
                 const { getFirebaseAuth } = await import('@/lib/firebase');
                 const auth = getFirebaseAuth();
                 if (!auth) throw new Error('Auth not available');
-                const { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
-                
+                const { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } =
+                  await import('firebase/auth');
+
                 let meName = authName;
                 let meEmail = authEmail;
                 let meMobile = '';
@@ -434,7 +463,12 @@ function BookPageInner() {
                 }
 
                 setPatientStatus(authMode === 'login' ? 'EXISTING' : 'NEW');
-                setForm(f => ({ ...f, email: meEmail, fullName: meName || f.fullName, mobile: meMobile || f.mobile }));
+                setForm((f) => ({
+                  ...f,
+                  email: meEmail,
+                  fullName: meName || f.fullName,
+                  mobile: meMobile || f.mobile,
+                }));
                 setScreen('details');
               } catch (err) {
                 setAuthErr((err as Error).message);
@@ -444,27 +478,55 @@ function BookPageInner() {
             }}
             className="space-y-4"
           >
-            {authErr && <div className="rounded border border-danger/30 bg-danger-bg p-3 text-body-sm text-danger-fg">{authErr}</div>}
+            {authErr && (
+              <div className="rounded border border-danger/30 bg-danger-bg p-3 text-body-sm text-danger-fg">
+                {authErr}
+              </div>
+            )}
             {authMode === 'register' && (
               <div>
                 <label className="mb-1 block text-label-sm text-ink">Full name</label>
-                <input required value={authName} onChange={e => setAuthName(e.target.value)} className={inputCls} placeholder="John Doe" />
+                <input
+                  required
+                  value={authName}
+                  onChange={(e) => setAuthName(e.target.value)}
+                  className={inputCls}
+                  placeholder="John Doe"
+                />
               </div>
             )}
             <div>
               <label className="mb-1 block text-label-sm text-ink">Email</label>
-              <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} className={inputCls} placeholder="you@email.com" />
+              <input
+                type="email"
+                required
+                value={authEmail}
+                onChange={(e) => setAuthEmail(e.target.value)}
+                className={inputCls}
+                placeholder="you@email.com"
+              />
             </div>
             <div>
               <label className="mb-1 block text-label-sm text-ink">Password</label>
-              <input type="password" required value={authPass} onChange={e => setAuthPass(e.target.value)} className={inputCls} placeholder="••••••••" />
+              <input
+                type="password"
+                required
+                value={authPass}
+                onChange={(e) => setAuthPass(e.target.value)}
+                className={inputCls}
+                placeholder="••••••••"
+              />
             </div>
             <button
               type="submit"
               disabled={authBusy}
               className="mt-2 w-full rounded-lg bg-primary py-2.5 text-label-md text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
             >
-              {authBusy ? 'Please wait...' : authMode === 'login' ? 'Sign in and Continue' : 'Create account and Continue'}
+              {authBusy
+                ? 'Please wait...'
+                : authMode === 'login'
+                  ? 'Sign in and Continue'
+                  : 'Create account and Continue'}
             </button>
           </form>
         </div>
@@ -474,7 +536,9 @@ function BookPageInner() {
         <div className="mx-auto max-w-2xl">
           <div className="mb-6">
             <h2 className="text-headline-md text-ink">Patient details</h2>
-            <p className="mt-1 text-body-md text-ink-muted">Please provide the required information to secure your appointment.</p>
+            <p className="mt-1 text-body-md text-ink-muted">
+              Please provide the required information to secure your appointment.
+            </p>
             {bookFor && bookForName && (
               <div className="mt-4 inline-flex items-center gap-2 rounded-md bg-primary-50 px-3 py-1.5 text-label-sm text-primary">
                 <User className="h-4 w-4" /> Booking on behalf of {bookForName}
@@ -483,28 +547,59 @@ function BookPageInner() {
           </div>
           <div className="space-y-6 rounded-xl border border-line bg-surface p-5 md:p-6">
             <fieldset className="space-y-4">
-              <legend className="mb-2 w-full border-b border-line pb-2 text-headline-sm text-ink">Personal information</legend>
+              <legend className="mb-2 w-full border-b border-line pb-2 text-headline-sm text-ink">
+                Personal information
+              </legend>
               <Field label="Full name" required>
-                <input className={inputCls} value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
+                <input
+                  className={inputCls}
+                  value={form.fullName}
+                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                />
               </Field>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field label="Date of birth">
-                  <input type="date" className={inputCls} value={form.dateOfBirth} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })} />
+                  <input
+                    type="date"
+                    className={inputCls}
+                    value={form.dateOfBirth}
+                    onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
+                  />
                 </Field>
                 <Field label="Mobile number">
-                  <input type="tel" className={inputCls} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} />
+                  <input
+                    type="tel"
+                    className={inputCls}
+                    value={form.mobile}
+                    onChange={(e) => setForm({ ...form, mobile: e.target.value })}
+                  />
                 </Field>
               </div>
               <Field label="Email address">
-                <input type="email" className={inputCls} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                <input
+                  type="email"
+                  className={inputCls}
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
               </Field>
-              {!contactOk && <p className="-mt-2 text-label-sm text-ink-soft">Provide an email or mobile so the clinic can reach you.</p>}
+              {!contactOk && (
+                <p className="-mt-2 text-label-sm text-ink-soft">
+                  Provide an email or mobile so the clinic can reach you.
+                </p>
+              )}
             </fieldset>
 
             <fieldset className="space-y-3 border-t border-line pt-4">
               <legend className="mb-2 text-headline-sm text-ink">Visit details</legend>
               <Field label="Reason for visit">
-                <textarea rows={3} className={inputCls} value={form.reasonForVisit} onChange={(e) => setForm({ ...form, reasonForVisit: e.target.value })} placeholder="Briefly describe any symptoms or concerns…" />
+                <textarea
+                  rows={3}
+                  className={inputCls}
+                  value={form.reasonForVisit}
+                  onChange={(e) => setForm({ ...form, reasonForVisit: e.target.value })}
+                  placeholder="Briefly describe any symptoms or concerns…"
+                />
               </Field>
             </fieldset>
 
@@ -559,7 +654,9 @@ function BookPageInner() {
                 <div className="space-y-2 border-b border-line py-4 text-body-sm">
                   <div className="flex items-start gap-2">
                     <CalendarDays className="mt-0.5 h-4 w-4 text-ink-soft" />
-                    <span className="text-ink">{formatDay(date, true)} · {time}</span>
+                    <span className="text-ink">
+                      {formatDay(date, true)} · {time}
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
                     <MapPin className="mt-0.5 h-4 w-4 text-ink-soft" />
@@ -602,10 +699,14 @@ function Confirmation({ result }: { result: BookingResult }) {
   const pending = result.requiresApproval;
   return (
     <section className="mx-auto flex max-w-2xl flex-col items-center text-center">
-      <div className={`mb-6 grid h-24 w-24 place-items-center rounded-full ${pending ? 'bg-warning-bg' : 'bg-success-bg'}`}>
+      <div
+        className={`mb-6 grid h-24 w-24 place-items-center rounded-full ${pending ? 'bg-warning-bg' : 'bg-success-bg'}`}
+      >
         <CheckCircle2 className={`h-12 w-12 ${pending ? 'text-warning-fg' : 'text-success-fg'}`} />
       </div>
-      <h1 className="text-headline-md text-ink">{pending ? 'Booking request sent' : 'Your appointment is confirmed'}</h1>
+      <h1 className="text-headline-md text-ink">
+        {pending ? 'Booking request sent' : 'Your appointment is confirmed'}
+      </h1>
       <p className="mt-2 max-w-md text-body-lg text-ink-muted">
         {pending
           ? 'The clinic will review your request and confirm shortly. You can track it in your patient portal.'
@@ -615,7 +716,9 @@ function Confirmation({ result }: { result: BookingResult }) {
       <div className="mt-8 w-full rounded-xl border border-line bg-surface p-6 text-left shadow-sm">
         <div className="mb-4 flex items-center justify-between border-b border-line pb-4">
           <span className="text-label-md uppercase tracking-wide text-ink-soft">Reference ID</span>
-          <span className="rounded bg-primary-50 px-2 py-1 text-label-md text-primary">#{result.bookingId.slice(0, 8).toUpperCase()}</span>
+          <span className="rounded bg-primary-50 px-2 py-1 text-label-md text-primary">
+            #{result.bookingId.slice(0, 8).toUpperCase()}
+          </span>
         </div>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="flex items-start gap-3">
@@ -679,7 +782,15 @@ function Field({ label, required, children }: { label: string; required?: boolea
   );
 }
 
-function Consent({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: React.ReactNode }) {
+function Consent({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: React.ReactNode;
+}) {
   return (
     <label className="flex cursor-pointer items-start gap-3">
       <input
@@ -756,7 +867,13 @@ function parseStart(dateIso: string, time: string): Date | null {
 
 export default function BookPage() {
   return (
-    <Suspense fallback={<div className="grid min-h-screen place-items-center bg-canvas text-body-sm text-ink-soft">Loading booking…</div>}>
+    <Suspense
+      fallback={
+        <div className="grid min-h-screen place-items-center bg-canvas text-body-sm text-ink-soft">
+          Loading booking…
+        </div>
+      }
+    >
       <BookPageInner />
     </Suspense>
   );

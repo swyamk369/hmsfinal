@@ -139,7 +139,13 @@ export interface AdmissionDetail extends AdmissionLite {
   vitals: Vitals[];
   labOrders: { id: string; status: string; createdAt: string }[];
   bill: { id: string; billNumber: string; netAmount: number; status: string; items: any[]; payments: any[] } | null;
-  dischargeSummary: { id: string; summary: string; instructions: string | null; followUpDate: string | null; finalizedAt: string | null } | null;
+  dischargeSummary: {
+    id: string;
+    summary: string;
+    instructions: string | null;
+    followUpDate: string | null;
+    finalizedAt: string | null;
+  } | null;
 }
 
 export interface DischargeSummaryView {
@@ -151,25 +157,41 @@ export interface DischargeSummaryView {
 export const ipdApi = {
   occupancy: (t: string) => apiGet<Occupancy>('/ipd/occupancy', t),
   listWards: (t: string) => apiGet<Ward[]>('/ipd/wards', t),
-  createWard: (t: string, body: { name: string; type?: string; dailyRate?: number; chargeCatalogId?: string }) => apiPost<Ward>('/ipd/wards', body, t),
+  createWard: (t: string, body: { name: string; type?: string; dailyRate?: number; chargeCatalogId?: string }) =>
+    apiPost<Ward>('/ipd/wards', body, t),
   updateWard: (t: string, id: string, body: Record<string, unknown>) => apiPatch<Ward>(`/ipd/wards/${id}`, body, t),
   listBeds: (t: string, wardId?: string) => apiGet<Bed[]>(`/ipd/beds${wardId ? `?wardId=${wardId}` : ''}`, t),
-  createBed: (t: string, body: { wardId: string; bedNumber: string; status?: string }) => apiPost<Bed>('/ipd/beds', body, t),
+  createBed: (t: string, body: { wardId: string; bedNumber: string; status?: string }) =>
+    apiPost<Bed>('/ipd/beds', body, t),
   updateBed: (t: string, id: string, body: Record<string, unknown>) => apiPatch<Bed>(`/ipd/beds/${id}`, body, t),
-  listAdmissions: (t: string, params: Record<string, string> = {}) => apiGet<AdmissionLite[]>(`/ipd/admissions${qs(params)}`, t),
-  admit: (t: string, body: { patientId: string; bedId: string; providerId?: string; expectedDischargeAt?: string; reason?: string }) =>
-    apiPost<AdmissionDetail>('/ipd/admissions', body, t),
+  listAdmissions: (t: string, params: Record<string, string> = {}) =>
+    apiGet<AdmissionLite[]>(`/ipd/admissions${qs(params)}`, t),
+  admit: (
+    t: string,
+    body: { patientId: string; bedId: string; providerId?: string; expectedDischargeAt?: string; reason?: string },
+  ) => apiPost<AdmissionDetail>('/ipd/admissions', body, t),
   getAdmission: (t: string, id: string) => apiGet<AdmissionDetail>(`/ipd/admissions/${id}`, t),
   summary: (t: string, id: string) => apiGet<DischargeSummaryView>(`/ipd/admissions/${id}/summary`, t),
-  transfer: (t: string, id: string, toBedId: string, reason: string) => apiPost<AdmissionDetail>(`/ipd/admissions/${id}/transfer`, { toBedId, reason }, t),
+  transfer: (t: string, id: string, toBedId: string, reason: string) =>
+    apiPost<AdmissionDetail>(`/ipd/admissions/${id}/transfer`, { toBedId, reason }, t),
   addRound: (t: string, id: string, notes: string) => apiPost<Round>(`/ipd/admissions/${id}/rounds`, { notes }, t),
-  addCharge: (t: string, id: string, body: { description: string; quantity?: number; unitPrice: number; notes?: string }) =>
-    apiPost<Charge>(`/ipd/admissions/${id}/charges`, body, t),
-  discharge: (t: string, id: string, body: { reason: string; summary: string; instructions?: string; followUpDate?: string }) =>
-    apiPost<AdmissionDetail>(`/ipd/admissions/${id}/discharge`, body, t),
+  addCharge: (
+    t: string,
+    id: string,
+    body: { description: string; quantity?: number; unitPrice: number; notes?: string },
+  ) => apiPost<Charge>(`/ipd/admissions/${id}/charges`, body, t),
+  discharge: (
+    t: string,
+    id: string,
+    body: { reason: string; summary: string; instructions?: string; followUpDate?: string },
+  ) => apiPost<AdmissionDetail>(`/ipd/admissions/${id}/discharge`, body, t),
   bedChargePreview: (t: string, id: string) => apiGet<BedChargePreview>(`/ipd/admissions/${id}/bed-charge-preview`, t),
   accrueBedCharges: (t: string, id: string, asOf?: string) =>
-    apiPost<{ posted: number; billId: string | null; plan: BedChargePlan }>(`/ipd/admissions/${id}/accrue-bed-charges`, asOf ? { asOf } : {}, t),
+    apiPost<{ posted: number; billId: string | null; plan: BedChargePlan }>(
+      `/ipd/admissions/${id}/accrue-bed-charges`,
+      asOf ? { asOf } : {},
+      t,
+    ),
 };
 
 function qs(params: Record<string, string>): string {

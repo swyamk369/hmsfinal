@@ -25,10 +25,13 @@ export interface OnlineBookingDetail extends OnlineBookingRow {
 }
 
 export const bookingsApi = {
-  list: (t: string, status?: string) => apiGet<OnlineBookingRow[]>(`/hms/online-bookings${status ? `?status=${status}` : ''}`, t),
+  list: (t: string, status?: string) =>
+    apiGet<OnlineBookingRow[]>(`/hms/online-bookings${status ? `?status=${status}` : ''}`, t),
   get: (t: string, id: string) => apiGet<OnlineBookingDetail>(`/hms/online-bookings/${id}`, t),
   approve: (t: string, id: string) => apiPost(`/hms/online-bookings/${id}/approve`, {}, t),
   reject: (t: string, id: string, reason: string) => apiPost(`/hms/online-bookings/${id}/reject`, { reason }, t),
-  reschedule: (t: string, id: string, date: string, time: string) => apiPost(`/hms/online-bookings/${id}/reschedule`, { date, time }, t),
-  linkPatient: (t: string, id: string, patientId: string) => apiPost(`/hms/online-bookings/${id}/link-patient`, { patientId }, t),
+  reschedule: (t: string, id: string, date: string, time: string) =>
+    apiPost(`/hms/online-bookings/${id}/reschedule`, { date, time }, t),
+  linkPatient: (t: string, id: string, patientId: string) =>
+    apiPost(`/hms/online-bookings/${id}/link-patient`, { patientId }, t),
 };

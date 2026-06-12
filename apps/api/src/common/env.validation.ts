@@ -51,7 +51,9 @@ export function validateEnv(env: EnvInput): string[] {
       problems.push('CORS_ORIGIN must not contain localhost/loopback origins in production.');
     }
     if (env.APP_DATABASE_URL && /:app_pw@/.test(env.APP_DATABASE_URL)) {
-      problems.push('APP_DATABASE_URL still uses the default dev password (app_pw); set a strong password in production.');
+      problems.push(
+        'APP_DATABASE_URL still uses the default dev password (app_pw); set a strong password in production.',
+      );
     }
     if (env.THROTTLE_LIMIT && Number(env.THROTTLE_LIMIT) > 10_000) {
       problems.push(`THROTTLE_LIMIT=${env.THROTTLE_LIMIT} is too high for production (looks like an E2E override).`);

@@ -29,7 +29,10 @@ const PATIENT_SELECT = { select: { id: true, fullName: true, mrn: true, dob: tru
 
 @Injectable()
 export class IpdService {
-  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly notifications?: NotificationsService,
+  ) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -48,7 +51,13 @@ export class IpdService {
   async createWard(ctx: RequestContext, dto: CreateWardDto) {
     const s = this.scope(ctx);
     const ward = await s.db.ward.create({
-      data: { tenantId: s.tenantId, name: dto.name, type: (dto.type ?? 'GENERAL') as any, dailyRate: dto.dailyRate ?? 0, chargeCatalogId: dto.chargeCatalogId ?? null },
+      data: {
+        tenantId: s.tenantId,
+        name: dto.name,
+        type: (dto.type ?? 'GENERAL') as any,
+        dailyRate: dto.dailyRate ?? 0,
+        chargeCatalogId: dto.chargeCatalogId ?? null,
+      },
     });
     await this.record(s, 'ward.create', 'ward', ward.id, { name: ward.name, dailyRate: ward.dailyRate });
     return ward;
@@ -60,7 +69,13 @@ export class IpdService {
     if (!existing) throw new NotFoundException('Ward not found');
     const ward = await s.db.ward.update({
       where: { id },
-      data: { name: dto.name, type: dto.type as any, active: dto.active, dailyRate: dto.dailyRate, chargeCatalogId: dto.chargeCatalogId },
+      data: {
+        name: dto.name,
+        type: dto.type as any,
+        active: dto.active,
+        dailyRate: dto.dailyRate,
+        chargeCatalogId: dto.chargeCatalogId,
+      },
     });
     await this.record(s, dto.active === false ? 'ward.deactivate' : 'ward.update', 'ward', id, { changes: dto });
     return ward;
@@ -69,7 +84,11 @@ export class IpdService {
   // ── Beds ──────────────────────────────────────────────────────
   listBeds(ctx: RequestContext, wardId?: string) {
     const { db } = this.scope(ctx);
-    return db.bed.findMany({ where: wardId ? { wardId } : {}, orderBy: { bedNumber: 'asc' }, include: { ward: { select: { name: true } } } });
+    return db.bed.findMany({
+      where: wardId ? { wardId } : {},
+      orderBy: { bedNumber: 'asc' },
+      include: { ward: { select: { name: true } } },
+    });
   }
 
   async createBed(ctx: RequestContext, dto: CreateBedDto) {
@@ -77,7 +96,12 @@ export class IpdService {
     const ward = await s.db.ward.findFirst({ where: { id: dto.wardId }, select: { id: true } });
     if (!ward) throw new BadRequestException('Ward not found');
     const bed = await s.db.bed.create({
-      data: { tenantId: s.tenantId, wardId: dto.wardId, bedNumber: dto.bedNumber, status: (dto.status ?? 'AVAILABLE') as any },
+      data: {
+        tenantId: s.tenantId,
+        wardId: dto.wardId,
+        bedNumber: dto.bedNumber,
+        status: (dto.status ?? 'AVAILABLE') as any,
+      },
     });
     await this.record(s, 'bed.create', 'bed', bed.id, { bedNumber: bed.bedNumber });
     return bed;
@@ -88,7 +112,9 @@ export class IpdService {
     const existing = await s.db.bed.findFirst({ where: { id } });
     if (!existing) throw new NotFoundException('Bed not found');
     if (dto.status && existing.status === 'OCCUPIED' && dto.status !== 'OCCUPIED') {
-      throw new BadRequestException('Cannot change the status of an occupied bed — discharge or transfer the patient first');
+      throw new BadRequestException(
+        'Cannot change the status of an occupied bed — discharge or transfer the patient first',
+      );
     }
     const bed = await s.db.bed.update({ where: { id }, data: { bedNumber: dto.bedNumber, status: dto.status as any } });
     await this.record(s, dto.status ? 'bed.status' : 'bed.update', 'bed', id, { changes: dto });
@@ -98,10 +124,17 @@ export class IpdService {
   // ── Occupancy ─────────────────────────────────────────────────
   async occupancy(ctx: RequestContext) {
     const { db } = this.scope(ctx);
-    const wards = await db.ward.findMany({ where: { active: true }, orderBy: { name: 'asc' }, include: { beds: { orderBy: { bedNumber: 'asc' } } } });
+    const wards = await db.ward.findMany({
+      where: { active: true },
+      orderBy: { name: 'asc' },
+      include: { beds: { orderBy: { bedNumber: 'asc' } } },
+    });
     const bedIds = wards.flatMap((w) => w.beds.map((b) => b.id));
     const admissions = bedIds.length
-      ? await db.admission.findMany({ where: { status: 'ADMITTED', bedId: { in: bedIds } }, include: { patient: PATIENT_SELECT } })
+      ? await db.admission.findMany({
+          where: { status: 'ADMITTED', bedId: { in: bedIds } },
+          include: { patient: PATIENT_SELECT },
+        })
       : [];
     const byBed = new Map(admissions.map((a) => [a.bedId, a]));
     const counts = { occupied: 0, available: 0, maintenance: 0, reserved: 0 };
@@ -127,7 +160,13 @@ export class IpdService {
     const where: any = {};
     if (filters.status) where.status = filters.status;
     if (filters.wardId) where.bed = { wardId: filters.wardId };
-    if (filters.q) where.patient = { OR: [{ fullName: { contains: filters.q, mode: 'insensitive' } }, { mrn: { contains: filters.q, mode: 'insensitive' } }] };
+    if (filters.q)
+      where.patient = {
+        OR: [
+          { fullName: { contains: filters.q, mode: 'insensitive' } },
+          { mrn: { contains: filters.q, mode: 'insensitive' } },
+        ],
+      };
     return db.admission.findMany({
       where,
       orderBy: { admittedAt: 'desc' },
@@ -138,7 +177,10 @@ export class IpdService {
 
   async admit(ctx: RequestContext, dto: CreateAdmissionDto) {
     const s = this.scope(ctx);
-    const patient = await s.db.patient.findFirst({ where: { id: dto.patientId, deletedAt: null }, select: { id: true } });
+    const patient = await s.db.patient.findFirst({
+      where: { id: dto.patientId, deletedAt: null },
+      select: { id: true },
+    });
     if (!patient) throw new BadRequestException('Patient not found');
     const bed = await s.db.bed.findFirst({ where: { id: dto.bedId } });
     if (!bed) throw new BadRequestException('Bed not found');
@@ -149,7 +191,15 @@ export class IpdService {
       if (!fresh || fresh.status !== 'AVAILABLE') throw new BadRequestException('Bed was just taken — pick another');
       // An IPD encounter anchors nursing vitals (Vitals require an encounterId).
       const encounter = await tx.encounter.create({
-        data: { tenantId: s.tenantId, patientId: dto.patientId, providerId: dto.providerId, type: 'IPD', status: 'IN_PROGRESS', chiefComplaint: dto.reason, startedAt: new Date() },
+        data: {
+          tenantId: s.tenantId,
+          patientId: dto.patientId,
+          providerId: dto.providerId,
+          type: 'IPD',
+          status: 'IN_PROGRESS',
+          chiefComplaint: dto.reason,
+          startedAt: new Date(),
+        },
       });
       const created = await tx.admission.create({
         data: {
@@ -200,21 +250,39 @@ export class IpdService {
     });
     if (!adm) throw new NotFoundException('Admission not found');
     const [provider, nursingNotes, medications, vitals, labOrders, bill, dischargeSummary] = await Promise.all([
-      adm.providerId ? s.db.provider.findFirst({ where: { id: adm.providerId }, include: { user: { select: { fullName: true } } } }) : null,
+      adm.providerId
+        ? s.db.provider.findFirst({ where: { id: adm.providerId }, include: { user: { select: { fullName: true } } } })
+        : null,
       s.db.nursingNote.findMany({ where: { admissionId: id }, orderBy: { createdAt: 'desc' } }),
       s.db.medicationAdministration.findMany({ where: { admissionId: id }, orderBy: { administeredAt: 'desc' } }),
-      adm.encounterId ? s.db.vitals.findMany({ where: { encounterId: adm.encounterId }, orderBy: { recordedAt: 'desc' } }) : Promise.resolve([]),
+      adm.encounterId
+        ? s.db.vitals.findMany({ where: { encounterId: adm.encounterId }, orderBy: { recordedAt: 'desc' } })
+        : Promise.resolve([]),
       s.db.labOrder.findMany({ where: { admissionId: id }, orderBy: { createdAt: 'desc' } }),
-      s.db.bill.findFirst({ where: { admissionId: id }, orderBy: { createdAt: 'desc' }, include: { items: true, payments: true } }),
+      s.db.bill.findFirst({
+        where: { admissionId: id },
+        orderBy: { createdAt: 'desc' },
+        include: { items: true, payments: true },
+      }),
       s.db.dischargeSummary.findUnique({ where: { admissionId: id } }),
     ]);
-    return { ...adm, providerName: provider?.user?.fullName ?? null, nursingNotes, medications, vitals, labOrders, bill, dischargeSummary };
+    return {
+      ...adm,
+      providerName: provider?.user?.fullName ?? null,
+      nursingNotes,
+      medications,
+      vitals,
+      labOrders,
+      bill,
+      dischargeSummary,
+    };
   }
 
   async transfer(ctx: RequestContext, id: string, dto: TransferDto) {
     const s = this.scope(ctx);
     const adm = await this.load(s, id);
-    if (adm.status !== 'ADMITTED') throw new BadRequestException(`Cannot transfer a ${adm.status.toLowerCase()} admission`);
+    if (adm.status !== 'ADMITTED')
+      throw new BadRequestException(`Cannot transfer a ${adm.status.toLowerCase()} admission`);
     if (dto.toBedId === adm.bedId) throw new BadRequestException('Patient is already in that bed');
     const toBed = await s.db.bed.findFirst({ where: { id: dto.toBedId } });
     if (!toBed) throw new BadRequestException('Target bed not found');
@@ -224,14 +292,25 @@ export class IpdService {
       const fresh = await tx.bed.findFirst({ where: { id: dto.toBedId } });
       if (!fresh || fresh.status !== 'AVAILABLE') throw new BadRequestException('Target bed was just taken');
       await tx.bedTransfer.create({
-        data: { tenantId: s.tenantId, admissionId: id, fromBedId: adm.bedId, toBedId: dto.toBedId, reason: dto.reason, transferredById: s.actorId },
+        data: {
+          tenantId: s.tenantId,
+          admissionId: id,
+          fromBedId: adm.bedId,
+          toBedId: dto.toBedId,
+          reason: dto.reason,
+          transferredById: s.actorId,
+        },
       });
       await tx.bed.update({ where: { id: adm.bedId }, data: { status: 'AVAILABLE' } });
       await tx.bed.update({ where: { id: dto.toBedId }, data: { status: 'OCCUPIED' } });
       await tx.admission.update({ where: { id }, data: { bedId: dto.toBedId } });
     });
 
-    await this.record(s, 'ipd.transfer', 'admission', id, { fromBedId: adm.bedId, toBedId: dto.toBedId, reason: dto.reason });
+    await this.record(s, 'ipd.transfer', 'admission', id, {
+      fromBedId: adm.bedId,
+      toBedId: dto.toBedId,
+      reason: dto.reason,
+    });
     await this.notifications?.safeNotify(ctx, {
       category: 'IPD',
       type: 'ipd.bed_transfer',
@@ -250,7 +329,12 @@ export class IpdService {
     const adm = await this.load(s, id);
     if (adm.status !== 'ADMITTED') throw new BadRequestException('Admission is not active');
     const round = await s.db.ipdRound.create({
-      data: { tenantId: s.tenantId, admissionId: id, providerId: dto.providerId ?? ctx.providerId ?? null, notes: dto.notes },
+      data: {
+        tenantId: s.tenantId,
+        admissionId: id,
+        providerId: dto.providerId ?? ctx.providerId ?? null,
+        notes: dto.notes,
+      },
     });
     await this.record(s, 'ipd.round.write', 'ipd_round', round.id, { admissionId: id });
     return round;
@@ -263,18 +347,39 @@ export class IpdService {
     const quantity = dto.quantity ?? 1;
     const total = quantity * dto.unitPrice;
 
-    let bill = await s.db.bill.findFirst({ where: { admissionId: id, status: { in: ['UNPAID', 'PARTIAL'] } }, orderBy: { createdAt: 'desc' } });
+    let bill = await s.db.bill.findFirst({
+      where: { admissionId: id, status: { in: ['UNPAID', 'PARTIAL'] } },
+      orderBy: { createdAt: 'desc' },
+    });
     if (!bill) {
       const billNumber = await nextBillNumber(s.db, s.tenantId);
       bill = await s.db.bill.create({
-        data: { tenantId: s.tenantId, patientId: adm.patientId, admissionId: id, billNumber, totalAmount: total, discount: 0, netAmount: total, status: 'UNPAID', notes: 'IPD charges' },
+        data: {
+          tenantId: s.tenantId,
+          patientId: adm.patientId,
+          admissionId: id,
+          billNumber,
+          totalAmount: total,
+          discount: 0,
+          netAmount: total,
+          status: 'UNPAID',
+          notes: 'IPD charges',
+        },
       });
     } else {
       const totalAmount = bill.totalAmount + total;
       await s.db.bill.update({ where: { id: bill.id }, data: { totalAmount, netAmount: totalAmount - bill.discount } });
     }
     const billItem = await s.db.billItem.create({
-      data: { tenantId: s.tenantId, billId: bill.id, sourceType: 'IPD' as any, name: dto.description, quantity, unitPrice: dto.unitPrice, total },
+      data: {
+        tenantId: s.tenantId,
+        billId: bill.id,
+        sourceType: 'IPD' as any,
+        name: dto.description,
+        quantity,
+        unitPrice: dto.unitPrice,
+        total,
+      },
     });
     const charge = await s.db.ipdCharge.create({
       data: {
@@ -309,7 +414,12 @@ export class IpdService {
       },
     });
     await this.record(s, 'ipd.charge.write', 'ipd_charge', charge.id, { admissionId: id, billId: bill.id, total });
-    await this.record(s, 'charge.create', 'billable_charge', ledgerCharge.id, { admissionId: id, billId: bill.id, sourceModule: 'IPD', total });
+    await this.record(s, 'charge.create', 'billable_charge', ledgerCharge.id, {
+      admissionId: id,
+      billId: bill.id,
+      sourceModule: 'IPD',
+      total,
+    });
     return charge;
   }
 
@@ -317,10 +427,19 @@ export class IpdService {
   /** Read the inputs and compute the bed-charge plan as of a given instant (no writes). */
   private async computeBedPlan(
     s: Scope,
-    adm: { id: string; bedId: string; admittedAt: Date | string; dischargedAt: Date | string | null; bedChargedThrough: Date | string | null },
+    adm: {
+      id: string;
+      bedId: string;
+      admittedAt: Date | string;
+      dischargedAt: Date | string | null;
+      bedChargedThrough: Date | string | null;
+    },
     asOf: Date,
   ): Promise<BedChargePlan> {
-    const transfers = await s.db.bedTransfer.findMany({ where: { admissionId: adm.id }, orderBy: { transferredAt: 'asc' } });
+    const transfers = await s.db.bedTransfer.findMany({
+      where: { admissionId: adm.id },
+      orderBy: { transferredAt: 'asc' },
+    });
     const bedIds = new Set<string>([adm.bedId]);
     for (const t of transfers) {
       bedIds.add(t.fromBedId);
@@ -330,7 +449,15 @@ export class IpdService {
     const wardByBedId = new Map(
       beds
         .filter((b: any) => b.ward)
-        .map((b: any) => [b.id, { wardId: b.ward.id, wardName: b.ward.name, dailyRate: b.ward.dailyRate ?? 0, chargeCatalogId: b.ward.chargeCatalogId ?? null }]),
+        .map((b: any) => [
+          b.id,
+          {
+            wardId: b.ward.id,
+            wardName: b.ward.name,
+            dailyRate: b.ward.dailyRate ?? 0,
+            chargeCatalogId: b.ward.chargeCatalogId ?? null,
+          },
+        ]),
     );
     const settings = await s.db.hospitalSettings.findUnique({ where: { tenantId: s.tenantId } });
     return planBedCharges({
@@ -340,7 +467,11 @@ export class IpdService {
         dischargedAt: adm.dischargedAt ? new Date(adm.dischargedAt) : null,
         bedChargedThrough: adm.bedChargedThrough ? new Date(adm.bedChargedThrough) : null,
       },
-      transfers: transfers.map((t: any) => ({ fromBedId: t.fromBedId, toBedId: t.toBedId, transferredAt: new Date(t.transferredAt) })),
+      transfers: transfers.map((t: any) => ({
+        fromBedId: t.fromBedId,
+        toBedId: t.toBedId,
+        transferredAt: new Date(t.transferredAt),
+      })),
       wardByBedId,
       policy: bedChargePolicyFromSettings(settings ?? undefined),
       asOf,
@@ -351,15 +482,29 @@ export class IpdService {
   private async postBedCharges(tx: TenantTx, s: Scope, adm: { id: string; patientId: string }, plan: BedChargePlan) {
     const billable = plan.lines.filter((l) => l.total > 0);
     if (!billable.length) {
-      if (plan.chargedThrough) await tx.admission.update({ where: { id: adm.id }, data: { bedChargedThrough: plan.chargedThrough } });
+      if (plan.chargedThrough)
+        await tx.admission.update({ where: { id: adm.id }, data: { bedChargedThrough: plan.chargedThrough } });
       return { billId: null as string | null, posted: 0 };
     }
     const added = billable.reduce((sum, l) => sum + l.total, 0);
-    let bill = await tx.bill.findFirst({ where: { admissionId: adm.id, status: { in: ['UNPAID', 'PARTIAL'] } }, orderBy: { createdAt: 'desc' } });
+    let bill = await tx.bill.findFirst({
+      where: { admissionId: adm.id, status: { in: ['UNPAID', 'PARTIAL'] } },
+      orderBy: { createdAt: 'desc' },
+    });
     if (!bill) {
       const billNumber = await nextBillNumber(tx as unknown as TenantClient, s.tenantId);
       bill = await tx.bill.create({
-        data: { tenantId: s.tenantId, patientId: adm.patientId, admissionId: adm.id, billNumber, totalAmount: added, discount: 0, netAmount: added, status: 'UNPAID', notes: 'IPD charges' },
+        data: {
+          tenantId: s.tenantId,
+          patientId: adm.patientId,
+          admissionId: adm.id,
+          billNumber,
+          totalAmount: added,
+          discount: 0,
+          netAmount: added,
+          status: 'UNPAID',
+          notes: 'IPD charges',
+        },
       });
     } else {
       const totalAmount = bill.totalAmount + added;
@@ -368,10 +513,29 @@ export class IpdService {
     for (const line of billable) {
       const desc = `${line.wardName} room charge (${line.units} day${line.units > 1 ? 's' : ''})`;
       const item = await tx.billItem.create({
-        data: { tenantId: s.tenantId, billId: bill.id, catalogId: line.catalogId, sourceType: 'IPD' as any, name: desc, quantity: line.units, unitPrice: line.unitPrice, total: line.total },
+        data: {
+          tenantId: s.tenantId,
+          billId: bill.id,
+          catalogId: line.catalogId,
+          sourceType: 'IPD' as any,
+          name: desc,
+          quantity: line.units,
+          unitPrice: line.unitPrice,
+          total: line.total,
+        },
       });
       const ipdCharge = await tx.ipdCharge.create({
-        data: { tenantId: s.tenantId, admissionId: adm.id, catalogId: line.catalogId, description: desc, quantity: line.units, unitPrice: line.unitPrice, notes: `Auto bed charge ${line.fromDate}…${line.toDate}`, createdById: s.actorId, billItemId: item.id },
+        data: {
+          tenantId: s.tenantId,
+          admissionId: adm.id,
+          catalogId: line.catalogId,
+          description: desc,
+          quantity: line.units,
+          unitPrice: line.unitPrice,
+          notes: `Auto bed charge ${line.fromDate}…${line.toDate}`,
+          createdById: s.actorId,
+          billItemId: item.id,
+        },
       });
       await tx.billableCharge.create({
         data: {
@@ -407,7 +571,9 @@ export class IpdService {
     const adm = await this.load(s, id);
     const now = new Date();
     const pending = await this.computeBedPlan(s, adm as any, now);
-    const projected = adm.dischargedAt ? pending : await this.computeBedPlan(s, { ...(adm as any), dischargedAt: now }, now);
+    const projected = adm.dischargedAt
+      ? pending
+      : await this.computeBedPlan(s, { ...(adm as any), dischargedAt: now }, now);
     const bed = await s.db.bed.findFirst({ where: { id: adm.bedId }, include: { ward: true } });
     return {
       pending,
@@ -425,10 +591,22 @@ export class IpdService {
     const asOfDate = asOf ? new Date(asOf) : new Date();
     if (Number.isNaN(asOfDate.getTime())) throw new BadRequestException('Invalid asOf date');
     const plan = await this.computeBedPlan(s, adm as any, asOfDate);
-    const result = await tenantTransaction(s.tenantId, (tx) => this.postBedCharges(tx, s, { id, patientId: adm.patientId }, plan));
+    const result = await tenantTransaction(s.tenantId, (tx) =>
+      this.postBedCharges(tx, s, { id, patientId: adm.patientId }, plan),
+    );
     if (result.billId) {
-      await this.record(s, 'charge.create', 'billable_charge', result.billId, { admissionId: id, sourceModule: 'IPD', sourceType: 'BED_CHARGE', units: plan.totalUnits, total: plan.totalAmount });
-      await this.record(s, 'ipd.bed_charge.accrue', 'admission', id, { units: plan.totalUnits, total: plan.totalAmount, billId: result.billId });
+      await this.record(s, 'charge.create', 'billable_charge', result.billId, {
+        admissionId: id,
+        sourceModule: 'IPD',
+        sourceType: 'BED_CHARGE',
+        units: plan.totalUnits,
+        total: plan.totalAmount,
+      });
+      await this.record(s, 'ipd.bed_charge.accrue', 'admission', id, {
+        units: plan.totalUnits,
+        total: plan.totalAmount,
+        billId: result.billId,
+      });
     }
     return { posted: result.posted, billId: result.billId, plan };
   }
@@ -446,22 +624,55 @@ export class IpdService {
     await tenantTransaction(s.tenantId, async (tx) => {
       await tx.admission.update({
         where: { id },
-        data: { status: 'DISCHARGED', dischargedAt, dischargeReason: dto.reason, dischargeSummary: dto.summary, dischargeNotes: dto.instructions },
+        data: {
+          status: 'DISCHARGED',
+          dischargedAt,
+          dischargeReason: dto.reason,
+          dischargeSummary: dto.summary,
+          dischargeNotes: dto.instructions,
+        },
       });
       await tx.bed.update({ where: { id: adm.bedId }, data: { status: 'AVAILABLE' } });
-      if (adm.encounterId) await tx.encounter.update({ where: { id: adm.encounterId }, data: { status: 'COMPLETED', endedAt: new Date() } });
+      if (adm.encounterId)
+        await tx.encounter.update({
+          where: { id: adm.encounterId },
+          data: { status: 'COMPLETED', endedAt: new Date() },
+        });
       await tx.dischargeSummary.upsert({
         where: { admissionId: id },
-        create: { tenantId: s.tenantId, admissionId: id, summary: dto.summary, instructions: dto.instructions, followUpDate: dto.followUpDate ? new Date(dto.followUpDate) : null, preparedById: s.actorId, finalizedAt: new Date() },
-        update: { summary: dto.summary, instructions: dto.instructions, followUpDate: dto.followUpDate ? new Date(dto.followUpDate) : null, finalizedAt: new Date() },
+        create: {
+          tenantId: s.tenantId,
+          admissionId: id,
+          summary: dto.summary,
+          instructions: dto.instructions,
+          followUpDate: dto.followUpDate ? new Date(dto.followUpDate) : null,
+          preparedById: s.actorId,
+          finalizedAt: new Date(),
+        },
+        update: {
+          summary: dto.summary,
+          instructions: dto.instructions,
+          followUpDate: dto.followUpDate ? new Date(dto.followUpDate) : null,
+          finalizedAt: new Date(),
+        },
       });
       billResult = await this.postBedCharges(tx, s, { id, patientId: adm.patientId }, plan);
     });
 
     await this.record(s, 'ipd.discharge', 'admission', id, { reason: dto.reason });
     if (billResult.billId) {
-      await this.record(s, 'charge.create', 'billable_charge', billResult.billId, { admissionId: id, sourceModule: 'IPD', sourceType: 'BED_CHARGE', units: plan.totalUnits, total: plan.totalAmount });
-      await this.record(s, 'ipd.bed_charge.accrue', 'admission', id, { units: plan.totalUnits, total: plan.totalAmount, billId: billResult.billId });
+      await this.record(s, 'charge.create', 'billable_charge', billResult.billId, {
+        admissionId: id,
+        sourceModule: 'IPD',
+        sourceType: 'BED_CHARGE',
+        units: plan.totalUnits,
+        total: plan.totalAmount,
+      });
+      await this.record(s, 'ipd.bed_charge.accrue', 'admission', id, {
+        units: plan.totalUnits,
+        total: plan.totalAmount,
+        billId: billResult.billId,
+      });
     }
     await this.notifications?.safeNotify(ctx, {
       category: 'IPD',
@@ -482,12 +693,19 @@ export class IpdService {
     const [tenant, settings, diagnoses] = await Promise.all([
       s.db.tenant.findUnique({ where: { id: s.tenantId } }),
       s.db.hospitalSettings.findUnique({ where: { tenantId: s.tenantId } }),
-      admission.encounterId ? s.db.diagnosis.findMany({ where: { encounterId: admission.encounterId } }) : Promise.resolve([]),
+      admission.encounterId
+        ? s.db.diagnosis.findMany({ where: { encounterId: admission.encounterId } })
+        : Promise.resolve([]),
     ]);
     return {
       admission,
       diagnoses,
-      hospital: { name: tenant?.name ?? 'Hospital', address: tenant?.address ?? null, phone: tenant?.contactPhone ?? null, currency: settings?.currency ?? 'INR' },
+      hospital: {
+        name: tenant?.name ?? 'Hospital',
+        address: tenant?.address ?? null,
+        phone: tenant?.contactPhone ?? null,
+        currency: settings?.currency ?? 'INR',
+      },
     };
   }
 }

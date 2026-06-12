@@ -7,7 +7,19 @@ import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
 import { financeApi, type BillableCharge } from '@/lib/finance';
 import { money } from '@/lib/format';
-import { Button, EmptyState, ErrorState, FormField, Input, PageHeader, ReasonModal, Section, Select, Spinner, Textarea } from '@/components/ui';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  FormField,
+  Input,
+  PageHeader,
+  ReasonModal,
+  Section,
+  Select,
+  Spinner,
+  Textarea,
+} from '@/components/ui';
 import { ChargeTable, FinanceShell, FINANCE_PERMS } from '../finance-ui';
 
 function PendingChargesPageInner() {
@@ -63,7 +75,10 @@ function PendingChargesPageInner() {
   async function createBill() {
     setBusy(true);
     try {
-      const bill = await financeApi.billFromCharges(t, { chargeIds: Array.from(selected), notes: notes.trim() || undefined });
+      const bill = await financeApi.billFromCharges(t, {
+        chargeIds: Array.from(selected),
+        notes: notes.trim() || undefined,
+      });
       toast.success('Bill created from pending charges.');
       router.push(`/finance/bills/${bill.id}`);
     } catch (e) {
@@ -77,7 +92,11 @@ function PendingChargesPageInner() {
     <>
       <PageHeader
         title="Pending Charges"
-        subtitle={patientId ? 'Unbilled charges for this patient account' : 'Unbilled OPD, lab, pharmacy, IPD, insurance, and manual charges'}
+        subtitle={
+          patientId
+            ? 'Unbilled charges for this patient account'
+            : 'Unbilled OPD, lab, pharmacy, IPD, insurance, and manual charges'
+        }
       />
       <FinanceShell>
         <div className="space-y-6">
@@ -91,12 +110,16 @@ function PendingChargesPageInner() {
                 <Select value={sourceModule} onChange={(e) => setSourceModule(e.target.value)}>
                   <option value="">All sources</option>
                   {['OPD', 'LAB', 'PHARMACY', 'IPD', 'MANUAL', 'INSURANCE'].map((s) => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </Select>
               </FormField>
               <div className="flex items-end">
-                <Button variant="ghost" onClick={load}>Refresh</Button>
+                <Button variant="ghost" onClick={load}>
+                  Refresh
+                </Button>
               </div>
             </div>
           </Section>
@@ -104,7 +127,12 @@ function PendingChargesPageInner() {
           <Section title="Create bill from selected charges">
             <div className="grid gap-4 p-5 md:grid-cols-[1fr_220px_auto] md:items-end">
               <FormField label="Bill notes">
-                <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional cashier note" />
+                <Textarea
+                  rows={2}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Optional cashier note"
+                />
               </FormField>
               <div className="rounded-md border border-line px-3 py-2">
                 <div className="text-label-sm text-ink-soft">Selected total</div>
@@ -114,13 +142,18 @@ function PendingChargesPageInner() {
                 Create Bill
               </Button>
             </div>
-            {mixedPatients && <div className="px-5 pb-4 text-body-sm text-danger">Selected charges must belong to one patient.</div>}
+            {mixedPatients && (
+              <div className="px-5 pb-4 text-body-sm text-danger">Selected charges must belong to one patient.</div>
+            )}
           </Section>
 
           {!rows ? (
             <Spinner label="Loading charges..." />
           ) : rows.length === 0 ? (
-            <EmptyState title="No pending charges" hint="Charges from OPD, lab, pharmacy, IPD, and manual finance actions appear here." />
+            <EmptyState
+              title="No pending charges"
+              hint="Charges from OPD, lab, pharmacy, IPD, and manual finance actions appear here."
+            />
           ) : (
             <Section title={`${rows.length} pending charge${rows.length === 1 ? '' : 's'}`}>
               <ChargeTable charges={rows} selected={selected} onToggle={toggle} />
@@ -128,7 +161,9 @@ function PendingChargesPageInner() {
                 <Select value={cancelId ?? ''} onChange={(e) => setCancelId(e.target.value || null)}>
                   <option value="">Cancel a pending charge...</option>
                   {rows.map((row) => (
-                    <option key={row.id} value={row.id}>{row.patient?.fullName ?? 'Patient'} - {row.name}</option>
+                    <option key={row.id} value={row.id}>
+                      {row.patient?.fullName ?? 'Patient'} - {row.name}
+                    </option>
                   ))}
                 </Select>
               </div>

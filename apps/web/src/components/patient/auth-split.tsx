@@ -9,15 +9,7 @@ import { HeartPulse, ShieldCheck, FolderLock, Building2 } from 'lucide-react';
  * The right panel is a styled gradient (no stock imagery — we have none) carrying
  * real trust messaging. Mobile shows only the form.
  */
-export function AuthSplit({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle: string;
-  children: ReactNode;
-}) {
+export function AuthSplit({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
   return (
     <div className="flex min-h-screen w-full bg-surface">
       <div className="flex w-full flex-col justify-center overflow-y-auto px-6 py-10 lg:w-5/12 lg:px-12">
@@ -44,8 +36,8 @@ export function AuthSplit({
               <h2 className="text-headline-sm">Your health data, protected</h2>
             </div>
             <p className="text-body-md leading-relaxed text-white/90">
-              One secure login for every hospital you visit. Your records stay isolated per hospital and are never shared
-              between them — accessible only to you and your authorised care team.
+              One secure login for every hospital you visit. Your records stay isolated per hospital and are never
+              shared between them — accessible only to you and your authorised care team.
             </p>
             <ul className="mt-6 space-y-3 text-body-sm text-white/90">
               <Trust icon={FolderLock} text="Encrypted records, hospital by hospital" />

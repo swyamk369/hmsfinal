@@ -77,7 +77,12 @@ export class FinanceController {
 
   @Get('bills')
   @RequirePermission(PERMISSIONS.FINANCE_READ, PERMISSIONS.BILL_READ)
-  bills(@Ctx() ctx: RequestContext, @Query('status') status?: string, @Query('patientId') patientId?: string, @Query('q') q?: string) {
+  bills(
+    @Ctx() ctx: RequestContext,
+    @Query('status') status?: string,
+    @Query('patientId') patientId?: string,
+    @Query('q') q?: string,
+  ) {
     return this.svc.bills(ctx, { status, patientId, q });
   }
 

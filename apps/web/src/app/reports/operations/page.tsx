@@ -45,8 +45,16 @@ function OperationsReportPageInner() {
     <>
       <PageHeader
         title="Operations Report"
-        subtitle={data ? `Patient flow, OPD, lab, pharmacy, and IPD activity · updated ${formatDateTime(data.generatedAt)}` : 'Patient flow, OPD, lab, pharmacy, and IPD activity'}
-        action={<Button variant="ghost" onClick={load}>Refresh</Button>}
+        subtitle={
+          data
+            ? `Patient flow, OPD, lab, pharmacy, and IPD activity · updated ${formatDateTime(data.generatedAt)}`
+            : 'Patient flow, OPD, lab, pharmacy, and IPD activity'
+        }
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
       />
 
       <div className="space-y-6">
@@ -84,9 +92,24 @@ function OperationsReportPageInner() {
               items={[
                 { label: 'Registrations', value: data.totals.registrations ?? 0, icon: Users },
                 { label: 'Appointments', value: data.totals.appointments ?? 0, icon: CalendarDays },
-                { label: 'Encounters', value: data.totals.encounters ?? 0, hint: `${data.totals.consultationsCompleted ?? 0} completed`, icon: Stethoscope },
-                { label: 'Lab orders', value: data.totals.labOrders ?? 0, hint: `${data.totals.dispenses ?? 0} pharmacy dispenses`, icon: FlaskConical },
-                { label: 'Admissions', value: data.totals.admissions ?? 0, hint: `${data.totals.discharges ?? 0} discharged`, icon: ClipboardList },
+                {
+                  label: 'Encounters',
+                  value: data.totals.encounters ?? 0,
+                  hint: `${data.totals.consultationsCompleted ?? 0} completed`,
+                  icon: Stethoscope,
+                },
+                {
+                  label: 'Lab orders',
+                  value: data.totals.labOrders ?? 0,
+                  hint: `${data.totals.dispenses ?? 0} pharmacy dispenses`,
+                  icon: FlaskConical,
+                },
+                {
+                  label: 'Admissions',
+                  value: data.totals.admissions ?? 0,
+                  hint: `${data.totals.discharges ?? 0} discharged`,
+                  icon: ClipboardList,
+                },
               ]}
             />
 
@@ -118,7 +141,11 @@ function OperationsReportPageInner() {
 
 export default function OperationsReportPage() {
   return (
-    <Protected requireModule="REPORTS" allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER']} requirePermission={['reports.read', 'reports.operational.read']}>
+    <Protected
+      requireModule="REPORTS"
+      allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER']}
+      requirePermission={['reports.read', 'reports.operational.read']}
+    >
       <OperationsReportPageInner />
     </Protected>
   );

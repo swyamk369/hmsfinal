@@ -39,7 +39,13 @@ export class FinanceService {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
   }
 
-  private record(s: Scope, action: string, entity: string, entityId: string | null, metadata?: Record<string, unknown>) {
+  private record(
+    s: Scope,
+    action: string,
+    entity: string,
+    entityId: string | null,
+    metadata?: Record<string, unknown>,
+  ) {
     return this.audit.log(s.db, { tenantId: s.tenantId, actorId: s.actorId, action, entity, entityId, metadata });
   }
 
@@ -76,14 +82,19 @@ export class FinanceService {
 
   private async attachPatients(db: TenantClient, rows: any[]) {
     const ids = Array.from(new Set(rows.map((r) => r.patientId).filter(Boolean)));
-    const patients = ids.length ? await db.patient.findMany({ where: { id: { in: ids } }, select: PATIENT_SELECT.select }) : [];
+    const patients = ids.length
+      ? await db.patient.findMany({ where: { id: { in: ids } }, select: PATIENT_SELECT.select })
+      : [];
     const byId = new Map(patients.map((p) => [p.id, p]));
     return rows.map((row) => ({ ...row, patient: byId.get(row.patientId) ?? null }));
   }
 
   async createCharge(ctx: RequestContext, dto: CreateChargeDto) {
     const s = this.scope(ctx);
-    const patient = await s.db.patient.findFirst({ where: { id: dto.patientId, deletedAt: null }, select: { id: true } });
+    const patient = await s.db.patient.findFirst({
+      where: { id: dto.patientId, deletedAt: null },
+      select: { id: true },
+    });
     if (!patient) throw new BadRequestException('Patient not found');
     const charge = await s.db.billableCharge.create({
       data: {
@@ -129,11 +140,23 @@ export class FinanceService {
       s.db.payment.findMany({ where: { createdAt: { gte: start, lt: end } } }),
       s.db.refund.findMany({ where: { createdAt: { gte: start, lt: end } } }),
       s.db.billableCharge.findMany({ where: { status: 'PENDING' as any }, orderBy: { createdAt: 'asc' }, take: 10 }),
-      s.db.bill.findMany({ where: { status: 'UNPAID' as any }, include: { payments: true, refunds: true, patient: PATIENT_SELECT }, take: 20 }),
-      s.db.bill.findMany({ where: { status: 'PARTIAL' as any }, include: { payments: true, refunds: true, patient: PATIENT_SELECT }, take: 20 }),
+      s.db.bill.findMany({
+        where: { status: 'UNPAID' as any },
+        include: { payments: true, refunds: true, patient: PATIENT_SELECT },
+        take: 20,
+      }),
+      s.db.bill.findMany({
+        where: { status: 'PARTIAL' as any },
+        include: { payments: true, refunds: true, patient: PATIENT_SELECT },
+        take: 20,
+      }),
       s.db.bill.findMany({ where: { status: 'CANCELLED' as any, updatedAt: { gte: start, lt: end } } }),
       s.db.financeApproval.findMany({ where: { status: 'PENDING' as any }, orderBy: { requestedAt: 'asc' }, take: 10 }),
-      s.db.insuranceClaim.findMany({ where: { status: { in: ACTIVE_CLAIMS as any } }, include: { settlements: true }, take: 50 }),
+      s.db.insuranceClaim.findMany({
+        where: { status: { in: ACTIVE_CLAIMS as any } },
+        include: { settlements: true },
+        take: 50,
+      }),
       s.db.financeDayClose.findFirst({ where: { businessDate: start }, orderBy: { closedAt: 'desc' } }),
       s.db.billableCharge.findMany({ where: { status: 'BILLED' as any, updatedAt: { gte: start, lt: end } } }),
     ]);
@@ -155,10 +178,26 @@ export class FinanceService {
       return acc;
     }, {});
     const blockers = [
-      pendingCharges.length > 0 && { type: 'PENDING_CHARGES', label: `${pendingCharges.length} charges not billed`, href: '/finance/pending-charges' },
-      unpaidBills.length > 0 && { type: 'UNPAID_BILLS', label: `${unpaidBills.length} unpaid bills`, href: '/finance/bills?status=UNPAID' },
-      partialBills.length > 0 && { type: 'PARTIAL_BILLS', label: `${partialBills.length} partial bills`, href: '/finance/bills?status=PARTIAL' },
-      approvals.length > 0 && { type: 'APPROVALS', label: `${approvals.length} finance approvals pending`, href: '/finance/approvals' },
+      pendingCharges.length > 0 && {
+        type: 'PENDING_CHARGES',
+        label: `${pendingCharges.length} charges not billed`,
+        href: '/finance/pending-charges',
+      },
+      unpaidBills.length > 0 && {
+        type: 'UNPAID_BILLS',
+        label: `${unpaidBills.length} unpaid bills`,
+        href: '/finance/bills?status=UNPAID',
+      },
+      partialBills.length > 0 && {
+        type: 'PARTIAL_BILLS',
+        label: `${partialBills.length} partial bills`,
+        href: '/finance/bills?status=PARTIAL',
+      },
+      approvals.length > 0 && {
+        type: 'APPROVALS',
+        label: `${approvals.length} finance approvals pending`,
+        href: '/finance/approvals',
+      },
       !dayClose && { type: 'DAY_CLOSE', label: 'Day close is not completed', href: '/finance/day-close' },
     ].filter(Boolean);
 
@@ -191,10 +230,22 @@ export class FinanceService {
       s.db.bill.findMany({
         where: { patientId },
         orderBy: { createdAt: 'desc' },
-        include: { items: true, payments: true, refunds: true, claims: { include: { patientPolicy: { include: { provider: true } }, settlements: true } } },
+        include: {
+          items: true,
+          payments: true,
+          refunds: true,
+          claims: { include: { patientPolicy: { include: { provider: true } }, settlements: true } },
+        },
       }),
-      s.db.insuranceClaim.findMany({ where: { bill: { patientId } }, include: { patientPolicy: { include: { provider: true } }, settlements: true, bill: true } }),
-      s.db.patientDocument.findMany({ where: { patientId, category: { in: ['BILLING', 'INSURANCE', 'GENERATED_REPORT'] as any } }, orderBy: { createdAt: 'desc' }, take: 25 }),
+      s.db.insuranceClaim.findMany({
+        where: { bill: { patientId } },
+        include: { patientPolicy: { include: { provider: true } }, settlements: true, bill: true },
+      }),
+      s.db.patientDocument.findMany({
+        where: { patientId, category: { in: ['BILLING', 'INSURANCE', 'GENERATED_REPORT'] as any } },
+        orderBy: { createdAt: 'desc' },
+        take: 25,
+      }),
     ]);
     const outstanding = bills.reduce((sum: number, b: any) => {
       const paid = b.payments.reduce((a: number, p: any) => a + p.amount, 0);
@@ -209,7 +260,9 @@ export class FinanceService {
       claims,
       documents,
       totals: {
-        pendingCharges: charges.filter((c: any) => c.status === 'PENDING').reduce((s2: number, c: any) => s2 + c.total, 0),
+        pendingCharges: charges
+          .filter((c: any) => c.status === 'PENDING')
+          .reduce((s2: number, c: any) => s2 + c.total, 0),
         outstanding,
         paid: bills.flatMap((b: any) => b.payments).reduce((s2: number, p: any) => s2 + p.amount, 0),
         refunded: bills.flatMap((b: any) => b.refunds).reduce((s2: number, r: any) => s2 + r.amount, 0),
@@ -217,7 +270,10 @@ export class FinanceService {
     };
   }
 
-  async pendingCharges(ctx: RequestContext, filters: { patientId?: string; status?: string; sourceModule?: string; q?: string }) {
+  async pendingCharges(
+    ctx: RequestContext,
+    filters: { patientId?: string; status?: string; sourceModule?: string; q?: string },
+  ) {
     const s = this.scope(ctx);
     const where: any = {};
     if (filters.patientId) where.patientId = filters.patientId;
@@ -235,7 +291,10 @@ export class FinanceService {
         select: { id: true },
         take: 100,
       });
-      where.OR = [{ name: { contains: filters.q, mode: 'insensitive' } }, { patientId: { in: patients.map((p) => p.id) } }];
+      where.OR = [
+        { name: { contains: filters.q, mode: 'insensitive' } },
+        { patientId: { in: patients.map((p) => p.id) } },
+      ];
     }
     const rows = await s.db.billableCharge.findMany({ where, orderBy: { createdAt: 'desc' }, take: 200 });
     return this.attachPatients(s.db, rows);
@@ -258,7 +317,8 @@ export class FinanceService {
     const s = this.scope(ctx);
     const charges = await s.db.billableCharge.findMany({ where: { id: { in: dto.chargeIds } } });
     if (charges.length !== dto.chargeIds.length) throw new BadRequestException('One or more charges were not found');
-    if (charges.some((c: any) => c.status !== 'PENDING')) throw new BadRequestException('Only pending charges can be billed');
+    if (charges.some((c: any) => c.status !== 'PENDING'))
+      throw new BadRequestException('Only pending charges can be billed');
     const patientIds = new Set(charges.map((c: any) => c.patientId));
     if (patientIds.size !== 1) throw new BadRequestException('Selected charges must belong to the same patient');
     const patientId = charges[0].patientId;
@@ -391,9 +451,14 @@ export class FinanceService {
     const whereActor = cashierId ? { collectedById: cashierId } : {};
     const [payments, refunds, cancelledBills, existing] = await Promise.all([
       s.db.payment.findMany({ where: { createdAt: { gte: start, lt: end }, ...whereActor } }),
-      s.db.refund.findMany({ where: { createdAt: { gte: start, lt: end }, ...(cashierId ? { refundedById: cashierId } : {}) } }),
+      s.db.refund.findMany({
+        where: { createdAt: { gte: start, lt: end }, ...(cashierId ? { refundedById: cashierId } : {}) },
+      }),
       s.db.bill.findMany({ where: { status: 'CANCELLED' as any, updatedAt: { gte: start, lt: end } } }),
-      s.db.financeDayClose.findMany({ where: { businessDate: start, ...(cashierId ? { cashierId } : {}) }, orderBy: { closedAt: 'desc' } }),
+      s.db.financeDayClose.findMany({
+        where: { businessDate: start, ...(cashierId ? { cashierId } : {}) },
+        orderBy: { closedAt: 'desc' },
+      }),
     ]);
     const methodTotals = this.paymentMethodTotals(payments);
     const refundTotal = refunds.reduce((sum, r) => sum + r.amount, 0);
@@ -485,17 +550,28 @@ export class FinanceService {
       where: { id },
       data: { status: status as any, decidedById: s.actorId, decidedAt: new Date(), decisionReason: dto.reason },
     });
-    if (status === 'APPROVED' && existing.type === 'DAY_CLOSE_REOPEN' && existing.entity === 'finance_day_close' && existing.entityId) {
+    if (
+      status === 'APPROVED' &&
+      existing.type === 'DAY_CLOSE_REOPEN' &&
+      existing.entity === 'finance_day_close' &&
+      existing.entityId
+    ) {
       await s.db.financeDayClose.update({
         where: { id: existing.entityId },
         data: { status: 'REOPENED' as any, reopenedById: s.actorId, reopenedAt: new Date(), reopenReason: dto.reason },
       });
       await this.record(s, 'finance.day_close.reopen', 'finance_day_close', existing.entityId, { reason: dto.reason });
     }
-    await this.record(s, status === 'APPROVED' ? 'finance.approval.approve' : 'finance.approval.reject', 'finance_approval', id, {
-      type: existing.type,
-      reason: dto.reason,
-    });
+    await this.record(
+      s,
+      status === 'APPROVED' ? 'finance.approval.approve' : 'finance.approval.reject',
+      'finance_approval',
+      id,
+      {
+        type: existing.type,
+        reason: dto.reason,
+      },
+    );
     return updated;
   }
 
@@ -518,28 +594,95 @@ export class FinanceService {
     };
 
     // 1) LAB — completed orders with no LAB_ORDER charge.
-    const labOrders = await s.db.labOrder.findMany({ where: { status: 'COMPLETED' as any, createdAt: { gte: since } }, select: { id: true, patientId: true, createdAt: true }, take: 500 });
+    const labOrders = await s.db.labOrder.findMany({
+      where: { status: 'COMPLETED' as any, createdAt: { gte: since } },
+      select: { id: true, patientId: true, createdAt: true },
+      take: 500,
+    });
     const labBilled = labOrders.length
-      ? new Set((await s.db.billableCharge.findMany({ where: { sourceModule: 'LAB' as any, sourceType: 'LAB_ORDER', sourceId: { in: labOrders.map((o) => o.id) } }, select: { sourceId: true } })).map((c) => c.sourceId))
+      ? new Set(
+          (
+            await s.db.billableCharge.findMany({
+              where: {
+                sourceModule: 'LAB' as any,
+                sourceType: 'LAB_ORDER',
+                sourceId: { in: labOrders.map((o) => o.id) },
+              },
+              select: { sourceId: true },
+            })
+          ).map((c) => c.sourceId),
+        )
       : new Set<string>();
-    const labLeaks = labOrders.filter((o) => !labBilled.has(o.id)).map((o) => ({ sourceId: o.id, patientId: o.patientId, label: 'Completed lab order not billed', occurredAt: o.createdAt, href: `/lab/orders/${o.id}`, estimated: null as number | null }));
+    const labLeaks = labOrders
+      .filter((o) => !labBilled.has(o.id))
+      .map((o) => ({
+        sourceId: o.id,
+        patientId: o.patientId,
+        label: 'Completed lab order not billed',
+        occurredAt: o.createdAt,
+        href: `/lab/orders/${o.id}`,
+        estimated: null as number | null,
+      }));
 
     // 2) PHARMACY — dispensed records with no bill.
-    const dispenses = await s.db.dispenseRecord.findMany({ where: { status: 'DISPENSED' as any, billId: null, createdAt: { gte: since } }, select: { id: true, patientId: true, createdAt: true }, take: 500 });
-    const pharmaLeaks = dispenses.map((d) => ({ sourceId: d.id, patientId: d.patientId, label: 'Dispensed medication not billed', occurredAt: d.createdAt, href: `/finance/patient-accounts/${d.patientId}`, estimated: null as number | null }));
+    const dispenses = await s.db.dispenseRecord.findMany({
+      where: { status: 'DISPENSED' as any, billId: null, createdAt: { gte: since } },
+      select: { id: true, patientId: true, createdAt: true },
+      take: 500,
+    });
+    const pharmaLeaks = dispenses.map((d) => ({
+      sourceId: d.id,
+      patientId: d.patientId,
+      label: 'Dispensed medication not billed',
+      occurredAt: d.createdAt,
+      href: `/finance/patient-accounts/${d.patientId}`,
+      estimated: null as number | null,
+    }));
 
     // 3) OPD — completed OPD encounters with no consultation charge.
-    const encounters = await s.db.encounter.findMany({ where: { status: 'COMPLETED' as any, type: 'OPD' as any, createdAt: { gte: since } }, select: { id: true, patientId: true, createdAt: true }, take: 500 });
+    const encounters = await s.db.encounter.findMany({
+      where: { status: 'COMPLETED' as any, type: 'OPD' as any, createdAt: { gte: since } },
+      select: { id: true, patientId: true, createdAt: true },
+      take: 500,
+    });
     const opdBilled = encounters.length
-      ? new Set((await s.db.billableCharge.findMany({ where: { sourceModule: 'OPD' as any, sourceType: 'CONSULTATION', sourceId: { in: encounters.map((e) => e.id) } }, select: { sourceId: true } })).map((c) => c.sourceId))
+      ? new Set(
+          (
+            await s.db.billableCharge.findMany({
+              where: {
+                sourceModule: 'OPD' as any,
+                sourceType: 'CONSULTATION',
+                sourceId: { in: encounters.map((e) => e.id) },
+              },
+              select: { sourceId: true },
+            })
+          ).map((c) => c.sourceId),
+        )
       : new Set<string>();
-    const opdLeaks = encounters.filter((e) => !opdBilled.has(e.id)).map((e) => ({ sourceId: e.id, patientId: e.patientId, label: 'Completed consultation not billed', occurredAt: e.createdAt, href: `/finance/patient-accounts/${e.patientId}`, estimated: null as number | null }));
+    const opdLeaks = encounters
+      .filter((e) => !opdBilled.has(e.id))
+      .map((e) => ({
+        sourceId: e.id,
+        patientId: e.patientId,
+        label: 'Completed consultation not billed',
+        occurredAt: e.createdAt,
+        href: `/finance/patient-accounts/${e.patientId}`,
+        estimated: null as number | null,
+      }));
 
     // 4) IPD — admitted patients with un-accrued completed bed-days (uses the 21.1 watermark).
-    const admitted = await s.db.admission.findMany({ where: { status: 'ADMITTED' as any }, select: { id: true, patientId: true, admittedAt: true, bedChargedThrough: true, bedId: true }, take: 500 });
+    const admitted = await s.db.admission.findMany({
+      where: { status: 'ADMITTED' as any },
+      select: { id: true, patientId: true, admittedAt: true, bedChargedThrough: true, bedId: true },
+      take: 500,
+    });
     const bedIds = [...new Set(admitted.map((a) => a.bedId))];
-    const beds = bedIds.length ? await s.db.bed.findMany({ where: { id: { in: bedIds } }, include: { ward: true } }) : [];
-    const rateByBed = new Map<string, number>(beds.filter((b: any) => b.ward).map((b: any) => [b.id, b.ward.dailyRate ?? 0]));
+    const beds = bedIds.length
+      ? await s.db.bed.findMany({ where: { id: { in: bedIds } }, include: { ward: true } })
+      : [];
+    const rateByBed = new Map<string, number>(
+      beds.filter((b: any) => b.ward).map((b: any) => [b.id, b.ward.dailyRate ?? 0]),
+    );
     const ipdLeaks = admitted
       .map((a) => {
         const rate = rateByBed.get(a.bedId) ?? 0;
@@ -550,13 +693,23 @@ export class FinanceService {
         if (!behind) return null;
         const fromMs = through != null ? through + DAY : admittedDay;
         const daysBehind = Math.max(1, Math.round((todayStart.getTime() - fromMs) / DAY));
-        return { sourceId: a.id, patientId: a.patientId, label: `${daysBehind} bed-day(s) not accrued`, occurredAt: a.admittedAt, href: `/ipd/admissions/${a.id}`, estimated: daysBehind * rate, admissionId: a.id };
+        return {
+          sourceId: a.id,
+          patientId: a.patientId,
+          label: `${daysBehind} bed-day(s) not accrued`,
+          occurredAt: a.admittedAt,
+          href: `/ipd/admissions/${a.id}`,
+          estimated: daysBehind * rate,
+          admissionId: a.id,
+        };
       })
       .filter((r): r is NonNullable<typeof r> => r !== null);
 
     const all = [...labLeaks, ...pharmaLeaks, ...opdLeaks, ...ipdLeaks];
     const patientIds = [...new Set(all.map((r) => r.patientId))];
-    const patients = patientIds.length ? await s.db.patient.findMany({ where: { id: { in: patientIds } }, select: PATIENT_SELECT.select }) : [];
+    const patients = patientIds.length
+      ? await s.db.patient.findMany({ where: { id: { in: patientIds } }, select: PATIENT_SELECT.select })
+      : [];
     const byPatient = new Map(patients.map((p) => [p.id, p]));
     const withPatient = (rows: any[]) => rows.map((r) => ({ ...r, patient: byPatient.get(r.patientId) ?? null }));
 
@@ -570,7 +723,10 @@ export class FinanceService {
     return {
       generatedAt: now.toISOString(),
       totalCount: categories.reduce((sum, c) => sum + c.count, 0),
-      estimatedRecoverable: categories.reduce((sum, c) => sum + c.rows.reduce((a: number, r: any) => a + (r.estimated ?? 0), 0), 0),
+      estimatedRecoverable: categories.reduce(
+        (sum, c) => sum + c.rows.reduce((a: number, r: any) => a + (r.estimated ?? 0), 0),
+        0,
+      ),
       categories,
     };
   }

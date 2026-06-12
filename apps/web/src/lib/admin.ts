@@ -168,7 +168,8 @@ export const adminApi = {
     apiPatch<CatalogItem>(`/admin/catalog/${id}`, body, t),
 
   listWards: (t: string) => apiGet<Ward[]>('/admin/wards', t),
-  createWard: (t: string, body: { name: string; type?: string; dailyRate?: number }) => apiPost<Ward>('/admin/wards', body, t),
+  createWard: (t: string, body: { name: string; type?: string; dailyRate?: number }) =>
+    apiPost<Ward>('/admin/wards', body, t),
   updateWard: (t: string, id: string, body: Partial<Ward>) => apiPatch<Ward>(`/admin/wards/${id}`, body, t),
 
   createBed: (t: string, body: { wardId: string; bedNumber: string; status?: string }) =>

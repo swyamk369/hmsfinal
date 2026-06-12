@@ -12,7 +12,19 @@ import {
   notificationsApi,
   type AppNotification,
 } from '@/lib/notifications';
-import { Badge, Button, EmptyState, ErrorState, FormField, PageHeader, Section, Select, Spinner, StatusChip, cx } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  EmptyState,
+  ErrorState,
+  FormField,
+  PageHeader,
+  Section,
+  Select,
+  Spinner,
+  StatusChip,
+  cx,
+} from '@/components/ui';
 import { HelpTip } from '@/components/operations';
 
 function NotificationRow({ row, onChanged }: { row: AppNotification; onChanged: () => Promise<void> }) {
@@ -60,11 +72,23 @@ function NotificationRow({ row, onChanged }: { row: AppNotification; onChanged: 
           </Link>
         )}
         {!row.readAt && (
-          <Button size="sm" variant="ghost" icon={Check} loading={busy === 'read'} onClick={() => act('read', () => notificationsApi.markRead(t, row.id))}>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={Check}
+            loading={busy === 'read'}
+            onClick={() => act('read', () => notificationsApi.markRead(t, row.id))}
+          >
             Read
           </Button>
         )}
-        <Button size="sm" variant="ghost" icon={Archive} loading={busy === 'archive'} onClick={() => act('archive', () => notificationsApi.archive(t, row.id))}>
+        <Button
+          size="sm"
+          variant="ghost"
+          icon={Archive}
+          loading={busy === 'archive'}
+          onClick={() => act('archive', () => notificationsApi.archive(t, row.id))}
+        >
           Archive
         </Button>
       </div>
@@ -114,7 +138,9 @@ function NotificationsInner() {
         action={
           <div className="flex gap-2">
             <Link href="/settings/notifications">
-              <Button variant="ghost" icon={Filter}>Preferences</Button>
+              <Button variant="ghost" icon={Filter}>
+                Preferences
+              </Button>
             </Link>
             <Button variant="dark" icon={CheckCheck} onClick={readAll}>
               Mark all read
@@ -141,13 +167,21 @@ function NotificationsInner() {
             <FormField label="Category">
               <Select value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="">All categories</option>
-                {NOTIFICATION_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                {NOTIFICATION_CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </Select>
             </FormField>
             <FormField label="Severity">
               <Select value={severity} onChange={(e) => setSeverity(e.target.value)}>
                 <option value="">All severities</option>
-                {NOTIFICATION_SEVERITIES.map((s) => <option key={s} value={s}>{s}</option>)}
+                {NOTIFICATION_SEVERITIES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
               </Select>
             </FormField>
             <div className="flex items-end">
@@ -162,7 +196,11 @@ function NotificationsInner() {
         {loading ? (
           <Spinner label="Loading notifications..." />
         ) : rows.length === 0 ? (
-          <EmptyState icon={Bell} title="No notifications found" hint="Notifications appear here from real workflow events in this tenant." />
+          <EmptyState
+            icon={Bell}
+            title="No notifications found"
+            hint="Notifications appear here from real workflow events in this tenant."
+          />
         ) : (
           <Section title={`${rows.length} notification${rows.length === 1 ? '' : 's'}`}>
             <div className="divide-y divide-line">

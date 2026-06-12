@@ -87,7 +87,8 @@ describe('Phase 19 dashboard and support screens', () => {
     }
 
     const shell = fs.readFileSync(path.join(process.cwd(), 'src/components/app-shell.tsx'), 'utf8');
-    expect(shell).toContain('href="/support"');
+    expect(shell).toContain("href: '/support'");
+    expect(shell).toContain("href: '/platform/support'");
   });
 
   it('shows the live OPD queue route to reception users', () => {
@@ -109,6 +110,8 @@ describe('Phase 19 dashboard and support screens', () => {
       tenants: [membership],
     };
 
-    expect(visibleNav(profile, membership).map((item) => item.href)).toEqual(expect.arrayContaining(['/reception', '/opd']));
+    expect(visibleNav(profile, membership).map((item) => item.href)).toEqual(
+      expect.arrayContaining(['/reception', '/opd']),
+    );
   });
 });

@@ -111,7 +111,12 @@ function DashboardInner() {
           <Spinner label="Loading live dashboard..." />
         </>
       ) : roles.has('HOSPITAL_ADMIN') ? (
-        <HospitalAdminDashboard data={data} modules={modules} load={load} tenantName={membership?.tenantName ?? 'Hospital'} />
+        <HospitalAdminDashboard
+          data={data}
+          modules={modules}
+          load={load}
+          tenantName={membership?.tenantName ?? 'Hospital'}
+        />
       ) : (
         <RoleWorkspaceDashboard
           data={data}
@@ -189,7 +194,9 @@ function HospitalAdminDashboard({
         subtitle={`${tenantName} · hospital operations, access, setup, and risk`}
         action={
           <div className="flex flex-wrap gap-2">
-            <span className="flex items-center px-1 text-body-sm text-ink-soft">Updated {formatDateTime(data.generatedAt)}</span>
+            <span className="flex items-center px-1 text-body-sm text-ink-soft">
+              Updated {formatDateTime(data.generatedAt)}
+            </span>
             {modules.has('REPORTS') && (
               <Link href="/manager">
                 <Button variant="ghost" icon={Activity}>
@@ -208,7 +215,11 @@ function HospitalAdminDashboard({
         <div className="flex flex-wrap gap-1.5">
           <Badge tone="primary">Admin</Badge>
           <Badge tone="slate">{modules.size} modules enabled</Badge>
-          {data.alerts.length > 0 ? <Badge tone="warning">{data.alerts.length} alerts</Badge> : <Badge tone="success">No alerts</Badge>}
+          {data.alerts.length > 0 ? (
+            <Badge tone="warning">{data.alerts.length} alerts</Badge>
+          ) : (
+            <Badge tone="success">No alerts</Badge>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           {modules.has('REPORTS') && (
@@ -365,7 +376,11 @@ function HospitalAdminDashboard({
         <Section title="Setup readiness">
           <div className="divide-y divide-line">
             {setupItems.map((item) => (
-              <Link key={item.label} href={item.href} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-canvas">
+              <Link
+                key={item.label}
+                href={item.href}
+                className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-canvas"
+              >
                 <div className="flex items-center gap-3">
                   {Number(item.value) > 0 ? (
                     <CheckCircle2 className="h-5 w-5 text-success" />
@@ -426,7 +441,18 @@ function HospitalAdminDashboard({
 
       <WorkQueuePanel
         title="Admin action queue"
-        modules={['OPD', 'SCHEDULING', 'LAB', 'PHARMACY', 'INVENTORY', 'BILLING', 'IPD', 'INSURANCE', 'ADMIN', 'SYSTEM']}
+        modules={[
+          'OPD',
+          'SCHEDULING',
+          'LAB',
+          'PHARMACY',
+          'INVENTORY',
+          'BILLING',
+          'IPD',
+          'INSURANCE',
+          'ADMIN',
+          'SYSTEM',
+        ]}
         limit={12}
       />
 
@@ -475,7 +501,9 @@ function RoleWorkspaceDashboard({
         subtitle={`${tenantName} · ${view.subtitle}`}
         action={
           <div className="flex flex-wrap gap-2">
-            <span className="flex items-center px-1 text-body-sm text-ink-soft">Updated {formatDateTime(data.generatedAt)}</span>
+            <span className="flex items-center px-1 text-body-sm text-ink-soft">
+              Updated {formatDateTime(data.generatedAt)}
+            </span>
             {view.primaryHref && (
               <Link href={view.primaryHref}>
                 <Button variant="ghost" icon={view.primaryIcon}>
@@ -604,7 +632,18 @@ function dashboardViewFor(roles: Set<string>): DashboardView {
       helpTitle: 'Admin focus',
       help: 'Watch patient flow, collection, capacity, stock, clinical risk, setup readiness, and access control before going into deep module work.',
       queueTitle: 'Admin action queue',
-      queueModules: ['OPD', 'SCHEDULING', 'LAB', 'PHARMACY', 'INVENTORY', 'BILLING', 'IPD', 'INSURANCE', 'ADMIN', 'SYSTEM'],
+      queueModules: [
+        'OPD',
+        'SCHEDULING',
+        'LAB',
+        'PHARMACY',
+        'INVENTORY',
+        'BILLING',
+        'IPD',
+        'INSURANCE',
+        'ADMIN',
+        'SYSTEM',
+      ],
       primaryHref: '/admin',
       primaryLabel: 'Hospital setup',
       primaryIcon: Settings2,
@@ -618,7 +657,18 @@ function dashboardViewFor(roles: Set<string>): DashboardView {
       helpTitle: 'Manager focus',
       help: 'Start with blockers, then scan department pressure. The charts surface queue, revenue, bed, stock, lab, pharmacy, and insurance pressure without opening every module.',
       queueTitle: 'Cross-department work queue',
-      queueModules: ['OPD', 'SCHEDULING', 'LAB', 'PHARMACY', 'INVENTORY', 'BILLING', 'IPD', 'INSURANCE', 'ADMIN', 'SYSTEM'],
+      queueModules: [
+        'OPD',
+        'SCHEDULING',
+        'LAB',
+        'PHARMACY',
+        'INVENTORY',
+        'BILLING',
+        'IPD',
+        'INSURANCE',
+        'ADMIN',
+        'SYSTEM',
+      ],
       primaryHref: '/manager',
       primaryLabel: 'Operations view',
       primaryIcon: Activity,
@@ -743,7 +793,18 @@ function dashboardViewFor(roles: Set<string>): DashboardView {
     helpTitle: 'Workspace focus',
     help: 'Use this view to find assigned work, current alerts, and module shortcuts available to your role.',
     queueTitle: 'My work queue',
-    queueModules: ['OPD', 'SCHEDULING', 'LAB', 'PHARMACY', 'INVENTORY', 'BILLING', 'IPD', 'INSURANCE', 'ADMIN', 'SYSTEM'],
+    queueModules: [
+      'OPD',
+      'SCHEDULING',
+      'LAB',
+      'PHARMACY',
+      'INVENTORY',
+      'BILLING',
+      'IPD',
+      'INSURANCE',
+      'ADMIN',
+      'SYSTEM',
+    ],
   };
 }
 
@@ -755,72 +816,237 @@ function roleKpis(kind: DashboardKind, data: DashboardReport): KpiItem[] {
   switch (kind) {
     case 'manager':
       return [
-        { label: 'OPD volume', value: data.opd?.todayEncounters ?? 0, hint: `${data.opd?.completionRate ?? 0}% complete`, icon: Stethoscope },
-        { label: 'Revenue today', value: money(data.billing?.paidToday ?? 0), hint: `${money(financeReceivables)} receivable`, icon: Banknote },
-        { label: 'IPD occupancy', value: `${data.ipd?.occupancyRate ?? 0}%`, hint: `${data.ipd?.activeAdmissions ?? 0} active admissions`, icon: BedDouble },
+        {
+          label: 'OPD volume',
+          value: data.opd?.todayEncounters ?? 0,
+          hint: `${data.opd?.completionRate ?? 0}% complete`,
+          icon: Stethoscope,
+        },
+        {
+          label: 'Revenue today',
+          value: money(data.billing?.paidToday ?? 0),
+          hint: `${money(financeReceivables)} receivable`,
+          icon: Banknote,
+        },
+        {
+          label: 'IPD occupancy',
+          value: `${data.ipd?.occupancyRate ?? 0}%`,
+          hint: `${data.ipd?.activeAdmissions ?? 0} active admissions`,
+          icon: BedDouble,
+        },
         { label: 'Open alerts', value: data.alerts.length, hint: 'Cross-module bottlenecks', icon: Activity },
       ];
     case 'reception':
       return [
-        { label: 'Appointments', value: data.opd?.todayAppointments ?? 0, hint: 'Scheduled today', icon: CalendarClock },
-        { label: 'Waiting queue', value: data.opd?.queueWaiting ?? 0, hint: `${data.opd?.inProgress ?? 0} in progress`, icon: ClipboardList },
-        { label: 'Walk-ins', value: data.opd?.walkIns ?? 0, hint: `${data.opd?.completed ?? 0} completed`, icon: Users },
-        { label: 'Billing handoff', value: data.billing?.unpaidBills ?? 0, hint: `${money(financeReceivables)} receivable`, icon: Banknote },
+        {
+          label: 'Appointments',
+          value: data.opd?.todayAppointments ?? 0,
+          hint: 'Scheduled today',
+          icon: CalendarClock,
+        },
+        {
+          label: 'Waiting queue',
+          value: data.opd?.queueWaiting ?? 0,
+          hint: `${data.opd?.inProgress ?? 0} in progress`,
+          icon: ClipboardList,
+        },
+        {
+          label: 'Walk-ins',
+          value: data.opd?.walkIns ?? 0,
+          hint: `${data.opd?.completed ?? 0} completed`,
+          icon: Users,
+        },
+        {
+          label: 'Billing handoff',
+          value: data.billing?.unpaidBills ?? 0,
+          hint: `${money(financeReceivables)} receivable`,
+          icon: Banknote,
+        },
       ];
     case 'doctor':
       return [
-        { label: 'Consults today', value: data.opd?.todayEncounters ?? 0, hint: `${data.opd?.queueWaiting ?? 0} waiting`, icon: Stethoscope },
-        { label: 'Completed', value: data.opd?.completed ?? 0, hint: `${data.opd?.completionRate ?? 0}% completion`, icon: CheckCircle2 },
-        { label: 'Abnormal labs', value: data.lab?.abnormalUnverified ?? 0, hint: 'Need review or verification', icon: FlaskConical },
-        { label: 'IPD occupancy', value: `${data.ipd?.occupancyRate ?? 0}%`, hint: `${data.ipd?.activeAdmissions ?? 0} active admissions`, icon: BedDouble },
+        {
+          label: 'Consults today',
+          value: data.opd?.todayEncounters ?? 0,
+          hint: `${data.opd?.queueWaiting ?? 0} waiting`,
+          icon: Stethoscope,
+        },
+        {
+          label: 'Completed',
+          value: data.opd?.completed ?? 0,
+          hint: `${data.opd?.completionRate ?? 0}% completion`,
+          icon: CheckCircle2,
+        },
+        {
+          label: 'Abnormal labs',
+          value: data.lab?.abnormalUnverified ?? 0,
+          hint: 'Need review or verification',
+          icon: FlaskConical,
+        },
+        {
+          label: 'IPD occupancy',
+          value: `${data.ipd?.occupancyRate ?? 0}%`,
+          hint: `${data.ipd?.activeAdmissions ?? 0} active admissions`,
+          icon: BedDouble,
+        },
       ];
     case 'nurse':
       return [
-        { label: 'Vitals due', value: data.nursing?.vitalsDue ?? 0, hint: 'Admitted patients pending vitals', icon: HeartPulse },
-        { label: 'Meds today', value: data.nursing?.medsToday ?? 0, hint: 'Medication administration entries', icon: Pill },
-        { label: 'Notes today', value: data.nursing?.notesToday ?? 0, hint: 'Nursing documentation', icon: ClipboardList },
-        { label: 'Admissions', value: data.ipd?.activeAdmissions ?? 0, hint: `${data.ipd?.occupancyRate ?? 0}% beds occupied`, icon: BedDouble },
+        {
+          label: 'Vitals due',
+          value: data.nursing?.vitalsDue ?? 0,
+          hint: 'Admitted patients pending vitals',
+          icon: HeartPulse,
+        },
+        {
+          label: 'Meds today',
+          value: data.nursing?.medsToday ?? 0,
+          hint: 'Medication administration entries',
+          icon: Pill,
+        },
+        {
+          label: 'Notes today',
+          value: data.nursing?.notesToday ?? 0,
+          hint: 'Nursing documentation',
+          icon: ClipboardList,
+        },
+        {
+          label: 'Admissions',
+          value: data.ipd?.activeAdmissions ?? 0,
+          hint: `${data.ipd?.occupancyRate ?? 0}% beds occupied`,
+          icon: BedDouble,
+        },
       ];
     case 'lab':
       return [
         { label: 'Pending tests', value: labPending, hint: 'Ordered, sample, and processing', icon: FlaskConical },
-        { label: 'Samples', value: data.lab?.sampleCollected ?? 0, hint: 'Collected and awaiting processing', icon: ClipboardList },
-        { label: 'Completed today', value: data.lab?.completedToday ?? 0, hint: 'Reports completed', icon: CheckCircle2 },
-        { label: 'Abnormal pending', value: data.lab?.abnormalUnverified ?? 0, hint: 'Needs verification', icon: AlertTriangle },
+        {
+          label: 'Samples',
+          value: data.lab?.sampleCollected ?? 0,
+          hint: 'Collected and awaiting processing',
+          icon: ClipboardList,
+        },
+        {
+          label: 'Completed today',
+          value: data.lab?.completedToday ?? 0,
+          hint: 'Reports completed',
+          icon: CheckCircle2,
+        },
+        {
+          label: 'Abnormal pending',
+          value: data.lab?.abnormalUnverified ?? 0,
+          hint: 'Needs verification',
+          icon: AlertTriangle,
+        },
       ];
     case 'pharmacy':
       return [
-        { label: 'Pending Rx', value: data.pharmacy?.pendingPrescriptions ?? 0, hint: 'Finalized prescriptions', icon: Pill },
-        { label: 'Dispensed today', value: data.pharmacy?.dispensedToday ?? 0, hint: 'Completed dispense records', icon: CheckCircle2 },
+        {
+          label: 'Pending Rx',
+          value: data.pharmacy?.pendingPrescriptions ?? 0,
+          hint: 'Finalized prescriptions',
+          icon: Pill,
+        },
+        {
+          label: 'Dispensed today',
+          value: data.pharmacy?.dispensedToday ?? 0,
+          hint: 'Completed dispense records',
+          icon: CheckCircle2,
+        },
         { label: 'Low stock', value: data.inventory?.lowStock ?? 0, hint: 'Needs replenishment', icon: Warehouse },
-        { label: 'Expiring batches', value: data.inventory?.expiringBatches ?? 0, hint: 'Review FEFO risk', icon: AlertTriangle },
+        {
+          label: 'Expiring batches',
+          value: data.inventory?.expiringBatches ?? 0,
+          hint: 'Review FEFO risk',
+          icon: AlertTriangle,
+        },
       ];
     case 'inventory':
       return [
         { label: 'Active items', value: data.inventory?.itemCount ?? 0, hint: 'Item master', icon: Warehouse },
-        { label: 'Low stock', value: data.inventory?.lowStock ?? 0, hint: 'Below reorder threshold', icon: AlertTriangle },
-        { label: 'Pending POs', value: data.inventory?.pendingPurchases ?? 0, hint: 'Procurement follow-up', icon: ClipboardList },
-        { label: 'Stock value', value: money(data.inventory?.stockValue ?? 0), hint: `${data.inventory?.expiringBatches ?? 0} expiring batches`, icon: Banknote },
+        {
+          label: 'Low stock',
+          value: data.inventory?.lowStock ?? 0,
+          hint: 'Below reorder threshold',
+          icon: AlertTriangle,
+        },
+        {
+          label: 'Pending POs',
+          value: data.inventory?.pendingPurchases ?? 0,
+          hint: 'Procurement follow-up',
+          icon: ClipboardList,
+        },
+        {
+          label: 'Stock value',
+          value: money(data.inventory?.stockValue ?? 0),
+          hint: `${data.inventory?.expiringBatches ?? 0} expiring batches`,
+          icon: Banknote,
+        },
       ];
     case 'finance':
       return [
-        { label: 'Collected today', value: money(data.billing?.paidToday ?? 0), hint: `${money(data.billing?.billedToday ?? 0)} billed`, icon: Banknote },
-        { label: 'Receivables', value: money(financeReceivables), hint: `${data.billing?.unpaidBills ?? 0} unpaid bills`, icon: FileText },
+        {
+          label: 'Collected today',
+          value: money(data.billing?.paidToday ?? 0),
+          hint: `${money(data.billing?.billedToday ?? 0)} billed`,
+          icon: Banknote,
+        },
+        {
+          label: 'Receivables',
+          value: money(financeReceivables),
+          hint: `${data.billing?.unpaidBills ?? 0} unpaid bills`,
+          icon: FileText,
+        },
         { label: 'Partial bills', value: data.billing?.partialBills ?? 0, hint: 'Need follow-up', icon: ClipboardList },
-        { label: 'Refunds today', value: money(data.billing?.refundsToday ?? 0), hint: 'Monitor leakage', icon: AlertTriangle },
+        {
+          label: 'Refunds today',
+          value: money(data.billing?.refundsToday ?? 0),
+          hint: 'Monitor leakage',
+          icon: AlertTriangle,
+        },
       ];
     case 'insurance':
       return [
-        { label: 'Open claims', value: insuranceOpen, hint: `${data.insurance?.submitted ?? 0} submitted`, icon: ShieldCheck },
-        { label: 'Approved outstanding', value: money(data.insurance?.approvedOutstanding ?? 0), hint: 'Awaiting settlement', icon: Banknote },
-        { label: 'Settled today', value: money(data.insurance?.settledToday ?? 0), hint: 'Closed value today', icon: CheckCircle2 },
+        {
+          label: 'Open claims',
+          value: insuranceOpen,
+          hint: `${data.insurance?.submitted ?? 0} submitted`,
+          icon: ShieldCheck,
+        },
+        {
+          label: 'Approved outstanding',
+          value: money(data.insurance?.approvedOutstanding ?? 0),
+          hint: 'Awaiting settlement',
+          icon: Banknote,
+        },
+        {
+          label: 'Settled today',
+          value: money(data.insurance?.settledToday ?? 0),
+          hint: 'Closed value today',
+          icon: CheckCircle2,
+        },
         { label: 'Rejected', value: data.insurance?.rejected ?? 0, hint: 'Reason required', icon: AlertTriangle },
       ];
     default:
       return [
-        { label: 'Patients', value: data.setup?.patients ?? 0, hint: `${data.setup?.activeStaff ?? 0} active staff`, icon: Users },
-        { label: 'OPD today', value: data.opd?.todayEncounters ?? 0, hint: `${data.opd?.queueWaiting ?? 0} waiting`, icon: Stethoscope },
-        { label: 'Collected today', value: money(data.billing?.paidToday ?? 0), hint: `${money(financeReceivables)} outstanding`, icon: Banknote },
+        {
+          label: 'Patients',
+          value: data.setup?.patients ?? 0,
+          hint: `${data.setup?.activeStaff ?? 0} active staff`,
+          icon: Users,
+        },
+        {
+          label: 'OPD today',
+          value: data.opd?.todayEncounters ?? 0,
+          hint: `${data.opd?.queueWaiting ?? 0} waiting`,
+          icon: Stethoscope,
+        },
+        {
+          label: 'Collected today',
+          value: money(data.billing?.paidToday ?? 0),
+          hint: `${money(financeReceivables)} outstanding`,
+          icon: Banknote,
+        },
         { label: 'Open alerts', value: data.alerts.length, hint: 'Needs attention', icon: Activity },
       ];
   }
@@ -829,7 +1055,13 @@ function roleKpis(kind: DashboardKind, data: DashboardReport): KpiItem[] {
 function roleMeters(kind: DashboardKind, data: DashboardReport): MeterItem[] {
   const collection = collectionRate(data);
   const opdTotal = Math.max(data.opd?.todayEncounters ?? 0, 1);
-  const labTotal = Math.max((data.lab?.ordered ?? 0) + (data.lab?.sampleCollected ?? 0) + (data.lab?.processing ?? 0) + (data.lab?.completedToday ?? 0), 1);
+  const labTotal = Math.max(
+    (data.lab?.ordered ?? 0) +
+      (data.lab?.sampleCollected ?? 0) +
+      (data.lab?.processing ?? 0) +
+      (data.lab?.completedToday ?? 0),
+    1,
+  );
   const rxTotal = Math.max((data.pharmacy?.pendingPrescriptions ?? 0) + (data.pharmacy?.dispensedToday ?? 0), 1);
   const admissionTotal = Math.max(data.ipd?.activeAdmissions ?? data.ipd?.totalBeds ?? 0, 1);
   const inventoryTotal = Math.max(data.inventory?.itemCount ?? 0, 1);
@@ -845,66 +1077,290 @@ function roleMeters(kind: DashboardKind, data: DashboardReport): MeterItem[] {
   switch (kind) {
     case 'reception':
       return [
-        { label: 'Queue waiting', value: data.opd?.queueWaiting ?? 0, max: opdTotal, hint: `${data.opd?.inProgress ?? 0} already with doctors`, tone: (data.opd?.queueWaiting ?? 0) > 5 ? 'warning' : 'primary' },
-        { label: 'Queue completed', value: data.opd?.completionRate ?? 0, max: 100, suffix: '%', hint: `${data.opd?.completed ?? 0} consultations completed`, tone: 'success' },
-        { label: 'Appointment load', value: data.opd?.todayAppointments ?? 0, max: Math.max(data.opd?.todayAppointments ?? 0, data.opd?.todayEncounters ?? 0, 1), hint: 'Scheduled demand today', tone: 'primary' },
-        { label: 'Billing handoff', value: data.billing?.unpaidBills ?? 0, max: Math.max((data.billing?.unpaidBills ?? 0) + (data.billing?.partialBills ?? 0), 1), hint: `${money(data.billing?.outstandingReceivables ?? 0)} still receivable`, tone: (data.billing?.unpaidBills ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          label: 'Queue waiting',
+          value: data.opd?.queueWaiting ?? 0,
+          max: opdTotal,
+          hint: `${data.opd?.inProgress ?? 0} already with doctors`,
+          tone: (data.opd?.queueWaiting ?? 0) > 5 ? 'warning' : 'primary',
+        },
+        {
+          label: 'Queue completed',
+          value: data.opd?.completionRate ?? 0,
+          max: 100,
+          suffix: '%',
+          hint: `${data.opd?.completed ?? 0} consultations completed`,
+          tone: 'success',
+        },
+        {
+          label: 'Appointment load',
+          value: data.opd?.todayAppointments ?? 0,
+          max: Math.max(data.opd?.todayAppointments ?? 0, data.opd?.todayEncounters ?? 0, 1),
+          hint: 'Scheduled demand today',
+          tone: 'primary',
+        },
+        {
+          label: 'Billing handoff',
+          value: data.billing?.unpaidBills ?? 0,
+          max: Math.max((data.billing?.unpaidBills ?? 0) + (data.billing?.partialBills ?? 0), 1),
+          hint: `${money(data.billing?.outstandingReceivables ?? 0)} still receivable`,
+          tone: (data.billing?.unpaidBills ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     case 'doctor':
       return [
-        { label: 'Consult completion', value: data.opd?.completionRate ?? 0, max: 100, suffix: '%', hint: `${data.opd?.completed ?? 0}/${data.opd?.todayEncounters ?? 0} done`, tone: 'success' },
-        { label: 'Waiting consults', value: data.opd?.queueWaiting ?? 0, max: opdTotal, hint: 'Patients still waiting', tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Abnormal lab review', value: data.lab?.abnormalUnverified ?? 0, max: Math.max(data.lab?.abnormalUnverified ?? 0, labTotal), hint: 'Results needing clinical attention', tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success' },
-        { label: 'IPD bed pressure', value: data.ipd?.occupancyRate ?? 0, max: 100, suffix: '%', hint: `${data.ipd?.activeAdmissions ?? 0} active admissions`, tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'primary' },
+        {
+          label: 'Consult completion',
+          value: data.opd?.completionRate ?? 0,
+          max: 100,
+          suffix: '%',
+          hint: `${data.opd?.completed ?? 0}/${data.opd?.todayEncounters ?? 0} done`,
+          tone: 'success',
+        },
+        {
+          label: 'Waiting consults',
+          value: data.opd?.queueWaiting ?? 0,
+          max: opdTotal,
+          hint: 'Patients still waiting',
+          tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Abnormal lab review',
+          value: data.lab?.abnormalUnverified ?? 0,
+          max: Math.max(data.lab?.abnormalUnverified ?? 0, labTotal),
+          hint: 'Results needing clinical attention',
+          tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success',
+        },
+        {
+          label: 'IPD bed pressure',
+          value: data.ipd?.occupancyRate ?? 0,
+          max: 100,
+          suffix: '%',
+          hint: `${data.ipd?.activeAdmissions ?? 0} active admissions`,
+          tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'primary',
+        },
       ];
     case 'nurse':
       return [
-        { label: 'Vitals coverage', value: Math.max(0, admissionTotal - (data.nursing?.vitalsDue ?? 0)), max: admissionTotal, hint: `${data.nursing?.vitalsDue ?? 0} patients still due`, tone: (data.nursing?.vitalsDue ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Medication activity', value: data.nursing?.medsToday ?? 0, max: Math.max(data.nursing?.medsToday ?? 0, 1), hint: 'Administration entries today', tone: 'primary' },
-        { label: 'Notes completed', value: data.nursing?.notesToday ?? 0, max: Math.max(admissionTotal, data.nursing?.notesToday ?? 0, 1), hint: 'Nursing notes today', tone: 'primary' },
-        { label: 'Bed occupancy', value: data.ipd?.occupancyRate ?? 0, max: 100, suffix: '%', hint: `${data.ipd?.occupiedBeds ?? 0}/${data.ipd?.totalBeds ?? 0} beds occupied`, tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'success' },
+        {
+          label: 'Vitals coverage',
+          value: Math.max(0, admissionTotal - (data.nursing?.vitalsDue ?? 0)),
+          max: admissionTotal,
+          hint: `${data.nursing?.vitalsDue ?? 0} patients still due`,
+          tone: (data.nursing?.vitalsDue ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Medication activity',
+          value: data.nursing?.medsToday ?? 0,
+          max: Math.max(data.nursing?.medsToday ?? 0, 1),
+          hint: 'Administration entries today',
+          tone: 'primary',
+        },
+        {
+          label: 'Notes completed',
+          value: data.nursing?.notesToday ?? 0,
+          max: Math.max(admissionTotal, data.nursing?.notesToday ?? 0, 1),
+          hint: 'Nursing notes today',
+          tone: 'primary',
+        },
+        {
+          label: 'Bed occupancy',
+          value: data.ipd?.occupancyRate ?? 0,
+          max: 100,
+          suffix: '%',
+          hint: `${data.ipd?.occupiedBeds ?? 0}/${data.ipd?.totalBeds ?? 0} beds occupied`,
+          tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'success',
+        },
       ];
     case 'lab':
       return [
-        { label: 'Orders waiting', value: data.lab?.ordered ?? 0, max: labTotal, hint: 'Orders not yet sampled', tone: (data.lab?.ordered ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Samples collected', value: data.lab?.sampleCollected ?? 0, max: labTotal, hint: 'Ready for processing', tone: 'primary' },
-        { label: 'Processing', value: data.lab?.processing ?? 0, max: labTotal, hint: 'Tests in progress', tone: 'primary' },
-        { label: 'Abnormal unverified', value: data.lab?.abnormalUnverified ?? 0, max: Math.max(data.lab?.abnormalUnverified ?? 0, labTotal), hint: 'Escalate quickly', tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success' },
+        {
+          label: 'Orders waiting',
+          value: data.lab?.ordered ?? 0,
+          max: labTotal,
+          hint: 'Orders not yet sampled',
+          tone: (data.lab?.ordered ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Samples collected',
+          value: data.lab?.sampleCollected ?? 0,
+          max: labTotal,
+          hint: 'Ready for processing',
+          tone: 'primary',
+        },
+        {
+          label: 'Processing',
+          value: data.lab?.processing ?? 0,
+          max: labTotal,
+          hint: 'Tests in progress',
+          tone: 'primary',
+        },
+        {
+          label: 'Abnormal unverified',
+          value: data.lab?.abnormalUnverified ?? 0,
+          max: Math.max(data.lab?.abnormalUnverified ?? 0, labTotal),
+          hint: 'Escalate quickly',
+          tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success',
+        },
       ];
     case 'pharmacy':
       return [
-        { label: 'Prescription queue', value: data.pharmacy?.pendingPrescriptions ?? 0, max: rxTotal, hint: 'Finalized prescriptions waiting', tone: (data.pharmacy?.pendingPrescriptions ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Dispensed today', value: data.pharmacy?.dispensedToday ?? 0, max: rxTotal, hint: 'Completed dispense flow', tone: 'success' },
-        { label: 'Low stock risk', value: data.inventory?.lowStock ?? 0, max: inventoryTotal, hint: 'May block dispense', tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success' },
-        { label: 'Expiry risk', value: data.inventory?.expiringBatches ?? 0, max: Math.max(data.inventory?.expiringBatches ?? 0, inventoryTotal), hint: 'FEFO review needed', tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          label: 'Prescription queue',
+          value: data.pharmacy?.pendingPrescriptions ?? 0,
+          max: rxTotal,
+          hint: 'Finalized prescriptions waiting',
+          tone: (data.pharmacy?.pendingPrescriptions ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Dispensed today',
+          value: data.pharmacy?.dispensedToday ?? 0,
+          max: rxTotal,
+          hint: 'Completed dispense flow',
+          tone: 'success',
+        },
+        {
+          label: 'Low stock risk',
+          value: data.inventory?.lowStock ?? 0,
+          max: inventoryTotal,
+          hint: 'May block dispense',
+          tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success',
+        },
+        {
+          label: 'Expiry risk',
+          value: data.inventory?.expiringBatches ?? 0,
+          max: Math.max(data.inventory?.expiringBatches ?? 0, inventoryTotal),
+          hint: 'FEFO review needed',
+          tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     case 'inventory':
       return [
-        { label: 'Stock health', value: inventoryTotal - (data.inventory?.lowStock ?? 0), max: inventoryTotal, hint: `${data.inventory?.lowStock ?? 0} low-stock items`, tone: (data.inventory?.lowStock ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Expiry watch', value: data.inventory?.expiringBatches ?? 0, max: Math.max(data.inventory?.expiringBatches ?? 0, inventoryTotal), hint: 'Batches expiring soon', tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Procurement pending', value: data.inventory?.pendingPurchases ?? 0, max: Math.max(data.inventory?.pendingPurchases ?? 0, 1), hint: 'Purchase orders to follow', tone: (data.inventory?.pendingPurchases ?? 0) > 0 ? 'primary' : 'success' },
-        { label: 'Catalog coverage', value: data.inventory?.itemCount ?? 0, max: Math.max(data.inventory?.itemCount ?? 0, 1), hint: `${money(data.inventory?.stockValue ?? 0)} stock value`, tone: 'primary' },
+        {
+          label: 'Stock health',
+          value: inventoryTotal - (data.inventory?.lowStock ?? 0),
+          max: inventoryTotal,
+          hint: `${data.inventory?.lowStock ?? 0} low-stock items`,
+          tone: (data.inventory?.lowStock ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Expiry watch',
+          value: data.inventory?.expiringBatches ?? 0,
+          max: Math.max(data.inventory?.expiringBatches ?? 0, inventoryTotal),
+          hint: 'Batches expiring soon',
+          tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Procurement pending',
+          value: data.inventory?.pendingPurchases ?? 0,
+          max: Math.max(data.inventory?.pendingPurchases ?? 0, 1),
+          hint: 'Purchase orders to follow',
+          tone: (data.inventory?.pendingPurchases ?? 0) > 0 ? 'primary' : 'success',
+        },
+        {
+          label: 'Catalog coverage',
+          value: data.inventory?.itemCount ?? 0,
+          max: Math.max(data.inventory?.itemCount ?? 0, 1),
+          hint: `${money(data.inventory?.stockValue ?? 0)} stock value`,
+          tone: 'primary',
+        },
       ];
     case 'finance':
       return [
-        { label: 'Collection rate', value: collection, max: 100, suffix: '%', hint: `${money(data.billing?.paidToday ?? 0)} collected`, tone: collection >= 80 ? 'success' : collection >= 50 ? 'warning' : 'danger' },
-        { label: 'Unpaid bills', value: data.billing?.unpaidBills ?? 0, max: Math.max((data.billing?.unpaidBills ?? 0) + (data.billing?.partialBills ?? 0), 1), hint: `${money(data.billing?.outstandingReceivables ?? 0)} receivable`, tone: (data.billing?.unpaidBills ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Partial bills', value: data.billing?.partialBills ?? 0, max: Math.max((data.billing?.unpaidBills ?? 0) + (data.billing?.partialBills ?? 0), 1), hint: 'Needs settlement follow-up', tone: (data.billing?.partialBills ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Refund control', value: data.billing?.refundsToday ?? 0, max: Math.max(data.billing?.refundsToday ?? 0, data.billing?.paidToday ?? 0, 1), hint: money(data.billing?.refundsToday ?? 0), tone: (data.billing?.refundsToday ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          label: 'Collection rate',
+          value: collection,
+          max: 100,
+          suffix: '%',
+          hint: `${money(data.billing?.paidToday ?? 0)} collected`,
+          tone: collection >= 80 ? 'success' : collection >= 50 ? 'warning' : 'danger',
+        },
+        {
+          label: 'Unpaid bills',
+          value: data.billing?.unpaidBills ?? 0,
+          max: Math.max((data.billing?.unpaidBills ?? 0) + (data.billing?.partialBills ?? 0), 1),
+          hint: `${money(data.billing?.outstandingReceivables ?? 0)} receivable`,
+          tone: (data.billing?.unpaidBills ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Partial bills',
+          value: data.billing?.partialBills ?? 0,
+          max: Math.max((data.billing?.unpaidBills ?? 0) + (data.billing?.partialBills ?? 0), 1),
+          hint: 'Needs settlement follow-up',
+          tone: (data.billing?.partialBills ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Refund control',
+          value: data.billing?.refundsToday ?? 0,
+          max: Math.max(data.billing?.refundsToday ?? 0, data.billing?.paidToday ?? 0, 1),
+          hint: money(data.billing?.refundsToday ?? 0),
+          tone: (data.billing?.refundsToday ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     case 'insurance':
       return [
-        { label: 'Submitted claims', value: data.insurance?.submitted ?? 0, max: claimTotal, hint: 'Awaiting review', tone: (data.insurance?.submitted ?? 0) > 0 ? 'warning' : 'success' },
-        { label: 'Under review', value: data.insurance?.underReview ?? 0, max: claimTotal, hint: 'In payer review', tone: 'primary' },
-        { label: 'Settled claims', value: data.insurance?.settled ?? 0, max: claimTotal, hint: `${money(data.insurance?.settledToday ?? 0)} settled today`, tone: 'success' },
-        { label: 'Approved outstanding', value: data.insurance?.approvedOutstanding ?? 0, max: Math.max(data.insurance?.approvedOutstanding ?? 0, data.insurance?.settledToday ?? 0, 1), hint: 'Settlement still pending', tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          label: 'Submitted claims',
+          value: data.insurance?.submitted ?? 0,
+          max: claimTotal,
+          hint: 'Awaiting review',
+          tone: (data.insurance?.submitted ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          label: 'Under review',
+          value: data.insurance?.underReview ?? 0,
+          max: claimTotal,
+          hint: 'In payer review',
+          tone: 'primary',
+        },
+        {
+          label: 'Settled claims',
+          value: data.insurance?.settled ?? 0,
+          max: claimTotal,
+          hint: `${money(data.insurance?.settledToday ?? 0)} settled today`,
+          tone: 'success',
+        },
+        {
+          label: 'Approved outstanding',
+          value: data.insurance?.approvedOutstanding ?? 0,
+          max: Math.max(data.insurance?.approvedOutstanding ?? 0, data.insurance?.settledToday ?? 0, 1),
+          hint: 'Settlement still pending',
+          tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     default:
       return [
-        { label: 'OPD completion', value: data.opd?.completionRate ?? 0, max: 100, suffix: '%', hint: `${data.opd?.completed ?? 0} completed today`, tone: 'success' },
-        { label: 'Collection rate', value: collection, max: 100, suffix: '%', hint: `${money(data.billing?.paidToday ?? 0)} collected`, tone: collection >= 80 ? 'success' : 'warning' },
-        { label: 'IPD occupancy', value: data.ipd?.occupancyRate ?? 0, max: 100, suffix: '%', hint: `${data.ipd?.occupiedBeds ?? 0}/${data.ipd?.totalBeds ?? 0} beds`, tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'primary' },
-        { label: 'Inventory risk', value: data.inventory?.lowStock ?? 0, max: inventoryTotal, hint: `${data.inventory?.expiringBatches ?? 0} expiring batches`, tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success' },
+        {
+          label: 'OPD completion',
+          value: data.opd?.completionRate ?? 0,
+          max: 100,
+          suffix: '%',
+          hint: `${data.opd?.completed ?? 0} completed today`,
+          tone: 'success',
+        },
+        {
+          label: 'Collection rate',
+          value: collection,
+          max: 100,
+          suffix: '%',
+          hint: `${money(data.billing?.paidToday ?? 0)} collected`,
+          tone: collection >= 80 ? 'success' : 'warning',
+        },
+        {
+          label: 'IPD occupancy',
+          value: data.ipd?.occupancyRate ?? 0,
+          max: 100,
+          suffix: '%',
+          hint: `${data.ipd?.occupiedBeds ?? 0}/${data.ipd?.totalBeds ?? 0} beds`,
+          tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'primary',
+        },
+        {
+          label: 'Inventory risk',
+          value: data.inventory?.lowStock ?? 0,
+          max: inventoryTotal,
+          hint: `${data.inventory?.expiringBatches ?? 0} expiring batches`,
+          tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success',
+        },
       ];
   }
 }
@@ -914,78 +1370,323 @@ function roleFocus(kind: DashboardKind, data: DashboardReport): FocusItem[] {
   switch (kind) {
     case 'manager':
       return [
-        { icon: ClipboardList, title: 'Patient flow', body: `${data.opd?.queueWaiting ?? 0} waiting, ${data.opd?.inProgress ?? 0} in progress`, href: '/opd', tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: Banknote, title: 'Money flow', body: commonFinance, href: '/finance', tone: (data.billing?.outstandingReceivables ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: Warehouse, title: 'Supply risk', body: `${data.inventory?.lowStock ?? 0} low-stock items and ${data.inventory?.expiringBatches ?? 0} expiring batches`, href: '/inventory', tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success' },
-        { icon: ShieldCheck, title: 'Insurance settlements', body: `${money(data.insurance?.approvedOutstanding ?? 0)} approved but unsettled`, href: '/insurance', tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          icon: ClipboardList,
+          title: 'Patient flow',
+          body: `${data.opd?.queueWaiting ?? 0} waiting, ${data.opd?.inProgress ?? 0} in progress`,
+          href: '/opd',
+          tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: Banknote,
+          title: 'Money flow',
+          body: commonFinance,
+          href: '/finance',
+          tone: (data.billing?.outstandingReceivables ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: Warehouse,
+          title: 'Supply risk',
+          body: `${data.inventory?.lowStock ?? 0} low-stock items and ${data.inventory?.expiringBatches ?? 0} expiring batches`,
+          href: '/inventory',
+          tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success',
+        },
+        {
+          icon: ShieldCheck,
+          title: 'Insurance settlements',
+          body: `${money(data.insurance?.approvedOutstanding ?? 0)} approved but unsettled`,
+          href: '/insurance',
+          tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     case 'reception':
       return [
-        { icon: CalendarClock, title: 'Appointments to check in', body: `${data.opd?.todayAppointments ?? 0} scheduled today and ${data.opd?.walkIns ?? 0} walk-ins`, href: '/opd/appointments', tone: 'primary' },
-        { icon: ClipboardList, title: 'Live OPD queue', body: `${data.opd?.queueWaiting ?? 0} waiting and ${data.opd?.inProgress ?? 0} with doctors`, href: '/opd', tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: Users, title: 'Patient registration', body: `${data.setup?.patients ?? 0} total patient records`, href: '/patients?new=1', tone: 'primary' },
-        { icon: Banknote, title: 'Payment handoff', body: commonFinance, href: '/finance/pending-charges', tone: (data.billing?.outstandingReceivables ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          icon: CalendarClock,
+          title: 'Appointments to check in',
+          body: `${data.opd?.todayAppointments ?? 0} scheduled today and ${data.opd?.walkIns ?? 0} walk-ins`,
+          href: '/opd/appointments',
+          tone: 'primary',
+        },
+        {
+          icon: ClipboardList,
+          title: 'Live OPD queue',
+          body: `${data.opd?.queueWaiting ?? 0} waiting and ${data.opd?.inProgress ?? 0} with doctors`,
+          href: '/opd',
+          tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: Users,
+          title: 'Patient registration',
+          body: `${data.setup?.patients ?? 0} total patient records`,
+          href: '/patients?new=1',
+          tone: 'primary',
+        },
+        {
+          icon: Banknote,
+          title: 'Payment handoff',
+          body: commonFinance,
+          href: '/finance/pending-charges',
+          tone: (data.billing?.outstandingReceivables ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     case 'doctor':
       return [
-        { icon: Stethoscope, title: 'Consultation queue', body: `${data.opd?.queueWaiting ?? 0} waiting, ${data.opd?.completed ?? 0} completed today`, href: '/doctor', tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: FlaskConical, title: 'Lab follow-up', body: `${data.lab?.abnormalUnverified ?? 0} abnormal results need attention`, href: '/lab', tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success' },
-        { icon: BedDouble, title: 'Admitted patients', body: `${data.ipd?.activeAdmissions ?? 0} active admissions at ${data.ipd?.occupancyRate ?? 0}% occupancy`, href: '/ipd', tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'primary' },
-        { icon: FileText, title: 'Clinical reports', body: 'Open clinical trend reports when follow-up patterns are unclear.', href: '/reports/clinical', tone: 'primary' },
+        {
+          icon: Stethoscope,
+          title: 'Consultation queue',
+          body: `${data.opd?.queueWaiting ?? 0} waiting, ${data.opd?.completed ?? 0} completed today`,
+          href: '/doctor',
+          tone: (data.opd?.queueWaiting ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: FlaskConical,
+          title: 'Lab follow-up',
+          body: `${data.lab?.abnormalUnverified ?? 0} abnormal results need attention`,
+          href: '/lab',
+          tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success',
+        },
+        {
+          icon: BedDouble,
+          title: 'Admitted patients',
+          body: `${data.ipd?.activeAdmissions ?? 0} active admissions at ${data.ipd?.occupancyRate ?? 0}% occupancy`,
+          href: '/ipd',
+          tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'primary',
+        },
+        {
+          icon: FileText,
+          title: 'Clinical reports',
+          body: 'Open clinical trend reports when follow-up patterns are unclear.',
+          href: '/reports/clinical',
+          tone: 'primary',
+        },
       ];
     case 'nurse':
       return [
-        { icon: HeartPulse, title: 'Vitals due', body: `${data.nursing?.vitalsDue ?? 0} admitted patients need vitals`, href: '/nursing', tone: (data.nursing?.vitalsDue ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: Pill, title: 'Medication administration', body: `${data.nursing?.medsToday ?? 0} MAR entries today`, href: '/nursing', tone: 'primary' },
-        { icon: ClipboardList, title: 'Nursing documentation', body: `${data.nursing?.notesToday ?? 0} notes recorded today`, href: '/nursing', tone: 'primary' },
-        { icon: BedDouble, title: 'Bed pressure', body: `${data.ipd?.occupiedBeds ?? 0}/${data.ipd?.totalBeds ?? 0} beds occupied`, href: '/ipd', tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'success' },
+        {
+          icon: HeartPulse,
+          title: 'Vitals due',
+          body: `${data.nursing?.vitalsDue ?? 0} admitted patients need vitals`,
+          href: '/nursing',
+          tone: (data.nursing?.vitalsDue ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: Pill,
+          title: 'Medication administration',
+          body: `${data.nursing?.medsToday ?? 0} MAR entries today`,
+          href: '/nursing',
+          tone: 'primary',
+        },
+        {
+          icon: ClipboardList,
+          title: 'Nursing documentation',
+          body: `${data.nursing?.notesToday ?? 0} notes recorded today`,
+          href: '/nursing',
+          tone: 'primary',
+        },
+        {
+          icon: BedDouble,
+          title: 'Bed pressure',
+          body: `${data.ipd?.occupiedBeds ?? 0}/${data.ipd?.totalBeds ?? 0} beds occupied`,
+          href: '/ipd',
+          tone: (data.ipd?.occupancyRate ?? 0) >= 85 ? 'warning' : 'success',
+        },
       ];
     case 'lab':
       return [
-        { icon: FlaskConical, title: 'Orders not sampled', body: `${data.lab?.ordered ?? 0} orders waiting for sample collection`, href: '/lab', tone: (data.lab?.ordered ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: ClipboardList, title: 'Samples and processing', body: `${data.lab?.sampleCollected ?? 0} samples collected, ${data.lab?.processing ?? 0} processing`, href: '/lab', tone: 'primary' },
-        { icon: AlertTriangle, title: 'Abnormal verification', body: `${data.lab?.abnormalUnverified ?? 0} abnormal results unverified`, href: '/lab', tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success' },
-        { icon: CheckCircle2, title: 'Reports completed', body: `${data.lab?.completedToday ?? 0} reports completed today`, href: '/lab', tone: 'success' },
+        {
+          icon: FlaskConical,
+          title: 'Orders not sampled',
+          body: `${data.lab?.ordered ?? 0} orders waiting for sample collection`,
+          href: '/lab',
+          tone: (data.lab?.ordered ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: ClipboardList,
+          title: 'Samples and processing',
+          body: `${data.lab?.sampleCollected ?? 0} samples collected, ${data.lab?.processing ?? 0} processing`,
+          href: '/lab',
+          tone: 'primary',
+        },
+        {
+          icon: AlertTriangle,
+          title: 'Abnormal verification',
+          body: `${data.lab?.abnormalUnverified ?? 0} abnormal results unverified`,
+          href: '/lab',
+          tone: (data.lab?.abnormalUnverified ?? 0) > 0 ? 'danger' : 'success',
+        },
+        {
+          icon: CheckCircle2,
+          title: 'Reports completed',
+          body: `${data.lab?.completedToday ?? 0} reports completed today`,
+          href: '/lab',
+          tone: 'success',
+        },
       ];
     case 'pharmacy':
       return [
-        { icon: Pill, title: 'Dispense queue', body: `${data.pharmacy?.pendingPrescriptions ?? 0} finalized prescriptions waiting`, href: '/pharmacy', tone: (data.pharmacy?.pendingPrescriptions ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: CheckCircle2, title: 'Completed dispenses', body: `${data.pharmacy?.dispensedToday ?? 0} dispensed today`, href: '/pharmacy', tone: 'success' },
-        { icon: Warehouse, title: 'Stock blockers', body: `${data.inventory?.lowStock ?? 0} low-stock items can block dispense`, href: '/inventory', tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success' },
-        { icon: AlertTriangle, title: 'Expiry watch', body: `${data.inventory?.expiringBatches ?? 0} batches expiring soon`, href: '/inventory', tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          icon: Pill,
+          title: 'Dispense queue',
+          body: `${data.pharmacy?.pendingPrescriptions ?? 0} finalized prescriptions waiting`,
+          href: '/pharmacy',
+          tone: (data.pharmacy?.pendingPrescriptions ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: CheckCircle2,
+          title: 'Completed dispenses',
+          body: `${data.pharmacy?.dispensedToday ?? 0} dispensed today`,
+          href: '/pharmacy',
+          tone: 'success',
+        },
+        {
+          icon: Warehouse,
+          title: 'Stock blockers',
+          body: `${data.inventory?.lowStock ?? 0} low-stock items can block dispense`,
+          href: '/inventory',
+          tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success',
+        },
+        {
+          icon: AlertTriangle,
+          title: 'Expiry watch',
+          body: `${data.inventory?.expiringBatches ?? 0} batches expiring soon`,
+          href: '/inventory',
+          tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     case 'inventory':
       return [
-        { icon: AlertTriangle, title: 'Low stock', body: `${data.inventory?.lowStock ?? 0} active items are at or below threshold`, href: '/inventory/items', tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success' },
-        { icon: CalendarClock, title: 'Expiry', body: `${data.inventory?.expiringBatches ?? 0} batches need expiry review`, href: '/inventory/transactions', tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: ClipboardList, title: 'Purchase orders', body: `${data.inventory?.pendingPurchases ?? 0} POs pending`, href: '/inventory/purchases', tone: 'primary' },
-        { icon: Banknote, title: 'Stock value', body: `${money(data.inventory?.stockValue ?? 0)} current sale value`, href: '/reports/inventory', tone: 'primary' },
+        {
+          icon: AlertTriangle,
+          title: 'Low stock',
+          body: `${data.inventory?.lowStock ?? 0} active items are at or below threshold`,
+          href: '/inventory/items',
+          tone: (data.inventory?.lowStock ?? 0) > 0 ? 'danger' : 'success',
+        },
+        {
+          icon: CalendarClock,
+          title: 'Expiry',
+          body: `${data.inventory?.expiringBatches ?? 0} batches need expiry review`,
+          href: '/inventory/transactions',
+          tone: (data.inventory?.expiringBatches ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: ClipboardList,
+          title: 'Purchase orders',
+          body: `${data.inventory?.pendingPurchases ?? 0} POs pending`,
+          href: '/inventory/purchases',
+          tone: 'primary',
+        },
+        {
+          icon: Banknote,
+          title: 'Stock value',
+          body: `${money(data.inventory?.stockValue ?? 0)} current sale value`,
+          href: '/reports/inventory',
+          tone: 'primary',
+        },
       ];
     case 'finance':
       return [
-        { icon: Banknote, title: 'Collections', body: `${money(data.billing?.paidToday ?? 0)} collected from ${money(data.billing?.billedToday ?? 0)} billed today`, href: '/finance/cashier', tone: collectionRate(data) >= 80 ? 'success' : 'warning' },
-        { icon: FileText, title: 'Receivables', body: commonFinance, href: '/finance/pending-charges', tone: (data.billing?.outstandingReceivables ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: AlertTriangle, title: 'Refund control', body: `${money(data.billing?.refundsToday ?? 0)} refunded today`, href: '/finance/refunds', tone: (data.billing?.refundsToday ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: ShieldCheck, title: 'Insurance receivables', body: `${money(data.insurance?.approvedOutstanding ?? 0)} approved but unsettled`, href: '/finance/insurance-receivables', tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          icon: Banknote,
+          title: 'Collections',
+          body: `${money(data.billing?.paidToday ?? 0)} collected from ${money(data.billing?.billedToday ?? 0)} billed today`,
+          href: '/finance/cashier',
+          tone: collectionRate(data) >= 80 ? 'success' : 'warning',
+        },
+        {
+          icon: FileText,
+          title: 'Receivables',
+          body: commonFinance,
+          href: '/finance/pending-charges',
+          tone: (data.billing?.outstandingReceivables ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: AlertTriangle,
+          title: 'Refund control',
+          body: `${money(data.billing?.refundsToday ?? 0)} refunded today`,
+          href: '/finance/refunds',
+          tone: (data.billing?.refundsToday ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: ShieldCheck,
+          title: 'Insurance receivables',
+          body: `${money(data.insurance?.approvedOutstanding ?? 0)} approved but unsettled`,
+          href: '/finance/insurance-receivables',
+          tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     case 'insurance':
       return [
-        { icon: ShieldCheck, title: 'Open claims', body: `${(data.insurance?.submitted ?? 0) + (data.insurance?.underReview ?? 0)} claims in submission or review`, href: '/insurance', tone: 'primary' },
-        { icon: Banknote, title: 'Pending settlements', body: `${money(data.insurance?.approvedOutstanding ?? 0)} approved but unpaid`, href: '/insurance', tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success' },
-        { icon: CheckCircle2, title: 'Settled today', body: `${money(data.insurance?.settledToday ?? 0)} settled today`, href: '/accounts', tone: 'success' },
-        { icon: AlertTriangle, title: 'Rejected claims', body: `${data.insurance?.rejected ?? 0} rejected claims need documented follow-up`, href: '/insurance', tone: (data.insurance?.rejected ?? 0) > 0 ? 'warning' : 'success' },
+        {
+          icon: ShieldCheck,
+          title: 'Open claims',
+          body: `${(data.insurance?.submitted ?? 0) + (data.insurance?.underReview ?? 0)} claims in submission or review`,
+          href: '/insurance',
+          tone: 'primary',
+        },
+        {
+          icon: Banknote,
+          title: 'Pending settlements',
+          body: `${money(data.insurance?.approvedOutstanding ?? 0)} approved but unpaid`,
+          href: '/insurance',
+          tone: (data.insurance?.approvedOutstanding ?? 0) > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: CheckCircle2,
+          title: 'Settled today',
+          body: `${money(data.insurance?.settledToday ?? 0)} settled today`,
+          href: '/accounts',
+          tone: 'success',
+        },
+        {
+          icon: AlertTriangle,
+          title: 'Rejected claims',
+          body: `${data.insurance?.rejected ?? 0} rejected claims need documented follow-up`,
+          href: '/insurance',
+          tone: (data.insurance?.rejected ?? 0) > 0 ? 'warning' : 'success',
+        },
       ];
     default:
       return [
-        { icon: ClipboardList, title: 'Work queue', body: 'Open assigned tasks from enabled modules.', href: '/dashboard', tone: 'primary' },
-        { icon: AlertTriangle, title: 'Alerts', body: `${data.alerts.length} cross-module alerts`, href: '/dashboard', tone: data.alerts.length > 0 ? 'warning' : 'success' },
-        { icon: Users, title: 'Patient flow', body: `${data.opd?.todayEncounters ?? 0} OPD encounters today`, href: '/opd', tone: 'primary' },
-        { icon: FileText, title: 'Reports', body: 'Use reports for deeper operational review.', href: '/reports', tone: 'primary' },
+        {
+          icon: ClipboardList,
+          title: 'Work queue',
+          body: 'Open assigned tasks from enabled modules.',
+          href: '/dashboard',
+          tone: 'primary',
+        },
+        {
+          icon: AlertTriangle,
+          title: 'Alerts',
+          body: `${data.alerts.length} cross-module alerts`,
+          href: '/dashboard',
+          tone: data.alerts.length > 0 ? 'warning' : 'success',
+        },
+        {
+          icon: Users,
+          title: 'Patient flow',
+          body: `${data.opd?.todayEncounters ?? 0} OPD encounters today`,
+          href: '/opd',
+          tone: 'primary',
+        },
+        {
+          icon: FileText,
+          title: 'Reports',
+          body: 'Use reports for deeper operational review.',
+          href: '/reports',
+          tone: 'primary',
+        },
       ];
   }
 }
 
-function roleFlowCards(kind: DashboardKind, data: DashboardReport, modules: Set<string>, roles: Set<string>): FlowCard[] {
+function roleFlowCards(
+  kind: DashboardKind,
+  data: DashboardReport,
+  modules: Set<string>,
+  roles: Set<string>,
+): FlowCard[] {
   const base: FlowCard[] = [];
   const includeOpd = modules.has('OPD') && data.opd;
   const includeBilling = modules.has('BILLING') && data.billing;
@@ -996,28 +1697,84 @@ function roleFlowCards(kind: DashboardKind, data: DashboardReport, modules: Set<
   const includeInsurance = modules.has('INSURANCE') && data.insurance;
 
   if (includeOpd && ['manager', 'reception', 'doctor', 'workspace'].includes(kind)) {
-    base.push({ title: 'OPD queue', value: data.opd!.queueWaiting, hint: `${data.opd!.completed} completed today`, href: roles.has('DOCTOR') ? '/doctor' : '/opd', icon: Stethoscope, tone: data.opd!.queueWaiting > 0 ? 'warning' : 'success' });
+    base.push({
+      title: 'OPD queue',
+      value: data.opd!.queueWaiting,
+      hint: `${data.opd!.completed} completed today`,
+      href: roles.has('DOCTOR') ? '/doctor' : '/opd',
+      icon: Stethoscope,
+      tone: data.opd!.queueWaiting > 0 ? 'warning' : 'success',
+    });
   }
   if (includeBilling && ['manager', 'reception', 'finance', 'workspace'].includes(kind)) {
-    base.push({ title: 'Finance', value: money(data.billing!.outstandingReceivables), hint: `${data.billing!.unpaidBills} unpaid bills`, href: '/finance', icon: Banknote, tone: data.billing!.outstandingReceivables > 0 ? 'warning' : 'success' });
+    base.push({
+      title: 'Finance',
+      value: money(data.billing!.outstandingReceivables),
+      hint: `${data.billing!.unpaidBills} unpaid bills`,
+      href: '/finance',
+      icon: Banknote,
+      tone: data.billing!.outstandingReceivables > 0 ? 'warning' : 'success',
+    });
   }
   if (includeLab && ['manager', 'doctor', 'lab', 'workspace'].includes(kind)) {
-    base.push({ title: 'Lab pending', value: labPendingCount(data), hint: `${data.lab!.abnormalUnverified} abnormal unverified`, href: '/lab', icon: FlaskConical, tone: data.lab!.abnormalUnverified > 0 ? 'danger' : 'primary' });
+    base.push({
+      title: 'Lab pending',
+      value: labPendingCount(data),
+      hint: `${data.lab!.abnormalUnverified} abnormal unverified`,
+      href: '/lab',
+      icon: FlaskConical,
+      tone: data.lab!.abnormalUnverified > 0 ? 'danger' : 'primary',
+    });
   }
   if (includePharmacy && ['manager', 'pharmacy', 'workspace'].includes(kind)) {
-    base.push({ title: 'Pharmacy', value: data.pharmacy!.pendingPrescriptions, hint: `${data.pharmacy!.dispensedToday} dispensed today`, href: '/pharmacy', icon: Pill, tone: data.pharmacy!.pendingPrescriptions > 0 ? 'warning' : 'success' });
+    base.push({
+      title: 'Pharmacy',
+      value: data.pharmacy!.pendingPrescriptions,
+      hint: `${data.pharmacy!.dispensedToday} dispensed today`,
+      href: '/pharmacy',
+      icon: Pill,
+      tone: data.pharmacy!.pendingPrescriptions > 0 ? 'warning' : 'success',
+    });
   }
   if (includeInventory && ['manager', 'pharmacy', 'inventory', 'workspace'].includes(kind)) {
-    base.push({ title: 'Inventory risk', value: data.inventory!.lowStock, hint: `${data.inventory!.expiringBatches} expiring batches`, href: '/inventory', icon: Warehouse, tone: data.inventory!.lowStock > 0 ? 'danger' : 'success' });
+    base.push({
+      title: 'Inventory risk',
+      value: data.inventory!.lowStock,
+      hint: `${data.inventory!.expiringBatches} expiring batches`,
+      href: '/inventory',
+      icon: Warehouse,
+      tone: data.inventory!.lowStock > 0 ? 'danger' : 'success',
+    });
   }
   if (includeIpd && ['manager', 'doctor', 'nurse', 'workspace'].includes(kind)) {
-    base.push({ title: 'IPD', value: `${data.ipd!.occupancyRate}%`, hint: `${data.ipd!.activeAdmissions} active admissions`, href: '/ipd', icon: BedDouble, tone: data.ipd!.occupancyRate >= 85 ? 'warning' : 'success' });
+    base.push({
+      title: 'IPD',
+      value: `${data.ipd!.occupancyRate}%`,
+      hint: `${data.ipd!.activeAdmissions} active admissions`,
+      href: '/ipd',
+      icon: BedDouble,
+      tone: data.ipd!.occupancyRate >= 85 ? 'warning' : 'success',
+    });
   }
   if (data.nursing && ['nurse', 'manager', 'workspace'].includes(kind)) {
-    base.push({ title: 'Nursing tasks', value: data.nursing.vitalsDue, hint: `${data.nursing.medsToday} meds, ${data.nursing.notesToday} notes today`, href: '/nursing', icon: HeartPulse, tone: data.nursing.vitalsDue > 0 ? 'warning' : 'success' });
+    base.push({
+      title: 'Nursing tasks',
+      value: data.nursing.vitalsDue,
+      hint: `${data.nursing.medsToday} meds, ${data.nursing.notesToday} notes today`,
+      href: '/nursing',
+      icon: HeartPulse,
+      tone: data.nursing.vitalsDue > 0 ? 'warning' : 'success',
+    });
   }
   if (includeInsurance && ['manager', 'finance', 'insurance', 'workspace'].includes(kind)) {
-    base.push({ title: 'Insurance', value: money(data.insurance!.approvedOutstanding), hint: `${data.insurance!.submitted + data.insurance!.underReview} open claims`, href: '/insurance', icon: ShieldCheck, tone: data.insurance!.approvedOutstanding > 0 ? 'warning' : 'success' });
+    base.push({
+      title: 'Insurance',
+      value: money(data.insurance!.approvedOutstanding),
+      hint: `${data.insurance!.submitted + data.insurance!.underReview} open claims`,
+      href: '/insurance',
+      icon: ShieldCheck,
+      tone: data.insurance!.approvedOutstanding > 0 ? 'warning' : 'success',
+    });
   }
 
   return base.slice(0, 8);
@@ -1071,7 +1828,11 @@ function roleShortcuts(kind: DashboardKind, modules: Set<string>, roles: Set<str
       add(modules.has('BILLING'), { href: '/finance/cashier', icon: Banknote, label: 'Cashier' });
       add(modules.has('BILLING'), { href: '/finance/pending-charges', icon: ClipboardList, label: 'Pending charges' });
       add(modules.has('BILLING'), { href: '/finance/day-close', icon: CheckCircle2, label: 'Day close' });
-      add(modules.has('INSURANCE'), { href: '/finance/insurance-receivables', icon: ShieldCheck, label: 'Insurance receivables' });
+      add(modules.has('INSURANCE'), {
+        href: '/finance/insurance-receivables',
+        icon: ShieldCheck,
+        label: 'Insurance receivables',
+      });
       break;
     case 'insurance':
       add(modules.has('INSURANCE'), { href: '/insurance', icon: ShieldCheck, label: 'Claims workbench' });
@@ -1123,7 +1884,9 @@ function roleScore(kind: DashboardKind, data: DashboardReport): number {
       return total ? ((data.insurance?.settled ?? 0) / total) * 100 : 100;
     }
     default:
-      return Math.round(((data.opd?.completionRate ?? 0) + collection + (100 - Math.min(data.alerts.length * 15, 60))) / 3);
+      return Math.round(
+        ((data.opd?.completionRate ?? 0) + collection + (100 - Math.min(data.alerts.length * 15, 60))) / 3,
+      );
   }
 }
 
@@ -1250,7 +2013,10 @@ function AdminModuleCard({
   tone: HealthTone;
 }) {
   return (
-    <Link href={href} className="rounded-md border border-line p-4 transition hover:border-primary/60 hover:bg-primary-50">
+    <Link
+      href={href}
+      className="rounded-md border border-line p-4 transition hover:border-primary/60 hover:bg-primary-50"
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-label-md uppercase text-ink-muted">{title}</div>
@@ -1267,7 +2033,10 @@ function AdminModuleCard({
 
 function Shortcut({ href, icon: Icon, label }: { href: string; icon: LucideIcon; label: string }) {
   return (
-    <Link href={href} className="flex items-center gap-3 rounded-md border border-line px-3 py-3 transition hover:border-primary/60 hover:bg-primary-50">
+    <Link
+      href={href}
+      className="flex items-center gap-3 rounded-md border border-line px-3 py-3 transition hover:border-primary/60 hover:bg-primary-50"
+    >
       <span className="grid h-8 w-8 place-items-center rounded-md bg-primary-100 text-primary-700">
         <Icon className="h-4 w-4" />
       </span>

@@ -7,7 +7,8 @@ import { getFirebaseAuth } from '@/lib/firebase';
 import { usePortal } from '@/components/patient/portal-shell';
 import { Loading, ErrorState, SubTabs } from '@/components/patient/portal-ui';
 
-const inputCls = 'w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25';
+const inputCls =
+  'w-full rounded-lg border border-line bg-surface px-3 py-2 text-body-md text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25';
 type Tab = 'profile' | 'notifications' | 'security' | 'records';
 
 export default function SettingsPage() {
@@ -60,7 +61,9 @@ export default function SettingsPage() {
 function Card({ icon: Icon, title, children }: { icon: typeof User; title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-line bg-surface p-5">
-      <h2 className="mb-4 flex items-center gap-2 text-headline-sm text-ink"><Icon className="h-5 w-5 text-primary" /> {title}</h2>
+      <h2 className="mb-4 flex items-center gap-2 text-headline-sm text-ink">
+        <Icon className="h-5 w-5 text-primary" /> {title}
+      </h2>
       {children}
     </div>
   );
@@ -68,7 +71,11 @@ function Card({ icon: Icon, title, children }: { icon: typeof User; title: strin
 
 function Note({ tone, text }: { tone: 'ok' | 'err'; text: string }) {
   return (
-    <div className={`mb-3 rounded-lg px-3 py-2 text-body-sm ${tone === 'ok' ? 'bg-success-bg text-success-fg' : 'bg-danger-bg text-danger-fg'}`}>{text}</div>
+    <div
+      className={`mb-3 rounded-lg px-3 py-2 text-body-sm ${tone === 'ok' ? 'bg-success-bg text-success-fg' : 'bg-danger-bg text-danger-fg'}`}
+    >
+      {text}
+    </div>
   );
 }
 
@@ -110,7 +117,11 @@ function ProfileTab({ data, onSaved }: { data: PortalSettings; onSaved: () => Pr
           <input className={inputCls} value={mobile} onChange={(e) => setMobile(e.target.value)} />
         </label>
       </div>
-      <button onClick={save} disabled={busy} className="mt-4 rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700 disabled:opacity-50">
+      <button
+        onClick={save}
+        disabled={busy}
+        className="mt-4 rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700 disabled:opacity-50"
+      >
         {busy ? 'Saving…' : 'Save changes'}
       </button>
     </Card>
@@ -162,7 +173,9 @@ function NotificationsTab({ prefs }: { prefs: NotificationPrefs }) {
               onClick={() => toggle(key)}
               className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors ${state[key] ? 'bg-primary' : 'bg-line'}`}
             >
-              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${state[key] ? 'left-[22px]' : 'left-0.5'}`} />
+              <span
+                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${state[key] ? 'left-[22px]' : 'left-0.5'}`}
+              />
             </button>
           </li>
         ))}
@@ -201,7 +214,12 @@ function SecurityTab() {
       setPw2('');
     } catch (e) {
       const raw = (e as Error).message;
-      setMsg({ tone: 'err', text: raw.includes('requires-recent-login') ? 'For security, please sign out and sign in again, then retry.' : 'Could not update password.' });
+      setMsg({
+        tone: 'err',
+        text: raw.includes('requires-recent-login')
+          ? 'For security, please sign out and sign in again, then retry.'
+          : 'Could not update password.',
+      });
     } finally {
       setBusy(false);
     }
@@ -220,7 +238,11 @@ function SecurityTab() {
           <input type="password" className={inputCls} value={pw2} onChange={(e) => setPw2(e.target.value)} />
         </label>
       </div>
-      <button onClick={change} disabled={busy} className="mt-4 rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700 disabled:opacity-50">
+      <button
+        onClick={change}
+        disabled={busy}
+        className="mt-4 rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700 disabled:opacity-50"
+      >
         {busy ? 'Updating…' : 'Update password'}
       </button>
     </Card>
@@ -249,7 +271,10 @@ function RecordsTab() {
           ))}
         </ul>
       )}
-      <button onClick={openLinkModal} className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-line px-4 py-2 text-label-md font-medium text-ink hover:bg-canvas">
+      <button
+        onClick={openLinkModal}
+        className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-line px-4 py-2 text-label-md font-medium text-ink hover:bg-canvas"
+      >
         <Plus className="h-4 w-4" /> Link another hospital record
       </button>
     </Card>

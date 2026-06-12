@@ -6,12 +6,24 @@ import { PageHeader, Section, Badge } from '@/components/ui';
 
 const CHECKS = [
   ['Patient stuck in OPD', 'Check whether the encounter is CHECKED_IN or IN_PROGRESS, then open Doctor or OPD queue.'],
-  ['Lab report not printable', 'Verify result entry and verification status, then confirm lab.report.print permission.'],
-  ['Prescription not dispensing', 'Check finalized status, item stock, active batches, expiry, and partial dispense history.'],
-  ['Stock looks wrong', 'Use inventory ledger first. Adjust only when the physical count is verified and a reason is documented.'],
+  [
+    'Lab report not printable',
+    'Verify result entry and verification status, then confirm lab.report.print permission.',
+  ],
+  [
+    'Prescription not dispensing',
+    'Check finalized status, item stock, active batches, expiry, and partial dispense history.',
+  ],
+  [
+    'Stock looks wrong',
+    'Use inventory ledger first. Adjust only when the physical count is verified and a reason is documented.',
+  ],
   ['Bed not available', 'Check active admissions and transfers. A bed frees only after discharge completes.'],
   ['Bill cannot close', 'Review payments, refunds, insurance claim status, and outstanding patient share.'],
-  ['Claim stuck', 'Open the claim detail and confirm submit/review/approve/reject/settle sequence and required reasons.'],
+  [
+    'Claim stuck',
+    'Open the claim detail and confirm submit/review/approve/reject/settle sequence and required reasons.',
+  ],
   ['Notification missing', 'Check notification preferences, recipient role, tenant scope, and delivery failure logs.'],
 ];
 

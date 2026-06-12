@@ -1,20 +1,32 @@
-import { Controller, Post, Body, Req, Res } from '@nestjs/common';
+import { Body, Controller, Headers, Post, Res } from '@nestjs/common';
 import { AiService, ChatRequestDto } from './ai.service';
-import { Ctx } from '../common/decorators';
+import { Ctx, Public } from '../common/decorators';
 import type { RequestContext } from '../common/types';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 
 @Controller('ai')
 export class AiController {
   constructor(private readonly aiService: AiService) {}
 
+  @Public()
   @Post('chat')
-  async chat(@Ctx() ctx: RequestContext, @Body() dto: ChatRequestDto, @Req() req: Request, @Res() res: Response) {
-    const webResponse = await this.aiService.handleChatStream(ctx, dto.messages);
-    
+  async chat(
+    @Ctx() ctx: RequestContext,
+    @Body() dto: ChatRequestDto,
+    @Headers('authorization') authorization: string | undefined,
+    @Headers('x-tenant-id') tenantId: string | undefined,
+    @Headers('x-hms-path') currentPath: string | undefined,
+    @Res() res: Response,
+  ) {
+    const webResponse = await this.aiService.handleChatStream(ctx, dto.messages, {
+      authorization,
+      tenantId,
+      currentPath,
+    });
+
     webResponse.headers.forEach((value, key) => res.setHeader(key, value));
     res.status(webResponse.status);
-    
+
     if (!webResponse.body) {
       res.end();
       return;

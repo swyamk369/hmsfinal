@@ -370,20 +370,34 @@ function LabTab({
               {o.items.map((it) => {
                 const r = it.results[0];
                 return (
-                  <li key={it.id} className={cx(
-                    "flex items-center justify-between rounded-md p-2 -mx-2 transition-colors",
-                    (r && (r.abnormalFlag === 'HIGH' || r.abnormalFlag === 'CRITICAL')) ? "bg-danger-bg border border-danger/30" : ""
-                  )}>
-                    <span className={cx(
-                      "text-ink-muted",
-                      (r && (r.abnormalFlag === 'HIGH' || r.abnormalFlag === 'CRITICAL')) && "text-danger-fg font-medium"
-                    )}>{it.testName}</span>
+                  <li
+                    key={it.id}
+                    className={cx(
+                      'flex items-center justify-between rounded-md p-2 -mx-2 transition-colors',
+                      r && (r.abnormalFlag === 'HIGH' || r.abnormalFlag === 'CRITICAL')
+                        ? 'bg-danger-bg border border-danger/30'
+                        : '',
+                    )}
+                  >
+                    <span
+                      className={cx(
+                        'text-ink-muted',
+                        r &&
+                          (r.abnormalFlag === 'HIGH' || r.abnormalFlag === 'CRITICAL') &&
+                          'text-danger-fg font-medium',
+                      )}
+                    >
+                      {it.testName}
+                    </span>
                     {r ? (
                       <span className="flex items-center gap-2">
-                        <span className={cx(
-                          "text-ink",
-                          (r.abnormalFlag === 'HIGH' || r.abnormalFlag === 'CRITICAL') && "text-danger-fg font-semibold"
-                        )}>
+                        <span
+                          className={cx(
+                            'text-ink',
+                            (r.abnormalFlag === 'HIGH' || r.abnormalFlag === 'CRITICAL') &&
+                              'text-danger-fg font-semibold',
+                          )}
+                        >
                           {r.value ?? '—'} {r.unit}
                         </span>
                         <StatusChip status={r.isVerified ? 'VERIFIED' : r.abnormalFlag} />

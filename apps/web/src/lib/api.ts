@@ -20,10 +20,17 @@ export class ApiError extends Error {
 
 /** Token fetch with a ceiling — a hung Firebase token refresh must not hang the app. */
 async function tokenWithTimeout(): Promise<string | null> {
-  return Promise.race([
-    getFirebaseIdToken(),
-    new Promise<null>((resolve) => setTimeout(() => resolve(null), TOKEN_TIMEOUT_MS)),
-  ]).catch(() => null);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const timeout = new Promise<null>((resolve) => {
+      timer = setTimeout(() => resolve(null), TOKEN_TIMEOUT_MS);
+    });
+    return await Promise.race([getFirebaseIdToken(), timeout]);
+  } catch {
+    return null;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 export async function buildHeaders(tenantId?: string | null, json = false): Promise<Record<string, string>> {

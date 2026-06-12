@@ -14,9 +14,13 @@ export interface AddCommentDto {
 
 @Injectable()
 export class SupportService {
+  private hasGlobalQueueAccess(ctx: RequestContext) {
+    return ctx.isPlatform || ctx.isSupport;
+  }
+
   async listTickets(ctx: RequestContext) {
-    if (ctx.isSupport) {
-      // Support staff sees all tickets globally
+    if (this.hasGlobalQueueAccess(ctx)) {
+      // Platform admins and support staff see the global support queue.
       return platformDb.supportTicket.findMany({
         orderBy: { createdAt: 'desc' },
         include: {
@@ -73,8 +77,8 @@ export class SupportService {
     });
 
     if (!ticket) throw new NotFoundException('Ticket not found');
-    
-    if (!ctx.isSupport && ticket.tenantId !== ctx.tenantId && ticket.reporterId !== ctx.userId) {
+
+    if (!this.hasGlobalQueueAccess(ctx) && ticket.tenantId !== ctx.tenantId && ticket.reporterId !== ctx.userId) {
       throw new NotFoundException('Ticket not found');
     }
 
@@ -82,10 +86,12 @@ export class SupportService {
   }
 
   async updateTicketStatus(ctx: RequestContext, id: string, status: TicketStatus) {
-    // Only support staff can update status for now, or the reporter can CLOSE it
-    if (!ctx.isSupport && status !== 'CLOSED') {
+    // Platform/support staff can triage globally; reporters can only close their own ticket.
+    if (!this.hasGlobalQueueAccess(ctx) && status !== 'CLOSED') {
       throw new NotFoundException('Not authorized to update status');
     }
+
+    await this.getTicket(ctx, id);
 
     return platformDb.supportTicket.update({
       where: { id },

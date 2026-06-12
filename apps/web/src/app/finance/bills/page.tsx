@@ -5,7 +5,17 @@ import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
 import { financeApi } from '@/lib/finance';
 import type { Bill } from '@/lib/billing';
-import { Button, EmptyState, ErrorState, FormField, Input, PageHeader, Section, Select, Spinner } from '@/components/ui';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  FormField,
+  Input,
+  PageHeader,
+  Section,
+  Select,
+  Spinner,
+} from '@/components/ui';
 import { BillTable, FinanceShell, FINANCE_PERMS } from '../finance-ui';
 
 function FinanceBillsInner() {
@@ -35,7 +45,10 @@ function FinanceBillsInner() {
 
   return (
     <>
-      <PageHeader title="Bills" subtitle="Unified bills from charges, OPD, pharmacy, IPD, lab, manual services, and insurance" />
+      <PageHeader
+        title="Bills"
+        subtitle="Unified bills from charges, OPD, pharmacy, IPD, lab, manual services, and insurance"
+      />
       <FinanceShell>
         <div className="space-y-6">
           {err && <ErrorState message={err} />}
@@ -47,11 +60,17 @@ function FinanceBillsInner() {
               <FormField label="Status">
                 <Select value={status} onChange={(e) => setStatus(e.target.value)}>
                   <option value="">All</option>
-                  {['UNPAID', 'PARTIAL', 'PAID', 'CANCELLED', 'REFUNDED'].map((s) => <option key={s} value={s}>{s}</option>)}
+                  {['UNPAID', 'PARTIAL', 'PAID', 'CANCELLED', 'REFUNDED'].map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
                 </Select>
               </FormField>
               <div className="flex items-end">
-                <Button variant="ghost" onClick={load}>Refresh</Button>
+                <Button variant="ghost" onClick={load}>
+                  Refresh
+                </Button>
               </div>
             </div>
           </Section>

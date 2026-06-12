@@ -3,7 +3,19 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, MapPin, Stethoscope, HeartPulse, Baby, Brain, Bone, Eye, ShieldCheck, CalendarCheck, FolderLock } from 'lucide-react';
+import {
+  Search,
+  MapPin,
+  Stethoscope,
+  HeartPulse,
+  Baby,
+  Brain,
+  Bone,
+  Eye,
+  ShieldCheck,
+  CalendarCheck,
+  FolderLock,
+} from 'lucide-react';
 import { PublicShell } from '@/components/public-shell';
 
 const SPECIALTIES: { label: string; icon: typeof Stethoscope }[] = [
@@ -33,12 +45,18 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative -mx-4 overflow-hidden rounded-b-2xl bg-gradient-to-b from-primary-50 to-canvas px-4 pb-12 pt-10 md:pt-16">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <h1 className="text-display-lg text-ink md:text-4xl md:leading-tight">Find and book healthcare appointments online</h1>
+          <h1 className="text-display-lg text-ink md:text-4xl md:leading-tight">
+            Find and book healthcare appointments online
+          </h1>
           <p className="mt-4 max-w-2xl text-body-lg text-ink-muted">
-            Search doctors and hospitals, see real-time availability, and manage your visits securely — one login across every hospital you visit.
+            Search doctors and hospitals, see real-time availability, and manage your visits securely — one login across
+            every hospital you visit.
           </p>
 
-          <form onSubmit={search} className="mt-8 w-full max-w-3xl rounded-xl border border-line bg-surface p-3 shadow-sm md:flex md:items-center md:gap-2">
+          <form
+            onSubmit={search}
+            className="mt-8 w-full max-w-3xl rounded-xl border border-line bg-surface p-3 shadow-sm md:flex md:items-center md:gap-2"
+          >
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-ink-soft" />
               <input
@@ -81,20 +99,40 @@ export default function HomePage() {
 
       {/* Value props */}
       <section className="mx-auto mt-12 grid max-w-5xl gap-4 sm:grid-cols-3">
-        <Feature icon={CalendarCheck} title="Real-time booking" body="See genuine open slots from each hospital's schedule and book in a few taps." />
-        <Feature icon={FolderLock} title="Your records, in one place" body="Access appointments, bills, prescriptions, and shared reports across hospitals." />
-        <Feature icon={ShieldCheck} title="Private & secure" body="One login, separate records per hospital. Your data is isolated and never shared between hospitals." />
+        <Feature
+          icon={CalendarCheck}
+          title="Real-time booking"
+          body="See genuine open slots from each hospital's schedule and book in a few taps."
+        />
+        <Feature
+          icon={FolderLock}
+          title="Your records, in one place"
+          body="Access appointments, bills, prescriptions, and shared reports across hospitals."
+        />
+        <Feature
+          icon={ShieldCheck}
+          title="Private & secure"
+          body="One login, separate records per hospital. Your data is isolated and never shared between hospitals."
+        />
       </section>
 
       {/* CTA */}
       <section className="mx-auto mt-12 flex max-w-5xl flex-col items-center gap-3 rounded-2xl border border-line bg-surface px-6 py-10 text-center">
         <h2 className="text-headline-md text-ink">Ready to see a doctor?</h2>
-        <p className="max-w-xl text-body-md text-ink-muted">Browse specialists and hospitals near you, or sign in to manage your care.</p>
+        <p className="max-w-xl text-body-md text-ink-muted">
+          Browse specialists and hospitals near you, or sign in to manage your care.
+        </p>
         <div className="mt-2 flex flex-wrap justify-center gap-3">
-          <Link href="/doctors" className="rounded-lg bg-primary px-6 py-2.5 text-label-md font-medium text-white hover:bg-primary-700">
+          <Link
+            href="/doctors"
+            className="rounded-lg bg-primary px-6 py-2.5 text-label-md font-medium text-white hover:bg-primary-700"
+          >
             Find a doctor
           </Link>
-          <Link href="/hospitals" className="rounded-lg border border-line px-6 py-2.5 text-label-md font-medium text-ink hover:bg-canvas">
+          <Link
+            href="/hospitals"
+            className="rounded-lg border border-line px-6 py-2.5 text-label-md font-medium text-ink hover:bg-canvas"
+          >
             Browse hospitals
           </Link>
         </div>

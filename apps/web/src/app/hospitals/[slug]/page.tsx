@@ -3,7 +3,19 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Building2, MapPin, Phone, Globe, Mail, Clock, Video, Languages, ShieldCheck, CalendarCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  Building2,
+  MapPin,
+  Phone,
+  Globe,
+  Mail,
+  Clock,
+  Video,
+  Languages,
+  ShieldCheck,
+  CalendarCheck,
+} from 'lucide-react';
 import { PublicShell } from '@/components/public-shell';
 import { Avatar, Tag } from '@/components/patient/directory-ui';
 import { SaveHospitalButton } from '@/components/patient/save-button';
@@ -11,18 +23,27 @@ import { publicApi, inr, type PublicHospital, type PublicDoctor, type PublicAppo
 
 export default function HospitalProfilePage() {
   const { slug } = useParams<{ slug: string }>();
-  const [data, setData] = useState<{ hospital: PublicHospital; doctors: PublicDoctor[]; appointmentTypes: PublicAppointmentType[] } | null>(null);
+  const [data, setData] = useState<{
+    hospital: PublicHospital;
+    doctors: PublicDoctor[];
+    appointmentTypes: PublicAppointmentType[];
+  } | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    publicApi.hospital(slug).then(setData).catch((e) => setErr((e as Error).message));
+    publicApi
+      .hospital(slug)
+      .then(setData)
+      .catch((e) => setErr((e as Error).message));
   }, [slug]);
 
   if (err) {
     return (
       <PublicShell>
         <BackLink />
-        <div className="rounded-xl border border-line bg-surface px-6 py-12 text-center text-body-md text-ink-muted">{err}</div>
+        <div className="rounded-xl border border-line bg-surface px-6 py-12 text-center text-body-md text-ink-muted">
+          {err}
+        </div>
       </PublicShell>
     );
   }
@@ -127,7 +148,9 @@ export default function HospitalProfilePage() {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-body-sm text-ink-soft">Choose a doctor below to book one of these services online.</p>
+              <p className="mt-3 text-body-sm text-ink-soft">
+                Choose a doctor below to book one of these services online.
+              </p>
             </Section>
           )}
 
@@ -145,11 +168,17 @@ export default function HospitalProfilePage() {
                       </Link>
                       {d.specialty && <div className="truncate text-body-sm text-ink-muted">{d.specialty}</div>}
                       <div className="mt-1.5 flex gap-2">
-                        <Link href={`/doctors/${d.slug}`} className="text-label-md font-medium text-primary hover:underline">
+                        <Link
+                          href={`/doctors/${d.slug}`}
+                          className="text-label-md font-medium text-primary hover:underline"
+                        >
                           View profile
                         </Link>
                         {d.bookingEnabled && (
-                          <Link href={`/book/${d.tenantId}/${d.doctorId}`} className="text-label-md font-medium text-primary hover:underline">
+                          <Link
+                            href={`/book/${d.tenantId}/${d.doctorId}`}
+                            className="text-label-md font-medium text-primary hover:underline"
+                          >
                             Book
                           </Link>
                         )}
@@ -167,15 +196,27 @@ export default function HospitalProfilePage() {
           <div className="rounded-xl border border-line bg-surface p-6">
             <h2 className="mb-3 text-title-lg font-semibold text-ink">Quick info</h2>
             <dl className="space-y-3 text-body-sm">
-              <InfoRow icon={<Video className="h-4 w-4" />} label="Telehealth" value={telehealth ? 'Available' : 'Not offered'} />
+              <InfoRow
+                icon={<Video className="h-4 w-4" />}
+                label="Telehealth"
+                value={telehealth ? 'Available' : 'Not offered'}
+              />
               {(h.languages?.length ?? 0) > 0 && (
                 <InfoRow icon={<Languages className="h-4 w-4" />} label="Languages" value={h.languages.join(', ')} />
               )}
               {(h.insuranceAccepted?.length ?? 0) > 0 && (
-                <InfoRow icon={<ShieldCheck className="h-4 w-4" />} label="Insurance" value={h.insuranceAccepted!.join(', ')} />
+                <InfoRow
+                  icon={<ShieldCheck className="h-4 w-4" />}
+                  label="Insurance"
+                  value={h.insuranceAccepted!.join(', ')}
+                />
               )}
               {h.bookingEnabled && (
-                <InfoRow icon={<CalendarCheck className="h-4 w-4" />} label="Booking" value="Online booking available" />
+                <InfoRow
+                  icon={<CalendarCheck className="h-4 w-4" />}
+                  label="Booking"
+                  value="Online booking available"
+                />
               )}
             </dl>
             {data.doctors.some((d) => d.bookingEnabled) && (
@@ -231,7 +272,10 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 
 function BackLink() {
   return (
-    <Link href="/hospitals" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+    <Link
+      href="/hospitals"
+      className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+    >
       <ArrowLeft className="h-4 w-4" /> All hospitals
     </Link>
   );

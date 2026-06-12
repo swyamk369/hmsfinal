@@ -246,7 +246,8 @@ export class NotificationsService {
 
   private async resolveRecipients(db: TenantClient, input: NotifyInput): Promise<Recipient[]> {
     const byUser = new Map<string, Recipient>();
-    const add = (row: { userId: string; id: string }) => byUser.set(row.userId, { userId: row.userId, tenantUserId: row.id });
+    const add = (row: { userId: string; id: string }) =>
+      byUser.set(row.userId, { userId: row.userId, tenantUserId: row.id });
 
     if (input.allTenantUsers) {
       const rows = await db.tenantUser.findMany({ where: { active: true }, select: { id: true, userId: true } });
@@ -291,7 +292,10 @@ export class NotificationsService {
     );
   }
 
-  private enabledChannels(channels: Channel[], prefs: { inAppEnabled: boolean; emailEnabled: boolean; smsEnabled: boolean; whatsappEnabled: boolean }) {
+  private enabledChannels(
+    channels: Channel[],
+    prefs: { inAppEnabled: boolean; emailEnabled: boolean; smsEnabled: boolean; whatsappEnabled: boolean },
+  ) {
     return channels.filter((channel) => {
       if (channel === 'IN_APP') return prefs.inAppEnabled;
       if (channel === 'EMAIL') return prefs.emailEnabled;
@@ -313,19 +317,43 @@ export class NotificationsService {
     const apiKey = process.env[`NOTIFICATION_${channel}_API_KEY`] || process.env[`${channel}_API_KEY`] || null;
     if (!provider || !apiKey) {
       await db.notificationDeliveryAttempt.create({
-        data: { tenantId, notificationId, channel, status: 'SKIPPED', provider: provider ?? null, errorMessage: 'Provider env not configured' },
+        data: {
+          tenantId,
+          notificationId,
+          channel,
+          status: 'SKIPPED',
+          provider: provider ?? null,
+          errorMessage: 'Provider env not configured',
+        },
       });
       return;
     }
-    const failChannels = (process.env.NOTIFICATION_FAIL_CHANNELS ?? '').split(',').map((v) => v.trim().toUpperCase()).filter(Boolean);
+    const failChannels = (process.env.NOTIFICATION_FAIL_CHANNELS ?? '')
+      .split(',')
+      .map((v) => v.trim().toUpperCase())
+      .filter(Boolean);
     if (failChannels.includes(channel)) {
       await db.notificationDeliveryAttempt.create({
-        data: { tenantId, notificationId, channel, status: 'FAILED', provider, errorMessage: 'Provider delivery failed' },
+        data: {
+          tenantId,
+          notificationId,
+          channel,
+          status: 'FAILED',
+          provider,
+          errorMessage: 'Provider delivery failed',
+        },
       });
       return;
     }
     await db.notificationDeliveryAttempt.create({
-      data: { tenantId, notificationId, channel, status: 'SENT', provider, metadata: { mode: 'configured_adapter' } as any },
+      data: {
+        tenantId,
+        notificationId,
+        channel,
+        status: 'SENT',
+        provider,
+        metadata: { mode: 'configured_adapter' } as any,
+      },
     });
   }
 }

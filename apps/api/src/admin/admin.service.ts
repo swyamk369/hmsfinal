@@ -261,7 +261,12 @@ export class AdminService {
   async createWard(ctx: RequestContext, dto: CreateWardDto) {
     const s = this.scope(ctx);
     const ward = await s.db.ward.create({
-      data: { tenantId: s.tenantId, name: dto.name, type: (dto.type ?? 'GENERAL') as any, dailyRate: dto.dailyRate ?? 0 },
+      data: {
+        tenantId: s.tenantId,
+        name: dto.name,
+        type: (dto.type ?? 'GENERAL') as any,
+        dailyRate: dto.dailyRate ?? 0,
+      },
     });
     await this.record(s, 'ward.create', 'ward', ward.id, { name: ward.name, type: ward.type });
     return ward;

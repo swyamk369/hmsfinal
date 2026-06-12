@@ -66,15 +66,17 @@ export class SuperAdminService {
     return platformDb.plan.findMany({ where: { active: true }, orderBy: { priceInr: 'asc' } });
   }
 
-  async listAudit(q: {
-    limit?: number;
-    action?: string;
-    entity?: string;
-    actorId?: string;
-    tenantId?: string;
-    from?: string;
-    to?: string;
-  } = {}) {
+  async listAudit(
+    q: {
+      limit?: number;
+      action?: string;
+      entity?: string;
+      actorId?: string;
+      tenantId?: string;
+      from?: string;
+      to?: string;
+    } = {},
+  ) {
     const where: any = {};
     if (q.action) where.action = { contains: q.action, mode: 'insensitive' };
     if (q.entity) where.entity = { contains: q.entity, mode: 'insensitive' };

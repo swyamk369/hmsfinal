@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss';
 
 /**
  * Design tokens from extracted-frontend-screens/.../clinical_operations_system/DESIGN.md
- * Warm-neutral surfaces, blue primary, strict semantic traffic-light colors, Inter.
+ * Warm-neutral surfaces, blue primary, and strict semantic traffic-light colors.
  */
 const config: Config = {
   content: ['./src/**/*.{ts,tsx}'],
@@ -31,7 +31,7 @@ const config: Config = {
         ink900: '#0f1729',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['system-ui', 'sans-serif'],
       },
       fontSize: {
         'display-lg': ['30px', { lineHeight: '38px', letterSpacing: '-0.02em', fontWeight: '700' }],

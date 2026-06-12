@@ -7,7 +7,11 @@ import { Button, Section, StatCard, Badge, EmptyState } from '@/components/ui';
 import { downloadCsv, pairs } from '@/lib/reports';
 import { formatDateTime, money } from '@/lib/format';
 
-export function KpiGrid({ items }: { items: { label: string; value: React.ReactNode; hint?: string; icon?: LucideIcon }[] }) {
+export function KpiGrid({
+  items,
+}: {
+  items: { label: string; value: React.ReactNode; hint?: string; icon?: LucideIcon }[];
+}) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => (
@@ -34,7 +38,10 @@ export function Breakdown({ title, data }: { title: string; data: Record<string,
                   <span className="text-ink-muted">{row.value}</span>
                 </div>
                 <div className="h-2 rounded-full bg-canvas">
-                  <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.max(8, (row.value / max) * 100)}%` }} />
+                  <div
+                    className="h-2 rounded-full bg-primary"
+                    style={{ width: `${Math.max(8, (row.value / max) * 100)}%` }}
+                  />
                 </div>
               </div>
             );
@@ -62,7 +69,13 @@ export function ReportTable({
     <Section
       title={title}
       action={
-        <Button size="sm" variant="ghost" icon={Download} onClick={() => downloadCsv(filename, rows)} disabled={rows.length === 0}>
+        <Button
+          size="sm"
+          variant="ghost"
+          icon={Download}
+          onClick={() => downloadCsv(filename, rows)}
+          disabled={rows.length === 0}
+        >
           CSV
         </Button>
       }
@@ -87,8 +100,15 @@ export function ReportTable({
               {rows.map((row, i) => (
                 <tr key={row.id ?? `${title}-${i}`} className="hover:bg-canvas">
                   {columns.map((col) => (
-                    <td key={col.key} className={`px-5 py-3 ${col.money ? 'text-right font-medium text-ink' : 'text-ink-muted'}`}>
-                      {col.money ? money(Number(row[col.key] ?? 0)) : col.date ? formatDateTime(row[col.key]) : String(row[col.key] ?? '-')}
+                    <td
+                      key={col.key}
+                      className={`px-5 py-3 ${col.money ? 'text-right font-medium text-ink' : 'text-ink-muted'}`}
+                    >
+                      {col.money
+                        ? money(Number(row[col.key] ?? 0))
+                        : col.date
+                          ? formatDateTime(row[col.key])
+                          : String(row[col.key] ?? '-')}
                     </td>
                   ))}
                 </tr>

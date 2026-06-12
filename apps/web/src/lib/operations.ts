@@ -50,8 +50,6 @@ export const operationsApi = {
   workQueue: (tenantId: string) => apiGet<WorkQueueResponse>('/operations/work-queue', tenantId),
   summary: (tenantId: string) => apiGet<WorkQueueSummary>('/operations/work-queue/summary', tenantId),
   blockers: (tenantId: string) => apiGet<WorkQueueResponse>('/operations/blockers', tenantId),
-  recentActivity: (tenantId: string) => apiGet<{ generatedAt: string; items: RecentActivityItem[] }>(
-    '/operations/recent-activity',
-    tenantId,
-  ),
+  recentActivity: (tenantId: string) =>
+    apiGet<{ generatedAt: string; items: RecentActivityItem[] }>('/operations/recent-activity', tenantId),
 };

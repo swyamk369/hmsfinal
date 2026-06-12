@@ -7,14 +7,32 @@ import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
 import { bookingsApi, type OnlineBookingRow, type OnlineBookingDetail } from '@/lib/bookings';
 import { formatDateTime } from '@/lib/format';
-import { Button, PageHeader, Spinner, ErrorState, EmptyState, ReasonModal, Select, Modal, FormField, Input, StatusChip, Badge } from '@/components/ui';
+import {
+  Button,
+  PageHeader,
+  Spinner,
+  ErrorState,
+  EmptyState,
+  ReasonModal,
+  Select,
+  Modal,
+  FormField,
+  Input,
+  StatusChip,
+  Badge,
+} from '@/components/ui';
 
 function Inner() {
   const { activeTenantId, profile } = useAuth();
   const t = activeTenantId!;
   const toast = useToast();
   const perms = new Set(profile?.tenants.find((m) => m.tenantId === activeTenantId)?.permissions ?? []);
-  const canManage = ['online_booking.manage', 'online_booking.approve', 'online_booking.reject', 'online_booking.reschedule'].some((p) => perms.has(p));
+  const canManage = [
+    'online_booking.manage',
+    'online_booking.approve',
+    'online_booking.reject',
+    'online_booking.reschedule',
+  ].some((p) => perms.has(p));
 
   const [status, setStatus] = useState('');
   const [rows, setRows] = useState<OnlineBookingRow[] | null>(null);
@@ -76,13 +94,20 @@ function Inner() {
 
       {pendingCount > 0 && (
         <div className="mb-4 inline-flex items-center gap-2 rounded-lg border border-warning/30 bg-warning-bg px-4 py-2 text-body-sm text-warning-fg">
-          <CalendarClock className="h-4 w-4" /> {pendingCount} booking{pendingCount === 1 ? '' : 's'} awaiting your approval
+          <CalendarClock className="h-4 w-4" /> {pendingCount} booking{pendingCount === 1 ? '' : 's'} awaiting your
+          approval
         </div>
       )}
 
       {err && <ErrorState message={err} />}
       {!rows && !err && <Spinner label="Loading bookings…" />}
-      {rows && rows.length === 0 && <EmptyState icon={CalendarClock} title="No online bookings" hint="Bookings from the public site will appear here." />}
+      {rows && rows.length === 0 && (
+        <EmptyState
+          icon={CalendarClock}
+          title="No online bookings"
+          hint="Bookings from the public site will appear here."
+        />
+      )}
 
       {rows && rows.length > 0 && (
         <div className="overflow-x-auto rounded-lg border border-line bg-surface">
@@ -115,8 +140,11 @@ function Inner() {
                   </td>
                   <td className="px-5 py-3 text-ink-muted">{b.doctorName ?? '—'}</td>
                   <td className="px-5 py-3 text-ink-muted">
-                    {new Date(b.appointmentDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })} · {b.appointmentTime}
-                    <div className="text-label-sm text-ink-soft">{b.consultationType === 'TELEHEALTH' ? 'Telehealth' : 'In-person'}</div>
+                    {new Date(b.appointmentDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })} ·{' '}
+                    {b.appointmentTime}
+                    <div className="text-label-sm text-ink-soft">
+                      {b.consultationType === 'TELEHEALTH' ? 'Telehealth' : 'In-person'}
+                    </div>
                   </td>
                   <td className="px-5 py-3">
                     <StatusChip status={b.bookingStatus} />
@@ -124,13 +152,28 @@ function Inner() {
                   <td className="px-5 py-3">
                     <div className="flex flex-wrap items-center justify-end gap-1.5">
                       {canManage && b.possibleDuplicatePatient && (
-                        <Button size="sm" variant="ghost" icon={Link2} onClick={() => bookingsApi.get(t, b.id).then(setLinkFor).catch((e) => toast.error((e as Error).message))}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          icon={Link2}
+                          onClick={() =>
+                            bookingsApi
+                              .get(t, b.id)
+                              .then(setLinkFor)
+                              .catch((e) => toast.error((e as Error).message))
+                          }
+                        >
                           Review
                         </Button>
                       )}
                       {canManage && b.bookingStatus === 'PENDING' && (
                         <>
-                          <Button size="sm" icon={CheckCircle2} loading={busy} onClick={() => run('Booking approved.', () => bookingsApi.approve(t, b.id))}>
+                          <Button
+                            size="sm"
+                            icon={CheckCircle2}
+                            loading={busy}
+                            onClick={() => run('Booking approved.', () => bookingsApi.approve(t, b.id))}
+                          >
                             Approve
                           </Button>
                           <Button size="sm" variant="ghost" icon={X} onClick={() => setRejectId(b.id)}>
@@ -165,12 +208,32 @@ function Inner() {
         }}
       />
 
-      {reschedule && <RescheduleModal booking={reschedule} onClose={() => setReschedule(null)} onDone={(date, time) => run('Booking rescheduled.', () => bookingsApi.reschedule(t, reschedule.id, date, time)).then(() => setReschedule(null))} />}
+      {reschedule && (
+        <RescheduleModal
+          booking={reschedule}
+          onClose={() => setReschedule(null)}
+          onDone={(date, time) =>
+            run('Booking rescheduled.', () => bookingsApi.reschedule(t, reschedule.id, date, time)).then(() =>
+              setReschedule(null),
+            )
+          }
+        />
+      )}
 
       {linkFor && (
-        <Modal open onClose={() => setLinkFor(null)} title="Possible existing patient" footer={<Button variant="ghost" onClick={() => setLinkFor(null)}>Close</Button>}>
+        <Modal
+          open
+          onClose={() => setLinkFor(null)}
+          title="Possible existing patient"
+          footer={
+            <Button variant="ghost" onClick={() => setLinkFor(null)}>
+              Close
+            </Button>
+          }
+        >
           <p className="mb-3 text-body-sm text-ink-muted">
-            This booking ({linkFor.fullName}) may match an existing patient. Link it to the correct record, or keep the new one.
+            This booking ({linkFor.fullName}) may match an existing patient. Link it to the correct record, or keep the
+            new one.
           </p>
           <div className="space-y-2">
             {linkFor.duplicates.length === 0 && <p className="text-body-sm text-ink-soft">No candidates found.</p>}
@@ -178,9 +241,19 @@ function Inner() {
               <div key={d.id} className="flex items-center justify-between rounded-lg border border-line p-3">
                 <div>
                   <div className="font-medium text-ink">{d.fullName}</div>
-                  <div className="text-label-sm text-ink-soft">MRN {d.mrn} · {[d.phone, d.email].filter(Boolean).join(' · ')}</div>
+                  <div className="text-label-sm text-ink-soft">
+                    MRN {d.mrn} · {[d.phone, d.email].filter(Boolean).join(' · ')}
+                  </div>
                 </div>
-                <Button size="sm" icon={Link2} onClick={() => { const id = linkFor.id; setLinkFor(null); run('Linked to existing patient.', () => bookingsApi.linkPatient(t, id, d.id)); }}>
+                <Button
+                  size="sm"
+                  icon={Link2}
+                  onClick={() => {
+                    const id = linkFor.id;
+                    setLinkFor(null);
+                    run('Linked to existing patient.', () => bookingsApi.linkPatient(t, id, d.id));
+                  }}
+                >
                   Link
                 </Button>
               </div>
@@ -192,7 +265,15 @@ function Inner() {
   );
 }
 
-function RescheduleModal({ booking, onClose, onDone }: { booking: OnlineBookingRow; onClose: () => void; onDone: (date: string, time: string) => void }) {
+function RescheduleModal({
+  booking,
+  onClose,
+  onDone,
+}: {
+  booking: OnlineBookingRow;
+  onClose: () => void;
+  onDone: (date: string, time: string) => void;
+}) {
   const [date, setDate] = useState(booking.appointmentDate.slice(0, 10));
   const [time, setTime] = useState(booking.appointmentTime);
   return (
@@ -202,8 +283,12 @@ function RescheduleModal({ booking, onClose, onDone }: { booking: OnlineBookingR
       title="Reschedule booking"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button icon={CalendarClock} disabled={!date || !time} onClick={() => onDone(date, time)}>Reschedule</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button icon={CalendarClock} disabled={!date || !time} onClick={() => onDone(date, time)}>
+            Reschedule
+          </Button>
         </>
       }
     >

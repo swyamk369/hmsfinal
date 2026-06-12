@@ -35,14 +35,20 @@ export class NursingService {
       where: { status: 'ADMITTED' },
       orderBy: { admittedAt: 'desc' },
       take: 100,
-      include: { patient: { include: { allergies: { select: { id: true } } } }, bed: { include: { ward: { select: { name: true } } } } },
+      include: {
+        patient: { include: { allergies: { select: { id: true } } } },
+        bed: { include: { ward: { select: { name: true } } } },
+      },
     });
     const encounterIds = admissions.map((a) => a.encounterId).filter(Boolean) as string[];
     const [medsToday, notesToday, vitalsTodayRows] = await Promise.all([
       db.medicationAdministration.count({ where: { administeredAt: { gte: start } } }),
       db.nursingNote.count({ where: { createdAt: { gte: start } } }),
       encounterIds.length
-        ? db.vitals.findMany({ where: { encounterId: { in: encounterIds }, recordedAt: { gte: start } }, select: { encounterId: true } })
+        ? db.vitals.findMany({
+            where: { encounterId: { in: encounterIds }, recordedAt: { gte: start } },
+            select: { encounterId: true },
+          })
         : Promise.resolve([]),
     ]);
     const vitalsTodaySet = new Set(vitalsTodayRows.map((v) => v.encounterId));
@@ -50,7 +56,14 @@ export class NursingService {
     const alerts = admissions.filter((a) => (a.patient.allergies?.length ?? 0) > 0).length;
     return {
       admissions: admissions.map((a) => ({ ...a, allergyCount: a.patient.allergies?.length ?? 0 })),
-      counts: { admitted: admissions.length, vitalsToday: vitalsTodaySet.size, vitalsDue, medsToday, notesToday, alerts },
+      counts: {
+        admitted: admissions.length,
+        vitalsToday: vitalsTodaySet.size,
+        vitalsDue,
+        medsToday,
+        notesToday,
+        alerts,
+      },
     };
   }
 
@@ -80,7 +93,14 @@ export class NursingService {
     const s = this.scope(ctx);
     const adm = await this.activeAdmission(s, id);
     const note = await s.db.nursingNote.create({
-      data: { tenantId: s.tenantId, patientId: adm.patientId, admissionId: id, encounterId: adm.encounterId, nurseId: s.actorId, note: dto.note },
+      data: {
+        tenantId: s.tenantId,
+        patientId: adm.patientId,
+        admissionId: id,
+        encounterId: adm.encounterId,
+        nurseId: s.actorId,
+        note: dto.note,
+      },
     });
     await this.record(s, 'nursing.note.write', 'nursing_note', note.id, { admissionId: id });
     return note;
@@ -105,7 +125,10 @@ export class NursingService {
         notes: dto.notes,
       },
     });
-    await this.record(s, 'medication.administer', 'medication_administration', med.id, { admissionId: id, status: med.status });
+    await this.record(s, 'medication.administer', 'medication_administration', med.id, {
+      admissionId: id,
+      status: med.status,
+    });
     return med;
   }
 
@@ -117,7 +140,10 @@ export class NursingService {
       where: { id: medId },
       data: { status: dto.status as any, notes: dto.notes },
     });
-    await this.record(s, 'medication.administer', 'medication_administration', medId, { status: med.status, update: true });
+    await this.record(s, 'medication.administer', 'medication_administration', medId, {
+      status: med.status,
+      update: true,
+    });
     return med;
   }
 }

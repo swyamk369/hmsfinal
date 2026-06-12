@@ -226,7 +226,9 @@ function ClaimDetail({ id }: { id: string }) {
               />
               <Info
                 label="Coverage limit"
-                value={claim.patientPolicy?.coverage?.coverageLimit ? money(claim.patientPolicy.coverage.coverageLimit) : '—'}
+                value={
+                  claim.patientPolicy?.coverage?.coverageLimit ? money(claim.patientPolicy.coverage.coverageLimit) : '—'
+                }
               />
             </div>
           </Section>
@@ -334,8 +336,8 @@ function ApproveModal({
     setBusy(true);
     try {
       await onConfirm({
-        approvedAmount: approved ? toMinor(approved) ?? undefined : undefined,
-        patientShare: share ? toMinor(share) ?? undefined : undefined,
+        approvedAmount: approved ? (toMinor(approved) ?? undefined) : undefined,
+        patientShare: share ? (toMinor(share) ?? undefined) : undefined,
         notes: notes.trim() || undefined,
       });
       onClose();
@@ -410,7 +412,7 @@ function SettleModal({
     setBusy(true);
     try {
       await onConfirm({
-        amount: amount ? toMinor(amount) ?? undefined : undefined,
+        amount: amount ? (toMinor(amount) ?? undefined) : undefined,
         transactionId: txn.trim() || undefined,
         notes: notes.trim() || undefined,
       });

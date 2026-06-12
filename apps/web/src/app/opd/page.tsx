@@ -10,7 +10,19 @@ import { getActiveMembership } from '@/lib/access';
 import { useToast } from '@/components/toast';
 import { opdApi, type Encounter, type DoctorRef } from '@/lib/opd';
 import { ageFromDob, toMinor } from '@/lib/format';
-import { Button, PageHeader, Spinner, ErrorState, EmptyState, ReasonModal, Select, cx, Modal, FormField, Input } from '@/components/ui';
+import {
+  Button,
+  PageHeader,
+  Spinner,
+  ErrorState,
+  EmptyState,
+  ReasonModal,
+  Select,
+  cx,
+  Modal,
+  FormField,
+  Input,
+} from '@/components/ui';
 
 const COLUMNS: { key: string; label: string; dot: string }[] = [
   { key: 'SCHEDULED', label: 'Scheduled', dot: 'bg-slate-400' },
@@ -267,7 +279,12 @@ function OpdInner() {
             <Input value={chargeName} onChange={(e) => setChargeName(e.target.value)} placeholder="OPD consultation" />
           </FormField>
           <FormField label="Fee" hint="Leave blank to use the hospital default consultation service.">
-            <Input inputMode="decimal" value={chargeFee} onChange={(e) => setChargeFee(e.target.value)} placeholder="Default fee" />
+            <Input
+              inputMode="decimal"
+              value={chargeFee}
+              onChange={(e) => setChargeFee(e.target.value)}
+              placeholder="Default fee"
+            />
           </FormField>
           <p className="text-body-sm text-ink-soft">
             The charge will appear in Finance → Pending Charges and can be added to the patient bill before payment.

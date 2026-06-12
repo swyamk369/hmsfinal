@@ -71,7 +71,11 @@ export class OperationsService {
     ]);
     const items = groups
       .flat()
-      .sort((a, b) => this.priorityRank(b.priority) - this.priorityRank(a.priority) || new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .sort(
+        (a, b) =>
+          this.priorityRank(b.priority) - this.priorityRank(a.priority) ||
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      )
       .slice(0, 80);
     return { generatedAt: new Date().toISOString(), roles: ctx.roles, items };
   }
@@ -139,22 +143,82 @@ export class OperationsService {
     const now = new Date().toISOString();
     const items: WorkItem[] = [];
     if (departments === 0) {
-      items.push(this.item('setup-departments', 'SETUP_BLOCKER', 'Departments are not configured', 'Add departments before assigning staff and appointments.', MODULES.ADMIN, 'HIGH', 'MISSING', '/admin/departments?new=1', now, 'Appointments and providers need departments to route work correctly.', 'Department setup controls routing for doctors, nurses, reception, and reporting.'));
+      items.push(
+        this.item(
+          'setup-departments',
+          'SETUP_BLOCKER',
+          'Departments are not configured',
+          'Add departments before assigning staff and appointments.',
+          MODULES.ADMIN,
+          'HIGH',
+          'MISSING',
+          '/admin/departments?new=1',
+          now,
+          'Appointments and providers need departments to route work correctly.',
+          'Department setup controls routing for doctors, nurses, reception, and reporting.',
+        ),
+      );
     }
     if (catalog === 0) {
-      items.push(this.item('setup-catalog', 'SETUP_BLOCKER', 'Service catalog is empty', 'Billing and IPD charges need catalog/service prices.', MODULES.ADMIN, 'HIGH', 'MISSING', '/admin/catalog?new=1', now, 'Bills may need manual items until catalog is configured.', 'Catalog items keep pricing consistent across OPD, IPD, lab, and manual billing.'));
+      items.push(
+        this.item(
+          'setup-catalog',
+          'SETUP_BLOCKER',
+          'Service catalog is empty',
+          'Billing and IPD charges need catalog/service prices.',
+          MODULES.ADMIN,
+          'HIGH',
+          'MISSING',
+          '/admin/catalog?new=1',
+          now,
+          'Bills may need manual items until catalog is configured.',
+          'Catalog items keep pricing consistent across OPD, IPD, lab, and manual billing.',
+        ),
+      );
     }
     if (staff === 0) {
-      items.push(this.item('setup-staff', 'SETUP_BLOCKER', 'No active staff yet', 'Invite staff and assign tenant roles.', MODULES.ADMIN, 'HIGH', 'MISSING', '/admin/staff?new=1', now, 'Work queues stay empty until staff can access workflows.', 'Staff roles control what each team member can see and do.'));
+      items.push(
+        this.item(
+          'setup-staff',
+          'SETUP_BLOCKER',
+          'No active staff yet',
+          'Invite staff and assign tenant roles.',
+          MODULES.ADMIN,
+          'HIGH',
+          'MISSING',
+          '/admin/staff?new=1',
+          now,
+          'Work queues stay empty until staff can access workflows.',
+          'Staff roles control what each team member can see and do.',
+        ),
+      );
     }
     if (providers === 0 && this.hasModule(ctx, MODULES.OPD)) {
-      items.push(this.item('setup-providers', 'SETUP_BLOCKER', 'No active providers', 'Invite doctors or nurses and assign departments.', MODULES.ADMIN, 'NORMAL', 'MISSING', '/admin/staff?new=1', now, 'Consultations and IPD rounds need provider profiles.', 'Doctor and Nurse roles create provider profiles when a department is selected.'));
+      items.push(
+        this.item(
+          'setup-providers',
+          'SETUP_BLOCKER',
+          'No active providers',
+          'Invite doctors or nurses and assign departments.',
+          MODULES.ADMIN,
+          'NORMAL',
+          'MISSING',
+          '/admin/staff?new=1',
+          now,
+          'Consultations and IPD rounds need provider profiles.',
+          'Doctor and Nurse roles create provider profiles when a department is selected.',
+        ),
+      );
     }
     return items;
   }
 
   private async opdItems(ctx: RequestContext, db: TenantClient): Promise<WorkItem[]> {
-    if (!this.hasModule(ctx, MODULES.OPD) || !this.can(ctx, PERMISSIONS.QUEUE_READ, PERMISSIONS.ENCOUNTER_READ, PERMISSIONS.APPOINTMENT_READ)) return [];
+    if (
+      !this.hasModule(ctx, MODULES.OPD) ||
+      !this.can(ctx, PERMISSIONS.QUEUE_READ, PERMISSIONS.ENCOUNTER_READ, PERMISSIONS.APPOINTMENT_READ)
+    )
+      return [];
     const start = this.startOfToday();
     const end = this.endOfToday();
     const providerOnly = ctx.roles.includes(ROLES.DOCTOR) && !this.broad(ctx) && ctx.providerId;
@@ -190,7 +254,9 @@ export class OperationsService {
         return this.item(
           `opd-${e.id}`,
           'OPD_QUEUE',
-          e.status === 'IN_PROGRESS' ? `Consultation in progress: ${e.patient?.fullName ?? 'Patient'}` : `Patient waiting: ${e.patient?.fullName ?? 'Patient'}`,
+          e.status === 'IN_PROGRESS'
+            ? `Consultation in progress: ${e.patient?.fullName ?? 'Patient'}`
+            : `Patient waiting: ${e.patient?.fullName ?? 'Patient'}`,
           `Token ${e.tokenNumber ?? '-'} · ${e.chiefComplaint || 'Consultation'} · ${waitingMinutes} min`,
           MODULES.OPD,
           waitingMinutes >= 45 ? 'HIGH' : 'NORMAL',
@@ -215,7 +281,9 @@ export class OperationsService {
           a.status,
           '/opd/appointments',
           this.iso(a.scheduledAt),
-          new Date(a.scheduledAt).getTime() < Date.now() ? 'Appointment time has passed; check in or reschedule.' : null,
+          new Date(a.scheduledAt).getTime() < Date.now()
+            ? 'Appointment time has passed; check in or reschedule.'
+            : null,
           'Today’s scheduled appointments help reception keep check-in moving.',
           {},
           a.patient?.id,
@@ -236,14 +304,23 @@ export class OperationsService {
       }),
       db.labResult.findMany({
         where: { isVerified: false, abnormalFlag: { in: ['HIGH', 'LOW', 'CRITICAL'] as any } },
-        include: { labOrderItem: { include: { labOrder: { include: { patient: { select: { id: true, fullName: true, mrn: true } } } } } } },
+        include: {
+          labOrderItem: {
+            include: { labOrder: { include: { patient: { select: { id: true, fullName: true, mrn: true } } } } },
+          },
+        },
         orderBy: { recordedAt: 'asc' },
         take: 15,
       }),
     ]);
     return [
       ...orders.map((o: any) => {
-        const label = o.status === 'ORDERED' ? 'Sample pending' : o.status === 'SAMPLE_COLLECTED' ? 'Processing pending' : 'Result pending';
+        const label =
+          o.status === 'ORDERED'
+            ? 'Sample pending'
+            : o.status === 'SAMPLE_COLLECTED'
+              ? 'Processing pending'
+              : 'Result pending';
         return this.item(
           `lab-order-${o.id}`,
           'LAB_LIFECYCLE',
@@ -283,11 +360,18 @@ export class OperationsService {
   }
 
   private async pharmacyItems(ctx: RequestContext, db: TenantClient): Promise<WorkItem[]> {
-    if (!this.hasModule(ctx, MODULES.PHARMACY) || !this.can(ctx, PERMISSIONS.PHARMACY_READ, PERMISSIONS.PRESCRIPTION_READ)) return [];
+    if (
+      !this.hasModule(ctx, MODULES.PHARMACY) ||
+      !this.can(ctx, PERMISSIONS.PHARMACY_READ, PERMISSIONS.PRESCRIPTION_READ)
+    )
+      return [];
     const [rxs, partials] = await Promise.all([
       db.prescription.findMany({
         where: { status: 'FINALIZED' as any },
-        include: { encounter: { include: { patient: { select: { id: true, fullName: true, mrn: true } } } }, items: true },
+        include: {
+          encounter: { include: { patient: { select: { id: true, fullName: true, mrn: true } } } },
+          items: true,
+        },
         orderBy: { finalizedAt: 'asc' },
         take: 20,
       }),
@@ -313,21 +397,58 @@ export class OperationsService {
         ),
       ),
       ...partials.map((d: any) =>
-        this.item('dispense-partial-' + d.id, 'PARTIAL_DISPENSE', 'Partial pharmacy dispense needs follow-up', 'Review missing stock or patient pickup.', MODULES.PHARMACY, 'HIGH', d.status, `/pharmacy/dispense/${d.prescriptionId}`, this.iso(d.createdAt), 'Prescription was only partially dispensed.', 'Partial dispense remains open until stock or clinical decision resolves the prescription.', { prescriptionId: d.prescriptionId }, d.patientId, null),
+        this.item(
+          'dispense-partial-' + d.id,
+          'PARTIAL_DISPENSE',
+          'Partial pharmacy dispense needs follow-up',
+          'Review missing stock or patient pickup.',
+          MODULES.PHARMACY,
+          'HIGH',
+          d.status,
+          `/pharmacy/dispense/${d.prescriptionId}`,
+          this.iso(d.createdAt),
+          'Prescription was only partially dispensed.',
+          'Partial dispense remains open until stock or clinical decision resolves the prescription.',
+          { prescriptionId: d.prescriptionId },
+          d.patientId,
+          null,
+        ),
       ),
     ];
   }
 
   private async inventoryItems(ctx: RequestContext, db: TenantClient): Promise<WorkItem[]> {
-    if (!this.hasModule(ctx, MODULES.INVENTORY) || !this.can(ctx, PERMISSIONS.INVENTORY_READ, PERMISSIONS.INVENTORY_REPORTS_READ)) return [];
+    if (
+      !this.hasModule(ctx, MODULES.INVENTORY) ||
+      !this.can(ctx, PERMISSIONS.INVENTORY_READ, PERMISSIONS.INVENTORY_REPORTS_READ)
+    )
+      return [];
     const soon = new Date(Date.now() + 30 * 86400000);
     const [items, batches, purchases] = await Promise.all([
-      db.inventoryItem.findMany({ where: { active: true }, include: { batches: true }, orderBy: { createdAt: 'desc' }, take: 200 }),
-      db.inventoryBatch.findMany({ where: { quantity: { gt: 0 }, expiryDate: { not: null, lte: soon } }, include: { item: true }, orderBy: { expiryDate: 'asc' }, take: 20 }),
-      db.purchaseOrder.findMany({ where: { status: { in: ['DRAFT', 'ORDERED'] as any } }, include: { supplier: true, items: true }, orderBy: { createdAt: 'asc' }, take: 15 }),
+      db.inventoryItem.findMany({
+        where: { active: true },
+        include: { batches: true },
+        orderBy: { createdAt: 'desc' },
+        take: 200,
+      }),
+      db.inventoryBatch.findMany({
+        where: { quantity: { gt: 0 }, expiryDate: { not: null, lte: soon } },
+        include: { item: true },
+        orderBy: { expiryDate: 'asc' },
+        take: 20,
+      }),
+      db.purchaseOrder.findMany({
+        where: { status: { in: ['DRAFT', 'ORDERED'] as any } },
+        include: { supplier: true, items: true },
+        orderBy: { createdAt: 'asc' },
+        take: 15,
+      }),
     ]);
     const low = items
-      .map((it: any) => ({ item: it, qty: (it.batches ?? []).reduce((sum: number, b: any) => sum + (b.quantity ?? 0), 0) }))
+      .map((it: any) => ({
+        item: it,
+        qty: (it.batches ?? []).reduce((sum: number, b: any) => sum + (b.quantity ?? 0), 0),
+      }))
       .filter((row) => row.qty <= row.item.lowStockThreshold)
       .slice(0, 20);
     return [
@@ -348,10 +469,36 @@ export class OperationsService {
         ),
       ),
       ...batches.map((b: any) =>
-        this.item(`expiry-${b.id}`, 'EXPIRY_RISK', `${b.item?.name ?? 'Item'} batch expiring`, `${b.batchNumber} · ${b.quantity} units · ${new Date(b.expiryDate).toLocaleDateString()}`, MODULES.INVENTORY, new Date(b.expiryDate).getTime() < Date.now() ? 'CRITICAL' : 'HIGH', 'EXPIRING', '/inventory', this.iso(b.expiryDate), 'Batch should be reviewed before use or write-off.', 'Expiry alerts show batches expiring in the next 30 days or already expired.', { batchId: b.id, itemId: b.itemId }),
+        this.item(
+          `expiry-${b.id}`,
+          'EXPIRY_RISK',
+          `${b.item?.name ?? 'Item'} batch expiring`,
+          `${b.batchNumber} · ${b.quantity} units · ${new Date(b.expiryDate).toLocaleDateString()}`,
+          MODULES.INVENTORY,
+          new Date(b.expiryDate).getTime() < Date.now() ? 'CRITICAL' : 'HIGH',
+          'EXPIRING',
+          '/inventory',
+          this.iso(b.expiryDate),
+          'Batch should be reviewed before use or write-off.',
+          'Expiry alerts show batches expiring in the next 30 days or already expired.',
+          { batchId: b.id, itemId: b.itemId },
+        ),
       ),
       ...purchases.map((po: any) =>
-        this.item(`po-${po.id}`, 'PO_RECEIVE', `Purchase order ${po.status.toLowerCase()} with ${po.supplier?.name ?? 'supplier'}`, `${po.items?.length ?? 0} line item(s)`, MODULES.INVENTORY, po.status === 'ORDERED' ? 'NORMAL' : 'LOW', po.status, `/inventory/purchases/${po.id}`, this.iso(po.createdAt), po.status === 'ORDERED' ? 'Goods have not been received yet.' : null, 'Purchase orders become stock only after goods receipt creates batches and ledger entries.', { supplierId: po.supplierId }),
+        this.item(
+          `po-${po.id}`,
+          'PO_RECEIVE',
+          `Purchase order ${po.status.toLowerCase()} with ${po.supplier?.name ?? 'supplier'}`,
+          `${po.items?.length ?? 0} line item(s)`,
+          MODULES.INVENTORY,
+          po.status === 'ORDERED' ? 'NORMAL' : 'LOW',
+          po.status,
+          `/inventory/purchases/${po.id}`,
+          this.iso(po.createdAt),
+          po.status === 'ORDERED' ? 'Goods have not been received yet.' : null,
+          'Purchase orders become stock only after goods receipt creates batches and ledger entries.',
+          { supplierId: po.supplierId },
+        ),
       ),
     ];
   }
@@ -366,7 +513,11 @@ export class OperationsService {
         take: 25,
       }),
       this.can(ctx, PERMISSIONS.NURSING_READ, PERMISSIONS.MEDICATION_ADMINISTER)
-        ? db.medicationAdministration.findMany({ where: { status: { in: ['MISSED', 'REFUSED', 'HELD'] as any } }, orderBy: { administeredAt: 'desc' }, take: 15 })
+        ? db.medicationAdministration.findMany({
+            where: { status: { in: ['MISSED', 'REFUSED', 'HELD'] as any } },
+            orderBy: { administeredAt: 'desc' },
+            take: 15,
+          })
         : Promise.resolve([]),
     ]);
     return [
@@ -381,7 +532,9 @@ export class OperationsService {
           a.status,
           ctx.roles.includes(ROLES.NURSE) && !this.broad(ctx) ? `/nursing/ipd/${a.id}` : `/ipd/admissions/${a.id}`,
           this.iso(a.admittedAt),
-          a.expectedDischargeAt && new Date(a.expectedDischargeAt).getTime() < Date.now() ? 'Expected discharge date has passed.' : null,
+          a.expectedDischargeAt && new Date(a.expectedDischargeAt).getTime() < Date.now()
+            ? 'Expected discharge date has passed.'
+            : null,
           'Active admissions appear until discharge is completed and the bed is released.',
           { bedId: a.bedId, expectedDischargeAt: a.expectedDischargeAt },
           a.patient?.id,
@@ -389,13 +542,32 @@ export class OperationsService {
         ),
       ),
       ...meds.map((m: any) =>
-        this.item(`med-${m.id}`, 'MEDICATION_ALERT', `Medication ${m.status.toLowerCase()}`, 'Review MAR notes and patient status.', MODULES.IPD, m.status === 'MISSED' ? 'HIGH' : 'NORMAL', m.status, m.admissionId ? `/nursing/ipd/${m.admissionId}` : '/nursing', this.iso(m.administeredAt), m.status === 'MISSED' ? 'Medication was marked missed.' : null, 'Medication exceptions need clinical review so the MAR remains accurate.', { medicationId: m.id }, m.patientId, null),
+        this.item(
+          `med-${m.id}`,
+          'MEDICATION_ALERT',
+          `Medication ${m.status.toLowerCase()}`,
+          'Review MAR notes and patient status.',
+          MODULES.IPD,
+          m.status === 'MISSED' ? 'HIGH' : 'NORMAL',
+          m.status,
+          m.admissionId ? `/nursing/ipd/${m.admissionId}` : '/nursing',
+          this.iso(m.administeredAt),
+          m.status === 'MISSED' ? 'Medication was marked missed.' : null,
+          'Medication exceptions need clinical review so the MAR remains accurate.',
+          { medicationId: m.id },
+          m.patientId,
+          null,
+        ),
       ),
     ];
   }
 
   private async billingItems(ctx: RequestContext, db: TenantClient): Promise<WorkItem[]> {
-    if (!this.hasModule(ctx, MODULES.BILLING) || !this.can(ctx, PERMISSIONS.BILL_READ, PERMISSIONS.REPORTS_FINANCIAL_READ)) return [];
+    if (
+      !this.hasModule(ctx, MODULES.BILLING) ||
+      !this.can(ctx, PERMISSIONS.BILL_READ, PERMISSIONS.REPORTS_FINANCIAL_READ)
+    )
+      return [];
     const bills = await db.bill.findMany({
       where: { status: { in: ['UNPAID', 'PARTIAL'] as any } },
       include: { patient: { select: { id: true, fullName: true, mrn: true } }, payments: true, refunds: true },
@@ -426,12 +598,20 @@ export class OperationsService {
   }
 
   private async financeItems(ctx: RequestContext, db: TenantClient): Promise<WorkItem[]> {
-    if (!this.hasModule(ctx, MODULES.BILLING) || !this.can(ctx, PERMISSIONS.FINANCE_READ, PERMISSIONS.BILL_READ, PERMISSIONS.PAYMENT_COLLECT)) return [];
+    if (
+      !this.hasModule(ctx, MODULES.BILLING) ||
+      !this.can(ctx, PERMISSIONS.FINANCE_READ, PERMISSIONS.BILL_READ, PERMISSIONS.PAYMENT_COLLECT)
+    )
+      return [];
     const start = this.startOfToday();
     const [charges, approvals, dayClose] = await Promise.all([
       db.billableCharge.findMany({ where: { status: 'PENDING' as any }, orderBy: { createdAt: 'asc' }, take: 20 }),
       this.can(ctx, PERMISSIONS.FINANCE_APPROVAL_MANAGE)
-        ? db.financeApproval.findMany({ where: { status: 'PENDING' as any }, orderBy: { requestedAt: 'asc' }, take: 10 })
+        ? db.financeApproval.findMany({
+            where: { status: 'PENDING' as any },
+            orderBy: { requestedAt: 'asc' },
+            take: 10,
+          })
         : Promise.resolve([]),
       this.can(ctx, PERMISSIONS.FINANCE_DAY_CLOSE, PERMISSIONS.FINANCE_RECONCILE)
         ? db.financeDayClose.findFirst({ where: { businessDate: start }, orderBy: { closedAt: 'desc' } })
@@ -496,8 +676,13 @@ export class OperationsService {
   private async insuranceItems(ctx: RequestContext, db: TenantClient): Promise<WorkItem[]> {
     if (!this.hasModule(ctx, MODULES.INSURANCE) || !this.can(ctx, PERMISSIONS.INSURANCE_READ)) return [];
     const claims = await db.insuranceClaim.findMany({
-      where: { status: { in: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'PARTIALLY_APPROVED', 'REJECTED'] as any } },
-      include: { bill: { include: { patient: { select: { id: true, fullName: true, mrn: true } } } }, patientPolicy: { include: { provider: true } } },
+      where: {
+        status: { in: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'PARTIALLY_APPROVED', 'REJECTED'] as any },
+      },
+      include: {
+        bill: { include: { patient: { select: { id: true, fullName: true, mrn: true } } } },
+        patientPolicy: { include: { provider: true } },
+      },
       orderBy: { createdAt: 'asc' },
       take: 25,
     });
@@ -505,14 +690,24 @@ export class OperationsService {
       this.item(
         `claim-${c.id}`,
         'INSURANCE_CLAIM',
-        c.status === 'REJECTED' ? `Rejected claim: ${c.bill?.patient?.fullName ?? 'Patient'}` : `Insurance claim ${c.status.toLowerCase()}`,
+        c.status === 'REJECTED'
+          ? `Rejected claim: ${c.bill?.patient?.fullName ?? 'Patient'}`
+          : `Insurance claim ${c.status.toLowerCase()}`,
         `${c.patientPolicy?.provider?.name ?? 'Payer'} · ${c.bill?.billNumber ?? 'Bill'}`,
         MODULES.INSURANCE,
-        c.status === 'REJECTED' ? 'HIGH' : c.status === 'APPROVED' || c.status === 'PARTIALLY_APPROVED' ? 'NORMAL' : 'LOW',
+        c.status === 'REJECTED'
+          ? 'HIGH'
+          : c.status === 'APPROVED' || c.status === 'PARTIALLY_APPROVED'
+            ? 'NORMAL'
+            : 'LOW',
         c.status,
         `/insurance/claims/${c.id}`,
         this.iso(c.createdAt),
-        c.status === 'REJECTED' ? c.rejectionReason || 'Claim rejected and needs correction.' : c.status === 'APPROVED' ? 'Approved claim is not settled yet.' : null,
+        c.status === 'REJECTED'
+          ? c.rejectionReason || 'Claim rejected and needs correction.'
+          : c.status === 'APPROVED'
+            ? 'Approved claim is not settled yet.'
+            : null,
         'Claims move from draft to submitted, review, approval/rejection, and settlement.',
         { claimAmount: c.claimAmount, approvedAmount: c.approvedAmount },
         c.bill?.patient?.id,
@@ -534,7 +729,20 @@ export class OperationsService {
       take: 15,
     });
     return rows.map((n: any) =>
-      this.item(`notification-${n.id}`, 'NOTIFICATION', n.title, n.message, 'SYSTEM', n.severity === 'CRITICAL' ? 'CRITICAL' : 'HIGH', n.severity, n.actionUrl || '/notifications', this.iso(n.createdAt), 'High-priority notification is unread.', 'Unread high-priority notifications appear here until read or archived.', { category: n.category, type: n.type }),
+      this.item(
+        `notification-${n.id}`,
+        'NOTIFICATION',
+        n.title,
+        n.message,
+        'SYSTEM',
+        n.severity === 'CRITICAL' ? 'CRITICAL' : 'HIGH',
+        n.severity,
+        n.actionUrl || '/notifications',
+        this.iso(n.createdAt),
+        'High-priority notification is unread.',
+        'Unread high-priority notifications appear here until read or archived.',
+        { category: n.category, type: n.type },
+      ),
     );
   }
 
@@ -554,6 +762,21 @@ export class OperationsService {
     patientId: string | null = null,
     patientName: string | null = null,
   ): WorkItem {
-    return { id, type, title, subtitle, module, priority, status, actionHref, createdAt, blocker, help, metadata, patientId, patientName };
+    return {
+      id,
+      type,
+      title,
+      subtitle,
+      module,
+      priority,
+      status,
+      actionHref,
+      createdAt,
+      blocker,
+      help,
+      metadata,
+      patientId,
+      patientName,
+    };
   }
 }

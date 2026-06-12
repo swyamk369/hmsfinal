@@ -1,10 +1,29 @@
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsArray, IsDateString, IsIn, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min, ValidateNested } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsDateString,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { IsReason } from '../common/validation';
 import { PAYMENT_METHODS } from '../billing/dto';
 
 export const CHARGE_SOURCES = ['OPD', 'LAB', 'PHARMACY', 'IPD', 'MANUAL', 'INSURANCE'] as const;
-export const APPROVAL_TYPES = ['REFUND', 'DISCOUNT', 'WRITE_OFF', 'BILL_CANCEL', 'DAY_CLOSE_REOPEN', 'DISCHARGE_OVERRIDE'] as const;
+export const APPROVAL_TYPES = [
+  'REFUND',
+  'DISCOUNT',
+  'WRITE_OFF',
+  'BILL_CANCEL',
+  'DAY_CLOSE_REOPEN',
+  'DISCHARGE_OVERRIDE',
+] as const;
 
 export class CreateChargeDto {
   @IsUUID()

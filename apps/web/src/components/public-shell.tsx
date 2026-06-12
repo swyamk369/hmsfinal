@@ -39,24 +39,39 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             HealthConnect
           </Link>
           <nav className="hidden items-center gap-1 text-body-md md:flex">
-            <Link href="/hospitals" className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink">
+            <Link
+              href="/hospitals"
+              className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink"
+            >
               Hospitals
             </Link>
-            <Link href="/doctors" className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink">
+            <Link
+              href="/doctors"
+              className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink"
+            >
               Doctors
             </Link>
           </nav>
           <div className="flex items-center gap-2">
             {isPatientLogged === false ? (
-              <Link href="/patient/login" className="rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas">
+              <Link
+                href="/patient/login"
+                className="rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas"
+              >
                 Patient Login
               </Link>
             ) : isPatientLogged === true ? (
-              <Link href="/patient/dashboard" className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas">
+              <Link
+                href="/patient/dashboard"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas"
+              >
                 <User className="h-4 w-4" /> Patient Portal
               </Link>
             ) : null}
-            <Link href="/doctors" className="rounded-lg bg-primary px-4 py-1.5 text-label-md font-medium text-white hover:bg-primary-700">
+            <Link
+              href="/doctors"
+              className="rounded-lg bg-primary px-4 py-1.5 text-label-md font-medium text-white hover:bg-primary-700"
+            >
               Book appointment
             </Link>
           </div>
@@ -64,7 +79,9 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
       <footer className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 py-8 text-center text-body-sm text-ink-soft">
-        <span>Find hospitals and doctors, and book appointments online. © {new Date().getFullYear()} HealthConnect.</span>
+        <span>
+          Find hospitals and doctors, and book appointments online. © {new Date().getFullYear()} HealthConnect.
+        </span>
         <div className="flex gap-4">
           <Link href="/patient/login" className="font-medium text-ink-muted hover:text-primary">
             Patient Portal

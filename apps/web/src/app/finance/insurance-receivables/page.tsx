@@ -48,7 +48,15 @@ function InsuranceReceivablesInner() {
 
   return (
     <>
-      <PageHeader title="Insurance Receivables" subtitle="Approved, submitted, rejected, and unsettled claim money" action={<Button variant="ghost" onClick={load}>Refresh</Button>} />
+      <PageHeader
+        title="Insurance Receivables"
+        subtitle="Approved, submitted, rejected, and unsettled claim money"
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
+      />
       <FinanceShell>
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -61,7 +69,10 @@ function InsuranceReceivablesInner() {
           {!rows ? (
             <Spinner label="Loading insurance receivables..." />
           ) : rows.length === 0 ? (
-            <EmptyState title="No open insurance receivables" hint="Approved-but-unsettled and submitted claims appear here for follow-up." />
+            <EmptyState
+              title="No open insurance receivables"
+              hint="Approved-but-unsettled and submitted claims appear here for follow-up."
+            />
           ) : (
             <Section title="Receivable claims">
               <div className="overflow-x-auto">
@@ -83,21 +94,33 @@ function InsuranceReceivablesInner() {
                       return (
                         <tr key={claim.id} className="hover:bg-canvas">
                           <td className="px-5 py-3">
-                            <Link href={`/insurance/claims/${claim.id}`} className="font-medium text-primary hover:underline">
+                            <Link
+                              href={`/insurance/claims/${claim.id}`}
+                              className="font-medium text-primary hover:underline"
+                            >
                               {claim.bill?.billNumber ?? claim.id.slice(0, 8)}
                             </Link>
                             <div className="text-label-sm text-ink-soft">{formatDateTime(claim.createdAt)}</div>
                           </td>
                           <td className="px-5 py-3">
-                            <Link href={`/finance/patient-accounts/${claim.bill?.patientId}`} className="font-medium text-ink hover:text-primary">
+                            <Link
+                              href={`/finance/patient-accounts/${claim.bill?.patientId}`}
+                              className="font-medium text-ink hover:text-primary"
+                            >
                               {claim.bill?.patient?.fullName ?? 'Patient'}
                             </Link>
                             <div className="text-label-sm text-ink-soft">{claim.bill?.patient?.mrn ?? ''}</div>
                           </td>
-                          <td className="px-5 py-3 text-ink-muted">{claim.patientPolicy?.provider?.name ?? 'Insurance'}</td>
+                          <td className="px-5 py-3 text-ink-muted">
+                            {claim.patientPolicy?.provider?.name ?? 'Insurance'}
+                          </td>
                           <td className="px-5 py-3 text-right text-ink-muted">{money(approved)}</td>
-                          <td className="px-5 py-3 text-right font-medium text-ink">{money(Math.max(0, approved - settled))}</td>
-                          <td className="px-5 py-3"><StatusChip status={claim.status} /></td>
+                          <td className="px-5 py-3 text-right font-medium text-ink">
+                            {money(Math.max(0, approved - settled))}
+                          </td>
+                          <td className="px-5 py-3">
+                            <StatusChip status={claim.status} />
+                          </td>
                         </tr>
                       );
                     })}
@@ -114,7 +137,10 @@ function InsuranceReceivablesInner() {
 
 export default function InsuranceReceivablesPage() {
   return (
-    <Protected requireModule="BILLING" requirePermission={['insurance.read', 'reports.financial.read', ...FINANCE_PERMS]}>
+    <Protected
+      requireModule="BILLING"
+      requirePermission={['insurance.read', 'reports.financial.read', ...FINANCE_PERMS]}
+    >
       <InsuranceReceivablesInner />
     </Protected>
   );

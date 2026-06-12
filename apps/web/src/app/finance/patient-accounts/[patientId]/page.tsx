@@ -63,7 +63,10 @@ function PatientAccountPageInner({ patientId }: { patientId: string }) {
 
   return (
     <>
-      <Link href="/finance" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+      <Link
+        href="/finance"
+        className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to finance
       </Link>
       <PageHeader
@@ -71,8 +74,12 @@ function PatientAccountPageInner({ patientId }: { patientId: string }) {
         subtitle={`${data.patient.fullName} · ${data.patient.mrn} · ${ageFromDob(data.patient.dob)}`}
         action={
           <div className="flex flex-wrap gap-2">
-            <Button variant="ghost" icon={Printer} onClick={() => window.print()}>Statement</Button>
-            <Button icon={Upload} onClick={() => setDocumentOpen(true)}>Attach document</Button>
+            <Button variant="ghost" icon={Printer} onClick={() => window.print()}>
+              Statement
+            </Button>
+            <Button icon={Upload} onClick={() => setDocumentOpen(true)}>
+              Attach document
+            </Button>
           </div>
         }
       />
@@ -99,14 +106,19 @@ function PatientAccountPageInner({ patientId }: { patientId: string }) {
             action={
               data.pendingCharges.length ? (
                 <Link href={`/finance/pending-charges?patientId=${patientId}`}>
-                  <Button size="sm" variant="ghost">Create bill</Button>
+                  <Button size="sm" variant="ghost">
+                    Create bill
+                  </Button>
                 </Link>
               ) : undefined
             }
           >
             {data.pendingCharges.length === 0 ? (
               <div className="p-5">
-                <EmptyState title="No pending charges" hint="OPD, lab, pharmacy, IPD, and manual charges appear here before billing." />
+                <EmptyState
+                  title="No pending charges"
+                  hint="OPD, lab, pharmacy, IPD, and manual charges appear here before billing."
+                />
               </div>
             ) : (
               <ChargeTable charges={data.pendingCharges} />
@@ -115,7 +127,9 @@ function PatientAccountPageInner({ patientId }: { patientId: string }) {
 
           <Section title="Bills">
             {data.bills.length === 0 ? (
-              <div className="p-5"><EmptyState title="No bills yet" /></div>
+              <div className="p-5">
+                <EmptyState title="No bills yet" />
+              </div>
             ) : (
               <BillTable bills={data.bills} />
             )}
@@ -124,16 +138,23 @@ function PatientAccountPageInner({ patientId }: { patientId: string }) {
           <div className="grid gap-6 xl:grid-cols-2">
             <Section title="Insurance claims">
               {data.claims.length === 0 ? (
-                <div className="p-5"><EmptyState title="No insurance claims" /></div>
+                <div className="p-5">
+                  <EmptyState title="No insurance claims" />
+                </div>
               ) : (
                 <ul className="divide-y divide-line">
                   {data.claims.map((claim: any) => (
                     <li key={claim.id} className="flex items-center justify-between px-5 py-3 text-body-sm">
                       <div>
-                        <Link href={`/insurance/claims/${claim.id}`} className="font-medium text-primary hover:underline">
+                        <Link
+                          href={`/insurance/claims/${claim.id}`}
+                          className="font-medium text-primary hover:underline"
+                        >
                           {claim.bill?.billNumber ?? claim.id.slice(0, 8)}
                         </Link>
-                        <div className="text-label-sm text-ink-soft">{claim.patientPolicy?.provider?.name ?? 'Insurance'}</div>
+                        <div className="text-label-sm text-ink-soft">
+                          {claim.patientPolicy?.provider?.name ?? 'Insurance'}
+                        </div>
                       </div>
                       <div className="text-right">
                         <div className="font-medium text-ink">{money(claim.claimAmount ?? 0)}</div>
@@ -148,14 +169,23 @@ function PatientAccountPageInner({ patientId }: { patientId: string }) {
             <Section title="Finance documents">
               {data.documents.length === 0 ? (
                 <div className="p-5">
-                  <EmptyState icon={FileText} title="No finance documents" hint="Attach estimates, scanned receipts, payer forms, and generated statements." />
+                  <EmptyState
+                    icon={FileText}
+                    title="No finance documents"
+                    hint="Attach estimates, scanned receipts, payer forms, and generated statements."
+                  />
                 </div>
               ) : (
                 <ul className="divide-y divide-line">
                   {data.documents.map((doc: any) => (
                     <li key={doc.id} className="flex items-center justify-between px-5 py-3 text-body-sm">
                       <div>
-                        <a href={doc.documentUrl} target="_blank" rel="noreferrer" className="font-medium text-primary hover:underline">
+                        <a
+                          href={doc.documentUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-primary hover:underline"
+                        >
                           {doc.title}
                         </a>
                         <div className="text-label-sm text-ink-soft">{formatDateTime(doc.createdAt)}</div>
@@ -252,8 +282,12 @@ function FinanceDocumentModal({
       title="Attach finance document"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button onClick={submit} loading={busy} disabled={!title.trim() || !documentUrl.trim()}>Attach</Button>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button onClick={submit} loading={busy} disabled={!title.trim() || !documentUrl.trim()}>
+            Attach
+          </Button>
         </>
       }
     >
@@ -269,7 +303,11 @@ function FinanceDocumentModal({
             <option value="OTHER">Other</option>
           </Select>
         </FormField>
-        <FormField label="Document URL" required hint="Use a storage URL for PDFs, scanned images, payer documents, or exported statements.">
+        <FormField
+          label="Document URL"
+          required
+          hint="Use a storage URL for PDFs, scanned images, payer documents, or exported statements."
+        >
           <Input value={documentUrl} onChange={(e) => setDocumentUrl(e.target.value)} placeholder="https://..." />
         </FormField>
         <div className="grid gap-4 sm:grid-cols-2">

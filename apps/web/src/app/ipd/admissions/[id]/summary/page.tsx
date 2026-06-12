@@ -17,7 +17,10 @@ function SummaryInner({ id }: { id: string }) {
 
   useEffect(() => {
     if (!activeTenantId) return;
-    ipdApi.summary(activeTenantId, id).then(setView).catch((e) => setErr((e as Error).message));
+    ipdApi
+      .summary(activeTenantId, id)
+      .then(setView)
+      .catch((e) => setErr((e as Error).message));
   }, [activeTenantId, id]);
 
   if (err) return <ErrorState message={err} />;
@@ -49,7 +52,9 @@ function SummaryInner({ id }: { id: string }) {
           </div>
           <div className="text-right">
             <h2 className="text-display-lg text-ink">DISCHARGE SUMMARY</h2>
-            <div className="mt-1 inline-flex justify-end"><StatusChip status={admission.status} /></div>
+            <div className="mt-1 inline-flex justify-end">
+              <StatusChip status={admission.status} />
+            </div>
           </div>
         </header>
 
@@ -59,7 +64,14 @@ function SummaryInner({ id }: { id: string }) {
             <Row label="MRN" value={admission.patient.mrn} />
             <Row label="Age / sex" value={`${ageFromDob(admission.patient.dob)} / ${admission.patient.sex ?? '-'}`} />
             <Row label="Phone" value={admission.patient.phone ?? '-'} />
-            <Row label="Allergies" value={admission.patient.allergies.length ? admission.patient.allergies.map((a) => a.substance).join(', ') : 'None recorded'} />
+            <Row
+              label="Allergies"
+              value={
+                admission.patient.allergies.length
+                  ? admission.patient.allergies.map((a) => a.substance).join(', ')
+                  : 'None recorded'
+              }
+            />
           </Box>
           <Box title="Admission details">
             <Row label="Admission ID" value={admission.id.slice(0, 8)} />
@@ -75,7 +87,8 @@ function SummaryInner({ id }: { id: string }) {
             <ul className="list-disc space-y-1 pl-5">
               {diagnoses.map((d) => (
                 <li key={d.id}>
-                  {d.description}{d.icdCode ? ` (${d.icdCode})` : ''} - {d.type}
+                  {d.description}
+                  {d.icdCode ? ` (${d.icdCode})` : ''} - {d.type}
                 </li>
               ))}
             </ul>
@@ -104,7 +117,12 @@ function SummaryInner({ id }: { id: string }) {
           {admission.medications.length ? (
             <Table
               heads={['Time', 'Status', 'Reference', 'Notes']}
-              rows={admission.medications.map((m) => [formatDateTime(m.administeredAt), m.status, m.prescriptionItemId ?? '-', m.notes ?? '-'])}
+              rows={admission.medications.map((m) => [
+                formatDateTime(m.administeredAt),
+                m.status,
+                m.prescriptionItemId ?? '-',
+                m.notes ?? '-',
+              ])}
             />
           ) : (
             <Muted>No medication administrations recorded.</Muted>
@@ -115,7 +133,11 @@ function SummaryInner({ id }: { id: string }) {
           {admission.labOrders.length ? (
             <Table
               heads={['Order', 'Status', 'Ordered']}
-              rows={admission.labOrders.map((o) => [`Order ${o.id.slice(0, 8)}`, o.status, formatDateTime(o.createdAt)])}
+              rows={admission.labOrders.map((o) => [
+                `Order ${o.id.slice(0, 8)}`,
+                o.status,
+                formatDateTime(o.createdAt),
+              ])}
             />
           ) : (
             <Muted>No lab orders linked to this admission.</Muted>
@@ -127,7 +149,12 @@ function SummaryInner({ id }: { id: string }) {
             <>
               <Table
                 heads={['Description', 'Qty', 'Unit price', 'Total']}
-                rows={admission.charges.map((c) => [c.description, String(c.quantity), money(c.unitPrice, hospital.currency), money(c.quantity * c.unitPrice, hospital.currency)])}
+                rows={admission.charges.map((c) => [
+                  c.description,
+                  String(c.quantity),
+                  money(c.unitPrice, hospital.currency),
+                  money(c.quantity * c.unitPrice, hospital.currency),
+                ])}
               />
               <div className="mt-3 flex justify-end text-title-lg text-ink">
                 Total IPD charges: {money(billTotal, hospital.currency)}
@@ -142,9 +169,19 @@ function SummaryInner({ id }: { id: string }) {
           <div className="space-y-3 text-body-sm">
             <Row label="Reason" value={admission.dischargeReason ?? '-'} />
             <Block label="Summary" value={admission.dischargeSummary?.summary ?? admission.dischargeNotes ?? '-'} />
-            <Block label="Instructions" value={admission.dischargeSummary?.instructions ?? admission.dischargeNotes ?? '-'} />
+            <Block
+              label="Instructions"
+              value={admission.dischargeSummary?.instructions ?? admission.dischargeNotes ?? '-'}
+            />
             <Row label="Follow-up date" value={formatDate(admission.dischargeSummary?.followUpDate)} />
-            <Row label="Prepared / finalized by" value={admission.dischargeSummary?.finalizedAt ? `Finalized ${formatDateTime(admission.dischargeSummary.finalizedAt)}` : 'Draft'} />
+            <Row
+              label="Prepared / finalized by"
+              value={
+                admission.dischargeSummary?.finalizedAt
+                  ? `Finalized ${formatDateTime(admission.dischargeSummary.finalizedAt)}`
+                  : 'Draft'
+              }
+            />
           </div>
         </DocSection>
 
@@ -216,7 +253,9 @@ function Table({ heads, rows }: { heads: string[]; rows: string[][] }) {
         <thead>
           <tr className="border-b border-line text-label-md uppercase text-ink-soft">
             {heads.map((h) => (
-              <th key={h} className="py-2 pr-3 font-medium">{h}</th>
+              <th key={h} className="py-2 pr-3 font-medium">
+                {h}
+              </th>
             ))}
           </tr>
         </thead>
@@ -224,7 +263,9 @@ function Table({ heads, rows }: { heads: string[]; rows: string[][] }) {
           {rows.map((row, i) => (
             <tr key={i}>
               {row.map((cell, j) => (
-                <td key={`${i}-${j}`} className="py-2 pr-3">{cell}</td>
+                <td key={`${i}-${j}`} className="py-2 pr-3">
+                  {cell}
+                </td>
               ))}
             </tr>
           ))}
@@ -237,7 +278,11 @@ function Table({ heads, rows }: { heads: string[]; rows: string[][] }) {
 export default function SummaryPage() {
   const params = useParams<{ id: string }>();
   return (
-    <Protected requireModule="IPD" allowedRoles={['DOCTOR', 'NURSE', 'HOSPITAL_ADMIN']} requirePermission={['ipd.read']}>
+    <Protected
+      requireModule="IPD"
+      allowedRoles={['DOCTOR', 'NURSE', 'HOSPITAL_ADMIN']}
+      requirePermission={['ipd.read']}
+    >
       <SummaryInner id={params.id} />
     </Protected>
   );

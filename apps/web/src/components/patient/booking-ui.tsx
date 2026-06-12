@@ -84,7 +84,9 @@ export function BookingStepper({ current }: { current: number }) {
             >
               {done ? <Check className="h-4 w-4" /> : n}
             </span>
-            <span className={`hidden text-label-sm md:block ${active ? 'text-primary' : done ? 'text-ink' : 'text-ink-soft'}`}>
+            <span
+              className={`hidden text-label-sm md:block ${active ? 'text-primary' : done ? 'text-ink' : 'text-ink-soft'}`}
+            >
               {label}
             </span>
           </li>
@@ -152,7 +154,9 @@ export function ServiceOption({
       aria-pressed={selected}
       className={[
         'flex w-full flex-col gap-2 rounded-xl border p-4 text-left transition-all',
-        selected ? 'border-2 border-primary bg-primary-50 shadow-sm' : 'border border-line bg-surface hover:border-primary',
+        selected
+          ? 'border-2 border-primary bg-primary-50 shadow-sm'
+          : 'border border-line bg-surface hover:border-primary',
       ].join(' ')}
     >
       <div className="flex items-start justify-between">

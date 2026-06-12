@@ -72,8 +72,12 @@ export function Toggle({
       className="flex w-full items-center justify-between gap-3 py-1.5 text-left"
     >
       <span className="text-body-md text-ink">{label}</span>
-      <span className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors ${checked ? 'bg-primary' : 'bg-line'}`}>
-        <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all ${checked ? 'left-[18px]' : 'left-0.5'}`} />
+      <span
+        className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors ${checked ? 'bg-primary' : 'bg-line'}`}
+      >
+        <span
+          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all ${checked ? 'left-[18px]' : 'left-0.5'}`}
+        />
       </span>
     </button>
   );
@@ -180,7 +184,9 @@ export function ResultsLayout({
       >
         <SlidersHorizontal className="h-4 w-4" /> Filters
         {activeCount > 0 && (
-          <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-label-sm text-white">{activeCount}</span>
+          <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-label-sm text-white">
+            {activeCount}
+          </span>
         )}
       </button>
 
@@ -192,7 +198,11 @@ export function ResultsLayout({
           <div className="absolute inset-y-0 left-0 w-[85%] max-w-sm overflow-y-auto bg-canvas p-4">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-headline-sm text-ink">Filters</h2>
-              <button aria-label="Close filters" onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-full text-ink-muted hover:bg-surface">
+              <button
+                aria-label="Close filters"
+                onClick={() => setOpen(false)}
+                className="grid h-9 w-9 place-items-center rounded-full text-ink-muted hover:bg-surface"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -212,7 +222,15 @@ export function ResultsLayout({
   );
 }
 
-export function Pagination({ page, pageCount, onPage }: { page: number; pageCount: number; onPage: (p: number) => void }) {
+export function Pagination({
+  page,
+  pageCount,
+  onPage,
+}: {
+  page: number;
+  pageCount: number;
+  onPage: (p: number) => void;
+}) {
   if (pageCount <= 1) return null;
   const pages = Array.from({ length: pageCount }, (_, i) => i + 1).filter(
     (p) => p === 1 || p === pageCount || Math.abs(p - page) <= 1,

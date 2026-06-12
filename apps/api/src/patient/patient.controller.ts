@@ -75,11 +75,7 @@ export class PatientController {
 
   @Post(':id/documents/summary')
   @RequirePermission(PERMISSIONS.PATIENT_WRITE)
-  generateSummaryDocument(
-    @Ctx() ctx: RequestContext,
-    @Param('id') id: string,
-    @Body() dto: GeneratePatientSummaryDto,
-  ) {
+  generateSummaryDocument(@Ctx() ctx: RequestContext, @Param('id') id: string, @Body() dto: GeneratePatientSummaryDto) {
     return this.svc.generateSummaryDocument(ctx, id, dto);
   }
 

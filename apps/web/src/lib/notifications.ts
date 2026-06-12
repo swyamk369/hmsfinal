@@ -1,6 +1,15 @@
 import { apiGet, apiPost } from './api';
 
-export const NOTIFICATION_CATEGORIES = ['APPOINTMENT', 'LAB', 'BILLING', 'PHARMACY', 'INVENTORY', 'INSURANCE', 'IPD', 'SYSTEM'] as const;
+export const NOTIFICATION_CATEGORIES = [
+  'APPOINTMENT',
+  'LAB',
+  'BILLING',
+  'PHARMACY',
+  'INVENTORY',
+  'INSURANCE',
+  'IPD',
+  'SYSTEM',
+] as const;
 export const NOTIFICATION_SEVERITIES = ['INFO', 'SUCCESS', 'WARNING', 'CRITICAL'] as const;
 
 export interface NotificationDeliveryAttempt {

@@ -40,10 +40,30 @@ export default function HelpPage() {
       <p className="mb-6 text-body-sm text-ink-muted">Answers to common questions, and how to get help.</p>
 
       <div className="mb-6 grid gap-3 sm:grid-cols-2">
-        <Quick icon={CalendarDays} title="Manage appointments" body="Book, view, or add appointments to your calendar." href="/patient/appointments" />
-        <Quick icon={FileText} title="Your documents" body="View reports and documents hospitals share with you." href="/patient/documents" />
-        <Quick icon={Building2} title="Your hospitals" body="Switch between or link hospital records." href="/patient/hospitals" />
-        <Quick icon={ShieldCheck} title="Privacy & security" body="Manage your password and notification settings." href="/patient/settings" />
+        <Quick
+          icon={CalendarDays}
+          title="Manage appointments"
+          body="Book, view, or add appointments to your calendar."
+          href="/patient/appointments"
+        />
+        <Quick
+          icon={FileText}
+          title="Your documents"
+          body="View reports and documents hospitals share with you."
+          href="/patient/documents"
+        />
+        <Quick
+          icon={Building2}
+          title="Your hospitals"
+          body="Switch between or link hospital records."
+          href="/patient/hospitals"
+        />
+        <Quick
+          icon={ShieldCheck}
+          title="Privacy & security"
+          body="Manage your password and notification settings."
+          href="/patient/settings"
+        />
       </div>
 
       <section className="rounded-xl border border-line bg-surface">
@@ -53,9 +73,14 @@ export default function HelpPage() {
         <ul className="divide-y divide-line">
           {FAQS.map((f, i) => (
             <li key={f.q}>
-              <button onClick={() => setOpen(open === i ? null : i)} className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left">
+              <button
+                onClick={() => setOpen(open === i ? null : i)}
+                className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
+              >
                 <span className="font-medium text-ink">{f.q}</span>
-                <ChevronDown className={`h-5 w-5 flex-shrink-0 text-ink-soft transition-transform ${open === i ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`h-5 w-5 flex-shrink-0 text-ink-soft transition-transform ${open === i ? 'rotate-180' : ''}`}
+                />
               </button>
               {open === i && <p className="px-5 pb-4 text-body-md text-ink-muted">{f.a}</p>}
             </li>
@@ -64,17 +89,36 @@ export default function HelpPage() {
       </section>
 
       <div className="mt-6 rounded-xl border border-line bg-canvas p-5 text-body-sm text-ink-muted">
-        Still need help? For anything about your medical records, bills, or appointments, please contact the
-        relevant hospital directly — you’ll find their details on each <Link href="/hospitals" className="font-medium text-primary hover:underline">hospital’s page</Link>.
+        Still need help? For anything about your medical records, bills, or appointments, please contact the relevant
+        hospital directly — you’ll find their details on each{' '}
+        <Link href="/hospitals" className="font-medium text-primary hover:underline">
+          hospital’s page
+        </Link>
+        .
       </div>
     </div>
   );
 }
 
-function Quick({ icon: Icon, title, body, href }: { icon: typeof HelpCircle; title: string; body: string; href: string }) {
+function Quick({
+  icon: Icon,
+  title,
+  body,
+  href,
+}: {
+  icon: typeof HelpCircle;
+  title: string;
+  body: string;
+  href: string;
+}) {
   return (
-    <Link href={href} className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 transition-colors hover:border-primary">
-      <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-lg bg-primary-50 text-primary"><Icon className="h-5 w-5" /></span>
+    <Link
+      href={href}
+      className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4 transition-colors hover:border-primary"
+    >
+      <span className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-lg bg-primary-50 text-primary">
+        <Icon className="h-5 w-5" />
+      </span>
       <div>
         <p className="font-medium text-ink">{title}</p>
         <p className="text-body-sm text-ink-muted">{body}</p>

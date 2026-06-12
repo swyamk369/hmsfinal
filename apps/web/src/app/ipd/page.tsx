@@ -9,7 +9,22 @@ import { getActiveMembership } from '@/lib/access';
 import { useToast } from '@/components/toast';
 import { ipdApi, WARD_TYPES, BED_STATUSES, type Occupancy, type Ward, type Bed, type AdmissionLite } from '@/lib/ipd';
 import { formatDate } from '@/lib/format';
-import { Button, Section, Modal, FormField, Input, Select, PageHeader, Spinner, ErrorState, EmptyState, StatCard, StatusChip, Badge, cx } from '@/components/ui';
+import {
+  Button,
+  Section,
+  Modal,
+  FormField,
+  Input,
+  Select,
+  PageHeader,
+  Spinner,
+  ErrorState,
+  EmptyState,
+  StatCard,
+  StatusChip,
+  Badge,
+  cx,
+} from '@/components/ui';
 
 const BED_TONE: Record<string, string> = {
   AVAILABLE: 'border-t-success',
@@ -22,7 +37,10 @@ function IpdInner() {
   const { activeTenantId, profile } = useAuth();
   const t = activeTenantId!;
   const router = useRouter();
-  const perms = useMemo(() => new Set(getActiveMembership(profile, activeTenantId)?.permissions ?? []), [profile, activeTenantId]);
+  const perms = useMemo(
+    () => new Set(getActiveMembership(profile, activeTenantId)?.permissions ?? []),
+    [profile, activeTenantId],
+  );
 
   const [occ, setOcc] = useState<Occupancy | null>(null);
   const [admissions, setAdmissions] = useState<AdmissionLite[] | null>(null);
@@ -66,8 +84,16 @@ function IpdInner() {
         subtitle="Bed occupancy, admissions, and ward management"
         action={
           <div className="flex flex-wrap gap-2">
-            {canManage && <Button variant="ghost" icon={Settings2} onClick={() => setManageOpen(true)}>Wards &amp; beds</Button>}
-            {canAdmit && <Button icon={UserPlus} onClick={() => router.push('/ipd/admit')}>Admit patient</Button>}
+            {canManage && (
+              <Button variant="ghost" icon={Settings2} onClick={() => setManageOpen(true)}>
+                Wards &amp; beds
+              </Button>
+            )}
+            {canAdmit && (
+              <Button icon={UserPlus} onClick={() => router.push('/ipd/admit')}>
+                Admit patient
+              </Button>
+            )}
           </div>
         }
       />
@@ -92,7 +118,13 @@ function IpdInner() {
                   icon={BedDouble}
                   title="No active wards"
                   hint="Add a ward and beds to start admitting patients."
-                  action={canManage ? <Button size="sm" icon={Plus} onClick={() => setManageOpen(true)}>Manage wards &amp; beds</Button> : undefined}
+                  action={
+                    canManage ? (
+                      <Button size="sm" icon={Plus} onClick={() => setManageOpen(true)}>
+                        Manage wards &amp; beds
+                      </Button>
+                    ) : undefined
+                  }
                 />
               </div>
             </Section>
@@ -116,16 +148,26 @@ function IpdInner() {
                           )}
                         >
                           <div className="flex items-center justify-between">
-                            <span className="rounded bg-canvas px-1.5 py-0.5 text-label-sm font-medium text-ink">{b.bedNumber}</span>
-                            <BedDouble className={cx('h-4 w-4', b.status === 'OCCUPIED' ? 'text-primary' : 'text-ink-soft')} />
+                            <span className="rounded bg-canvas px-1.5 py-0.5 text-label-sm font-medium text-ink">
+                              {b.bedNumber}
+                            </span>
+                            <BedDouble
+                              className={cx('h-4 w-4', b.status === 'OCCUPIED' ? 'text-primary' : 'text-ink-soft')}
+                            />
                           </div>
                           {b.admission ? (
                             <>
-                              <span className="truncate text-body-sm font-medium text-ink">{b.admission.patient?.fullName}</span>
-                              <span className="text-label-sm text-ink-soft">Since {formatDate(b.admission.admittedAt)}</span>
+                              <span className="truncate text-body-sm font-medium text-ink">
+                                {b.admission.patient?.fullName}
+                              </span>
+                              <span className="text-label-sm text-ink-soft">
+                                Since {formatDate(b.admission.admittedAt)}
+                              </span>
                             </>
                           ) : (
-                            <span className="py-2 text-center text-label-sm capitalize text-ink-soft">{b.status.toLowerCase()}</span>
+                            <span className="py-2 text-center text-label-sm capitalize text-ink-soft">
+                              {b.status.toLowerCase()}
+                            </span>
                           )}
                         </button>
                       ))}
@@ -140,7 +182,12 @@ function IpdInner() {
             title="Admissions"
             action={
               <div className="flex gap-2">
-                <Input className="w-44" placeholder="Search patient…" value={q} onChange={(e) => setQ(e.target.value)} />
+                <Input
+                  className="w-44"
+                  placeholder="Search patient…"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                />
                 <Select className="w-36" value={status} onChange={(e) => setStatus(e.target.value)}>
                   <option value="">All</option>
                   <option value="ADMITTED">Admitted</option>
@@ -153,7 +200,9 @@ function IpdInner() {
             {!admissions ? (
               <Spinner label="Loading admissions…" />
             ) : admissions.length === 0 ? (
-              <div className="px-5 py-8"><EmptyState icon={BedDouble} title="No admissions" /></div>
+              <div className="px-5 py-8">
+                <EmptyState icon={BedDouble} title="No admissions" />
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-body-sm">
@@ -167,14 +216,22 @@ function IpdInner() {
                   </thead>
                   <tbody className="divide-y divide-line">
                     {admissions.map((a) => (
-                      <tr key={a.id} className="cursor-pointer hover:bg-canvas" onClick={() => router.push(`/ipd/admissions/${a.id}`)}>
+                      <tr
+                        key={a.id}
+                        className="cursor-pointer hover:bg-canvas"
+                        onClick={() => router.push(`/ipd/admissions/${a.id}`)}
+                      >
                         <td className="px-5 py-3">
                           <div className="font-medium text-ink">{a.patient?.fullName}</div>
                           <div className="text-label-sm text-ink-soft">{a.patient?.mrn}</div>
                         </td>
-                        <td className="px-5 py-3 text-ink-muted">{a.bed?.bedNumber} · {a.bed?.ward?.name}</td>
+                        <td className="px-5 py-3 text-ink-muted">
+                          {a.bed?.bedNumber} · {a.bed?.ward?.name}
+                        </td>
                         <td className="px-5 py-3 text-ink-muted">{formatDate(a.admittedAt)}</td>
-                        <td className="px-5 py-3"><StatusChip status={a.status} /></td>
+                        <td className="px-5 py-3">
+                          <StatusChip status={a.status} />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -185,12 +242,30 @@ function IpdInner() {
         </>
       )}
 
-      <ManageModal open={manageOpen} onClose={() => setManageOpen(false)} canWard={perms.has('ward.manage')} canBed={perms.has('bed.manage')} onChanged={loadOcc} />
+      <ManageModal
+        open={manageOpen}
+        onClose={() => setManageOpen(false)}
+        canWard={perms.has('ward.manage')}
+        canBed={perms.has('bed.manage')}
+        onChanged={loadOcc}
+      />
     </>
   );
 }
 
-function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: boolean; onClose: () => void; canWard: boolean; canBed: boolean; onChanged: () => Promise<void> }) {
+function ManageModal({
+  open,
+  onClose,
+  canWard,
+  canBed,
+  onChanged,
+}: {
+  open: boolean;
+  onClose: () => void;
+  canWard: boolean;
+  canBed: boolean;
+  onChanged: () => Promise<void>;
+}) {
   const { activeTenantId } = useAuth();
   const t = activeTenantId!;
   const toast = useToast();
@@ -212,7 +287,11 @@ function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: bool
     if (open) void load();
   }, [open, load]);
   useEffect(() => {
-    if (open && selWard) ipdApi.listBeds(t, selWard).then(setBeds).catch(() => {});
+    if (open && selWard)
+      ipdApi
+        .listBeds(t, selWard)
+        .then(setBeds)
+        .catch(() => {});
   }, [open, selWard, t]);
 
   async function addWard() {
@@ -266,19 +345,44 @@ function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: bool
           <div>
             <span className="mb-1 block text-label-md uppercase text-ink-soft">Add ward</span>
             <div className="flex gap-2">
-              <Input placeholder="Ward name" value={newWard.name} onChange={(e) => setNewWard((w) => ({ ...w, name: e.target.value }))} />
-              <Select className="w-36" value={newWard.type} onChange={(e) => setNewWard((w) => ({ ...w, type: e.target.value }))}>
-                {WARD_TYPES.map((x) => <option key={x} value={x}>{x}</option>)}
+              <Input
+                placeholder="Ward name"
+                value={newWard.name}
+                onChange={(e) => setNewWard((w) => ({ ...w, name: e.target.value }))}
+              />
+              <Select
+                className="w-36"
+                value={newWard.type}
+                onChange={(e) => setNewWard((w) => ({ ...w, type: e.target.value }))}
+              >
+                {WARD_TYPES.map((x) => (
+                  <option key={x} value={x}>
+                    {x}
+                  </option>
+                ))}
               </Select>
-              <Input className="w-28" type="number" min={0} placeholder="₹/day" value={newWard.rate} onChange={(e) => setNewWard((w) => ({ ...w, rate: e.target.value }))} />
-              <Button onClick={addWard} loading={busy} disabled={!newWard.name.trim()}>Add</Button>
+              <Input
+                className="w-28"
+                type="number"
+                min={0}
+                placeholder="₹/day"
+                value={newWard.rate}
+                onChange={(e) => setNewWard((w) => ({ ...w, rate: e.target.value }))}
+              />
+              <Button onClick={addWard} loading={busy} disabled={!newWard.name.trim()}>
+                Add
+              </Button>
             </div>
           </div>
         )}
 
         <FormField label="Ward">
           <Select value={selWard} onChange={(e) => setSelWard(e.target.value)}>
-            {wards.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+            {wards.map((w) => (
+              <option key={w.id} value={w.id}>
+                {w.name}
+              </option>
+            ))}
           </Select>
         </FormField>
 
@@ -288,8 +392,15 @@ function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: bool
               <span className="text-label-md uppercase text-ink-soft">Beds</span>
               {canBed && (
                 <div className="flex gap-2">
-                  <Input className="w-28" placeholder="Bed no." value={newBed} onChange={(e) => setNewBed(e.target.value)} />
-                  <Button size="sm" icon={Plus} onClick={addBed} loading={busy} disabled={!newBed.trim()}>Add bed</Button>
+                  <Input
+                    className="w-28"
+                    placeholder="Bed no."
+                    value={newBed}
+                    onChange={(e) => setNewBed(e.target.value)}
+                  />
+                  <Button size="sm" icon={Plus} onClick={addBed} loading={busy} disabled={!newBed.trim()}>
+                    Add bed
+                  </Button>
                 </div>
               )}
             </div>
@@ -298,11 +409,23 @@ function ManageModal({ open, onClose, canWard, canBed, onChanged }: { open: bool
                 <p className="text-body-sm text-ink-soft">No beds yet.</p>
               ) : (
                 beds.map((b) => (
-                  <div key={b.id} className="flex items-center justify-between rounded-md border border-line px-3 py-1.5">
+                  <div
+                    key={b.id}
+                    className="flex items-center justify-between rounded-md border border-line px-3 py-1.5"
+                  >
                     <span className="text-body-sm font-medium text-ink">{b.bedNumber}</span>
                     {canBed ? (
-                      <Select className="w-36" value={b.status} onChange={(e) => setBedStatus(b.id, e.target.value)} disabled={b.status === 'OCCUPIED'}>
-                        {BED_STATUSES.map((x) => <option key={x} value={x}>{x}</option>)}
+                      <Select
+                        className="w-36"
+                        value={b.status}
+                        onChange={(e) => setBedStatus(b.id, e.target.value)}
+                        disabled={b.status === 'OCCUPIED'}
+                      >
+                        {BED_STATUSES.map((x) => (
+                          <option key={x} value={x}>
+                            {x}
+                          </option>
+                        ))}
                       </Select>
                     ) : (
                       <Badge tone="slate">{b.status}</Badge>

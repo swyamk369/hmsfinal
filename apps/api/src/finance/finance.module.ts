@@ -16,28 +16,28 @@ import { FinanceGovernanceService } from './finance-governance.service';
 @Module({
   imports: [BillingModule],
   controllers: [
-    FinanceController, 
-    PriceListController, 
-    ServicePackageController, 
+    FinanceController,
+    PriceListController,
+    ServicePackageController,
     AdvanceDepositController,
     CostEstimateController,
-    FinanceGovernanceController
+    FinanceGovernanceController,
   ],
   providers: [
-    FinanceService, 
-    PriceListService, 
-    ServicePackageService, 
+    FinanceService,
+    PriceListService,
+    ServicePackageService,
     AdvanceDepositService,
     CostEstimateService,
-    FinanceGovernanceService
+    FinanceGovernanceService,
   ],
   exports: [
-    FinanceService, 
-    PriceListService, 
-    ServicePackageService, 
+    FinanceService,
+    PriceListService,
+    ServicePackageService,
     AdvanceDepositService,
     CostEstimateService,
-    FinanceGovernanceService
+    FinanceGovernanceService,
   ],
 })
 export class FinanceModule {}

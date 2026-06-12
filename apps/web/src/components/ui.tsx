@@ -421,28 +421,3 @@ export function ReasonModal({
     </Modal>
   );
 }
-
-// ─────────────────────────────────────────────────────────────
-// Phase placeholder (honest "built later" state)
-// ─────────────────────────────────────────────────────────────
-export function PhasePlaceholder({
-  module,
-  phase,
-  children,
-}: {
-  module: string;
-  phase: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className="card p-8">
-      <Badge tone="primary">{module}</Badge>
-      <h2 className="mt-3 text-title-lg text-ink">Workflow coming in {phase}</h2>
-      <p className="mt-1 max-w-xl text-body-md text-ink-muted">
-        The data model, RLS isolation, permissions, and module entitlement for this area are already in place. The
-        operational screens land in {phase} of the build plan.
-      </p>
-      {children && <div className="mt-4">{children}</div>}
-    </div>
-  );
-}

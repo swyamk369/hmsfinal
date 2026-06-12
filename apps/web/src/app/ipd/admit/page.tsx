@@ -54,7 +54,10 @@ function AdmitInner() {
       setBeds([]);
       return;
     }
-    ipdApi.listBeds(t, wardId).then((bs) => setBeds(bs.filter((b) => b.status === 'AVAILABLE'))).catch(() => setBeds([]));
+    ipdApi
+      .listBeds(t, wardId)
+      .then((bs) => setBeds(bs.filter((b) => b.status === 'AVAILABLE')))
+      .catch(() => setBeds([]));
   }, [wardId, t]);
 
   async function submit() {
@@ -83,7 +86,10 @@ function AdmitInner() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/ipd" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+      <Link
+        href="/ipd"
+        className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to IPD
       </Link>
       <PageHeader title="Inpatient Admission" subtitle="Assign a bed and register the admission" />
@@ -95,9 +101,13 @@ function AdmitInner() {
               <div className="flex items-center justify-between rounded-lg border border-line bg-canvas p-3">
                 <div>
                   <div className="font-medium text-ink">{patient.fullName}</div>
-                  <div className="text-label-sm text-ink-soft">{patient.mrn} · {ageFromDob(patient.dob)} · {patient.sex}</div>
+                  <div className="text-label-sm text-ink-soft">
+                    {patient.mrn} · {ageFromDob(patient.dob)} · {patient.sex}
+                  </div>
                 </div>
-                <Button size="sm" variant="ghost" icon={X} onClick={() => setPatient(null)}>Clear</Button>
+                <Button size="sm" variant="ghost" icon={X} onClick={() => setPatient(null)}>
+                  Clear
+                </Button>
               </div>
             ) : (
               <PatientPicker onPick={setPatient} />
@@ -110,7 +120,12 @@ function AdmitInner() {
             <FormField label="Admitting physician">
               <Select value={providerId} onChange={(e) => setProviderId(e.target.value)}>
                 <option value="">— Unassigned —</option>
-                {doctors.map((d) => <option key={d.id} value={d.id}>{d.fullName}{d.speciality ? ` (${d.speciality})` : ''}</option>)}
+                {doctors.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.fullName}
+                    {d.speciality ? ` (${d.speciality})` : ''}
+                  </option>
+                ))}
               </Select>
             </FormField>
             <FormField label="Expected discharge">
@@ -118,7 +133,12 @@ function AdmitInner() {
             </FormField>
             <div className="sm:col-span-2">
               <FormField label="Presenting complaint / reason">
-                <Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Brief clinical reason for admission" />
+                <Textarea
+                  rows={2}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Brief clinical reason for admission"
+                />
               </FormField>
             </div>
           </div>
@@ -129,24 +149,38 @@ function AdmitInner() {
             <FormField label="Ward" required>
               <Select value={wardId} onChange={(e) => setWardId(e.target.value)}>
                 <option value="">Select ward…</option>
-                {wards.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+                {wards.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name}
+                  </option>
+                ))}
               </Select>
             </FormField>
             <FormField label="Bed (available)" required>
               <Select value={bedId} onChange={(e) => setBedId(e.target.value)} disabled={!wardId}>
                 <option value="">{wardId ? 'Select bed…' : 'Pick a ward first'}</option>
-                {beds.map((b) => <option key={b.id} value={b.id}>{b.bedNumber}</option>)}
+                {beds.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.bedNumber}
+                  </option>
+                ))}
               </Select>
             </FormField>
             {wardId && beds.length === 0 && (
-              <div className="sm:col-span-2"><Badge tone="warning">No available beds in this ward</Badge></div>
+              <div className="sm:col-span-2">
+                <Badge tone="warning">No available beds in this ward</Badge>
+              </div>
             )}
           </div>
         </Section>
 
         <div className="flex justify-end gap-3">
-          <Link href="/ipd"><Button variant="ghost">Cancel</Button></Link>
-          <Button icon={UserCheck} onClick={submit} loading={busy} disabled={!patient || !bedId}>Admit patient</Button>
+          <Link href="/ipd">
+            <Button variant="ghost">Cancel</Button>
+          </Link>
+          <Button icon={UserCheck} onClick={submit} loading={busy} disabled={!patient || !bedId}>
+            Admit patient
+          </Button>
         </div>
       </div>
     </div>
@@ -180,14 +214,23 @@ function PatientPicker({ onPick }: { onPick: (p: Patient) => void }) {
     <div>
       <div className="relative">
         <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
-        <Input className="pl-8" placeholder="Search patient by name, MRN, or phone…" value={q} onChange={(e) => setQ(e.target.value)} autoFocus />
+        <Input
+          className="pl-8"
+          placeholder="Search patient by name, MRN, or phone…"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          autoFocus
+        />
       </div>
       {loading && <p className="mt-2 text-label-sm text-ink-soft">Searching…</p>}
       {results.length > 0 && (
         <ul className="mt-2 divide-y divide-line rounded-md border border-line">
           {results.slice(0, 6).map((p) => (
             <li key={p.id}>
-              <button onClick={() => onPick(p)} className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-canvas">
+              <button
+                onClick={() => onPick(p)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-canvas"
+              >
                 <span className="font-medium text-ink">{p.fullName}</span>
                 <span className="text-label-sm text-ink-soft">{p.mrn}</span>
               </button>
@@ -201,7 +244,11 @@ function PatientPicker({ onPick }: { onPick: (p: Patient) => void }) {
 
 export default function AdmitPage() {
   return (
-    <Protected requireModule="IPD" allowedRoles={['DOCTOR', 'HOSPITAL_ADMIN', 'NURSE']} requirePermission={['ipd.admit']}>
+    <Protected
+      requireModule="IPD"
+      allowedRoles={['DOCTOR', 'HOSPITAL_ADMIN', 'NURSE']}
+      requirePermission={['ipd.admit']}
+    >
       <AdmitInner />
     </Protected>
   );

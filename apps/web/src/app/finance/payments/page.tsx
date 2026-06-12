@@ -36,7 +36,15 @@ function PaymentsPageInner() {
 
   return (
     <>
-      <PageHeader title="Payments" subtitle="Collection ledger for cashier and finance reconciliation" action={<Button variant="ghost" onClick={load}>Refresh</Button>} />
+      <PageHeader
+        title="Payments"
+        subtitle="Collection ledger for cashier and finance reconciliation"
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
+      />
       <FinanceShell>
         <div className="space-y-6">
           <Section title="Filters">
@@ -48,7 +56,9 @@ function PaymentsPageInner() {
                 <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
               </FormField>
               <div className="flex items-end">
-                <Button variant="dark" onClick={load}>Apply</Button>
+                <Button variant="dark" onClick={load}>
+                  Apply
+                </Button>
               </div>
             </div>
           </Section>
@@ -56,7 +66,10 @@ function PaymentsPageInner() {
           {!rows ? (
             <Spinner label="Loading payments..." />
           ) : rows.length === 0 ? (
-            <EmptyState title="No payments found" hint="Collections appear here as soon as cashier or reception records payment." />
+            <EmptyState
+              title="No payments found"
+              hint="Collections appear here as soon as cashier or reception records payment."
+            />
           ) : (
             <Section title={`${rows.length} payment${rows.length === 1 ? '' : 's'}`}>
               <div className="overflow-x-auto">
@@ -75,7 +88,12 @@ function PaymentsPageInner() {
                       <tr key={row.id} className="hover:bg-canvas">
                         <td className="px-5 py-3">
                           {row.bill ? (
-                            <Link href={`/finance/bills/${row.bill.id}`} className="font-mono text-primary hover:underline">{row.bill.billNumber}</Link>
+                            <Link
+                              href={`/finance/bills/${row.bill.id}`}
+                              className="font-mono text-primary hover:underline"
+                            >
+                              {row.bill.billNumber}
+                            </Link>
                           ) : (
                             <span className="text-ink-muted">-</span>
                           )}
@@ -103,7 +121,10 @@ function PaymentsPageInner() {
 
 export default function PaymentsPage() {
   return (
-    <Protected requireModule="BILLING" requirePermission={['finance.read', 'finance.reconcile', 'reports.financial.read', ...FINANCE_PERMS]}>
+    <Protected
+      requireModule="BILLING"
+      requirePermission={['finance.read', 'finance.reconcile', 'reports.financial.read', ...FINANCE_PERMS]}
+    >
       <PaymentsPageInner />
     </Protected>
   );

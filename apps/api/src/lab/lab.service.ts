@@ -43,7 +43,10 @@ const TRANSITIONS: Record<string, string[]> = {
 
 @Injectable()
 export class LabService {
-  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly notifications?: NotificationsService,
+  ) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };

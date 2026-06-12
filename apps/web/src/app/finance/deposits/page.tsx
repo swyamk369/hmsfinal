@@ -1,16 +1,18 @@
 import { PageHeader } from '@/components/ui';
+import Protected from '@/components/Protected';
 import { DepositsList } from './deposits-list';
+import { FinanceShell } from '../finance-ui';
 
 export default function DepositsPage() {
   return (
-    <div className="flex flex-col h-full">
-      <PageHeader
-        title="Advance Deposits"
-        subtitle="Manage patient advance payments and balances"
-      />
-      <div className="flex-1 p-6">
+    <Protected
+      requireModule="BILLING"
+      requirePermission={['finance.patient_account.read', 'finance.cashier', 'payment.collect']}
+    >
+      <PageHeader title="Advance Deposits" subtitle="Manage patient advance payments and balances" />
+      <FinanceShell>
         <DepositsList />
-      </div>
-    </div>
+      </FinanceShell>
+    </Protected>
   );
 }

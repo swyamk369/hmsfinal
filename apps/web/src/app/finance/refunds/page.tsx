@@ -36,7 +36,15 @@ function RefundsPageInner() {
 
   return (
     <>
-      <PageHeader title="Refunds" subtitle="Reason-backed refund ledger for audit and reconciliation" action={<Button variant="ghost" onClick={load}>Refresh</Button>} />
+      <PageHeader
+        title="Refunds"
+        subtitle="Reason-backed refund ledger for audit and reconciliation"
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
+      />
       <FinanceShell>
         <div className="space-y-6">
           <Section title="Filters">
@@ -48,7 +56,9 @@ function RefundsPageInner() {
                 <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
               </FormField>
               <div className="flex items-end">
-                <Button variant="dark" onClick={load}>Apply</Button>
+                <Button variant="dark" onClick={load}>
+                  Apply
+                </Button>
               </div>
             </div>
           </Section>
@@ -56,7 +66,10 @@ function RefundsPageInner() {
           {!rows ? (
             <Spinner label="Loading refunds..." />
           ) : rows.length === 0 ? (
-            <EmptyState title="No refunds found" hint="Refunded payments appear here with the reason required by audit policy." />
+            <EmptyState
+              title="No refunds found"
+              hint="Refunded payments appear here with the reason required by audit policy."
+            />
           ) : (
             <Section title={`${rows.length} refund${rows.length === 1 ? '' : 's'}`}>
               <div className="overflow-x-auto">
@@ -75,7 +88,12 @@ function RefundsPageInner() {
                       <tr key={row.id} className="hover:bg-canvas">
                         <td className="px-5 py-3">
                           {row.bill ? (
-                            <Link href={`/finance/bills/${row.bill.id}`} className="font-mono text-primary hover:underline">{row.bill.billNumber}</Link>
+                            <Link
+                              href={`/finance/bills/${row.bill.id}`}
+                              className="font-mono text-primary hover:underline"
+                            >
+                              {row.bill.billNumber}
+                            </Link>
                           ) : (
                             <span className="text-ink-muted">-</span>
                           )}

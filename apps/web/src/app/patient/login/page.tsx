@@ -26,7 +26,7 @@ export default function PatientLoginPage() {
     try {
       const { signInWithEmailAndPassword, signOut } = await import('firebase/auth');
       await signInWithEmailAndPassword(auth, email.trim(), password);
-      
+
       try {
         const { portalApi } = await import('@/lib/patient-portal');
         await portalApi.me();
@@ -37,7 +37,7 @@ export default function PatientLoginPage() {
           return;
         }
       }
-      
+
       router.replace('/patient/dashboard');
     } catch (e) {
       setErr(friendly((e as Error).message));
@@ -47,7 +47,10 @@ export default function PatientLoginPage() {
   }
 
   return (
-    <AuthSplit title="Sign in to your patient portal" subtitle="Secure access to your appointments, bills, and medical records.">
+    <AuthSplit
+      title="Sign in to your patient portal"
+      subtitle="Secure access to your appointments, bills, and medical records."
+    >
       {err && (
         <div className="mb-5 flex items-start gap-3 rounded-md border border-danger/30 bg-danger-bg px-4 py-3">
           <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-danger" />
@@ -57,11 +60,25 @@ export default function PatientLoginPage() {
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
           <label className="mb-1.5 block text-label-md text-ink">Email</label>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={authInputCls} placeholder="you@email.com" />
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={authInputCls}
+            placeholder="you@email.com"
+          />
         </div>
         <div>
           <label className="mb-1.5 block text-label-md text-ink">Password</label>
-          <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className={authInputCls} placeholder="••••••••" />
+          <input
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={authInputCls}
+            placeholder="••••••••"
+          />
         </div>
         <button
           type="submit"
@@ -88,7 +105,8 @@ export default function PatientLoginPage() {
 }
 
 function friendly(raw: string): string {
-  if (raw.includes('invalid-credential') || raw.includes('wrong-password') || raw.includes('user-not-found')) return 'Incorrect email or password.';
+  if (raw.includes('invalid-credential') || raw.includes('wrong-password') || raw.includes('user-not-found'))
+    return 'Incorrect email or password.';
   if (raw.includes('too-many-requests')) return 'Too many attempts. Please wait and try again.';
   if (raw.includes('network')) return 'Network error. Check your connection.';
   return 'Unable to sign in. Please try again.';

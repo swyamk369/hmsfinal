@@ -4,7 +4,10 @@ import type { RequestContext } from '../common/types';
 
 @Injectable()
 export class FinanceGovernanceService {
-  async requestApproval(ctx: RequestContext, data: { type: any; amount?: number; entity: string; entityId?: string; reason: string; notes?: string }) {
+  async requestApproval(
+    ctx: RequestContext,
+    data: { type: any; amount?: number; entity: string; entityId?: string; reason: string; notes?: string },
+  ) {
     const db = requireDb(ctx);
     return db.financeApproval.create({
       data: {
@@ -32,7 +35,7 @@ export class FinanceGovernanceService {
   async resolveApproval(ctx: RequestContext, id: string, status: 'APPROVED' | 'REJECTED', decisionReason?: string) {
     const db = requireDb(ctx);
     const approval = await db.financeApproval.findFirst({
-      where: { id, tenantId: ctx.tenantId! }
+      where: { id, tenantId: ctx.tenantId! },
     });
 
     if (!approval) throw new NotFoundException('Finance Approval not found');
@@ -49,21 +52,25 @@ export class FinanceGovernanceService {
     });
   }
 
-  async checkThresholds(ctx: RequestContext, type: 'DISCOUNT' | 'REFUND', amount: number): Promise<{ requiresApproval: boolean; threshold: number }> {
+  async checkThresholds(
+    ctx: RequestContext,
+    type: 'DISCOUNT' | 'REFUND',
+    amount: number,
+  ): Promise<{ requiresApproval: boolean; threshold: number }> {
     const db = requireDb(ctx);
     const settings = await db.hospitalSettings.findFirst({ where: { tenantId: ctx.tenantId! } });
     if (!settings) return { requiresApproval: false, threshold: 0 };
 
     if (type === 'DISCOUNT') {
-      return { 
+      return {
         requiresApproval: amount > settings.discountApprovalThreshold,
-        threshold: settings.discountApprovalThreshold 
+        threshold: settings.discountApprovalThreshold,
       };
     }
     if (type === 'REFUND') {
-      return { 
+      return {
         requiresApproval: amount > settings.refundApprovalThreshold,
-        threshold: settings.refundApprovalThreshold 
+        threshold: settings.refundApprovalThreshold,
       };
     }
     return { requiresApproval: false, threshold: 0 };

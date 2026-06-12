@@ -48,8 +48,11 @@ function ReceptionInner() {
   const membership = useMemo(() => getActiveMembership(profile, activeTenantId), [activeTenantId, profile]);
   const permissions = useMemo(() => new Set(membership?.permissions ?? []), [membership]);
   const modules = useMemo(() => new Set(membership?.modules ?? []), [membership]);
-  const canPostConsultCharge = modules.has('BILLING') && (permissions.has('finance.charge.manage') || permissions.has('bill.write'));
-  const canOpenFinance = modules.has('BILLING') && (permissions.has('finance.cashier') || permissions.has('bill.read') || permissions.has('payment.collect'));
+  const canPostConsultCharge =
+    modules.has('BILLING') && (permissions.has('finance.charge.manage') || permissions.has('bill.write'));
+  const canOpenFinance =
+    modules.has('BILLING') &&
+    (permissions.has('finance.cashier') || permissions.has('bill.read') || permissions.has('payment.collect'));
 
   const [doctors, setDoctors] = useState<DoctorRef[]>([]);
   const [departments, setDepartments] = useState<DepartmentRef[]>([]);
@@ -141,7 +144,9 @@ function ReceptionInner() {
       }
 
       setLastToken({ token: enc.tokenNumber ?? 0, name: selected.fullName, patientId: selected.id });
-      toast.success(`Checked in - token #${enc.tokenNumber}.${chargePosted ? ' Consultation charge is pending billing.' : ''}`);
+      toast.success(
+        `Checked in - token #${enc.tokenNumber}.${chargePosted ? ' Consultation charge is pending billing.' : ''}`,
+      );
       setSelected(null);
       setComplaint('');
       setProviderId('');
@@ -166,10 +171,14 @@ function ReceptionInner() {
               <Button icon={ListChecks}>Live OPD Queue</Button>
             </Link>
             <Link href="/opd/appointments?new=1">
-              <Button variant="ghost" icon={CalendarPlus}>Book Appointment</Button>
+              <Button variant="ghost" icon={CalendarPlus}>
+                Book Appointment
+              </Button>
             </Link>
             <Link href="/patients?new=1">
-              <Button variant="ghost" icon={UserPlus}>Register Patient</Button>
+              <Button variant="ghost" icon={UserPlus}>
+                Register Patient
+              </Button>
             </Link>
           </div>
         }
@@ -179,9 +188,24 @@ function ReceptionInner() {
 
       <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Waiting" value={queue ? waiting.length : '...'} hint="Checked-in patients" icon={Ticket} />
-        <StatCard label="In consult" value={queue ? inConsult.length : '...'} hint="Doctor has started" icon={ListChecks} />
-        <StatCard label="Appointments" value={appts ? openAppointments.length : '...'} hint={`${overdueAppointments.length} overdue`} icon={CalendarClock} />
-        <StatCard label="Billing handoff" value={canOpenFinance ? 'Ready' : 'Limited'} hint="Finance access for reception" icon={WalletCards} />
+        <StatCard
+          label="In consult"
+          value={queue ? inConsult.length : '...'}
+          hint="Doctor has started"
+          icon={ListChecks}
+        />
+        <StatCard
+          label="Appointments"
+          value={appts ? openAppointments.length : '...'}
+          hint={`${overdueAppointments.length} overdue`}
+          icon={CalendarClock}
+        />
+        <StatCard
+          label="Billing handoff"
+          value={canOpenFinance ? 'Ready' : 'Limited'}
+          hint="Finance access for reception"
+          icon={WalletCards}
+        />
       </div>
 
       <Section
@@ -236,7 +260,9 @@ function ReceptionInner() {
                     onChange={(e) => setTerm(e.target.value)}
                   />
                 </div>
-                <Button type="submit" variant="ghost">Search</Button>
+                <Button type="submit" variant="ghost">
+                  Search
+                </Button>
               </form>
 
               {results && results.length === 0 && (
@@ -246,7 +272,9 @@ function ReceptionInner() {
                     hint="Register the patient first, then return here for OPD check-in."
                     action={
                       <Link href="/patients?new=1">
-                        <Button size="sm" icon={UserPlus}>Register Patient</Button>
+                        <Button size="sm" icon={UserPlus}>
+                          Register Patient
+                        </Button>
                       </Link>
                     }
                   />
@@ -271,10 +299,15 @@ function ReceptionInner() {
                         </span>
                       </span>
                       <div className="flex items-center gap-2">
-                        <Link href={`/patients/${p.id}`} className="text-label-sm font-medium text-primary hover:underline">
+                        <Link
+                          href={`/patients/${p.id}`}
+                          className="text-label-sm font-medium text-primary hover:underline"
+                        >
                           Profile
                         </Link>
-                        {selected?.id === p.id && <span className="text-label-sm font-medium text-primary">Selected</span>}
+                        {selected?.id === p.id && (
+                          <span className="text-label-sm font-medium text-primary">Selected</span>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -301,7 +334,9 @@ function ReceptionInner() {
                       <Select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}>
                         <option value="">Any department</option>
                         {departments.map((d) => (
-                          <option key={d.id} value={d.id}>{d.name}</option>
+                          <option key={d.id} value={d.id}>
+                            {d.name}
+                          </option>
                         ))}
                       </Select>
                     </FormField>
@@ -310,7 +345,8 @@ function ReceptionInner() {
                         <option value="">Unassigned</option>
                         {doctors.map((d) => (
                           <option key={d.id} value={d.id}>
-                            {d.fullName}{d.speciality ? ` (${d.speciality})` : ''}
+                            {d.fullName}
+                            {d.speciality ? ` (${d.speciality})` : ''}
                           </option>
                         ))}
                       </Select>
@@ -358,8 +394,12 @@ function ReceptionInner() {
                   )}
 
                   <div className="flex flex-wrap justify-end gap-2">
-                    <Button variant="ghost" onClick={() => setSelected(null)} disabled={busy}>Clear</Button>
-                    <Button icon={Ticket} onClick={checkIn} loading={busy}>Check in &amp; generate token</Button>
+                    <Button variant="ghost" onClick={() => setSelected(null)} disabled={busy}>
+                      Clear
+                    </Button>
+                    <Button icon={Ticket} onClick={checkIn} loading={busy}>
+                      Check in &amp; generate token
+                    </Button>
                   </div>
                 </>
               )}
@@ -369,14 +409,20 @@ function ReceptionInner() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <div className="text-label-sm uppercase">Token issued</div>
-                      <div className="text-headline-md">#{lastToken.token} - {lastToken.name}</div>
+                      <div className="text-headline-md">
+                        #{lastToken.token} - {lastToken.name}
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Link href="/opd">
-                        <Button size="sm" icon={ListChecks}>Open Queue</Button>
+                        <Button size="sm" icon={ListChecks}>
+                          Open Queue
+                        </Button>
                       </Link>
                       <Link href={`/finance/pending-charges?patientId=${lastToken.patientId}`}>
-                        <Button size="sm" variant="ghost" icon={CreditCard}>Billing</Button>
+                        <Button size="sm" variant="ghost" icon={CreditCard}>
+                          Billing
+                        </Button>
                       </Link>
                     </div>
                   </div>
@@ -425,7 +471,12 @@ function QuickAction({
       )}
     >
       <div className="flex items-start gap-3">
-        <span className={cx('grid h-9 w-9 flex-shrink-0 place-items-center rounded-md', primary ? 'bg-primary text-white' : 'bg-canvas text-primary')}>
+        <span
+          className={cx(
+            'grid h-9 w-9 flex-shrink-0 place-items-center rounded-md',
+            primary ? 'bg-primary text-white' : 'bg-canvas text-primary',
+          )}
+        >
           <Icon className="h-4 w-4" />
         </span>
         <span className="min-w-0">
@@ -443,7 +494,10 @@ function QueueSnapshot({ queue }: { queue: Encounter[] | null }) {
     <Section
       title="Live OPD queue"
       action={
-        <Link href="/opd" className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
+        <Link
+          href="/opd"
+          className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline"
+        >
           Open <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       }
@@ -461,15 +515,24 @@ function QueueSnapshot({ queue }: { queue: Encounter[] | null }) {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded bg-canvas px-1.5 py-0.5 font-mono text-label-sm text-ink">#{e.tokenNumber ?? '-'}</span>
+                    <span className="rounded bg-canvas px-1.5 py-0.5 font-mono text-label-sm text-ink">
+                      #{e.tokenNumber ?? '-'}
+                    </span>
                     <StatusChip status={e.status} />
                   </div>
-                  <Link href={`/patients/${e.patientId}`} className="mt-1 block truncate font-medium text-ink hover:text-primary">
+                  <Link
+                    href={`/patients/${e.patientId}`}
+                    className="mt-1 block truncate font-medium text-ink hover:text-primary"
+                  >
                     {e.patient?.fullName ?? 'Patient'}
                   </Link>
-                  <div className="text-label-sm text-ink-soft">{e.chiefComplaint || 'Consultation'} - {formatDateTime(e.createdAt)}</div>
+                  <div className="text-label-sm text-ink-soft">
+                    {e.chiefComplaint || 'Consultation'} - {formatDateTime(e.createdAt)}
+                  </div>
                 </div>
-                <Link href="/opd" className="text-label-sm font-medium text-primary hover:underline">Queue</Link>
+                <Link href="/opd" className="text-label-sm font-medium text-primary hover:underline">
+                  Queue
+                </Link>
               </div>
             </li>
           ))}
@@ -485,7 +548,10 @@ function AppointmentsToday({ appointments }: { appointments: Appointment[] | nul
     <Section
       title="Today's appointments"
       action={
-        <Link href="/opd/appointments" className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
+        <Link
+          href="/opd/appointments"
+          className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline"
+        >
           Manage <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       }
@@ -494,7 +560,16 @@ function AppointmentsToday({ appointments }: { appointments: Appointment[] | nul
         <Spinner label="Loading appointments..." />
       ) : open.length === 0 ? (
         <div className="px-5 py-8">
-          <EmptyState title="Nothing scheduled now" action={<Link href="/opd/appointments?new=1"><Button size="sm" icon={CalendarPlus}>Book</Button></Link>} />
+          <EmptyState
+            title="Nothing scheduled now"
+            action={
+              <Link href="/opd/appointments?new=1">
+                <Button size="sm" icon={CalendarPlus}>
+                  Book
+                </Button>
+              </Link>
+            }
+          />
         </div>
       ) : (
         <ul className="divide-y divide-line">
@@ -504,7 +579,8 @@ function AppointmentsToday({ appointments }: { appointments: Appointment[] | nul
                 <div className="min-w-0">
                   <div className="font-medium text-ink">{a.patient?.fullName ?? 'Patient'}</div>
                   <div className="text-label-sm text-ink-soft">
-                    {formatDateTime(a.scheduledAt)}{a.reason ? ` - ${a.reason}` : ''}
+                    {formatDateTime(a.scheduledAt)}
+                    {a.reason ? ` - ${a.reason}` : ''}
                   </div>
                 </div>
                 <StatusChip status={a.status} />

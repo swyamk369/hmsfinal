@@ -24,8 +24,15 @@ export default function HospitalsPage() {
         body="Link a hospital where you already have records, or book a new appointment to create one."
         action={
           <div className="flex gap-2">
-            <button onClick={openLinkModal} className="rounded-lg border border-line px-4 py-2.5 font-medium text-ink hover:bg-canvas">Link a record</button>
-            <Link href="/doctors" className="rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90">Find a doctor</Link>
+            <button
+              onClick={openLinkModal}
+              className="rounded-lg border border-line px-4 py-2.5 font-medium text-ink hover:bg-canvas"
+            >
+              Link a record
+            </button>
+            <Link href="/doctors" className="rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90">
+              Find a doctor
+            </Link>
           </div>
         }
       />
@@ -39,7 +46,10 @@ export default function HospitalsPage() {
         {hospitals.map((h) => {
           const active = h.tenantId === tenantId;
           return (
-            <div key={h.tenantId} className={`rounded-xl border bg-surface p-5 ${active ? 'border-primary ring-1 ring-primary-100' : 'border-line'}`}>
+            <div
+              key={h.tenantId}
+              className={`rounded-xl border bg-surface p-5 ${active ? 'border-primary ring-1 ring-primary-100' : 'border-line'}`}
+            >
               <div className="flex items-start gap-3">
                 <Avatar name={h.hospitalName} url={h.logoUrl} shape="square" />
                 <div className="min-w-0 flex-1">

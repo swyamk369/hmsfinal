@@ -189,10 +189,15 @@ function BillDetail({ id }: { id: string }) {
                       {bill.claims.map((claim) => (
                         <tr key={claim.id}>
                           <td className="px-5 py-2.5">
-                            <Link href={`/insurance/claims/${claim.id}`} className="font-medium text-primary hover:underline">
+                            <Link
+                              href={`/insurance/claims/${claim.id}`}
+                              className="font-medium text-primary hover:underline"
+                            >
                               {claim.patientPolicy?.provider?.name ?? 'Insurance'}
                             </Link>
-                            <div className="text-label-sm text-ink-soft">{claim.patientPolicy?.policyNumber ?? '—'}</div>
+                            <div className="text-label-sm text-ink-soft">
+                              {claim.patientPolicy?.policyNumber ?? '—'}
+                            </div>
                           </td>
                           <td className="px-5 py-2.5 text-right text-ink-muted">{money(claim.claimAmount)}</td>
                           <td className="px-5 py-2.5 text-right text-ink-muted">

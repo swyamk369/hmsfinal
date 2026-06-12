@@ -1,8 +1,15 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { platformDb, forTenant } from '@hms/db';
 import { FirebaseService } from '../common/firebase.service';
 import { AuditService } from '../common/audit.service';
 import { PatientNotifyService } from './patient-notify.service';
+import { registerPatientAuthUser } from './patient-auth';
 import type {
   SaveProviderDto,
   SaveHospitalDto,
@@ -32,17 +39,15 @@ export class PatientFeaturesService {
     if (!authHeader?.startsWith('Bearer ')) throw new UnauthorizedException('Please sign in to continue.');
     const v = await this.firebase.verifyIdToken(authHeader.slice(7));
     if (!v?.uid) throw new UnauthorizedException('Your session has expired. Please sign in again.');
-    await platformDb.patientAuthUser.upsert({
-      where: { uid: v.uid },
-      create: { uid: v.uid, email: v.email ?? null, status: 'ACTIVE', lastLoginAt: new Date() },
-      update: { lastLoginAt: new Date(), email: v.email ?? undefined },
-    });
+    await registerPatientAuthUser(v);
     return v;
   }
 
   private async assertAccess(uid: string, tenantId: string): Promise<string> {
     if (!tenantId) throw new ForbiddenException('Select a hospital to continue.');
-    const access = await platformDb.patientPortalAccess.findFirst({ where: { uid, tenantId, accessStatus: 'ACTIVE' as any } });
+    const access = await platformDb.patientPortalAccess.findFirst({
+      where: { uid, tenantId, accessStatus: 'ACTIVE' as any },
+    });
     if (!access) throw new ForbiddenException("You don't have access to this hospital's records.");
     return access.patientId;
   }
@@ -58,10 +63,21 @@ export class PatientFeaturesService {
     return platformDb.patientSavedProvider.upsert({
       where: { uid_tenantId_doctorId: { uid, tenantId: dto.tenantId, doctorId: dto.doctorId } },
       create: {
-        uid, tenantId: dto.tenantId, doctorId: dto.doctorId, doctorSlug: dto.doctorSlug ?? null,
-        doctorName: dto.doctorName, specialty: dto.specialty ?? null, hospitalName: dto.hospitalName, photoUrl: dto.photoUrl ?? null,
+        uid,
+        tenantId: dto.tenantId,
+        doctorId: dto.doctorId,
+        doctorSlug: dto.doctorSlug ?? null,
+        doctorName: dto.doctorName,
+        specialty: dto.specialty ?? null,
+        hospitalName: dto.hospitalName,
+        photoUrl: dto.photoUrl ?? null,
       },
-      update: { doctorName: dto.doctorName, specialty: dto.specialty ?? null, hospitalName: dto.hospitalName, photoUrl: dto.photoUrl ?? null },
+      update: {
+        doctorName: dto.doctorName,
+        specialty: dto.specialty ?? null,
+        hospitalName: dto.hospitalName,
+        photoUrl: dto.photoUrl ?? null,
+      },
     });
   }
 
@@ -83,7 +99,14 @@ export class PatientFeaturesService {
     const { uid } = await this.authUid(auth);
     return platformDb.patientSavedHospital.upsert({
       where: { uid_tenantId: { uid, tenantId: dto.tenantId } },
-      create: { uid, tenantId: dto.tenantId, hospitalSlug: dto.hospitalSlug ?? null, hospitalName: dto.hospitalName, city: dto.city ?? null, logoUrl: dto.logoUrl ?? null },
+      create: {
+        uid,
+        tenantId: dto.tenantId,
+        hospitalSlug: dto.hospitalSlug ?? null,
+        hospitalName: dto.hospitalName,
+        city: dto.city ?? null,
+        logoUrl: dto.logoUrl ?? null,
+      },
       update: { hospitalName: dto.hospitalName, city: dto.city ?? null, logoUrl: dto.logoUrl ?? null },
     });
   }
@@ -105,7 +128,14 @@ export class PatientFeaturesService {
   async addFamily(auth: string | undefined, dto: FamilyMemberDto) {
     const { uid } = await this.authUid(auth);
     return platformDb.patientFamilyMember.create({
-      data: { uid, fullName: dto.fullName, relationship: dto.relationship, dob: dto.dob ? new Date(dto.dob) : null, sex: dto.sex ?? null, mobile: dto.mobile ?? null },
+      data: {
+        uid,
+        fullName: dto.fullName,
+        relationship: dto.relationship,
+        dob: dto.dob ? new Date(dto.dob) : null,
+        sex: dto.sex ?? null,
+        mobile: dto.mobile ?? null,
+      },
     });
   }
 
@@ -115,7 +145,13 @@ export class PatientFeaturesService {
     if (!row) throw new NotFoundException('Family member not found');
     return platformDb.patientFamilyMember.update({
       where: { id },
-      data: { fullName: dto.fullName, relationship: dto.relationship, dob: dto.dob ? new Date(dto.dob) : null, sex: dto.sex ?? null, mobile: dto.mobile ?? null },
+      data: {
+        fullName: dto.fullName,
+        relationship: dto.relationship,
+        dob: dto.dob ? new Date(dto.dob) : null,
+        sex: dto.sex ?? null,
+        mobile: dto.mobile ?? null,
+      },
     });
   }
 
@@ -130,7 +166,11 @@ export class PatientFeaturesService {
   // ── Notifications ───────────────────────────────────────────
   async listNotifications(auth?: string) {
     const { uid } = await this.authUid(auth);
-    const items = await platformDb.patientNotification.findMany({ where: { uid }, orderBy: { createdAt: 'desc' }, take: 100 });
+    const items = await platformDb.patientNotification.findMany({
+      where: { uid },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
     const unread = items.filter((n) => !n.readAt).length;
     return { items, unread };
   }
@@ -154,7 +194,12 @@ export class PatientFeaturesService {
     const { uid } = await this.authUid(auth);
     const u = await platformDb.patientAuthUser.findUnique({ where: { uid } });
     return {
-      profile: { displayName: u?.displayName ?? null, email: u?.email ?? null, mobile: u?.mobile ?? null, profilePhotoUrl: u?.profilePhotoUrl ?? null },
+      profile: {
+        displayName: u?.displayName ?? null,
+        email: u?.email ?? null,
+        mobile: u?.mobile ?? null,
+        profilePhotoUrl: u?.profilePhotoUrl ?? null,
+      },
       notifications: {
         notifyBookingUpdates: u?.notifyBookingUpdates ?? true,
         notifyDocuments: u?.notifyDocuments ?? true,
@@ -184,7 +229,12 @@ export class PatientFeaturesService {
         notifyByEmail: dto.notifyByEmail,
       },
     });
-    return { notifyBookingUpdates: u.notifyBookingUpdates, notifyDocuments: u.notifyDocuments, notifyBilling: u.notifyBilling, notifyByEmail: u.notifyByEmail };
+    return {
+      notifyBookingUpdates: u.notifyBookingUpdates,
+      notifyDocuments: u.notifyDocuments,
+      notifyBilling: u.notifyBilling,
+      notifyByEmail: u.notifyByEmail,
+    };
   }
 
   // ── Prescription refill requests (tenant-scoped, RLS) ───────
@@ -192,7 +242,11 @@ export class PatientFeaturesService {
     const { uid } = await this.authUid(auth);
     const patientId = await this.assertAccess(uid, tenantId);
     const db = forTenant(tenantId);
-    return db.prescriptionRefillRequest.findMany({ where: { patientId, uid }, orderBy: { createdAt: 'desc' }, take: 50 });
+    return db.prescriptionRefillRequest.findMany({
+      where: { patientId, uid },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
   }
 
   async createRefill(auth: string | undefined, dto: CreateRefillDto) {
@@ -207,15 +261,39 @@ export class PatientFeaturesService {
     }
     // Avoid duplicate open requests for the same prescription.
     const open = await db.prescriptionRefillRequest.findFirst({
-      where: { patientId, prescriptionId: dto.prescriptionId ?? null, status: { in: ['REQUESTED', 'APPROVED'] as any } },
+      where: {
+        patientId,
+        prescriptionId: dto.prescriptionId ?? null,
+        status: { in: ['REQUESTED', 'APPROVED'] as any },
+      },
     });
     if (open) throw new BadRequestException('You already have an open refill request for this prescription.');
 
     const row = await db.prescriptionRefillRequest.create({
-      data: { tenantId: dto.tenantId, patientId, prescriptionId: dto.prescriptionId ?? null, uid, note: dto.note?.trim() || null, status: 'REQUESTED' },
+      data: {
+        tenantId: dto.tenantId,
+        patientId,
+        prescriptionId: dto.prescriptionId ?? null,
+        uid,
+        note: dto.note?.trim() || null,
+        status: 'REQUESTED',
+      },
     });
-    await this.audit.log(db, { tenantId: dto.tenantId, actorId: null, action: 'prescription_refill.request', entity: 'prescription_refill_request', entityId: row.id, metadata: { uid, prescriptionId: dto.prescriptionId ?? null } });
-    await this.notify.notifyUid(uid, { category: 'REFILL', title: 'Refill request received', body: 'Your hospital has received your refill request and will review it.', actionUrl: '/patient/prescriptions', tenantId: dto.tenantId });
+    await this.audit.log(db, {
+      tenantId: dto.tenantId,
+      actorId: null,
+      action: 'prescription_refill.request',
+      entity: 'prescription_refill_request',
+      entityId: row.id,
+      metadata: { uid, prescriptionId: dto.prescriptionId ?? null },
+    });
+    await this.notify.notifyUid(uid, {
+      category: 'REFILL',
+      title: 'Refill request received',
+      body: 'Your hospital has received your refill request and will review it.',
+      actionUrl: '/patient/prescriptions',
+      tenantId: dto.tenantId,
+    });
     return row;
   }
 
@@ -236,7 +314,15 @@ export class PatientFeaturesService {
       status: o.status,
       tests: o.items.map((i: any) => ({
         testName: i.testName,
-        results: i.results.map((r: any) => ({ testName: r.testName, value: r.value, unit: r.unit, referenceRange: r.referenceRange, abnormalFlag: r.abnormalFlag, notes: r.notes, recordedAt: r.recordedAt })),
+        results: i.results.map((r: any) => ({
+          testName: r.testName,
+          value: r.value,
+          unit: r.unit,
+          referenceRange: r.referenceRange,
+          abnormalFlag: r.abnormalFlag,
+          notes: r.notes,
+          recordedAt: r.recordedAt,
+        })),
       })),
     };
   }

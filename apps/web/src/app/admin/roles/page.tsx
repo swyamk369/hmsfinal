@@ -86,7 +86,7 @@ function RolesInner() {
     setDraftPermissions([...selected.permissions].sort());
     setReason('');
     setSuccess(null);
-  }, [selected?.id, selectedPermissionKey]);
+  }, [selected, selectedPermissionKey]);
 
   // Group permissions by domain, preserving spec order.
   const groups = useMemo(() => {
@@ -208,7 +208,14 @@ function RolesInner() {
                 title={`${selected.name} access matrix`}
                 action={
                   <div className="flex flex-wrap items-center gap-2">
-                    <Button type="button" size="sm" variant="ghost" icon={RotateCcw} onClick={resetDraft} disabled={!changed || saving}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      icon={RotateCcw}
+                      onClick={resetDraft}
+                      disabled={!changed || saving}
+                    >
                       Revert
                     </Button>
                     <Button
@@ -247,7 +254,8 @@ function RolesInner() {
                       <div className="divide-y divide-line">
                         {perms.map((p) => {
                           const on = held.has(p.key);
-                          const locked = selected.code === 'HOSPITAL_ADMIN' && (p.key === 'role.read' || p.key === 'role.write');
+                          const locked =
+                            selected.code === 'HOSPITAL_ADMIN' && (p.key === 'role.read' || p.key === 'role.write');
                           return (
                             <div key={p.key} className="flex items-center justify-between gap-3 px-4 py-2.5">
                               <div className="min-w-0">

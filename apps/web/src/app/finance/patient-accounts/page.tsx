@@ -77,7 +77,10 @@ function PatientAccountsIndexInner() {
                     <td className="px-4 py-2.5 font-mono text-[13px] text-ink-muted">{p.mrn}</td>
                     <td className="px-4 py-2.5 text-ink-muted">{p.phone ?? '—'}</td>
                     <td className="px-4 py-2.5 text-right">
-                      <Link href={`/finance/patient-accounts/${p.id}`} className="font-medium text-primary hover:underline">
+                      <Link
+                        href={`/finance/patient-accounts/${p.id}`}
+                        className="font-medium text-primary hover:underline"
+                      >
                         Open account
                       </Link>
                     </td>

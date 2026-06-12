@@ -77,7 +77,11 @@ export default function NotificationBell() {
               <div className="px-4 py-6 text-body-sm text-danger">{err}</div>
             ) : rows.length === 0 ? (
               <div className="p-4">
-                <EmptyState title="No unread notifications" hint="Workflow alerts will appear here as staff actions happen." icon={Bell} />
+                <EmptyState
+                  title="No unread notifications"
+                  hint="Workflow alerts will appear here as staff actions happen."
+                  icon={Bell}
+                />
               </div>
             ) : (
               <div className="max-h-96 divide-y divide-line overflow-y-auto">
@@ -101,10 +105,18 @@ export default function NotificationBell() {
               </div>
             )}
             <div className="flex items-center justify-between border-t border-line px-4 py-3">
-              <Link href="/settings/notifications" onClick={() => setOpen(false)} className="text-body-sm text-ink-soft hover:text-primary">
+              <Link
+                href="/settings/notifications"
+                onClick={() => setOpen(false)}
+                className="text-body-sm text-ink-soft hover:text-primary"
+              >
                 Preferences
               </Link>
-              <Link href="/notifications" onClick={() => setOpen(false)} className="inline-flex items-center gap-1 text-body-sm font-medium text-primary">
+              <Link
+                href="/notifications"
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center gap-1 text-body-sm font-medium text-primary"
+              >
                 View all <ExternalLink className="h-3.5 w-3.5" />
               </Link>
             </div>

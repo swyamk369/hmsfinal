@@ -9,7 +9,15 @@ import { FirebaseService } from '../src/common/firebase.service';
 import { AuditService } from '../src/common/audit.service';
 
 function model() {
-  return { findFirst: jest.fn().mockResolvedValue(null), findUnique: jest.fn().mockResolvedValue(null), findMany: jest.fn().mockResolvedValue([]), upsert: jest.fn().mockResolvedValue({}), update: jest.fn().mockResolvedValue({}), create: jest.fn().mockResolvedValue({}), count: jest.fn().mockResolvedValue(0) };
+  return {
+    findFirst: jest.fn().mockResolvedValue(null),
+    findUnique: jest.fn().mockResolvedValue(null),
+    findMany: jest.fn().mockResolvedValue([]),
+    upsert: jest.fn().mockResolvedValue({}),
+    update: jest.fn().mockResolvedValue({}),
+    create: jest.fn().mockResolvedValue({}),
+    count: jest.fn().mockResolvedValue(0),
+  };
 }
 
 const pdb = platformDb as any;
@@ -19,8 +27,22 @@ let svc: PatientPortalService;
 const TOKEN = 'Bearer valid-token';
 
 beforeEach(() => {
-  Object.assign(pdb, { patientAuthUser: model(), patientPortalAccess: model(), publicHospitalProfile: model(), patientPortalSettings: model() });
-  tdb = { patient: model(), appointment: model(), bill: model(), patientDocument: model(), labOrder: model(), provider: model(), prescription: model() };
+  Object.assign(pdb, {
+    user: model(),
+    patientAuthUser: model(),
+    patientPortalAccess: model(),
+    publicHospitalProfile: model(),
+    patientPortalSettings: model(),
+  });
+  tdb = {
+    patient: model(),
+    appointment: model(),
+    bill: model(),
+    patientDocument: model(),
+    labOrder: model(),
+    provider: model(),
+    prescription: model(),
+  };
   firebase = { verifyIdToken: jest.fn().mockResolvedValue({ uid: 'u1', email: 'p@x.com' }) };
   audit = { log: jest.fn().mockResolvedValue(undefined) };
   svc = new PatientPortalService(firebase as unknown as FirebaseService, audit as unknown as AuditService);
@@ -39,7 +61,21 @@ describe('Patient portal — auth', () => {
   it('me() verifies the token and registers/refreshes the PatientAuthUser', async () => {
     pdb.patientAuthUser.findUnique.mockResolvedValue({ uid: 'u1', email: 'p@x.com', displayName: 'Priya' });
     const out = await svc.me(TOKEN);
-    expect(pdb.patientAuthUser.upsert).toHaveBeenCalledWith(expect.objectContaining({ where: { uid: 'u1' } }));
+    expect(pdb.patientAuthUser.update).toHaveBeenCalledWith(expect.objectContaining({ where: { uid: 'u1' } }));
+    expect(out.uid).toBe('u1');
+  });
+
+  it('does not crash when the Firebase email belongs to another patient UID', async () => {
+    pdb.patientAuthUser.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ uid: 'other-uid', email: 'p@x.com' })
+      .mockResolvedValueOnce({ uid: 'u1', email: null, displayName: null });
+
+    const out = await svc.me(TOKEN);
+
+    expect(pdb.patientAuthUser.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ uid: 'u1', email: null }) }),
+    );
     expect(out.uid).toBe('u1');
   });
 });
@@ -58,10 +94,16 @@ describe('Patient portal — tenant isolation', () => {
   });
 
   it('linked-hospitals lists only ACTIVE access links', async () => {
-    pdb.patientPortalAccess.findMany.mockResolvedValue([{ tenantId: 't1', patientId: 'p1', hospitalDisplayName: 'Demo' }]);
-    pdb.publicHospitalProfile.findMany.mockResolvedValue([{ tenantId: 't1', hospitalDisplayName: 'Demo Hospital', city: 'Pune' }]);
+    pdb.patientPortalAccess.findMany.mockResolvedValue([
+      { tenantId: 't1', patientId: 'p1', hospitalDisplayName: 'Demo' },
+    ]);
+    pdb.publicHospitalProfile.findMany.mockResolvedValue([
+      { tenantId: 't1', hospitalDisplayName: 'Demo Hospital', city: 'Pune' },
+    ]);
     const out = await svc.linkedHospitals(TOKEN);
-    expect(pdb.patientPortalAccess.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { uid: 'u1', accessStatus: 'ACTIVE' } }));
+    expect(pdb.patientPortalAccess.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { uid: 'u1', accessStatus: 'ACTIVE' } }),
+    );
     expect(out[0]).toMatchObject({ tenantId: 't1', hospitalName: 'Demo Hospital' });
   });
 });
@@ -69,9 +111,17 @@ describe('Patient portal — tenant isolation', () => {
 describe('Patient portal — document view & request access (Phase 22.6)', () => {
   it('marking a document viewed audits patient.document_view', async () => {
     pdb.patientPortalAccess.findFirst.mockResolvedValue({ patientId: 'p1', tenantId: 't1', accessStatus: 'ACTIVE' });
-    tdb.patientDocument.findFirst.mockResolvedValue({ id: 'doc1', patientId: 'p1', visibleToPatient: true, patientViewedAt: null });
+    tdb.patientDocument.findFirst.mockResolvedValue({
+      id: 'doc1',
+      patientId: 'p1',
+      visibleToPatient: true,
+      patientViewedAt: null,
+    });
     await svc.markDocumentViewed(TOKEN, 't1', 'doc1');
-    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'patient.document_view' }));
+    expect(audit.log).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ action: 'patient.document_view' }),
+    );
   });
 
   it('request-access returns no_match when no patient matches', async () => {
@@ -87,7 +137,12 @@ describe('Patient portal — document view & request access (Phase 22.6)', () =>
     pdb.patientPortalAccess.findFirst.mockResolvedValue(null);
     const out = await svc.requestAccess(TOKEN, { tenantId: 't1', phone: '+9112345' });
     expect(out.status).toBe('requested');
-    expect(pdb.patientPortalAccess.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ accessStatus: 'PENDING' }) }));
-    expect(audit.log).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ action: 'patient_portal_access.requested' }));
+    expect(pdb.patientPortalAccess.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ accessStatus: 'PENDING' }) }),
+    );
+    expect(audit.log).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ action: 'patient_portal_access.requested' }),
+    );
   });
 });

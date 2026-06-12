@@ -43,8 +43,16 @@ function ClinicalReportPageInner() {
     <>
       <PageHeader
         title="Clinical Report"
-        subtitle={data ? `Consultations, diagnoses, vitals, prescriptions, lab flags, and IPD rounds · updated ${formatDateTime(data.generatedAt)}` : 'Consultations, diagnoses, vitals, prescriptions, lab flags, and IPD rounds'}
-        action={<Button variant="ghost" onClick={load}>Refresh</Button>}
+        subtitle={
+          data
+            ? `Consultations, diagnoses, vitals, prescriptions, lab flags, and IPD rounds · updated ${formatDateTime(data.generatedAt)}`
+            : 'Consultations, diagnoses, vitals, prescriptions, lab flags, and IPD rounds'
+        }
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
       />
 
       <div className="space-y-6">
@@ -75,7 +83,12 @@ function ClinicalReportPageInner() {
                 { label: 'Vitals recorded', value: data.totals.vitalsRecorded ?? 0, icon: HeartPulse },
                 { label: 'Prescriptions', value: data.totals.prescriptionsFinalized ?? 0, icon: Pill },
                 { label: 'Abnormal labs', value: data.totals.labAbnormalResults ?? 0, icon: FlaskConical },
-                { label: 'IPD rounds', value: data.totals.ipdRounds ?? 0, hint: `${data.totals.dischargeSummaries ?? 0} discharge summaries`, icon: ClipboardPlus },
+                {
+                  label: 'IPD rounds',
+                  value: data.totals.ipdRounds ?? 0,
+                  hint: `${data.totals.dischargeSummaries ?? 0} discharge summaries`,
+                  icon: ClipboardPlus,
+                },
               ]}
             />
 
@@ -105,7 +118,11 @@ function ClinicalReportPageInner() {
 
 export default function ClinicalReportPage() {
   return (
-    <Protected requireModule="REPORTS" allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER', 'DOCTOR', 'LAB_TECH']} requirePermission={['reports.read', 'reports.clinical.read', 'encounter.read', 'lab.read']}>
+    <Protected
+      requireModule="REPORTS"
+      allowedRoles={['HOSPITAL_ADMIN', 'HOSPITAL_MANAGER', 'DOCTOR', 'LAB_TECH']}
+      requirePermission={['reports.read', 'reports.clinical.read', 'encounter.read', 'lab.read']}
+    >
       <ClinicalReportPageInner />
     </Protected>
   );

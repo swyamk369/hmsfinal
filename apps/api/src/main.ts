@@ -17,7 +17,7 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: (process.env.CORS_ORIGIN ?? 'http://localhost:3001').split(',').map((s) => s.trim()),
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'X-HMS-Path'],
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new GlobalHttpExceptionFilter());

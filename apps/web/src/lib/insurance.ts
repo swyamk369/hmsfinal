@@ -121,8 +121,7 @@ export const insuranceApi = {
   providers: (t: string) => apiGet<InsuranceProvider[]>('/insurance/providers', t),
   policies: (t: string, params: Record<string, string> = {}) =>
     apiGet<PatientInsurancePolicy[]>(`/insurance/policies${qs(params)}`, t),
-  createPolicy: (t: string, body: CreatePolicyInput) =>
-    apiPost<PatientInsurancePolicy>('/insurance/policies', body, t),
+  createPolicy: (t: string, body: CreatePolicyInput) => apiPost<PatientInsurancePolicy>('/insurance/policies', body, t),
   updatePolicy: (t: string, id: string, body: Partial<CreatePolicyInput> & { active?: boolean }) =>
     apiPatch<PatientInsurancePolicy>(`/insurance/policies/${id}`, body, t),
   bills: (t: string, params: Record<string, string> = {}) => apiGet<Bill[]>(`/insurance/bills${qs(params)}`, t),

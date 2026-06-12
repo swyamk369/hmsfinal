@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShieldAlert, CheckCircle2, MessageSquare, Clock, ArrowRight } from 'lucide-react';
 import Protected from '@/components/Protected';
+import { formatDateTime } from '@/lib/format';
 import {
   Button,
   Card,
@@ -19,7 +20,6 @@ import {
   ErrorState,
 } from '@/components/ui';
 import { supportApi, type SupportTicket } from '@/lib/support-api';
-import { formatDistanceToNow } from 'date-fns';
 
 function SupportDashboard() {
   const router = useRouter();
@@ -45,7 +45,7 @@ function SupportDashboard() {
     if (!tickets) return [];
     return tickets.filter((t) => {
       if (statusFilter !== 'ALL' && t.status !== statusFilter) return false;
-      if (q && !`${t.subject} ${t.description} ${t.tenantId}`.toLowerCase().includes(q.toLowerCase())) return false;
+      if (q && !`${t.title} ${t.description} ${t.tenantId ?? ''}`.toLowerCase().includes(q.toLowerCase())) return false;
       return true;
     });
   }, [tickets, q, statusFilter]);
@@ -121,21 +121,27 @@ function SupportDashboard() {
                   onClick={() => router.push(`/platform/support/${t.id}`)}
                 >
                   <td className="px-4 py-3">
-                    <div className="font-medium text-ink truncate max-w-xs">{t.subject}</div>
+                    <div className="font-medium text-ink truncate max-w-xs">{t.title}</div>
                     <div className="font-mono text-label-sm text-ink-soft">{t.id.slice(0, 8)}</div>
                   </td>
                   <td className="px-4 py-3 font-mono text-label-sm text-ink-soft">{t.tenantId || 'Global'}</td>
                   <td className="px-4 py-3">
-                    <Badge variant={t.priority === 'URGENT' || t.priority === 'HIGH' ? 'danger' : 'neutral'}>
+                    <Badge
+                      tone={
+                        t.priority === 'URGENT' || t.priority === 'HIGH'
+                          ? 'danger'
+                          : t.priority === 'MEDIUM'
+                            ? 'warning'
+                            : 'slate'
+                      }
+                    >
                       {t.priority}
                     </Badge>
                   </td>
                   <td className="px-4 py-3">
                     <StatusChip status={t.status} />
                   </td>
-                  <td className="px-4 py-3 text-right text-ink-soft">
-                    {formatDistanceToNow(new Date(t.createdAt), { addSuffix: true })}
-                  </td>
+                  <td className="px-4 py-3 text-right text-ink-soft">{formatDateTime(t.createdAt)}</td>
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/platform/support/${t.id}`}

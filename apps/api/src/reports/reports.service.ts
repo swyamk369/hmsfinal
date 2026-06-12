@@ -68,7 +68,10 @@ export class ReportsService {
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, count]) => ({ date, count }));
   }
 
-  private sum(rows: { amount?: number | null; netAmount?: number | null; total?: number | null }[], key: 'amount' | 'netAmount' | 'total') {
+  private sum(
+    rows: { amount?: number | null; netAmount?: number | null; total?: number | null }[],
+    key: 'amount' | 'netAmount' | 'total',
+  ) {
     return rows.reduce((acc, row) => acc + (row[key] ?? 0), 0);
   }
 
@@ -80,30 +83,39 @@ export class ReportsService {
     const setup = this.can(ctx, PERMISSIONS.SETTINGS_READ, PERMISSIONS.STAFF_READ)
       ? await this.setupSummary(s.db)
       : null;
-    const opd = this.hasModule(ctx, MODULES.OPD) && this.can(ctx, PERMISSIONS.QUEUE_READ, PERMISSIONS.APPOINTMENT_READ)
-      ? await this.opdToday(s.db, start, end, ctx.providerId)
-      : null;
-    const billing = this.hasModule(ctx, MODULES.BILLING) && this.can(ctx, PERMISSIONS.BILL_READ, PERMISSIONS.REPORTS_FINANCIAL_READ)
-      ? await this.billingToday(s.db, start, end)
-      : null;
-    const lab = this.hasModule(ctx, MODULES.LAB) && this.can(ctx, PERMISSIONS.LAB_READ)
-      ? await this.labSummary(s.db, start)
-      : null;
-    const pharmacy = this.hasModule(ctx, MODULES.PHARMACY) && this.can(ctx, PERMISSIONS.PHARMACY_READ)
-      ? await this.pharmacySummary(s.db, start)
-      : null;
-    const inventory = this.hasModule(ctx, MODULES.INVENTORY) && this.can(ctx, PERMISSIONS.INVENTORY_READ, PERMISSIONS.INVENTORY_REPORTS_READ)
-      ? await this.inventorySummary(s.db)
-      : null;
-    const ipd = this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
-      ? await this.ipdSummary(s.db, start)
-      : null;
-    const nursing = this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.NURSING_READ)
-      ? await this.nursingSummary(s.db, start)
-      : null;
-    const insurance = this.hasModule(ctx, MODULES.INSURANCE) && this.can(ctx, PERMISSIONS.INSURANCE_READ)
-      ? await this.insuranceSummary(s.db, start)
-      : null;
+    const opd =
+      this.hasModule(ctx, MODULES.OPD) && this.can(ctx, PERMISSIONS.QUEUE_READ, PERMISSIONS.APPOINTMENT_READ)
+        ? await this.opdToday(s.db, start, end, ctx.providerId)
+        : null;
+    const billing =
+      this.hasModule(ctx, MODULES.BILLING) && this.can(ctx, PERMISSIONS.BILL_READ, PERMISSIONS.REPORTS_FINANCIAL_READ)
+        ? await this.billingToday(s.db, start, end)
+        : null;
+    const lab =
+      this.hasModule(ctx, MODULES.LAB) && this.can(ctx, PERMISSIONS.LAB_READ)
+        ? await this.labSummary(s.db, start)
+        : null;
+    const pharmacy =
+      this.hasModule(ctx, MODULES.PHARMACY) && this.can(ctx, PERMISSIONS.PHARMACY_READ)
+        ? await this.pharmacySummary(s.db, start)
+        : null;
+    const inventory =
+      this.hasModule(ctx, MODULES.INVENTORY) &&
+      this.can(ctx, PERMISSIONS.INVENTORY_READ, PERMISSIONS.INVENTORY_REPORTS_READ)
+        ? await this.inventorySummary(s.db)
+        : null;
+    const ipd =
+      this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
+        ? await this.ipdSummary(s.db, start)
+        : null;
+    const nursing =
+      this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.NURSING_READ)
+        ? await this.nursingSummary(s.db, start)
+        : null;
+    const insurance =
+      this.hasModule(ctx, MODULES.INSURANCE) && this.can(ctx, PERMISSIONS.INSURANCE_READ)
+        ? await this.insuranceSummary(s.db, start)
+        : null;
 
     return {
       generatedAt,
@@ -141,8 +153,14 @@ export class ReportsService {
     const { db } = this.scope(ctx);
     const { start, end } = this.range(q);
     const [patients, appointments, encounters] = await Promise.all([
-      db.patient.findMany({ where: { createdAt: { gte: start, lte: end }, deletedAt: null }, select: { id: true, createdAt: true } }),
-      db.appointment.findMany({ where: { scheduledAt: { gte: start, lte: end } }, select: { id: true, status: true, scheduledAt: true } }),
+      db.patient.findMany({
+        where: { createdAt: { gte: start, lte: end }, deletedAt: null },
+        select: { id: true, createdAt: true },
+      }),
+      db.appointment.findMany({
+        where: { scheduledAt: { gte: start, lte: end } },
+        select: { id: true, status: true, scheduledAt: true },
+      }),
       db.encounter.findMany({
         where: {
           createdAt: { gte: start, lte: end },
@@ -153,18 +171,27 @@ export class ReportsService {
         select: { id: true, type: true, status: true, createdAt: true, endedAt: true },
       }),
     ]);
-    const labOrders = this.hasModule(ctx, MODULES.LAB) && this.can(ctx, PERMISSIONS.LAB_READ)
-      ? await db.labOrder.findMany({ where: { createdAt: { gte: start, lte: end } }, select: { id: true, status: true, createdAt: true } })
-      : [];
-    const dispenses = this.hasModule(ctx, MODULES.PHARMACY) && this.can(ctx, PERMISSIONS.PHARMACY_READ)
-      ? await db.dispenseRecord.findMany({ where: { createdAt: { gte: start, lte: end } }, select: { id: true, status: true, createdAt: true } })
-      : [];
-    const admissions = this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
-      ? await db.admission.findMany({
-          where: { admittedAt: { gte: start, lte: end } },
-          select: { id: true, status: true, admittedAt: true, dischargedAt: true },
-        })
-      : [];
+    const labOrders =
+      this.hasModule(ctx, MODULES.LAB) && this.can(ctx, PERMISSIONS.LAB_READ)
+        ? await db.labOrder.findMany({
+            where: { createdAt: { gte: start, lte: end } },
+            select: { id: true, status: true, createdAt: true },
+          })
+        : [];
+    const dispenses =
+      this.hasModule(ctx, MODULES.PHARMACY) && this.can(ctx, PERMISSIONS.PHARMACY_READ)
+        ? await db.dispenseRecord.findMany({
+            where: { createdAt: { gte: start, lte: end } },
+            select: { id: true, status: true, createdAt: true },
+          })
+        : [];
+    const admissions =
+      this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
+        ? await db.admission.findMany({
+            where: { admittedAt: { gte: start, lte: end } },
+            select: { id: true, status: true, admittedAt: true, dischargedAt: true },
+          })
+        : [];
 
     return {
       generatedAt: new Date().toISOString(),
@@ -212,7 +239,10 @@ export class ReportsService {
         where: { createdAt: { gte: start, lte: end }, ...(q.paymentMethod ? { method: q.paymentMethod as any } : {}) },
         select: { id: true, amount: true, method: true, createdAt: true },
       }),
-      db.refund.findMany({ where: { createdAt: { gte: start, lte: end } }, select: { id: true, amount: true, createdAt: true } }),
+      db.refund.findMany({
+        where: { createdAt: { gte: start, lte: end } },
+        select: { id: true, amount: true, createdAt: true },
+      }),
     ]);
     const insurance =
       this.hasModule(ctx, MODULES.INSURANCE) && this.can(ctx, PERMISSIONS.INSURANCE_READ)
@@ -227,10 +257,19 @@ export class ReportsService {
     const paidByBill = new Map<string, number>();
     const refundedByBill = new Map<string, number>();
     for (const b of bills) {
-      paidByBill.set(b.id, b.payments.reduce((sum, p) => sum + p.amount, 0));
-      refundedByBill.set(b.id, b.refunds.reduce((sum, r) => sum + r.amount, 0));
+      paidByBill.set(
+        b.id,
+        b.payments.reduce((sum, p) => sum + p.amount, 0),
+      );
+      refundedByBill.set(
+        b.id,
+        b.refunds.reduce((sum, r) => sum + r.amount, 0),
+      );
     }
-    const outstanding = bills.reduce((sum, b) => sum + Math.max(0, b.netAmount - ((paidByBill.get(b.id) ?? 0) - (refundedByBill.get(b.id) ?? 0))), 0);
+    const outstanding = bills.reduce(
+      (sum, b) => sum + Math.max(0, b.netAmount - ((paidByBill.get(b.id) ?? 0) - (refundedByBill.get(b.id) ?? 0))),
+      0,
+    );
     const settlementTotal = insurance.flatMap((c) => c.settlements).reduce((sum, s) => sum + s.amount, 0);
 
     return {
@@ -375,13 +414,22 @@ export class ReportsService {
       ...(q.departmentId ? { departmentId: q.departmentId } : {}),
     };
     const [encounters, diagnoses, vitals, prescriptions, labResults] = await Promise.all([
-      db.encounter.findMany({ where: encounterWhere, select: { id: true, status: true, type: true, createdAt: true, providerId: true } }),
+      db.encounter.findMany({
+        where: encounterWhere,
+        select: { id: true, status: true, type: true, createdAt: true, providerId: true },
+      }),
       db.diagnosis.findMany({
-        where: { createdAt: { gte: start, lte: end }, encounter: q.providerId || q.departmentId ? encounterWhere : undefined },
+        where: {
+          createdAt: { gte: start, lte: end },
+          encounter: q.providerId || q.departmentId ? encounterWhere : undefined,
+        },
         select: { id: true, description: true, icdCode: true, type: true, createdAt: true },
       }),
       db.vitals.findMany({
-        where: { recordedAt: { gte: start, lte: end }, encounter: q.providerId || q.departmentId ? encounterWhere : undefined },
+        where: {
+          recordedAt: { gte: start, lte: end },
+          encounter: q.providerId || q.departmentId ? encounterWhere : undefined,
+        },
         select: { id: true, recordedAt: true },
       }),
       db.prescription.findMany({
@@ -395,12 +443,20 @@ export class ReportsService {
           })
         : Promise.resolve([]),
     ]);
-    const ipdRounds = this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
-      ? await db.ipdRound.findMany({ where: { createdAt: { gte: start, lte: end }, ...(q.providerId ? { providerId: q.providerId } : {}) }, select: { id: true, createdAt: true } })
-      : [];
-    const dischargeSummaries = this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
-      ? await db.dischargeSummary.findMany({ where: { createdAt: { gte: start, lte: end } }, select: { id: true, finalizedAt: true, createdAt: true } })
-      : [];
+    const ipdRounds =
+      this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
+        ? await db.ipdRound.findMany({
+            where: { createdAt: { gte: start, lte: end }, ...(q.providerId ? { providerId: q.providerId } : {}) },
+            select: { id: true, createdAt: true },
+          })
+        : [];
+    const dischargeSummaries =
+      this.hasModule(ctx, MODULES.IPD) && this.can(ctx, PERMISSIONS.IPD_READ)
+        ? await db.dischargeSummary.findMany({
+            where: { createdAt: { gte: start, lte: end } },
+            select: { id: true, finalizedAt: true, createdAt: true },
+          })
+        : [];
     const diagnosisCounts = diagnoses.reduce(
       (acc, d) => {
         const key = d.icdCode || d.description;
@@ -425,8 +481,15 @@ export class ReportsService {
       labAbnormalFlags: this.countBy(labResults, 'abnormalFlag'),
       rows: [
         ...encounters.map((e) => ({ type: 'Encounter', label: e.type, status: e.status, date: e.createdAt })),
-        ...diagnoses.map((d) => ({ type: 'Diagnosis', label: d.icdCode || d.description, status: d.type, date: d.createdAt })),
-        ...labResults.filter((r) => r.abnormalFlag !== 'NORMAL').map((r) => ({ type: 'Lab result', label: r.testName, status: r.abnormalFlag, date: r.recordedAt })),
+        ...diagnoses.map((d) => ({
+          type: 'Diagnosis',
+          label: d.icdCode || d.description,
+          status: d.type,
+          date: d.createdAt,
+        })),
+        ...labResults
+          .filter((r) => r.abnormalFlag !== 'NORMAL')
+          .map((r) => ({ type: 'Lab result', label: r.testName, status: r.abnormalFlag, date: r.recordedAt })),
       ].sort((a, b) => new Date(b.date as any).getTime() - new Date(a.date as any).getTime()),
     };
   }
@@ -446,7 +509,11 @@ export class ReportsService {
     const [appointments, encounters] = await Promise.all([
       db.appointment.findMany({ where: { scheduledAt: { gte: start, lte: end } }, select: { id: true, status: true } }),
       db.encounter.findMany({
-        where: { createdAt: { gte: start, lte: end }, type: { in: ['OPD', 'WALK_IN'] as any }, ...(providerId ? { providerId } : {}) },
+        where: {
+          createdAt: { gte: start, lte: end },
+          type: { in: ['OPD', 'WALK_IN'] as any },
+          ...(providerId ? { providerId } : {}),
+        },
         select: { id: true, type: true, status: true },
       }),
     ]);
@@ -468,7 +535,10 @@ export class ReportsService {
       db.bill.findMany({ where: { createdAt: { gte: start, lte: end } }, include: { payments: true, refunds: true } }),
       db.payment.findMany({ where: { createdAt: { gte: start, lte: end } }, select: { amount: true, method: true } }),
       db.refund.findMany({ where: { createdAt: { gte: start, lte: end } }, select: { amount: true } }),
-      db.bill.findMany({ where: { status: { in: ['UNPAID', 'PARTIAL'] as any } }, include: { payments: true, refunds: true } }),
+      db.bill.findMany({
+        where: { status: { in: ['UNPAID', 'PARTIAL'] as any } },
+        include: { payments: true, refunds: true },
+      }),
     ]);
     const outstandingReceivables = outstandingBills.reduce((sum, b) => {
       const paid = b.payments.reduce((s, p) => s + p.amount, 0);
@@ -512,11 +582,16 @@ export class ReportsService {
     const now = new Date();
     const horizon = new Date(now.getTime() + 30 * DAY_MS);
     const [items, expiringBatches, pendingPurchases] = await Promise.all([
-      db.inventoryItem.findMany({ where: { active: true }, include: { batches: { select: { quantity: true, salePrice: true } } } }),
+      db.inventoryItem.findMany({
+        where: { active: true },
+        include: { batches: { select: { quantity: true, salePrice: true } } },
+      }),
       db.inventoryBatch.count({ where: { quantity: { gt: 0 }, expiryDate: { not: null, lte: horizon } } }),
       db.purchaseOrder.count({ where: { status: { in: ['DRAFT', 'ORDERED'] as any } } }),
     ]);
-    const lowStock = items.filter((it) => it.batches.reduce((sum, b) => sum + b.quantity, 0) <= it.lowStockThreshold).length;
+    const lowStock = items.filter(
+      (it) => it.batches.reduce((sum, b) => sum + b.quantity, 0) <= it.lowStockThreshold,
+    ).length;
     const stockValue = items.reduce((sum, it) => sum + it.batches.reduce((s, b) => s + b.quantity * b.salePrice, 0), 0);
     return { itemCount: items.length, lowStock, expiringBatches, pendingPurchases, stockValue };
   }
@@ -541,15 +616,27 @@ export class ReportsService {
   }
 
   private async nursingSummary(db: TenantClient, start: Date) {
-    const admissions = await db.admission.findMany({ where: { status: 'ADMITTED' }, select: { id: true, encounterId: true } });
+    const admissions = await db.admission.findMany({
+      where: { status: 'ADMITTED' },
+      select: { id: true, encounterId: true },
+    });
     const encounterIds = admissions.map((a) => a.encounterId).filter(Boolean) as string[];
     const [vitalsToday, medsToday, notesToday] = await Promise.all([
-      encounterIds.length ? db.vitals.findMany({ where: { encounterId: { in: encounterIds }, recordedAt: { gte: start } }, select: { encounterId: true } }) : [],
+      encounterIds.length
+        ? db.vitals.findMany({
+            where: { encounterId: { in: encounterIds }, recordedAt: { gte: start } },
+            select: { encounterId: true },
+          })
+        : [],
       db.medicationAdministration.count({ where: { administeredAt: { gte: start } } }),
       db.nursingNote.count({ where: { createdAt: { gte: start } } }),
     ]);
     const vitalsSet = new Set(vitalsToday.map((v) => v.encounterId));
-    return { vitalsDue: admissions.filter((a) => !a.encounterId || !vitalsSet.has(a.encounterId)).length, medsToday, notesToday };
+    return {
+      vitalsDue: admissions.filter((a) => !a.encounterId || !vitalsSet.has(a.encounterId)).length,
+      medsToday,
+      notesToday,
+    };
   }
 
   private async insuranceSummary(db: TenantClient, start: Date) {
@@ -574,12 +661,17 @@ export class ReportsService {
 
   private alerts(data: Record<string, any>) {
     const rows: { label: string; tone: string; href: string }[] = [];
-    if (data.billing?.outstandingReceivables > 0) rows.push({ label: 'Outstanding billing receivables', tone: 'warning', href: '/billing' });
-    if (data.lab?.abnormalUnverified > 0) rows.push({ label: 'Unverified abnormal lab results', tone: 'danger', href: '/lab' });
-    if (data.pharmacy?.pendingPrescriptions > 0) rows.push({ label: 'Prescriptions pending dispense', tone: 'warning', href: '/pharmacy' });
-    if (data.inventory?.lowStock > 0) rows.push({ label: 'Low-stock inventory items', tone: 'danger', href: '/inventory' });
+    if (data.billing?.outstandingReceivables > 0)
+      rows.push({ label: 'Outstanding billing receivables', tone: 'warning', href: '/billing' });
+    if (data.lab?.abnormalUnverified > 0)
+      rows.push({ label: 'Unverified abnormal lab results', tone: 'danger', href: '/lab' });
+    if (data.pharmacy?.pendingPrescriptions > 0)
+      rows.push({ label: 'Prescriptions pending dispense', tone: 'warning', href: '/pharmacy' });
+    if (data.inventory?.lowStock > 0)
+      rows.push({ label: 'Low-stock inventory items', tone: 'danger', href: '/inventory' });
     if (data.ipd?.occupancyRate >= 85) rows.push({ label: 'High IPD occupancy', tone: 'warning', href: '/ipd' });
-    if (data.insurance?.approvedOutstanding > 0) rows.push({ label: 'Insurance settlements pending', tone: 'warning', href: '/insurance' });
+    if (data.insurance?.approvedOutstanding > 0)
+      rows.push({ label: 'Insurance settlements pending', tone: 'warning', href: '/insurance' });
     return rows;
   }
 }

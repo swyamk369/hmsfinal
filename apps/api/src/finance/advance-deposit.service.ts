@@ -4,7 +4,17 @@ import type { RequestContext } from '../common/types';
 
 @Injectable()
 export class AdvanceDepositService {
-  async collectDeposit(ctx: RequestContext, data: { patientId: string; admissionId?: string; amount: number; paymentMethod: any; transactionId?: string; notes?: string }) {
+  async collectDeposit(
+    ctx: RequestContext,
+    data: {
+      patientId: string;
+      admissionId?: string;
+      amount: number;
+      paymentMethod: any;
+      transactionId?: string;
+      notes?: string;
+    },
+  ) {
     const db = requireDb(ctx);
     return db.advanceDeposit.create({
       data: {

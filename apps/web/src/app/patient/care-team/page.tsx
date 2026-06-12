@@ -55,7 +55,14 @@ export default function CareTeamPage() {
             icon={Heart}
             title="No saved doctors yet"
             body="Tap the heart on a doctor’s profile to save them here."
-            action={<Link href="/doctors" className="rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700">Find a doctor</Link>}
+            action={
+              <Link
+                href="/doctors"
+                className="rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700"
+              >
+                Find a doctor
+              </Link>
+            }
           />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
@@ -80,7 +87,11 @@ export default function CareTeamPage() {
                     )}
                   </div>
                 </div>
-                <button onClick={() => removeProvider(p.id)} aria-label="Remove" className="text-ink-soft hover:text-danger">
+                <button
+                  onClick={() => removeProvider(p.id)}
+                  aria-label="Remove"
+                  className="text-ink-soft hover:text-danger"
+                >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -98,7 +109,14 @@ export default function CareTeamPage() {
             icon={Building2}
             title="No saved hospitals yet"
             body="Save a hospital from its profile to find it quickly later."
-            action={<Link href="/hospitals" className="rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700">Browse hospitals</Link>}
+            action={
+              <Link
+                href="/hospitals"
+                className="rounded-lg bg-primary px-4 py-2 text-label-md font-medium text-white hover:bg-primary-700"
+              >
+                Browse hospitals
+              </Link>
+            }
           />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
@@ -109,12 +127,19 @@ export default function CareTeamPage() {
                   <p className="truncate font-medium text-ink">{h.hospitalName}</p>
                   {h.city && <p className="text-body-sm text-ink-muted">{h.city}</p>}
                   {h.hospitalSlug && (
-                    <Link href={`/hospitals/${h.hospitalSlug}`} className="mt-2 inline-block text-label-md font-medium text-primary hover:underline">
+                    <Link
+                      href={`/hospitals/${h.hospitalSlug}`}
+                      className="mt-2 inline-block text-label-md font-medium text-primary hover:underline"
+                    >
                       View details
                     </Link>
                   )}
                 </div>
-                <button onClick={() => removeHospital(h.id)} aria-label="Remove" className="text-ink-soft hover:text-danger">
+                <button
+                  onClick={() => removeHospital(h.id)}
+                  aria-label="Remove"
+                  className="text-ink-soft hover:text-danger"
+                >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>

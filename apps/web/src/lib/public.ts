@@ -25,7 +25,9 @@ async function postPublic<T>(path: string, body: unknown): Promise<T> {
   });
   if (!res.ok) {
     const b = await res.json().catch(() => ({}));
-    throw new Error((Array.isArray(b.message) ? b.message.join(', ') : b.message) || 'Booking failed. Please try again.');
+    throw new Error(
+      (Array.isArray(b.message) ? b.message.join(', ') : b.message) || 'Booking failed. Please try again.',
+    );
   }
   return res.json();
 }
@@ -116,7 +118,14 @@ export interface BookingOptions {
   specialty: string | null;
   hospital: string;
   consultationTypes: string[];
-  appointmentTypes: { id: string; name: string; durationMinutes: number; price: number; currency: string; consultationType: string }[];
+  appointmentTypes: {
+    id: string;
+    name: string;
+    durationMinutes: number;
+    price: number;
+    currency: string;
+    consultationType: string;
+  }[];
 }
 export interface DaySlots {
   date: string;
@@ -137,15 +146,23 @@ export interface BookingResult {
 export const publicApi = {
   hospitals: (q?: string, city?: string) => getPublic<SearchRow[]>(`/public/hospitals${qs({ q, city })}`),
   hospital: (slug: string) =>
-    getPublic<{ hospital: PublicHospital; doctors: PublicDoctor[]; appointmentTypes: PublicAppointmentType[] }>(`/public/hospitals/${slug}`),
-  doctors: (q?: string, specialty?: string, city?: string) => getPublic<SearchRow[]>(`/public/doctors${qs({ q, specialty, city })}`),
+    getPublic<{ hospital: PublicHospital; doctors: PublicDoctor[]; appointmentTypes: PublicAppointmentType[] }>(
+      `/public/hospitals/${slug}`,
+    ),
+  doctors: (q?: string, specialty?: string, city?: string) =>
+    getPublic<SearchRow[]>(`/public/doctors${qs({ q, specialty, city })}`),
   doctor: (slug: string) =>
-    getPublic<{ doctor: PublicDoctor; hospital: PublicHospital | null; appointmentTypes: PublicAppointmentType[] }>(`/public/doctors/${slug}`),
+    getPublic<{ doctor: PublicDoctor; hospital: PublicHospital | null; appointmentTypes: PublicAppointmentType[] }>(
+      `/public/doctors/${slug}`,
+    ),
   search: (q?: string, type?: string) => getPublic<SearchRow[]>(`/public/search${qs({ q, type })}`),
 
-  bookingOptions: (tenantId: string, doctorId: string) => getPublic<BookingOptions>(`/public/booking/options${qs({ tenantId, doctorId })}`),
+  bookingOptions: (tenantId: string, doctorId: string) =>
+    getPublic<BookingOptions>(`/public/booking/options${qs({ tenantId, doctorId })}`),
   bookingSlots: (tenantId: string, doctorId: string, from?: string, days = 14, appointmentTypeId?: string) =>
-    getPublic<DaySlots[]>(`/public/booking/slots${qs({ tenantId, doctorId, from, days: String(days), appointmentTypeId })}`),
+    getPublic<DaySlots[]>(
+      `/public/booking/slots${qs({ tenantId, doctorId, from, days: String(days), appointmentTypeId })}`,
+    ),
   createBooking: (body: Record<string, unknown>) => postPublic<BookingResult>('/public/booking/create', body),
 };
 

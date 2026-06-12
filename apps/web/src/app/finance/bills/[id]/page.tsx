@@ -63,7 +63,10 @@ function BillDetail({ id }: { id: string }) {
 
   return (
     <>
-      <Link href="/finance/bills" className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary">
+      <Link
+        href="/finance/bills"
+        className="mb-4 inline-flex items-center gap-1.5 text-body-sm font-medium text-ink-muted hover:text-primary"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to bills
       </Link>
       <PageHeader
@@ -72,16 +75,24 @@ function BillDetail({ id }: { id: string }) {
         action={
           <div className="flex flex-wrap gap-2">
             <Link href={`/billing/${bill.id}/invoice`}>
-              <Button variant="ghost" icon={Printer}>Invoice</Button>
+              <Button variant="ghost" icon={Printer}>
+                Invoice
+              </Button>
             </Link>
             {has('payment.collect') && bill.status !== 'CANCELLED' && due > 0 && (
-              <Button icon={CreditCard} onClick={() => setPayOpen(true)}>Collect payment</Button>
+              <Button icon={CreditCard} onClick={() => setPayOpen(true)}>
+                Collect payment
+              </Button>
             )}
             {has('payment.refund') && paidNet > 0 && (
-              <Button variant="ghost" icon={RotateCcw} onClick={() => setRefundOpen(true)}>Refund</Button>
+              <Button variant="ghost" icon={RotateCcw} onClick={() => setRefundOpen(true)}>
+                Refund
+              </Button>
             )}
             {has('bill.cancel') && bill.status !== 'CANCELLED' && paidNet === 0 && (
-              <Button variant="danger" icon={Ban} onClick={() => setCancelOpen(true)}>Cancel</Button>
+              <Button variant="danger" icon={Ban} onClick={() => setCancelOpen(true)}>
+                Cancel
+              </Button>
             )}
           </div>
         }
@@ -89,8 +100,13 @@ function BillDetail({ id }: { id: string }) {
       <FinanceShell>
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <StatusChip status={bill.status} />
-          {bill.cancellationReason && <span className="text-body-sm text-ink-soft">Cancelled: {bill.cancellationReason}</span>}
-          <Link href={`/finance/patient-accounts/${bill.patientId}`} className="text-body-sm font-medium text-primary hover:underline">
+          {bill.cancellationReason && (
+            <span className="text-body-sm text-ink-soft">Cancelled: {bill.cancellationReason}</span>
+          )}
+          <Link
+            href={`/finance/patient-accounts/${bill.patientId}`}
+            className="text-body-sm font-medium text-primary hover:underline"
+          >
             Open patient account
           </Link>
         </div>
@@ -131,8 +147,14 @@ function BillDetail({ id }: { id: string }) {
               ) : (
                 <ul className="divide-y divide-line">
                   {bill.payments.map((p) => (
-                    <li key={p.id} className="flex flex-col gap-1 px-5 py-3 text-body-sm sm:flex-row sm:items-center sm:justify-between">
-                      <span className="text-ink">Payment · {p.method.replace(/_/g, ' ')}{p.transactionId ? ` · ${p.transactionId}` : ''}</span>
+                    <li
+                      key={p.id}
+                      className="flex flex-col gap-1 px-5 py-3 text-body-sm sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <span className="text-ink">
+                        Payment · {p.method.replace(/_/g, ' ')}
+                        {p.transactionId ? ` · ${p.transactionId}` : ''}
+                      </span>
                       <span className="flex items-center gap-3">
                         <span className="font-medium text-success-fg">+{money(p.amount)}</span>
                         <span className="text-label-sm text-ink-soft">{formatDateTime(p.createdAt)}</span>
@@ -140,7 +162,10 @@ function BillDetail({ id }: { id: string }) {
                     </li>
                   ))}
                   {bill.refunds.map((r) => (
-                    <li key={r.id} className="flex flex-col gap-1 px-5 py-3 text-body-sm sm:flex-row sm:items-center sm:justify-between">
+                    <li
+                      key={r.id}
+                      className="flex flex-col gap-1 px-5 py-3 text-body-sm sm:flex-row sm:items-center sm:justify-between"
+                    >
                       <span className="text-ink">Refund · {r.reason}</span>
                       <span className="flex items-center gap-3">
                         <span className="font-medium text-danger-fg">-{money(r.amount)}</span>
@@ -158,7 +183,9 @@ function BillDetail({ id }: { id: string }) {
                 action={
                   has('insurance.claim.create') && bill.status !== 'CANCELLED' ? (
                     <Link href={`/insurance?billId=${bill.id}`}>
-                      <Button size="sm" variant="ghost" icon={ShieldCheck}>Create claim</Button>
+                      <Button size="sm" variant="ghost" icon={ShieldCheck}>
+                        Create claim
+                      </Button>
                     </Link>
                   ) : undefined
                 }
@@ -180,14 +207,23 @@ function BillDetail({ id }: { id: string }) {
                         {bill.claims.map((claim) => (
                           <tr key={claim.id}>
                             <td className="px-5 py-3">
-                              <Link href={`/insurance/claims/${claim.id}`} className="font-medium text-primary hover:underline">
+                              <Link
+                                href={`/insurance/claims/${claim.id}`}
+                                className="font-medium text-primary hover:underline"
+                              >
                                 {claim.patientPolicy?.provider?.name ?? 'Insurance claim'}
                               </Link>
-                              <div className="text-label-sm text-ink-soft">{claim.patientPolicy?.policyNumber ?? 'No policy number'}</div>
+                              <div className="text-label-sm text-ink-soft">
+                                {claim.patientPolicy?.policyNumber ?? 'No policy number'}
+                              </div>
                             </td>
                             <td className="px-5 py-3 text-right text-ink-muted">{money(claim.claimAmount)}</td>
-                            <td className="px-5 py-3 text-right text-ink-muted">{claim.approvedAmount ? money(claim.approvedAmount) : '-'}</td>
-                            <td className="px-5 py-3"><StatusChip status={claim.status} /></td>
+                            <td className="px-5 py-3 text-right text-ink-muted">
+                              {claim.approvedAmount ? money(claim.approvedAmount) : '-'}
+                            </td>
+                            <td className="px-5 py-3">
+                              <StatusChip status={claim.status} />
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -304,7 +340,12 @@ function CollectModal({
     }
     setBusy(true);
     try {
-      await onConfirm({ amount: parsed, method, transactionId: transactionId.trim() || undefined, notes: notes.trim() || undefined });
+      await onConfirm({
+        amount: parsed,
+        method,
+        transactionId: transactionId.trim() || undefined,
+        notes: notes.trim() || undefined,
+      });
       onClose();
     } catch (e) {
       toast.error((e as Error).message);
@@ -320,20 +361,30 @@ function CollectModal({
       title="Collect payment"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button onClick={submit} loading={busy}>Collect</Button>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button onClick={submit} loading={busy}>
+            Collect
+          </Button>
         </>
       }
     >
       <div className="space-y-4">
-        <div className="rounded-md bg-canvas px-3 py-2 text-body-sm text-ink-muted">Balance due: <span className="font-medium text-ink">{money(due)}</span></div>
+        <div className="rounded-md bg-canvas px-3 py-2 text-body-sm text-ink-muted">
+          Balance due: <span className="font-medium text-ink">{money(due)}</span>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField label="Amount" required>
             <Input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} autoFocus />
           </FormField>
           <FormField label="Method" required>
             <Select value={method} onChange={(e) => setMethod(e.target.value)}>
-              {PAYMENT_METHODS.map((m) => <option key={m} value={m}>{m.replace(/_/g, ' ')}</option>)}
+              {PAYMENT_METHODS.map((m) => (
+                <option key={m} value={m}>
+                  {m.replace(/_/g, ' ')}
+                </option>
+              ))}
             </Select>
           </FormField>
         </div>
@@ -400,13 +451,19 @@ function RefundModal({
       danger
       footer={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={busy}>Cancel</Button>
-          <Button variant="danger" onClick={submit} loading={busy} disabled={!reason.trim()}>Refund</Button>
+          <Button variant="ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={submit} loading={busy} disabled={!reason.trim()}>
+            Refund
+          </Button>
         </>
       }
     >
       <div className="space-y-4">
-        <div className="rounded-md bg-canvas px-3 py-2 text-body-sm text-ink-muted">Refundable: <span className="font-medium text-ink">{money(max)}</span></div>
+        <div className="rounded-md bg-canvas px-3 py-2 text-body-sm text-ink-muted">
+          Refundable: <span className="font-medium text-ink">{money(max)}</span>
+        </div>
         <FormField label="Amount" required>
           <Input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} autoFocus />
         </FormField>

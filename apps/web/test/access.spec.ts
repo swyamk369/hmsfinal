@@ -79,7 +79,7 @@ describe('getActiveMembership', () => {
 describe('visibleNav', () => {
   it('shows only platform nav for platform users', () => {
     const items = visibleNav(profile({ isPlatform: true, tenants: [] }), null);
-    expect(items.map((i) => i.href)).toEqual(['/platform', '/platform/plans', '/platform/audit']);
+    expect(items.map((i) => i.href)).toEqual(['/platform', '/platform/support', '/platform/plans', '/platform/audit']);
   });
 
   it('filters tenant nav by role and module', () => {
@@ -172,7 +172,10 @@ describe('routeDecision', () => {
 
   it('platform users bypass role/module checks', () => {
     expect(
-      routeDecision(profile({ isPlatform: true, tenants: [] }), null, { allowedRoles: ['DOCTOR'], requireModule: 'LAB' }),
+      routeDecision(profile({ isPlatform: true, tenants: [] }), null, {
+        allowedRoles: ['DOCTOR'],
+        requireModule: 'LAB',
+      }),
     ).toBeNull();
   });
 });

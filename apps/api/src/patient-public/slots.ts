@@ -56,7 +56,12 @@ export function dateKeyInTz(d: Date, timeZone?: string): string {
 /** The wall-clock time (HH:mm) of an instant as seen in a timezone (local when omitted). */
 export function timeKeyInTz(d: Date, timeZone?: string): string {
   if (!timeZone) return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  const parts = new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(d);
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(d);
   const m: Record<string, string> = {};
   for (const p of parts) m[p.type] = p.value;
   return `${m.hour === '24' ? '00' : m.hour}:${m.minute}`;
@@ -71,10 +76,26 @@ export function wallClockToInstant(dateKeyStr: string, timeStr: string, timeZone
   const [h, mi] = timeStr.split(':').map(Number);
   if (!timeZone) return new Date(y, mo - 1, d, h, mi).getTime();
   const asUTC = Date.UTC(y, mo - 1, d, h, mi);
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(asUTC));
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).formatToParts(new Date(asUTC));
   const m: Record<string, string> = {};
   for (const p of parts) m[p.type] = p.value;
-  const tzAsUTC = Date.UTC(Number(m.year), Number(m.month) - 1, Number(m.day), m.hour === '24' ? 0 : Number(m.hour), Number(m.minute), Number(m.second));
+  const tzAsUTC = Date.UTC(
+    Number(m.year),
+    Number(m.month) - 1,
+    Number(m.day),
+    m.hour === '24' ? 0 : Number(m.hour),
+    Number(m.minute),
+    Number(m.second),
+  );
   return asUTC - (tzAsUTC - asUTC);
 }
 

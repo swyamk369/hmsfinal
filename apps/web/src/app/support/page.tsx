@@ -1,13 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, LifeBuoy, Route, ShieldCheck, Stethoscope, Plus, MessageSquare } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { useRouter } from 'next/navigation';
+import { LifeBuoy, Route, ShieldCheck, Stethoscope, Plus } from 'lucide-react';
 import Protected from '@/components/Protected';
 import { HelpTip } from '@/components/operations';
-import { PageHeader, Section, Button, Modal, FormField, Input, Select, EmptyState, Badge, StatusChip } from '@/components/ui';
+import { useToast } from '@/components/toast';
+import {
+  PageHeader,
+  Section,
+  Button,
+  Modal,
+  FormField,
+  Input,
+  Select,
+  EmptyState,
+  Badge,
+  StatusChip,
+} from '@/components/ui';
+import { useAuth } from '@/lib/auth-context';
 import { supportApi, type SupportTicket } from '@/lib/support-api';
+import { formatDateTime } from '@/lib/format';
 
 const CARDS = [
   {
@@ -30,53 +44,79 @@ const CARDS = [
   },
 ];
 
-export default function SupportPage() {
+function SupportContent() {
+  const router = useRouter();
+  const toast = useToast();
+  const { activeTenantId, profile } = useAuth();
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
 
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('GENERAL');
   const [priority, setPriority] = useState('LOW');
   const [busy, setBusy] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
+    if (!profile || profile.isPlatform) return;
+    if (!activeTenantId) {
+      setTickets([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
-      setTickets(await supportApi.listTickets());
+      setTickets(await supportApi.listTickets(activeTenantId));
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }
+  }, [activeTenantId, profile]);
 
   useEffect(() => {
+    if (profile?.isPlatform) {
+      router.replace('/platform/support');
+      return;
+    }
     void load();
-  }, []);
+  }, [load, profile?.isPlatform, router]);
 
   async function submit() {
+    if (!activeTenantId) {
+      toast.error('Select a hospital workspace before raising a support ticket.');
+      return;
+    }
+
     setBusy(true);
     try {
-      await supportApi.createTicket({ subject, description, category, priority });
+      await supportApi.createTicket({ subject, description, priority }, activeTenantId);
       setCreateOpen(false);
       setSubject('');
       setDescription('');
       await load();
     } catch (e) {
-      alert((e as Error).message);
+      toast.error((e as Error).message);
     } finally {
       setBusy(false);
     }
   }
 
+  if (profile?.isPlatform) {
+    return <div className="text-body-sm text-ink-muted">Opening Global Support…</div>;
+  }
+
   return (
-    <Protected>
-      <PageHeader 
-        title="Support" 
-        subtitle="Operational help for hospital staff" 
-        action={<Button icon={Plus} onClick={() => setCreateOpen(true)}>Raise Ticket</Button>}
+    <>
+      <PageHeader
+        title="Support"
+        subtitle="Operational help for hospital staff"
+        action={
+          <Button icon={Plus} onClick={() => setCreateOpen(true)}>
+            Raise Ticket
+          </Button>
+        }
       />
       <div className="space-y-6">
         <HelpTip title="Use this during live work">
@@ -105,20 +145,34 @@ export default function SupportPage() {
               <EmptyState
                 title="No support tickets"
                 hint="You haven't raised any support tickets yet."
-                action={<Button icon={Plus} onClick={() => setCreateOpen(true)}>Raise Ticket</Button>}
+                action={
+                  <Button icon={Plus} onClick={() => setCreateOpen(true)}>
+                    Raise Ticket
+                  </Button>
+                }
               />
             ) : (
               <div className="divide-y divide-line">
                 {tickets.map((t) => (
                   <div key={t.id} className="py-3 flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-ink mb-1">{t.subject}</h4>
+                      <h4 className="font-medium text-ink mb-1">{t.title}</h4>
                       <div className="flex gap-3 text-label-sm text-ink-soft">
-                        <span>{formatDistanceToNow(new Date(t.createdAt), { addSuffix: true })}</span>
+                        <span>{formatDateTime(t.createdAt)}</span>
                         <span>•</span>
-                        <span>ID: {t.id.slice(0,8)}</span>
+                        <span>ID: {t.id.slice(0, 8)}</span>
                         <span>•</span>
-                        <Badge variant={t.priority === 'URGENT' ? 'danger' : 'neutral'}>{t.priority}</Badge>
+                        <Badge
+                          tone={
+                            t.priority === 'URGENT' || t.priority === 'HIGH'
+                              ? 'danger'
+                              : t.priority === 'MEDIUM'
+                                ? 'warning'
+                                : 'slate'
+                          }
+                        >
+                          {t.priority}
+                        </Badge>
                       </div>
                     </div>
                     <StatusChip status={t.status} />
@@ -146,27 +200,26 @@ export default function SupportPage() {
         title="Raise Support Ticket"
         footer={
           <>
-            <Button variant="ghost" onClick={() => setCreateOpen(false)} disabled={busy}>Cancel</Button>
-            <Button onClick={submit} loading={busy} disabled={!subject.trim() || !description.trim()}>Submit Ticket</Button>
+            <Button variant="ghost" onClick={() => setCreateOpen(false)} disabled={busy}>
+              Cancel
+            </Button>
+            <Button onClick={submit} loading={busy} disabled={!subject.trim() || !description.trim()}>
+              Submit Ticket
+            </Button>
           </>
         }
       >
         <div className="space-y-4">
-          <p className="text-body-sm text-ink-soft mb-4">Please describe the issue you are facing. Our global support team will look into it.</p>
+          <p className="text-body-sm text-ink-soft mb-4">
+            Please describe the issue you are facing. Our global support team will look into it.
+          </p>
           <FormField label="Subject" required>
-            <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Brief summary of the issue" />
+            <Input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Brief summary of the issue"
+            />
           </FormField>
-          
-          <FormField label="Category" required>
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="GENERAL">General</option>
-              <option value="BUG">Bug / Technical Issue</option>
-              <option value="FEATURE_REQUEST">Feature Request</option>
-              <option value="BILLING">Billing</option>
-              <option value="ACCESS">Access & Permissions</option>
-            </Select>
-          </FormField>
-
           <FormField label="Priority" required>
             <Select value={priority} onChange={(e) => setPriority(e.target.value)}>
               <option value="LOW">Low</option>
@@ -187,18 +240,14 @@ export default function SupportPage() {
           </FormField>
         </div>
       </Modal>
-    </Protected>
+    </>
   );
 }
 
-function SupportNote({ title, text }: { title: string; text: string }) {
+export default function SupportPage() {
   return (
-    <div className="rounded-md border border-line bg-canvas px-3 py-2">
-      <div className="flex items-center gap-2 text-body-sm font-medium text-ink">
-        <BookOpen className="h-4 w-4 text-primary" />
-        {title}
-      </div>
-      <p className="mt-1 text-body-sm text-ink-muted">{text}</p>
-    </div>
+    <Protected>
+      <SupportContent />
+    </Protected>
   );
 }

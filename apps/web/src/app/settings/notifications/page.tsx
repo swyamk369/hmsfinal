@@ -18,7 +18,12 @@ function Toggle({
 }) {
   return (
     <label className="flex items-center gap-2 text-body-sm text-ink-muted">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-4 w-4 accent-primary" />
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="h-4 w-4 accent-primary"
+      />
       {label}
     </label>
   );
@@ -73,12 +78,20 @@ function PreferencesInner() {
       <PageHeader
         title="Notification Preferences"
         subtitle="Choose in-app and external delivery settings for each workflow category"
-        action={<Button icon={Save} onClick={save} loading={saving} disabled={loading || rows.length === 0}>Save</Button>}
+        action={
+          <Button icon={Save} onClick={save} loading={saving} disabled={loading || rows.length === 0}>
+            Save
+          </Button>
+        }
       />
 
       <div className="space-y-6">
         {err && <ErrorState message={err} />}
-        {saved && <div className="rounded-md border border-success/30 bg-success-bg px-4 py-3 text-body-sm text-success-fg">{saved}</div>}
+        {saved && (
+          <div className="rounded-md border border-success/30 bg-success-bg px-4 py-3 text-body-sm text-success-fg">
+            {saved}
+          </div>
+        )}
         {loading ? (
           <Spinner label="Loading preferences..." />
         ) : rows.length === 0 ? (
@@ -93,17 +106,41 @@ function PreferencesInner() {
                     <div className="text-body-sm text-ink-soft">Tenant-scoped workflow alerts</div>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    <Toggle checked={row.inAppEnabled} onChange={(v) => patch(row.category, { inAppEnabled: v })} label="In-app" />
-                    <Toggle checked={row.emailEnabled} onChange={(v) => patch(row.category, { emailEnabled: v })} label="Email" />
-                    <Toggle checked={row.smsEnabled} onChange={(v) => patch(row.category, { smsEnabled: v })} label="SMS" />
-                    <Toggle checked={row.whatsappEnabled} onChange={(v) => patch(row.category, { whatsappEnabled: v })} label="WhatsApp" />
+                    <Toggle
+                      checked={row.inAppEnabled}
+                      onChange={(v) => patch(row.category, { inAppEnabled: v })}
+                      label="In-app"
+                    />
+                    <Toggle
+                      checked={row.emailEnabled}
+                      onChange={(v) => patch(row.category, { emailEnabled: v })}
+                      label="Email"
+                    />
+                    <Toggle
+                      checked={row.smsEnabled}
+                      onChange={(v) => patch(row.category, { smsEnabled: v })}
+                      label="SMS"
+                    />
+                    <Toggle
+                      checked={row.whatsappEnabled}
+                      onChange={(v) => patch(row.category, { whatsappEnabled: v })}
+                      label="WhatsApp"
+                    />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <FormField label="Quiet start">
-                      <Input type="time" value={row.quietHoursStart ?? ''} onChange={(e) => patch(row.category, { quietHoursStart: e.target.value || null })} />
+                      <Input
+                        type="time"
+                        value={row.quietHoursStart ?? ''}
+                        onChange={(e) => patch(row.category, { quietHoursStart: e.target.value || null })}
+                      />
                     </FormField>
                     <FormField label="Quiet end">
-                      <Input type="time" value={row.quietHoursEnd ?? ''} onChange={(e) => patch(row.category, { quietHoursEnd: e.target.value || null })} />
+                      <Input
+                        type="time"
+                        value={row.quietHoursEnd ?? ''}
+                        onChange={(e) => patch(row.category, { quietHoursEnd: e.target.value || null })}
+                      />
                     </FormField>
                   </div>
                 </div>

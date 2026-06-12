@@ -36,7 +36,11 @@ function FinanceHome() {
       <PageHeader
         title="Finance"
         subtitle="Cashier, bills, patient accounts, receivables, day close, approvals, and reports"
-        action={<Button variant="ghost" onClick={load}>Refresh</Button>}
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
       />
       <FinanceShell>
         {err && <ErrorState message={err} />}
@@ -52,22 +56,39 @@ function FinanceHome() {
             <div className="text-body-sm text-ink-soft">Updated {formatDateTime(data.generatedAt)}</div>
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <StatCard label="Collection today" value={money(data.collectionToday)} icon={CreditCard} hint={`${money(data.refundsToday)} refunded`} />
+              <StatCard
+                label="Collection today"
+                value={money(data.collectionToday)}
+                icon={CreditCard}
+                hint={`${money(data.refundsToday)} refunded`}
+              />
               <StatCard label="Patient dues" value={money(data.outstandingPatientDues)} icon={Banknote} />
               <StatCard label="Insurance receivables" value={money(data.insuranceReceivables)} icon={ShieldCheck} />
-              <StatCard label="Pending charges" value={data.pendingCharges} icon={ListChecks} hint={`${data.unpaidBills + data.partialBills} open bills`} />
+              <StatCard
+                label="Pending charges"
+                value={data.pendingCharges}
+                icon={ListChecks}
+                hint={`${data.unpaidBills + data.partialBills} open bills`}
+              />
             </div>
 
             <div className="grid gap-6 xl:grid-cols-3">
               <Section title="Finance blockers" className="xl:col-span-2">
                 {data.blockers.length === 0 ? (
                   <div className="p-5">
-                    <EmptyState title="No finance blockers" hint="Pending charges, unpaid bills, approvals, and day-close gaps appear here." />
+                    <EmptyState
+                      title="No finance blockers"
+                      hint="Pending charges, unpaid bills, approvals, and day-close gaps appear here."
+                    />
                   </div>
                 ) : (
                   <div className="divide-y divide-line">
                     {data.blockers.map((b) => (
-                      <Link key={b.type} href={b.href} className="flex items-center justify-between px-5 py-3 hover:bg-canvas">
+                      <Link
+                        key={b.type}
+                        href={b.href}
+                        className="flex items-center justify-between px-5 py-3 hover:bg-canvas"
+                      >
                         <span className="flex items-center gap-2 font-medium text-ink">
                           <AlertTriangle className="h-4 w-4 text-warning-fg" />
                           {b.label}
@@ -90,7 +111,9 @@ function FinanceHome() {
                     <span className="font-medium text-ink">{money(data.netCollectionToday)}</span>
                   </div>
                   <Link href="/finance/day-close">
-                    <Button className="w-full" variant="ghost" icon={FileText}>Review close</Button>
+                    <Button className="w-full" variant="ghost" icon={FileText}>
+                      Review close
+                    </Button>
                   </Link>
                 </div>
               </Section>

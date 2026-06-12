@@ -19,7 +19,14 @@ export default function PrescriptionsPage() {
         icon={Pill}
         title="Link a hospital to see prescriptions"
         body="Prescriptions shared by your doctor appear once you've linked a hospital record."
-        action={<button onClick={openLinkModal} className="rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90">Link a record</button>}
+        action={
+          <button
+            onClick={openLinkModal}
+            className="rounded-lg bg-primary px-4 py-2.5 font-medium text-white hover:opacity-90"
+          >
+            Link a record
+          </button>
+        }
       />
     );
   return <Inner tenantId={tenantId} tab={tab} setTab={setTab} />;
@@ -28,7 +35,7 @@ export default function PrescriptionsPage() {
 function Inner({ tenantId, tab, setTab }: { tenantId: string; tab: Filter; setTab: (f: Filter) => void }) {
   const { data: pData, err: pErr } = useData<PortalPrescription[]>(() => portalApi.prescriptions(tenantId), [tenantId]);
   const { data: rData, err: rErr } = useData<RefillRequest[]>(() => portalApi.refills(tenantId), [tenantId]);
-  
+
   if (pErr || rErr) return <ErrorState msg={pErr || rErr || 'Failed to load'} />;
   if (!pData || !rData) return <Loading label="Loading prescriptions…" />;
 
@@ -50,17 +57,35 @@ function Inner({ tenantId, tab, setTab }: { tenantId: string; tab: Filter; setTa
       />
       {tab === 'refills' ? (
         rData.length === 0 ? (
-          <EmptyState icon={RefreshCw} title="No refill requests" body="You haven't requested any prescription refills yet." />
+          <EmptyState
+            icon={RefreshCw}
+            title="No refill requests"
+            body="You haven't requested any prescription refills yet."
+          />
         ) : (
           <div className="space-y-3">
             {rData.map((r) => (
               <div key={r.id} className="rounded-xl border border-line bg-surface p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-body-sm text-ink-soft">{new Date(r.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                  <span className="text-body-sm text-ink-soft">
+                    {new Date(r.createdAt).toLocaleDateString(undefined, {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
                   <StatusBadge status={r.status} />
                 </div>
-                {r.note && <div className="text-body-sm text-ink mb-2"><strong>Your note:</strong> {r.note}</div>}
-                {r.staffNote && <div className="text-body-sm text-ink-muted bg-canvas p-2 rounded mt-2"><strong>Staff note:</strong> {r.staffNote}</div>}
+                {r.note && (
+                  <div className="text-body-sm text-ink mb-2">
+                    <strong>Your note:</strong> {r.note}
+                  </div>
+                )}
+                {r.staffNote && (
+                  <div className="text-body-sm text-ink-muted bg-canvas p-2 rounded mt-2">
+                    <strong>Staff note:</strong> {r.staffNote}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -72,7 +97,9 @@ function Inner({ tenantId, tab, setTab }: { tenantId: string; tab: Filter; setTa
           {rows.map((p) => (
             <div key={p.id} className="rounded-xl border border-line bg-surface p-4">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-body-sm text-ink-soft">{new Date(p.date).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                <span className="text-body-sm text-ink-soft">
+                  {new Date(p.date).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
                 <StatusBadge status={p.status} />
               </div>
               <ul className="space-y-1.5">
@@ -82,7 +109,9 @@ function Inner({ tenantId, tab, setTab }: { tenantId: string; tab: Filter; setTa
                     <span>
                       <span className="font-medium text-ink">{i.drugName}</span>
                       <span className="text-ink-muted">
-                        {[i.dosage, i.frequency, i.duration].filter(Boolean).length ? ' · ' + [i.dosage, i.frequency, i.duration].filter(Boolean).join(' · ') : ''}
+                        {[i.dosage, i.frequency, i.duration].filter(Boolean).length
+                          ? ' · ' + [i.dosage, i.frequency, i.duration].filter(Boolean).join(' · ')
+                          : ''}
                       </span>
                       {i.instructions && <span className="block text-label-sm text-ink-soft">{i.instructions}</span>}
                     </span>
@@ -90,7 +119,11 @@ function Inner({ tenantId, tab, setTab }: { tenantId: string; tab: Filter; setTa
                 ))}
               </ul>
               <div className="mt-3 flex justify-end border-t border-line pt-3">
-                <RefillButton tenantId={tenantId} prescriptionId={p.id} existingRequest={rData.find(r => r.prescriptionId === p.id && r.status === 'PENDING')} />
+                <RefillButton
+                  tenantId={tenantId}
+                  prescriptionId={p.id}
+                  existingRequest={rData.find((r) => r.prescriptionId === p.id && r.status === 'PENDING')}
+                />
               </div>
             </div>
           ))}
@@ -100,7 +133,15 @@ function Inner({ tenantId, tab, setTab }: { tenantId: string; tab: Filter; setTa
   );
 }
 
-function RefillButton({ tenantId, prescriptionId, existingRequest }: { tenantId: string; prescriptionId: string; existingRequest?: RefillRequest }) {
+function RefillButton({
+  tenantId,
+  prescriptionId,
+  existingRequest,
+}: {
+  tenantId: string;
+  prescriptionId: string;
+  existingRequest?: RefillRequest;
+}) {
   const [state, setState] = useState<'idle' | 'draft' | 'busy' | 'done' | 'error'>('idle');
   const [msg, setMsg] = useState<string | null>(null);
   const [note, setNote] = useState('');

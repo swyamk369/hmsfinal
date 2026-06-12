@@ -40,7 +40,10 @@ const SETTLEABLE_CLAIMS = ['APPROVED', 'PARTIALLY_APPROVED'] as const;
 
 @Injectable()
 export class InsuranceService {
-  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly notifications?: NotificationsService,
+  ) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };
@@ -60,7 +63,10 @@ export class InsuranceService {
     }
   }
 
-  private coverageFromDto(dto: Partial<CreatePolicyDto & UpdatePolicyDto>, previous?: string | null): string | undefined {
+  private coverageFromDto(
+    dto: Partial<CreatePolicyDto & UpdatePolicyDto>,
+    previous?: string | null,
+  ): string | undefined {
     const next: CoverageDetails = { ...this.parseCoverage(previous) };
     for (const key of [
       'memberId',
@@ -133,7 +139,10 @@ export class InsuranceService {
     const s = this.scope(ctx);
     const [patient, provider, duplicate] = await Promise.all([
       s.db.patient.findFirst({ where: { id: dto.patientId, deletedAt: null }, select: { id: true } }),
-      s.db.insuranceProvider.findFirst({ where: { id: dto.providerId, active: true }, select: { id: true, name: true } }),
+      s.db.insuranceProvider.findFirst({
+        where: { id: dto.providerId, active: true },
+        select: { id: true, name: true },
+      }),
       s.db.patientInsurancePolicy.findFirst({
         where: { providerId: dto.providerId, policyNumber: dto.policyNumber, active: true },
         select: { id: true },
@@ -141,7 +150,8 @@ export class InsuranceService {
     ]);
     if (!patient) throw new BadRequestException('Patient not found');
     if (!provider) throw new BadRequestException('Insurance provider not found or inactive');
-    if (duplicate) throw new BadRequestException('An active policy with this provider and policy number already exists');
+    if (duplicate)
+      throw new BadRequestException('An active policy with this provider and policy number already exists');
 
     const policy = await s.db.patientInsurancePolicy.create({
       data: {
@@ -166,7 +176,10 @@ export class InsuranceService {
     const existing = await s.db.patientInsurancePolicy.findFirst({ where: { id } });
     if (!existing) throw new NotFoundException('Policy not found');
     if (dto.providerId) {
-      const provider = await s.db.insuranceProvider.findFirst({ where: { id: dto.providerId, active: true }, select: { id: true } });
+      const provider = await s.db.insuranceProvider.findFirst({
+        where: { id: dto.providerId, active: true },
+        select: { id: true },
+      });
       if (!provider) throw new BadRequestException('Insurance provider not found or inactive');
     }
     const policy = await s.db.patientInsurancePolicy.update({
@@ -252,12 +265,20 @@ export class InsuranceService {
     return this.decorateClaim(claim);
   }
 
-  private calculateClaim(bill: { netAmount: number }, policy: { coverageDetails?: string | null }, dto: CreateClaimDto) {
+  private calculateClaim(
+    bill: { netAmount: number },
+    policy: { coverageDetails?: string | null },
+    dto: CreateClaimDto,
+  ) {
     const coverage = this.parseCoverage(policy.coverageDetails);
     const patientShare =
-      dto.patientShare ?? Math.round((bill.netAmount * Math.max(0, Math.min(100, coverage.patientSharePercent ?? 0))) / 100);
+      dto.patientShare ??
+      Math.round((bill.netAmount * Math.max(0, Math.min(100, coverage.patientSharePercent ?? 0))) / 100);
     const defaultClaimable = Math.max(0, bill.netAmount - patientShare);
-    const limited = coverage.coverageLimit && coverage.coverageLimit > 0 ? Math.min(defaultClaimable, coverage.coverageLimit) : defaultClaimable;
+    const limited =
+      coverage.coverageLimit && coverage.coverageLimit > 0
+        ? Math.min(defaultClaimable, coverage.coverageLimit)
+        : defaultClaimable;
     const claimAmount = dto.claimAmount ?? limited;
     if (claimAmount <= 0) throw new BadRequestException('Claim amount must be greater than zero');
     if (claimAmount + patientShare > bill.netAmount) {
@@ -280,7 +301,8 @@ export class InsuranceService {
       include: { provider: true },
     });
     if (!policy) throw new BadRequestException('Active patient policy not found');
-    if (policy.patientId !== bill.patientId) throw new BadRequestException('Policy does not belong to the billed patient');
+    if (policy.patientId !== bill.patientId)
+      throw new BadRequestException('Policy does not belong to the billed patient');
 
     const duplicate = bill.claims.find(
       (c) => c.patientPolicyId === dto.patientPolicyId && !CLOSED_CLAIMS.includes(c.status as any),
@@ -338,7 +360,10 @@ export class InsuranceService {
     const existing = await s.db.insuranceClaim.findFirst({ where: { id } });
     if (!existing) throw new NotFoundException('Claim not found');
     if (existing.status !== 'DRAFT') throw new BadRequestException('Only draft claims can be submitted');
-    await s.db.insuranceClaim.update({ where: { id }, data: { status: 'SUBMITTED', submittedAt: new Date(), notes: dto.notes ?? existing.notes } });
+    await s.db.insuranceClaim.update({
+      where: { id },
+      data: { status: 'SUBMITTED', submittedAt: new Date(), notes: dto.notes ?? existing.notes },
+    });
     await this.record(s, 'insurance.claim.submit', 'insurance_claim', id, { notes: dto.notes });
     await this.notifications?.safeNotify(ctx, {
       category: 'INSURANCE',
@@ -358,7 +383,10 @@ export class InsuranceService {
     const existing = await s.db.insuranceClaim.findFirst({ where: { id } });
     if (!existing) throw new NotFoundException('Claim not found');
     if (existing.status !== 'SUBMITTED') throw new BadRequestException('Only submitted claims can move under review');
-    await s.db.insuranceClaim.update({ where: { id }, data: { status: 'UNDER_REVIEW', notes: dto.notes ?? existing.notes } });
+    await s.db.insuranceClaim.update({
+      where: { id },
+      data: { status: 'UNDER_REVIEW', notes: dto.notes ?? existing.notes },
+    });
     await this.record(s, 'insurance.claim.review', 'insurance_claim', id, { notes: dto.notes });
     return this.getClaim(ctx, id);
   }
@@ -371,7 +399,8 @@ export class InsuranceService {
       throw new BadRequestException(`Cannot approve a ${existing.status.toLowerCase().replace(/_/g, ' ')} claim`);
     }
     const approvedAmount = dto.approvedAmount ?? existing.claimAmount;
-    if (approvedAmount > existing.claimAmount) throw new BadRequestException('Approved amount cannot exceed claim amount');
+    if (approvedAmount > existing.claimAmount)
+      throw new BadRequestException('Approved amount cannot exceed claim amount');
     const patientShare = dto.patientShare ?? Math.max(0, existing.bill.netAmount - approvedAmount);
     if (approvedAmount + patientShare > existing.bill.netAmount) {
       throw new BadRequestException('Approved amount plus patient share cannot exceed bill net amount');
@@ -379,7 +408,13 @@ export class InsuranceService {
     const status = approvedAmount < existing.claimAmount ? 'PARTIALLY_APPROVED' : 'APPROVED';
     await s.db.insuranceClaim.update({
       where: { id },
-      data: { status: status as any, approvedAmount, patientShare, approvedAt: new Date(), notes: dto.notes ?? existing.notes },
+      data: {
+        status: status as any,
+        approvedAmount,
+        patientShare,
+        approvedAt: new Date(),
+        notes: dto.notes ?? existing.notes,
+      },
     });
     await this.record(s, 'insurance.claim.approve', 'insurance_claim', id, { approvedAmount, patientShare, status });
     await this.notifications?.safeNotify(ctx, {
@@ -435,7 +470,8 @@ export class InsuranceService {
     if (!SETTLEABLE_CLAIMS.includes(existing.status as any)) {
       throw new BadRequestException('Only approved claims can be settled');
     }
-    if (existing.settlements.length > 0 || existing.status === 'SETTLED') throw new BadRequestException('Claim is already settled');
+    if (existing.settlements.length > 0 || existing.status === 'SETTLED')
+      throw new BadRequestException('Claim is already settled');
     const approved = existing.approvedAmount ?? existing.claimAmount;
     const amount = dto.amount ?? approved;
     if (amount <= 0) throw new BadRequestException('Settlement amount must be greater than zero');
@@ -447,8 +483,10 @@ export class InsuranceService {
         include: { bill: { include: { payments: true, refunds: true } }, settlements: true },
       });
       if (!fresh) throw new NotFoundException('Claim not found');
-      if (fresh.settlements.length > 0 || fresh.status === 'SETTLED') throw new BadRequestException('Claim is already settled');
-      if (!SETTLEABLE_CLAIMS.includes(fresh.status as any)) throw new BadRequestException('Only approved claims can be settled');
+      if (fresh.settlements.length > 0 || fresh.status === 'SETTLED')
+        throw new BadRequestException('Claim is already settled');
+      if (!SETTLEABLE_CLAIMS.includes(fresh.status as any))
+        throw new BadRequestException('Only approved claims can be settled');
       const payment = await tx.payment.create({
         data: {
           tenantId: s.tenantId,

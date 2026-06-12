@@ -17,7 +17,10 @@ const PATIENT_SELECT = { select: { id: true, fullName: true, mrn: true, phone: t
 
 @Injectable()
 export class BillingService {
-  constructor(private readonly audit: AuditService, private readonly notifications?: NotificationsService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly notifications?: NotificationsService,
+  ) {}
 
   private scope(ctx: RequestContext): Scope {
     return { db: requireDb(ctx), tenantId: ctx.tenantId!, actorId: ctx.userId };

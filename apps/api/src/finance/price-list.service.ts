@@ -53,7 +53,7 @@ export class PriceListService {
   async setItem(ctx: RequestContext, priceListId: string, data: { catalogId: string; price: number }) {
     const db = requireDb(ctx);
     await this.findOne(ctx, priceListId);
-    
+
     return db.priceListItem.upsert({
       where: {
         tenantId_priceListId_catalogId: {

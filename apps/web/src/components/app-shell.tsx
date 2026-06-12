@@ -58,6 +58,8 @@ const ICONS: Record<string, LucideIcon> = {
   '/reports': BarChart3,
   '/admin': Settings2,
   '/platform': Building2,
+  '/support': LifeBuoy,
+  '/platform/support': LifeBuoy,
   '/platform/plans': Layers,
   '/platform/audit': ScrollText,
 };
@@ -76,9 +78,12 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { profile, activeMembership } = useAuth();
+  const pathname = usePathname();
   if (!profile) return null;
 
   const items = visibleNav(profile, activeMembership);
+  const supportHref = profile.isPlatform ? '/platform/support' : '/support';
+  const supportActive = pathname === supportHref || pathname.startsWith(supportHref + '/');
 
   return (
     <div className="flex h-full flex-col">
@@ -104,8 +109,8 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <Link href="/settings/account" onClick={onNavigate} className="nav-item">
           <Settings className="h-[18px] w-[18px]" /> Settings
         </Link>
-        <Link href="/support" onClick={onNavigate} className="nav-item">
-          <LifeBuoy className="h-[18px] w-[18px]" /> Support
+        <Link href={supportHref} onClick={onNavigate} className={cx('nav-item', supportActive && 'nav-item-active')}>
+          <LifeBuoy className="h-[18px] w-[18px]" /> {profile.isPlatform ? 'Global Support' : 'Support'}
         </Link>
       </div>
     </div>
@@ -188,11 +193,33 @@ function TenantSelector() {
   );
 }
 
+function supportTarget(profile: { isPlatform: boolean }) {
+  return profile.isPlatform
+    ? { href: '/platform/support', label: 'Global Support' }
+    : { href: '/support', label: 'Support' };
+}
+
+function SupportShortcut() {
+  const { profile } = useAuth();
+  if (!profile) return null;
+  const support = supportTarget(profile);
+  return (
+    <Link
+      href={support.href}
+      className="hidden items-center gap-2 rounded-md border border-line bg-surface px-3 py-1.5 text-body-sm font-medium text-ink hover:bg-canvas sm:inline-flex"
+    >
+      <LifeBuoy className="h-4 w-4" />
+      <span className="hidden xl:inline">{support.label}</span>
+    </Link>
+  );
+}
+
 function ProfileMenu() {
   const { profile, activeMembership, logout } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   if (!profile) return null;
+  const support = supportTarget(profile);
 
   const roleLabel = profile.isPlatform
     ? 'Super Admin'
@@ -232,6 +259,20 @@ function ProfileMenu() {
               <div className="text-body-sm font-medium text-ink">{profile.fullName}</div>
               <div className="truncate text-body-sm text-ink-soft">{profile.email}</div>
             </div>
+            <Link
+              href={support.href}
+              onClick={() => setOpen(false)}
+              className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-body-sm text-ink hover:bg-canvas"
+            >
+              <LifeBuoy className="h-4 w-4" /> {support.label}
+            </Link>
+            <Link
+              href="/settings/account"
+              onClick={() => setOpen(false)}
+              className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-body-sm text-ink hover:bg-canvas"
+            >
+              <Settings className="h-4 w-4" /> Account settings
+            </Link>
             <button
               onClick={onLogout}
               className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-body-sm text-ink hover:bg-canvas"
@@ -278,6 +319,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <Breadcrumbs />
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <GlobalSearch />
+            <SupportShortcut />
             <NotificationBell />
             <TenantSelector />
             <ProfileMenu />

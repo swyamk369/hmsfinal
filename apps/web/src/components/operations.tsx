@@ -15,7 +15,15 @@ const priorityTone: Record<WorkPriority, 'slate' | 'primary' | 'warning' | 'dang
   CRITICAL: 'danger',
 };
 
-export function HelpTip({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
+export function HelpTip({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <div className={cx('rounded-md border border-primary-100 bg-primary-50/70 px-3 py-2 text-body-sm', className)}>
       <div className="flex gap-2">
@@ -194,7 +202,8 @@ export function BlockersPanel({ limit = 5 }: { limit?: number }) {
 
   if (err) return <ErrorState message={err} />;
   if (!items) return <Spinner label="Loading blockers..." />;
-  if (items.length === 0) return <EmptyGuidance title="No blockers" hint="Critical delays and blocked workflow items will appear here." />;
+  if (items.length === 0)
+    return <EmptyGuidance title="No blockers" hint="Critical delays and blocked workflow items will appear here." />;
 
   return (
     <Section title="Blockers">

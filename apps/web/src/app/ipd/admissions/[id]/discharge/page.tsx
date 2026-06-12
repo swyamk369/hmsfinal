@@ -9,7 +9,17 @@ import { useAuth } from '@/lib/auth-context';
 import { useToast } from '@/components/toast';
 import { ipdApi, type AdmissionDetail } from '@/lib/ipd';
 import { ageFromDob, formatDate, formatDateTime, money } from '@/lib/format';
-import { Button, ErrorState, FormField, Input, PageHeader, Section, Spinner, StatusChip, Textarea } from '@/components/ui';
+import {
+  Button,
+  ErrorState,
+  FormField,
+  Input,
+  PageHeader,
+  Section,
+  Spinner,
+  StatusChip,
+  Textarea,
+} from '@/components/ui';
 
 function DischargeInner({ id }: { id: string }) {
   const { activeTenantId } = useAuth();
@@ -94,7 +104,11 @@ function DischargeInner({ id }: { id: string }) {
           This admission is already {admission.status.toLowerCase()}. You can review or print the summary.
         </div>
       )}
-      {formErr && <div className="mb-5"><ErrorState message={formErr} /></div>}
+      {formErr && (
+        <div className="mb-5">
+          <ErrorState message={formErr} />
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-1">
@@ -156,12 +170,19 @@ function DischargeInner({ id }: { id: string }) {
               />
             </FormField>
             <FormField label="Follow-up date">
-              <Input type="date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} disabled={alreadyDischarged} />
+              <Input
+                type="date"
+                value={followUpDate}
+                onChange={(e) => setFollowUpDate(e.target.value)}
+                disabled={alreadyDischarged}
+              />
             </FormField>
           </div>
           <div className="flex justify-end gap-3 border-t border-line px-5 py-4">
             <Link href={`/ipd/admissions/${id}/summary`}>
-              <Button variant="ghost" icon={FileText}>Printable summary</Button>
+              <Button variant="ghost" icon={FileText}>
+                Printable summary
+              </Button>
             </Link>
             <Button
               icon={CheckCircle2}

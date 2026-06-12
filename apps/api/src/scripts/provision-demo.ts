@@ -48,7 +48,12 @@ async function seedLabCatalog(tenantId: string) {
 }
 
 const slugify = (s: string) =>
-  s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'profile';
+  s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60) || 'profile';
 
 const LANGS = ['English', 'Hindi'];
 const CTYPES = ['IN_PERSON', 'TELEHEALTH'];
@@ -56,11 +61,27 @@ const CTYPES = ['IN_PERSON', 'TELEHEALTH'];
 /** Phase 22 — seed a published public profile + doctors + types + availability + search index. */
 async function seedPublicLayer(
   tenantId: string,
-  opts: { displayName: string; slug: string; city: string; state: string; specialties: string[]; services: string[]; doctors: { doctorId: string; name: string; specialty: string }[] },
+  opts: {
+    displayName: string;
+    slug: string;
+    city: string;
+    state: string;
+    specialties: string[];
+    services: string[];
+    doctors: { doctorId: string; name: string; specialty: string }[];
+  },
 ) {
   await platformDb.patientPortalSettings.upsert({
     where: { tenantId },
-    create: { tenantId, enabled: true, onlineBookingEnabled: true, bookingApprovalMode: 'AUTOMATIC', clinicDisplayName: opts.displayName, allowNewPatientBookings: true, allowExistingPatientBookings: true },
+    create: {
+      tenantId,
+      enabled: true,
+      onlineBookingEnabled: true,
+      bookingApprovalMode: 'AUTOMATIC',
+      clinicDisplayName: opts.displayName,
+      allowNewPatientBookings: true,
+      allowExistingPatientBookings: true,
+    },
     update: { enabled: true, onlineBookingEnabled: true, bookingApprovalMode: 'AUTOMATIC' },
   });
 
@@ -68,11 +89,30 @@ async function seedPublicLayer(
   await platformDb.publicHospitalProfile.upsert({
     where: { tenantId },
     create: {
-      tenantId, hospitalSlug: hslug, hospitalDisplayName: opts.displayName, isPublic: true, bookingEnabled: true, profileStatus: 'PUBLISHED',
-      description: `${opts.displayName} provides quality, patient-first care.`, city: opts.city, state: opts.state, country: 'India',
-      phone: '+91 1800-000-000', specialties: opts.specialties, services: opts.services, consultationTypes: CTYPES, languages: LANGS, facilities: ['Pharmacy', 'Laboratory', 'Parking'],
+      tenantId,
+      hospitalSlug: hslug,
+      hospitalDisplayName: opts.displayName,
+      isPublic: true,
+      bookingEnabled: true,
+      profileStatus: 'PUBLISHED',
+      description: `${opts.displayName} provides quality, patient-first care.`,
+      city: opts.city,
+      state: opts.state,
+      country: 'India',
+      phone: '+91 1800-000-000',
+      specialties: opts.specialties,
+      services: opts.services,
+      consultationTypes: CTYPES,
+      languages: LANGS,
+      facilities: ['Pharmacy', 'Laboratory', 'Parking'],
     },
-    update: { isPublic: true, bookingEnabled: true, profileStatus: 'PUBLISHED', specialties: opts.specialties, services: opts.services },
+    update: {
+      isPublic: true,
+      bookingEnabled: true,
+      profileStatus: 'PUBLISHED',
+      specialties: opts.specialties,
+      services: opts.services,
+    },
   });
 
   for (const t of [
@@ -81,15 +121,29 @@ async function seedPublicLayer(
     { name: 'Telehealth Consultation', price: 40000, consultationType: 'TELEHEALTH', durationMinutes: 15 },
   ]) {
     const ex = await platformDb.appointmentType.findFirst({ where: { tenantId, name: t.name } });
-    if (!ex) await platformDb.appointmentType.create({ data: { tenantId, ...(t as any), isPublic: true, isActive: true } });
+    if (!ex)
+      await platformDb.appointmentType.create({ data: { tenantId, ...(t as any), isPublic: true, isActive: true } });
   }
 
   await platformDb.publicSearchIndex.deleteMany({ where: { type: 'HOSPITAL', tenantId } });
   await platformDb.publicSearchIndex.create({
     data: {
-      type: 'HOSPITAL', tenantId, hospitalSlug: hslug, hospitalName: opts.displayName, services: opts.services, location: `${opts.city}, ${opts.state}`,
-      city: opts.city, state: opts.state, country: 'India', consultationTypes: CTYPES, languages: LANGS, isBookable: true, profileUrl: `/hospitals/${hslug}`,
-      searchKeywords: [opts.displayName, opts.city, opts.state, ...opts.specialties, ...opts.services].join(' ').toLowerCase(),
+      type: 'HOSPITAL',
+      tenantId,
+      hospitalSlug: hslug,
+      hospitalName: opts.displayName,
+      services: opts.services,
+      location: `${opts.city}, ${opts.state}`,
+      city: opts.city,
+      state: opts.state,
+      country: 'India',
+      consultationTypes: CTYPES,
+      languages: LANGS,
+      isBookable: true,
+      profileUrl: `/hospitals/${hslug}`,
+      searchKeywords: [opts.displayName, opts.city, opts.state, ...opts.specialties, ...opts.services]
+        .join(' ')
+        .toLowerCase(),
     },
   });
 
@@ -99,21 +153,59 @@ async function seedPublicLayer(
     if (!exists) {
       await platformDb.publicDoctorProfile.create({
         data: {
-          tenantId, doctorId: doc.doctorId, doctorSlug: dslug, displayName: doc.name, specialty: doc.specialty, isPublic: true, bookingEnabled: true, profileStatus: 'PUBLISHED',
-          qualifications: 'MBBS, MD', bio: `${doc.name} is an experienced ${doc.specialty} at ${opts.displayName}.`, languages: LANGS, services: opts.services, consultationTypes: CTYPES,
-          acceptsNewPatients: true, acceptsExistingPatients: true, telehealthAvailable: true,
+          tenantId,
+          doctorId: doc.doctorId,
+          doctorSlug: dslug,
+          displayName: doc.name,
+          specialty: doc.specialty,
+          isPublic: true,
+          bookingEnabled: true,
+          profileStatus: 'PUBLISHED',
+          qualifications: 'MBBS, MD',
+          bio: `${doc.name} is an experienced ${doc.specialty} at ${opts.displayName}.`,
+          languages: LANGS,
+          services: opts.services,
+          consultationTypes: CTYPES,
+          acceptsNewPatients: true,
+          acceptsExistingPatients: true,
+          telehealthAvailable: true,
         },
       });
     }
     for (let day = 1; day <= 5; day++) {
-      const ar = await platformDb.availabilityRule.findFirst({ where: { tenantId, doctorId: doc.doctorId, dayOfWeek: day } });
-      if (!ar) await platformDb.availabilityRule.create({ data: { tenantId, doctorId: doc.doctorId, dayOfWeek: day, startTime: '09:00', endTime: '17:00', slotDurationMinutes: 15, consultationTypes: CTYPES, isActive: true } });
+      const ar = await platformDb.availabilityRule.findFirst({
+        where: { tenantId, doctorId: doc.doctorId, dayOfWeek: day },
+      });
+      if (!ar)
+        await platformDb.availabilityRule.create({
+          data: {
+            tenantId,
+            doctorId: doc.doctorId,
+            dayOfWeek: day,
+            startTime: '09:00',
+            endTime: '17:00',
+            slotDurationMinutes: 15,
+            consultationTypes: CTYPES,
+            isActive: true,
+          },
+        });
     }
     await platformDb.publicSearchIndex.deleteMany({ where: { type: 'DOCTOR', tenantId, doctorId: doc.doctorId } });
     await platformDb.publicSearchIndex.create({
       data: {
-        type: 'DOCTOR', tenantId, doctorId: doc.doctorId, doctorSlug: dslug, hospitalName: opts.displayName, doctorName: doc.name, specialty: doc.specialty, services: opts.services,
-        consultationTypes: CTYPES, languages: LANGS, isBookable: true, profileUrl: `/doctors/${dslug}`, searchKeywords: [doc.name, doc.specialty, opts.displayName, opts.city].join(' ').toLowerCase(),
+        type: 'DOCTOR',
+        tenantId,
+        doctorId: doc.doctorId,
+        doctorSlug: dslug,
+        hospitalName: opts.displayName,
+        doctorName: doc.name,
+        specialty: doc.specialty,
+        services: opts.services,
+        consultationTypes: CTYPES,
+        languages: LANGS,
+        isBookable: true,
+        profileUrl: `/doctors/${dslug}`,
+        searchKeywords: [doc.name, doc.specialty, opts.displayName, opts.city].join(' ').toLowerCase(),
       },
     });
   }
@@ -127,6 +219,7 @@ async function seedPortalPatient(tenantId: string, doctorId?: string) {
   let uid: string;
   try {
     uid = (await auth.getUserByEmail(email)).uid;
+    await auth.updateUser(uid, { password: PASSWORD, displayName: 'Priya Patient' });
   } catch {
     uid = (await auth.createUser({ email, password: PASSWORD, displayName: 'Priya Patient' })).uid;
   }
@@ -140,7 +233,17 @@ async function seedPortalPatient(tenantId: string, doctorId?: string) {
   if (!patient) {
     const n = await platformDb.patient.count({ where: { tenantId } });
     patient = await platformDb.patient.create({
-      data: { tenantId, mrn: `DEM-2026-${String(n + 1).padStart(5, '0')}`, fullName: 'Priya Patient', dob: new Date('1990-05-15'), sex: 'FEMALE', phone: '+919812345678', email, address: 'Pune, Maharashtra', linkedPortalUid: uid },
+      data: {
+        tenantId,
+        mrn: `DEM-2026-${String(n + 1).padStart(5, '0')}`,
+        fullName: 'Priya Patient',
+        dob: new Date('1990-05-15'),
+        sex: 'FEMALE',
+        phone: '+919812345678',
+        email,
+        address: 'Pune, Maharashtra',
+        linkedPortalUid: uid,
+      },
     });
   } else if (!patient.linkedPortalUid) {
     await platformDb.patient.update({ where: { id: patient.id }, data: { linkedPortalUid: uid } });
@@ -149,24 +252,70 @@ async function seedPortalPatient(tenantId: string, doctorId?: string) {
   const access = await platformDb.patientPortalAccess.findFirst({ where: { tenantId, uid, patientId: patient.id } });
   if (!access) {
     await platformDb.patientPortalAccess.create({
-      data: { tenantId, uid, patientId: patient.id, hospitalDisplayName: 'Demo Hospital', email, accessStatus: 'ACTIVE', verificationStatus: 'VERIFIED', linkedAt: new Date() },
+      data: {
+        tenantId,
+        uid,
+        patientId: patient.id,
+        hospitalDisplayName: 'Demo Hospital',
+        email,
+        accessStatus: 'ACTIVE',
+        verificationStatus: 'VERIFIED',
+        linkedAt: new Date(),
+      },
     });
   }
 
-  if (!(await platformDb.patientDocument.findFirst({ where: { tenantId, patientId: patient.id, title: 'Welcome to Demo Hospital' } }))) {
+  if (
+    !(await platformDb.patientDocument.findFirst({
+      where: { tenantId, patientId: patient.id, title: 'Welcome to Demo Hospital' },
+    }))
+  ) {
     await platformDb.patientDocument.create({
-      data: { tenantId, patientId: patient.id, title: 'Welcome to Demo Hospital', category: 'OTHER', source: 'GENERATED', documentUrl: 'https://example.com/welcome.pdf', fileName: 'welcome.pdf', mimeType: 'application/pdf', visibleToPatient: true, publishedAt: new Date() },
+      data: {
+        tenantId,
+        patientId: patient.id,
+        title: 'Welcome to Demo Hospital',
+        category: 'OTHER',
+        source: 'GENERATED',
+        documentUrl: 'https://example.com/welcome.pdf',
+        fileName: 'welcome.pdf',
+        mimeType: 'application/pdf',
+        visibleToPatient: true,
+        publishedAt: new Date(),
+      },
     });
   }
   if (!(await platformDb.bill.findFirst({ where: { tenantId, patientId: patient.id } }))) {
     const bn = `INV-2026-${String((await platformDb.bill.count({ where: { tenantId } })) + 1).padStart(5, '0')}`;
-    await platformDb.bill.create({ data: { tenantId, patientId: patient.id, billNumber: bn, totalAmount: 50000, discount: 0, netAmount: 50000, status: 'UNPAID', notes: 'Consultation' } });
+    await platformDb.bill.create({
+      data: {
+        tenantId,
+        patientId: patient.id,
+        billNumber: bn,
+        totalAmount: 50000,
+        discount: 0,
+        netAmount: 50000,
+        status: 'UNPAID',
+        notes: 'Consultation',
+      },
+    });
   }
   if (doctorId && !(await platformDb.appointment.findFirst({ where: { tenantId, patientId: patient.id } }))) {
     const when = new Date();
     when.setDate(when.getDate() + 2);
     when.setHours(10, 0, 0, 0);
-    await platformDb.appointment.create({ data: { tenantId, patientId: patient.id, providerId: doctorId, scheduledAt: when, status: 'SCHEDULED', reason: 'Follow-up', source: 'ADMIN', consultationType: 'IN_PERSON' } });
+    await platformDb.appointment.create({
+      data: {
+        tenantId,
+        patientId: patient.id,
+        providerId: doctorId,
+        scheduledAt: when,
+        status: 'SCHEDULED',
+        reason: 'Follow-up',
+        source: 'ADMIN',
+        consultationType: 'IN_PERSON',
+      },
+    });
   }
   // Phase 23 — Care Team, Family, Notifications, published lab report, refill request.
   if (doctorId) {
@@ -174,35 +323,88 @@ async function seedPortalPatient(tenantId: string, doctorId?: string) {
     if (prof && !(await platformDb.patientSavedProvider.findFirst({ where: { uid, tenantId, doctorId } }))) {
       await platformDb.patientSavedProvider.create({
         data: {
-          uid, tenantId, doctorId, doctorSlug: prof.doctorSlug,
-          doctorName: prof.displayName, specialty: prof.specialty ?? null, hospitalName: 'Demo Hospital',
+          uid,
+          tenantId,
+          doctorId,
+          doctorSlug: prof.doctorSlug,
+          doctorName: prof.displayName,
+          specialty: prof.specialty ?? null,
+          hospitalName: 'Demo Hospital',
         },
       });
     }
   }
   if (!(await platformDb.patientSavedHospital.findFirst({ where: { uid, tenantId } }))) {
-    await platformDb.patientSavedHospital.create({ data: { uid, tenantId, hospitalName: 'Demo Hospital', city: 'Pune' } });
+    await platformDb.patientSavedHospital.create({
+      data: { uid, tenantId, hospitalName: 'Demo Hospital', city: 'Pune' },
+    });
   }
   if (!(await platformDb.patientFamilyMember.findFirst({ where: { uid, fullName: 'Aarav Patient' } }))) {
-    await platformDb.patientFamilyMember.create({ data: { uid, fullName: 'Aarav Patient', relationship: 'Child', dob: new Date('2016-08-20'), sex: 'MALE' } });
+    await platformDb.patientFamilyMember.create({
+      data: { uid, fullName: 'Aarav Patient', relationship: 'Child', dob: new Date('2016-08-20'), sex: 'MALE' },
+    });
   }
   if ((await platformDb.patientNotification.count({ where: { uid } })) === 0) {
     await platformDb.patientNotification.createMany({
       data: [
-        { uid, tenantId, category: 'BOOKING', title: 'Appointment confirmed', body: 'Your follow-up at Demo Hospital is confirmed.', actionUrl: '/patient/appointments' },
-        { uid, tenantId, category: 'DOCUMENT', title: 'New document shared', body: 'Demo Hospital shared a document with you.', actionUrl: '/patient/documents' },
+        {
+          uid,
+          tenantId,
+          category: 'BOOKING',
+          title: 'Appointment confirmed',
+          body: 'Your follow-up at Demo Hospital is confirmed.',
+          actionUrl: '/patient/appointments',
+        },
+        {
+          uid,
+          tenantId,
+          category: 'DOCUMENT',
+          title: 'New document shared',
+          body: 'Demo Hospital shared a document with you.',
+          actionUrl: '/patient/documents',
+        },
       ],
     });
   }
 
   // A published (COMPLETED + verified) lab report so the clinical-record screen has real data.
   if (!(await platformDb.labOrder.findFirst({ where: { tenantId, patientId: patient.id } }))) {
-    const order = await platformDb.labOrder.create({ data: { tenantId, patientId: patient.id, status: 'COMPLETED', notes: 'Routine panel' } });
-    const item = await platformDb.labOrderItem.create({ data: { tenantId, labOrderId: order.id, testId: randomUUID(), testName: 'Complete Blood Count', status: 'COMPLETED' } });
+    const order = await platformDb.labOrder.create({
+      data: { tenantId, patientId: patient.id, status: 'COMPLETED', notes: 'Routine panel' },
+    });
+    const item = await platformDb.labOrderItem.create({
+      data: {
+        tenantId,
+        labOrderId: order.id,
+        testId: randomUUID(),
+        testName: 'Complete Blood Count',
+        status: 'COMPLETED',
+      },
+    });
     await platformDb.labResult.createMany({
       data: [
-        { tenantId, labOrderItemId: item.id, testName: 'Hemoglobin', value: '13.5', unit: 'g/dL', referenceRange: '12.0-15.5', abnormalFlag: 'NORMAL', isVerified: true, verifiedAt: new Date() },
-        { tenantId, labOrderItemId: item.id, testName: 'WBC', value: '11.8', unit: '10^3/uL', referenceRange: '4.0-11.0', abnormalFlag: 'HIGH', isVerified: true, verifiedAt: new Date() },
+        {
+          tenantId,
+          labOrderItemId: item.id,
+          testName: 'Hemoglobin',
+          value: '13.5',
+          unit: 'g/dL',
+          referenceRange: '12.0-15.5',
+          abnormalFlag: 'NORMAL',
+          isVerified: true,
+          verifiedAt: new Date(),
+        },
+        {
+          tenantId,
+          labOrderItemId: item.id,
+          testName: 'WBC',
+          value: '11.8',
+          unit: '10^3/uL',
+          referenceRange: '4.0-11.0',
+          abnormalFlag: 'HIGH',
+          isVerified: true,
+          verifiedAt: new Date(),
+        },
       ],
     });
   }
@@ -210,11 +412,19 @@ async function seedPortalPatient(tenantId: string, doctorId?: string) {
   // A pending refill request so the staff queue + patient prescriptions screen are demoable.
   if (!(await platformDb.prescriptionRefillRequest.findFirst({ where: { tenantId, patientId: patient.id } }))) {
     await platformDb.prescriptionRefillRequest.create({
-      data: { tenantId, patientId: patient.id, uid, status: 'REQUESTED', note: 'Please refill my blood-pressure medication.' },
+      data: {
+        tenantId,
+        patientId: patient.id,
+        uid,
+        status: 'REQUESTED',
+        note: 'Please refill my blood-pressure medication.',
+      },
     });
   }
 
-  console.log(`  ✓ portal patient: ${email} (pwd ${PASSWORD}) — bill, document, appointment, saved doctor/hospital, family, notifications, lab report & refill`);
+  console.log(
+    `  ✓ portal patient: ${email} (pwd ${PASSWORD}) — bill, document, appointment, saved doctor/hospital, family, notifications, lab report & refill`,
+  );
 }
 
 async function main(): Promise<void> {
@@ -268,9 +478,10 @@ async function main(): Promise<void> {
     { role: ROLES.ACCOUNTANT, email: 'accountant@demo.local', name: 'Anil Accountant' },
     { role: ROLES.INSURANCE_STAFF, email: 'insurance@demo.local', name: 'Isha Insurance' },
   ];
+  const auth = admin.auth(getFirebaseApp());
 
   for (const u of users) {
-    await provisionUser({
+    const { uid } = await provisionUser({
       tenantId: tenant.id,
       email: u.email,
       password: PASSWORD,
@@ -281,6 +492,7 @@ async function main(): Promise<void> {
       departmentId: u.departmentId,
       speciality: u.speciality,
     });
+    await auth.updateUser(uid, { password: PASSWORD, displayName: u.name });
     console.log(`  ✓ ${u.role.padEnd(17)} ${u.email}`);
   }
 
@@ -297,12 +509,21 @@ async function main(): Promise<void> {
     state: 'Maharashtra',
     specialties: ['General Medicine', 'Cardiology', 'Pediatrics'],
     services: ['Consultation', 'Lab Tests', 'Pharmacy', 'Health Checkup'],
-    doctors: demoDoctors.map((d) => ({ doctorId: d.id, name: d.user.fullName, specialty: d.speciality || 'General Physician' })),
+    doctors: demoDoctors.map((d) => ({
+      doctorId: d.id,
+      name: d.user.fullName,
+      specialty: d.speciality || 'General Physician',
+    })),
   });
   await seedPortalPatient(tenant.id, demoDoctors[0]?.id);
 
   // A second public hospital (no staff users) so global search spans multiple tenants.
-  const sunrise = await createTenant({ name: 'Sunrise Clinic', slug: 'sunrise-clinic', planCode: PLAN_CODES.GROWTH, contactEmail: 'hello@sunrise.local' });
+  const sunrise = await createTenant({
+    name: 'Sunrise Clinic',
+    slug: 'sunrise-clinic',
+    planCode: PLAN_CODES.GROWTH,
+    contactEmail: 'hello@sunrise.local',
+  });
   await seedPublicLayer(sunrise.tenant.id, {
     displayName: 'Sunrise Clinic',
     slug: 'sunrise-clinic',

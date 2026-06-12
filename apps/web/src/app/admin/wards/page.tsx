@@ -98,7 +98,11 @@ function WardsInner() {
               title={w.name}
               action={
                 <div className="flex items-center gap-2">
-                  <span className={w.dailyRate > 0 ? 'text-body-sm font-medium text-ink-muted' : 'text-body-sm text-ink-soft'}>
+                  <span
+                    className={
+                      w.dailyRate > 0 ? 'text-body-sm font-medium text-ink-muted' : 'text-body-sm text-ink-soft'
+                    }
+                  >
                     {w.dailyRate > 0 ? `${money(w.dailyRate)}/day` : 'No rate set'}
                   </span>
                   <StatusChip status={w.type} />
@@ -201,7 +205,8 @@ function WardModal({
     setBusy(true);
     try {
       const rate = Math.max(0, Math.round((Number(dailyRate) || 0) * 100));
-      if (ward) await adminApi.updateWard(activeTenantId, ward.id, { name: name.trim(), type, active, dailyRate: rate });
+      if (ward)
+        await adminApi.updateWard(activeTenantId, ward.id, { name: name.trim(), type, active, dailyRate: rate });
       else await adminApi.createWard(activeTenantId, { name: name.trim(), type, dailyRate: rate });
       toast.success(ward ? 'Ward updated.' : 'Ward created.');
       await onSaved();

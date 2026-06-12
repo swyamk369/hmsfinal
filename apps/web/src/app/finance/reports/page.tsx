@@ -42,8 +42,14 @@ function FinanceReportsInner() {
     <>
       <PageHeader
         title="Finance Reports"
-        subtitle={data ? `Unified finance summary · ${formatDateTime(data.generatedAt)}` : 'Unified revenue-cycle summary'}
-        action={<Button variant="ghost" onClick={load}>Refresh</Button>}
+        subtitle={
+          data ? `Unified finance summary · ${formatDateTime(data.generatedAt)}` : 'Unified revenue-cycle summary'
+        }
+        action={
+          <Button variant="ghost" onClick={load}>
+            Refresh
+          </Button>
+        }
       />
       <FinanceShell>
         {err && <ErrorState message={err} />}
@@ -55,7 +61,12 @@ function FinanceReportsInner() {
               <StatCard label="Collection today" value={money(dashboard.collectionToday)} icon={CreditCard} />
               <StatCard label="Net collection" value={money(dashboard.netCollectionToday)} icon={Banknote} />
               <StatCard label="Patient dues" value={money(dashboard.outstandingPatientDues)} />
-              <StatCard label="Insurance receivables" value={money(dashboard.insuranceReceivables)} icon={ShieldCheck} hint={`${data.insuranceReceivableCount} claims`} />
+              <StatCard
+                label="Insurance receivables"
+                value={money(dashboard.insuranceReceivables)}
+                icon={ShieldCheck}
+                hint={`${data.insuranceReceivableCount} claims`}
+              />
               <StatCard label="Pending charges" value={dashboard.pendingCharges} icon={ListChecks} />
             </div>
 
@@ -72,7 +83,11 @@ function FinanceReportsInner() {
               ) : (
                 <div className="divide-y divide-line">
                   {dashboard.blockers.map((blocker) => (
-                    <Link key={blocker.type} href={blocker.href} className="flex items-center justify-between px-5 py-3 hover:bg-canvas">
+                    <Link
+                      key={blocker.type}
+                      href={blocker.href}
+                      className="flex items-center justify-between px-5 py-3 hover:bg-canvas"
+                    >
                       <span className="font-medium text-ink">{blocker.label}</span>
                       <span className="text-body-sm text-primary">Open</span>
                     </Link>
@@ -100,7 +115,9 @@ function Breakdown({ title, rows }: { title: string; rows: Record<string, number
   return (
     <Section title={title}>
       {entries.length === 0 ? (
-        <div className="p-5"><EmptyState title="No data yet" /></div>
+        <div className="p-5">
+          <EmptyState title="No data yet" />
+        </div>
       ) : (
         <ul className="divide-y divide-line">
           {entries.map(([key, value]) => (
@@ -117,7 +134,10 @@ function Breakdown({ title, rows }: { title: string; rows: Record<string, number
 
 function ReportLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className="flex items-center justify-between rounded-md border border-line px-3 py-3 text-body-sm hover:border-primary hover:text-primary">
+    <Link
+      href={href}
+      className="flex items-center justify-between rounded-md border border-line px-3 py-3 text-body-sm hover:border-primary hover:text-primary"
+    >
       <span className="flex items-center gap-2 font-medium">
         <BarChart3 className="h-4 w-4" />
         {label}
@@ -129,7 +149,10 @@ function ReportLink({ href, label }: { href: string; label: string }) {
 
 export default function FinanceReportsPage() {
   return (
-    <Protected requireModule="BILLING" requirePermission={['reports.financial.read', 'finance.reconcile', ...FINANCE_PERMS]}>
+    <Protected
+      requireModule="BILLING"
+      requirePermission={['reports.financial.read', 'finance.reconcile', ...FINANCE_PERMS]}
+    >
       <FinanceReportsInner />
     </Protected>
   );
