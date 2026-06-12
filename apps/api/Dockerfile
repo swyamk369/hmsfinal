@@ -56,6 +56,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends dumb-init opens
  && rm -rf /var/lib/apt/lists/*
 COPY --chown=node:node --from=builder /repo/node_modules ./node_modules
 COPY --chown=node:node --from=builder /repo/package.json ./package.json
+COPY --chown=node:node --from=builder /repo/tsconfig.base.json ./tsconfig.base.json
 COPY --chown=node:node --from=builder /repo/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --chown=node:node --from=builder /repo/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --chown=node:node --from=builder /repo/packages ./packages
