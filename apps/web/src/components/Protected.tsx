@@ -12,6 +12,8 @@ interface ProtectedProps {
   allowedRoles?: string[];
   requireModule?: string;
   requirePlatform?: boolean;
+  /** With requirePlatform: also admit platform support staff (isSupport). */
+  allowSupport?: boolean;
   requirePermission?: string[];
 }
 
@@ -88,6 +90,7 @@ export default function Protected({
   allowedRoles,
   requireModule,
   requirePlatform,
+  allowSupport,
   requirePermission,
 }: ProtectedProps) {
   const { profile, loading, error, activeMembership, refresh } = useAuth();
@@ -95,7 +98,13 @@ export default function Protected({
 
   const redirect =
     !loading && profile
-      ? routeDecision(profile, activeMembership, { allowedRoles, requireModule, requirePlatform, requirePermission })
+      ? routeDecision(profile, activeMembership, {
+          allowedRoles,
+          requireModule,
+          requirePlatform,
+          allowSupport,
+          requirePermission,
+        })
       : null;
 
   useEffect(() => {

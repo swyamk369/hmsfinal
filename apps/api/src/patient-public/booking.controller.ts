@@ -1,5 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, Query } from '@nestjs/common';
 import { Public } from '../common/decorators';
+import { FirebaseService } from '../common/firebase.service';
+import { platformDb } from '@hms/db';
 import { BookingService } from './booking.service';
 import { CreateBookingDto, ValidateSlotDto } from './dto';
 
@@ -7,7 +9,23 @@ import { CreateBookingDto, ValidateSlotDto } from './dto';
 @Public()
 @Controller('public/booking')
 export class BookingController {
-  constructor(private readonly svc: BookingService) {}
+  constructor(
+    private readonly svc: BookingService,
+    private readonly firebase: FirebaseService,
+  ) {}
+
+  /**
+   * Optional identity capture: when a signed-in PORTAL patient books, attach
+   * their uid to the booking so confirm/reject/reschedule notifications reach
+   * them. Anonymous bookings stay fully supported. Never auto-links records.
+   */
+  private async resolvePortalUid(authorization?: string): Promise<string | null> {
+    if (!authorization?.startsWith('Bearer ')) return null;
+    const verified = await this.firebase.verifyIdToken(authorization.slice(7)).catch(() => null);
+    if (!verified?.uid) return null;
+    const portalUser = await platformDb.patientAuthUser.findUnique({ where: { uid: verified.uid } });
+    return portalUser ? verified.uid : null;
+  }
 
   @Get('options')
   options(@Query('tenantId') tenantId: string, @Query('doctorId') doctorId: string) {
@@ -31,8 +49,9 @@ export class BookingController {
   }
 
   @Post('create')
-  create(@Body() dto: CreateBookingDto) {
-    return this.svc.create(dto);
+  async create(@Body() dto: CreateBookingDto, @Headers('authorization') authorization?: string) {
+    const uid = await this.resolvePortalUid(authorization);
+    return this.svc.create(dto, uid);
   }
 
   @Get(':id/status')

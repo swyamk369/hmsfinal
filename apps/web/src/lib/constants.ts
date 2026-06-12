@@ -126,6 +126,9 @@ export const PLATFORM_NAV: NavItem[] = [
   { label: 'Audit Log', href: '/platform/audit' },
 ];
 
+// Platform support staff (isSupport, not super admin): global support queue only.
+export const SUPPORT_NAV: NavItem[] = [{ label: 'Global Support', href: '/platform/support' }];
+
 // Human labels for path segments, used by breadcrumbs.
 export const SEGMENT_LABELS: Record<string, string> = {
   admin: 'Admin',

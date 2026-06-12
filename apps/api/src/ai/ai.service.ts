@@ -4,6 +4,7 @@ import {
   convertToModelMessages,
   createUIMessageStream,
   createUIMessageStreamResponse,
+  stepCountIs,
   streamText,
   tool,
   type UIMessage,
@@ -118,6 +119,10 @@ export class AiService {
         model: google(process.env.GOOGLE_GENERATIVE_AI_MODEL || 'gemini-2.5-flash'),
         system: this.buildSystemPrompt(actor, meta),
         messages: modelMessages,
+        // Allow tool -> follow-up text turns. The SDK default stops after a
+        // single step, which would end the stream right after a tool call and
+        // leave the user with no confirmation (e.g. no ticket ID).
+        stopWhen: stepCountIs(5),
         timeout: 30_000,
         onError: ({ error }) => {
           console.error('AI provider stream error:', error);

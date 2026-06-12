@@ -17,5 +17,7 @@ export interface Profile {
   email: string;
   fullName: string;
   isPlatform: boolean;
+  /** Platform support staff — global support queue access without super-admin rights. */
+  isSupport?: boolean;
   tenants: Membership[];
 }

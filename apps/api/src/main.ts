@@ -15,7 +15,8 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { cors: false });
   app.use(helmet());
   app.enableCors({
-    origin: (process.env.CORS_ORIGIN ?? 'http://localhost:3001').split(',').map((s) => s.trim()),
+    // Dev default matches this app's web port (:4001); see CLAUDE.md ports.
+    origin: (process.env.CORS_ORIGIN ?? 'http://localhost:4001').split(',').map((s) => s.trim()),
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'X-HMS-Path'],
   });

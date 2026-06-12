@@ -173,7 +173,7 @@ function TicketDetailInner() {
 
 export default function TicketDetailPage() {
   return (
-    <Protected requirePlatform>
+    <Protected requirePlatform allowSupport>
       <TicketDetailInner />
     </Protected>
   );

@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pill, Search, RefreshCw } from 'lucide-react';
+import { Pill, Search, RefreshCw, RotateCcw } from 'lucide-react';
 import Protected from '@/components/Protected';
 import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/toast';
 import { pharmacyApi, type PharmacyPrescription, type PharmacyStats } from '@/lib/pharmacy';
+import { publicAdminApi, type RefillRequestRow } from '@/lib/public-admin';
 import { formatDateTime } from '@/lib/format';
 import {
   Button,
@@ -78,6 +80,7 @@ function PharmacyInner() {
           the queue until they are resolved.
         </HelpTip>
         <WorkQueuePanel title="Pharmacy work queue" modules={['PHARMACY', 'INVENTORY']} limit={6} compact />
+        <RefillQueue tenantId={t} />
       </div>
 
       <Section
@@ -107,7 +110,7 @@ function PharmacyInner() {
         }
       >
         {!rows ? (
-          <Spinner label="Loading prescriptions…" />
+          <Spinner label="Loading prescriptions..." />
         ) : rows.length === 0 ? (
           <div className="px-5 py-8">
             <EmptyState
@@ -151,6 +154,139 @@ function PharmacyInner() {
         )}
       </Section>
     </>
+  );
+}
+
+/**
+ * Patient-initiated prescription refill requests (Phase 23). Approve, reject
+ * (reason required), or mark dispensed - the patient is notified of each
+ * outcome in their portal.
+ */
+function RefillQueue({ tenantId }: { tenantId: string }) {
+  const toast = useToast();
+  const [status, setStatus] = useState('REQUESTED');
+  const [rows, setRows] = useState<RefillRequestRow[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    if (!tenantId) return;
+    setErr(null);
+    try {
+      setRows(await publicAdminApi.listRefillRequests(tenantId, status || undefined));
+    } catch (e) {
+      setErr((e as Error).message);
+    }
+  }, [tenantId, status]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function update(row: RefillRequestRow, next: 'APPROVED' | 'REJECTED' | 'DISPENSED') {
+    let staffNote: string | undefined;
+    if (next === 'REJECTED') {
+      const reason = window.prompt('Reason for declining this refill request (required):')?.trim();
+      if (!reason) return;
+      staffNote = reason;
+    }
+    setBusyId(row.id);
+    try {
+      await publicAdminApi.updateRefillRequest(tenantId, row.id, { status: next, staffNote });
+      toast.success(`Refill request ${next.toLowerCase()} - the patient has been notified.`);
+      await load();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  return (
+    <Section
+      title="Refill requests"
+      action={
+        <Select className="w-40" value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="REQUESTED">Requested</option>
+          <option value="APPROVED">Approved</option>
+          <option value="DISPENSED">Dispensed</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="">All</option>
+        </Select>
+      }
+    >
+      {err ? (
+        <div className="px-5 py-4">
+          <ErrorState message={err} />
+        </div>
+      ) : !rows ? (
+        <Spinner label="Loading refill requests..." />
+      ) : rows.length === 0 ? (
+        <div className="px-5 py-8">
+          <EmptyState
+            icon={RotateCcw}
+            title="No refill requests in this view"
+            hint="Patients raise refill requests from their portal; they appear here for review."
+          />
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-body-sm">
+            <thead>
+              <tr className="border-b border-line text-label-md uppercase text-ink-soft">
+                <th className="px-5 py-3 font-medium">Patient</th>
+                <th className="px-5 py-3 font-medium">Note</th>
+                <th className="px-5 py-3 font-medium">Requested</th>
+                <th className="px-5 py-3 font-medium">Status</th>
+                <th className="px-5 py-3 font-medium text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {rows.map((r) => (
+                <tr key={r.id} className="hover:bg-canvas">
+                  <td className="px-5 py-3">
+                    <div className="font-medium text-ink">{r.patientName ?? 'Patient'}</div>
+                    <div className="text-label-sm text-ink-soft">{r.patientMrn}</div>
+                  </td>
+                  <td className="max-w-xs truncate px-5 py-3 text-ink-muted" title={r.note ?? undefined}>
+                    {r.note || '-'}
+                  </td>
+                  <td className="px-5 py-3 text-ink-muted">{formatDateTime(r.createdAt)}</td>
+                  <td className="px-5 py-3">
+                    <StatusChip status={r.status} />
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    {r.status === 'REQUESTED' && (
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" loading={busyId === r.id} onClick={() => update(r, 'APPROVED')}>
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={busyId === r.id}
+                          onClick={() => update(r, 'REJECTED')}
+                        >
+                          Decline
+                        </Button>
+                      </div>
+                    )}
+                    {r.status === 'APPROVED' && (
+                      <Button size="sm" loading={busyId === r.id} onClick={() => update(r, 'DISPENSED')}>
+                        Mark dispensed
+                      </Button>
+                    )}
+                    {(r.status === 'REJECTED' || r.status === 'DISPENSED') && (
+                      <span className="text-label-sm text-ink-soft">{r.staffNote || '-'}</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Section>
   );
 }
 

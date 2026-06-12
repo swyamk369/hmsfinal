@@ -1,7 +1,7 @@
 // Pure, framework-free access + navigation logic. No React / Firebase imports,
 // so it is directly unit-testable and safe to import anywhere.
 
-import { NAV, PLATFORM_NAV, ROLE_LANDING, type NavItem } from './constants';
+import { NAV, PLATFORM_NAV, SUPPORT_NAV, ROLE_LANDING, type NavItem } from './constants';
 import type { Membership, Profile } from './types';
 
 /** Returns the membership for the active tenant, falling back to the first. */
@@ -14,6 +14,8 @@ export function getActiveMembership(profile: Profile | null, activeTenantId: str
 export function landingPath(profile: Profile | null, activeTenantId: string | null): string {
   if (!profile) return '/login';
   if (profile.isPlatform) return '/platform';
+  // Support staff without a tenant membership work from the global support queue.
+  if (profile.isSupport && profile.tenants.length === 0) return '/platform/support';
   const membership = getActiveMembership(profile, activeTenantId);
   const role = membership?.roles[0];
   return (role && ROLE_LANDING[role]) || '/dashboard';
@@ -23,6 +25,8 @@ export function landingPath(profile: Profile | null, activeTenantId: string | nu
 export function visibleNav(profile: Profile | null, activeMembership: Membership | null): NavItem[] {
   if (!profile) return [];
   if (profile.isPlatform) return PLATFORM_NAV;
+  // Support staff with no tenant memberships only see the global support queue.
+  if (profile.isSupport && profile.tenants.length === 0) return SUPPORT_NAV;
 
   const modules = new Set(activeMembership?.modules ?? []);
   const roles = new Set(activeMembership?.roles ?? []);
@@ -40,6 +44,8 @@ export interface AccessRequirement {
   allowedRoles?: string[];
   requireModule?: string;
   requirePlatform?: boolean;
+  /** When set with requirePlatform, platform SUPPORT staff are also allowed. */
+  allowSupport?: boolean;
   requirePermission?: string[];
 }
 
@@ -56,6 +62,13 @@ export function routeDecision(
 
   const suspended = !profile.isPlatform && activeMembership?.status === 'SUSPENDED';
   if (suspended) return '/tenant-suspended';
+
+  // Platform support staff with no tenant memberships: allowed on
+  // support-enabled pages, otherwise routed to their global support queue
+  // (never dead-ended on /unauthorized or a loading screen).
+  if (profile.isSupport && !profile.isPlatform && profile.tenants.length === 0) {
+    return req.requirePlatform && req.allowSupport ? null : '/platform/support';
+  }
 
   if (req.requirePlatform && !profile.isPlatform) return '/unauthorized';
 

@@ -1,6 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { platformDb } from '@hms/db';
 
+/**
+ * Platform support staff get a deliberately NON-PHI, read-only access picture
+ * for any tenant: enough to triage configuration/role/module issues without
+ * default access to clinical, financial, or pharmacy records. Anything more
+ * requires the hospital admin to grant a real (temporary) membership.
+ */
+export const SUPPORT_TENANT_PERMISSIONS: readonly string[] = [
+  'settings.read',
+  'facility.read',
+  'department.read',
+  'role.read',
+  'staff.read',
+  'public_profile.read',
+];
+
 export interface ActiveAccess {
   roles: string[];
   permissions: string[];
@@ -49,12 +64,15 @@ export class AccessService {
 
     const roles: string[] = [];
     const perms = new Set<string>();
+    const hasActiveMembership = Boolean(membership?.active);
+    const supportTriage = Boolean(user?.isSupport && !hasActiveMembership);
 
-    if (user?.isSupport) {
-      // Support Staff get automatic SYSTEM_ADMIN override for any tenant
-      roles.push('SYSTEM_ADMIN');
-      const allPerms = await platformDb.permission.findMany();
-      for (const p of allPerms) perms.add(p.key);
+    if (supportTriage) {
+      // Support staff triage with a restricted, read-only, NON-PHI permission
+      // set - never blanket access to clinical/financial records. A real
+      // active membership (granted by the hospital admin) takes precedence below.
+      roles.push('PLATFORM_SUPPORT');
+      for (const p of SUPPORT_TENANT_PERMISSIONS) perms.add(p);
     } else if (membership) {
       for (const ur of membership.roles) {
         roles.push(ur.role.code);
@@ -75,8 +93,8 @@ export class AccessService {
       tenantStatus: tenant.status,
       tenantName: tenant.name,
       tenantSlug: tenant.slug,
-      membershipActive: user?.isSupport ? true : (membership?.active ?? false),
-      membershipExists: user?.isSupport ? true : Boolean(membership),
+      membershipActive: supportTriage || hasActiveMembership,
+      membershipExists: supportTriage || Boolean(membership),
     };
   }
 }

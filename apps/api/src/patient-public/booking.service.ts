@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { platformDb, tenantTransaction } from '@hms/db';
 import { AuditService } from '../common/audit.service';
+import { PatientNotifyService } from './patient-notify.service';
 import { nextMrn } from '../common/sequences';
 import {
   daySlots,
@@ -17,7 +18,10 @@ const DEFAULT_DURATION = 15;
 
 @Injectable()
 export class BookingService {
-  constructor(private readonly audit: AuditService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly notify: PatientNotifyService,
+  ) {}
 
   // ── Public config validation (read via owner client, public filters) ──
   private async resolveContext(tenantId: string, doctorId: string) {
@@ -188,7 +192,7 @@ export class BookingService {
     return { available: slots.some((s) => s.time === time && s.available) };
   }
 
-  async create(dto: CreateBookingDto) {
+  async create(dto: CreateBookingDto, portalUid: string | null = null) {
     if (!dto.email && !dto.mobile)
       throw new BadRequestException('Please provide an email or mobile number so the clinic can contact you.');
     const { hp, dp, portal } = await this.resolveContext(dto.tenantId, dto.doctorId);
@@ -270,6 +274,7 @@ export class BookingService {
       const booking = await tx.onlineBooking.create({
         data: {
           tenantId: dto.tenantId,
+          uid: portalUid,
           patientId: patient.id,
           doctorId: dto.doctorId,
           locationId: dto.locationId ?? null,
@@ -316,6 +321,21 @@ export class BookingService {
       }
       return { booking, possibleDuplicate };
     });
+
+    // Real event → portal notification for signed-in patients (preference-aware).
+    if (portalUid) {
+      await this.notify
+        .notifyUid(portalUid, {
+          category: 'BOOKING',
+          title: requiresApproval ? 'Booking request received' : 'Booking confirmed',
+          body: requiresApproval
+            ? `Your booking with ${dp.displayName} on ${dto.date} at ${dto.time} is awaiting hospital confirmation.`
+            : `Your booking with ${dp.displayName} on ${dto.date} at ${dto.time} is confirmed.`,
+          actionUrl: '/patient/appointments',
+          tenantId: dto.tenantId,
+        })
+        .catch(() => undefined); // notification failure must never fail the booking
+    }
 
     return {
       bookingId: result.booking.id,

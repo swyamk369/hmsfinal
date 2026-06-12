@@ -360,6 +360,10 @@ export class HmsPublicService {
       data: { bookingStatus: 'CONFIRMED', approvalStatus: 'APPROVED' },
     });
     await this.record(s, 'online_booking.approve', 'online_booking', id, { appointmentId: b.appointmentId });
+    await this.notifyBooker(b, s.tenantId, {
+      title: 'Booking confirmed',
+      body: `Your appointment on ${this.bookingWhen(b)} has been confirmed by the hospital.`,
+    });
     return row;
   }
 
@@ -378,6 +382,10 @@ export class HmsPublicService {
         data: { status: 'CANCELLED', cancellationReason: reason },
       });
     await this.record(s, 'online_booking.reject', 'online_booking', id, { reason, appointmentId: b.appointmentId });
+    await this.notifyBooker(b, s.tenantId, {
+      title: 'Booking could not be confirmed',
+      body: reason?.trim() || 'The hospital could not confirm this booking. Please book another time.',
+    });
     return row;
   }
 
@@ -404,7 +412,36 @@ export class HmsPublicService {
       data: { appointmentDate: new Date(date), appointmentTime: time },
     });
     await this.record(s, 'online_booking.reschedule', 'online_booking', id, { date, time });
+    await this.notifyBooker(b, s.tenantId, {
+      title: 'Booking rescheduled',
+      body: `Your appointment has been moved to ${date} at ${time}.`,
+    });
     return row;
+  }
+
+  private bookingWhen(b: { appointmentDate: Date; appointmentTime: string }): string {
+    const d = new Date(b.appointmentDate);
+    return `${d.toISOString().slice(0, 10)} at ${b.appointmentTime}`;
+  }
+
+  /**
+   * Booking lifecycle → patient notification (REAL events only). Targets the
+   * booker's own portal identity (uid) when captured at booking time, else any
+   * portal identities actively linked to the booking's patient record.
+   * Best-effort: a notification failure must never fail the staff action.
+   */
+  private async notifyBooker(
+    b: { uid?: string | null; patientId?: string | null },
+    tenantId: string,
+    msg: { title: string; body?: string },
+  ): Promise<void> {
+    const input = { category: 'BOOKING' as const, actionUrl: '/patient/appointments', tenantId, ...msg };
+    try {
+      if (b.uid) await this.notify.notifyUid(b.uid, input);
+      else if (b.patientId) await this.notify.notifyPatientRecord(tenantId, b.patientId, input);
+    } catch {
+      /* best-effort */
+    }
   }
 
   async linkBookingPatient(ctx: RequestContext, id: string, patientId: string) {
@@ -502,15 +539,17 @@ export class HmsPublicService {
       REJECTED: 'Refill request declined',
       DISPENSED: 'Refill ready',
     };
-    await this.notify.notifyUid(req.uid, {
-      category: 'REFILL',
-      title: titles[dto.status] ?? 'Refill updated',
-      body:
-        dto.staffNote?.trim() ||
-        (dto.status === 'DISPENSED' ? 'Your refill is ready — please collect it from the pharmacy.' : undefined),
-      actionUrl: '/patient/prescriptions',
-      tenantId: s.tenantId,
-    });
+    await this.notify
+      .notifyUid(req.uid, {
+        category: 'REFILL',
+        title: titles[dto.status] ?? 'Refill updated',
+        body:
+          dto.staffNote?.trim() ||
+          (dto.status === 'DISPENSED' ? 'Your refill is ready - please collect it from the pharmacy.' : undefined),
+        actionUrl: '/patient/prescriptions',
+        tenantId: s.tenantId,
+      })
+      .catch(() => undefined);
     return row;
   }
 

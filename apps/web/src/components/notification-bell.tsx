@@ -37,7 +37,9 @@ export default function NotificationBell() {
     return () => window.clearInterval(timer);
   }, [load]);
 
-  if (!profile || profile.isPlatform) return null;
+  // Hidden for platform users and tenant-less support staff — staff
+  // notifications are tenant-scoped, so the bell would be a dead control.
+  if (!profile || profile.isPlatform || (profile.isSupport && profile.tenants.length === 0)) return null;
 
   async function markAllRead() {
     if (!t) return;

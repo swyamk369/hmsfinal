@@ -57,8 +57,12 @@ function SupportContent() {
   const [priority, setPriority] = useState('LOW');
   const [busy, setBusy] = useState(false);
 
+  const isGlobalSupport = Boolean(
+    profile && (profile.isPlatform || (profile.isSupport && profile.tenants.length === 0)),
+  );
+
   const load = useCallback(async () => {
-    if (!profile || profile.isPlatform) return;
+    if (!profile || isGlobalSupport) return;
     if (!activeTenantId) {
       setTickets([]);
       setLoading(false);
@@ -73,15 +77,15 @@ function SupportContent() {
     } finally {
       setLoading(false);
     }
-  }, [activeTenantId, profile]);
+  }, [activeTenantId, profile, isGlobalSupport]);
 
   useEffect(() => {
-    if (profile?.isPlatform) {
+    if (isGlobalSupport) {
       router.replace('/platform/support');
       return;
     }
     void load();
-  }, [load, profile?.isPlatform, router]);
+  }, [load, isGlobalSupport, router]);
 
   async function submit() {
     if (!activeTenantId) {
@@ -103,7 +107,7 @@ function SupportContent() {
     }
   }
 
-  if (profile?.isPlatform) {
+  if (isGlobalSupport) {
     return <div className="text-body-sm text-ink-muted">Opening Global Support…</div>;
   }
 
@@ -154,7 +158,11 @@ function SupportContent() {
             ) : (
               <div className="divide-y divide-line">
                 {tickets.map((t) => (
-                  <div key={t.id} className="py-3 flex items-center justify-between">
+                  <Link
+                    key={t.id}
+                    href={`/support/${t.id}`}
+                    className="flex items-center justify-between py-3 hover:bg-canvas"
+                  >
                     <div>
                       <h4 className="font-medium text-ink mb-1">{t.title}</h4>
                       <div className="flex gap-3 text-label-sm text-ink-soft">
@@ -176,7 +184,7 @@ function SupportContent() {
                       </div>
                     </div>
                     <StatusChip status={t.status} />
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

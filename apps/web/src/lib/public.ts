@@ -1,5 +1,8 @@
 // Public, no-auth API client for the patient-facing directory (Phase 22.3).
-// Plain fetch — no Firebase token, no tenant header.
+// Plain fetch — no tenant header. Booking creation OPTIONALLY attaches the
+// signed-in patient's Firebase token so booking notifications reach them.
+
+import { getFirebaseIdToken } from './firebase';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -17,10 +20,16 @@ async function getPublic<T>(path: string): Promise<T> {
   return res.json();
 }
 
-async function postPublic<T>(path: string, body: unknown): Promise<T> {
+async function postPublic<T>(path: string, body: unknown, withIdentity = false): Promise<T> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (withIdentity) {
+    // Best-effort: anonymous booking stays fully supported.
+    const token = await getFirebaseIdToken().catch(() => null);
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+  }
   const res = await fetch(`${API}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
   });
   if (!res.ok) {
@@ -163,7 +172,7 @@ export const publicApi = {
     getPublic<DaySlots[]>(
       `/public/booking/slots${qs({ tenantId, doctorId, from, days: String(days), appointmentTypeId })}`,
     ),
-  createBooking: (body: Record<string, unknown>) => postPublic<BookingResult>('/public/booking/create', body),
+  createBooking: (body: Record<string, unknown>) => postPublic<BookingResult>('/public/booking/create', body, true),
 };
 
 export const inr = (paise: number) => '₹' + (paise / 100).toLocaleString('en-IN');

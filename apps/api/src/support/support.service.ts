@@ -107,7 +107,7 @@ export class SupportService {
         ticketId: id,
         content: dto.content,
         authorId: ctx.userId!,
-        authorType: ctx.isSupport ? 'STAFF' : 'STAFF', // Can distinguish support vs staff if needed
+        authorType: 'STAFF',
       },
     });
   }

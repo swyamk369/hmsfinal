@@ -19,6 +19,14 @@ function messageText(message: UIMessage): string {
     .join('');
 }
 
+/** True when the assistant is invoking a tool (e.g. creating a support ticket). */
+function hasToolActivity(message: UIMessage): boolean {
+  return message.role === 'assistant' && message.parts.some((part) => part.type.startsWith('tool-'));
+}
+
+const FRIENDLY_ERROR =
+  'I could not reach the HMS Assistant just now. Please check your connection and try again. If this keeps happening, raise a support ticket from the Support page.';
+
 export function AiChatbot() {
   const { activeTenantId } = useAuth();
   const pathname = usePathname();
@@ -91,19 +99,29 @@ export function AiChatbot() {
               <p className="text-xs mt-2 text-gray-400">You can ask me to raise a support ticket if you find a bug!</p>
             </div>
           ) : (
-            messages.map((m) => (
-              <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-                    m.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-br-none'
-                      : 'bg-gray-100 text-gray-900 rounded-bl-none'
-                  }`}
-                >
-                  {messageText(m)}
+            messages.map((m) => {
+              const text = messageText(m);
+              // Hide assistant turns that are pure tool plumbing with no text
+              // yet; the "working" indicator below covers that state.
+              if (!text && m.role === 'assistant' && !hasToolActivity(m)) return null;
+              return (
+                <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+                      m.role === 'user'
+                        ? 'bg-primary text-primary-foreground rounded-br-none'
+                        : 'bg-gray-100 text-gray-900 rounded-bl-none'
+                    }`}
+                  >
+                    {hasToolActivity(m) && !text ? (
+                      <span className="text-gray-500 italic">Working on it (raising your support ticket)...</span>
+                    ) : (
+                      text
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
           {isLoading && (
             <div className="flex justify-start">
@@ -112,7 +130,13 @@ export function AiChatbot() {
               </div>
             </div>
           )}
-          {error && <div className="text-xs text-danger">{error.message}</div>}
+          {error && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] rounded-lg rounded-bl-none bg-gray-100 px-3 py-2 text-sm text-gray-900">
+                {FRIENDLY_ERROR}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

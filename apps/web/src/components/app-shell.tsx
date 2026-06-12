@@ -82,7 +82,8 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   if (!profile) return null;
 
   const items = visibleNav(profile, activeMembership);
-  const supportHref = profile.isPlatform ? '/platform/support' : '/support';
+  const support = supportTarget(profile);
+  const supportHref = support.href;
   const supportActive = pathname === supportHref || pathname.startsWith(supportHref + '/');
 
   return (
@@ -94,7 +95,11 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <div className="min-w-0">
           <div className="truncate text-title-lg leading-tight text-ink">HMS Portal</div>
           <div className="truncate text-body-sm text-ink-soft">
-            {profile.isPlatform ? 'Platform Console' : (activeMembership?.tenantName ?? 'Hospital')}
+            {profile.isPlatform
+              ? 'Platform Console'
+              : profile.isSupport && profile.tenants.length === 0
+                ? 'Support Console'
+                : (activeMembership?.tenantName ?? 'Hospital')}
           </div>
         </div>
       </div>
@@ -110,7 +115,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           <Settings className="h-[18px] w-[18px]" /> Settings
         </Link>
         <Link href={supportHref} onClick={onNavigate} className={cx('nav-item', supportActive && 'nav-item-active')}>
-          <LifeBuoy className="h-[18px] w-[18px]" /> {profile.isPlatform ? 'Global Support' : 'Support'}
+          <LifeBuoy className="h-[18px] w-[18px]" /> {support.label}
         </Link>
       </div>
     </div>
@@ -193,8 +198,8 @@ function TenantSelector() {
   );
 }
 
-function supportTarget(profile: { isPlatform: boolean }) {
-  return profile.isPlatform
+function supportTarget(profile: { isPlatform: boolean; isSupport?: boolean; tenants: unknown[] }) {
+  return profile.isPlatform || (profile.isSupport && profile.tenants.length === 0)
     ? { href: '/platform/support', label: 'Global Support' }
     : { href: '/support', label: 'Support' };
 }
@@ -223,7 +228,9 @@ function ProfileMenu() {
 
   const roleLabel = profile.isPlatform
     ? 'Super Admin'
-    : (activeMembership?.roles ?? []).map((r) => ROLE_LABELS[r] ?? r).join(', ') || 'No role';
+    : profile.isSupport && profile.tenants.length === 0
+      ? 'Platform Support'
+      : (activeMembership?.roles ?? []).map((r) => ROLE_LABELS[r] ?? r).join(', ') || 'No role';
   const initials = profile.fullName
     .split(' ')
     .map((p) => p[0])

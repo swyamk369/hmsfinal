@@ -19,6 +19,8 @@ export interface MeResponse {
   email: string;
   fullName: string;
   isPlatform: boolean;
+  /** Platform support staff — see the global support queue without being a super admin. */
+  isSupport: boolean;
   tenants: TenantMembership[];
 }
 
@@ -56,6 +58,7 @@ export class AuthService {
       email: user.email,
       fullName: user.fullName,
       isPlatform: user.isPlatform,
+      isSupport: user.isSupport,
       tenants,
     };
   }

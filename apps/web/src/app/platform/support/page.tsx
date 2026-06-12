@@ -163,7 +163,7 @@ function SupportDashboard() {
 
 export default function PlatformSupportPage() {
   return (
-    <Protected requirePlatform>
+    <Protected requirePlatform allowSupport>
       <SupportDashboard />
     </Protected>
   );

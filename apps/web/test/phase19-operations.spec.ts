@@ -79,6 +79,7 @@ describe('Phase 19 dashboard and support screens', () => {
   it('creates support routes and links the sidebar support item', () => {
     for (const file of [
       'src/app/support/page.tsx',
+      'src/app/support/[id]/page.tsx',
       'src/app/support/workflows/page.tsx',
       'src/app/support/roles/page.tsx',
       'src/app/support/troubleshooting/page.tsx',

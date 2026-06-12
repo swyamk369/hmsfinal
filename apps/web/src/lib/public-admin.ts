@@ -118,4 +118,27 @@ export const publicAdminApi = {
   listAccessRequests: (t: string) => apiGet<AccessRequest[]>('/hms/portal-access/requests', t),
   approveAccessRequest: (t: string, id: string) => apiPost(`/hms/portal-access/${id}/approve`, {}, t),
   rejectAccess: (t: string, id: string, reason: string) => apiPost(`/hms/portal-access/${id}/revoke`, { reason }, t),
+
+  // Phase 23 - staff queue for patient-initiated prescription refill requests.
+  listRefillRequests: (t: string, status?: string) =>
+    apiGet<RefillRequestRow[]>(`/hms/refill-requests${status ? `?status=${encodeURIComponent(status)}` : ''}`, t),
+  updateRefillRequest: (
+    t: string,
+    id: string,
+    body: { status: 'APPROVED' | 'REJECTED' | 'DISPENSED'; staffNote?: string },
+  ) => apiPatch<RefillRequestRow>(`/hms/refill-requests/${id}`, body, t),
 };
+
+export interface RefillRequestRow {
+  id: string;
+  tenantId: string;
+  patientId: string;
+  prescriptionId: string | null;
+  status: 'REQUESTED' | 'APPROVED' | 'REJECTED' | 'DISPENSED';
+  note: string | null;
+  staffNote: string | null;
+  createdAt: string;
+  updatedAt: string;
+  patientName: string | null;
+  patientMrn: string | null;
+}

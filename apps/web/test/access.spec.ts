@@ -24,6 +24,10 @@ describe('landingPath', () => {
     expect(landingPath(profile({ isPlatform: true, tenants: [] }), null)).toBe('/platform');
   });
 
+  it('routes support-only users to global support', () => {
+    expect(landingPath(profile({ isSupport: true, tenants: [] }), null)).toBe('/platform/support');
+  });
+
   it('routes each tenant role to its landing page', () => {
     const cases: Record<string, string> = {
       HOSPITAL_ADMIN: '/admin',
@@ -82,6 +86,11 @@ describe('visibleNav', () => {
     expect(items.map((i) => i.href)).toEqual(['/platform', '/platform/support', '/platform/plans', '/platform/audit']);
   });
 
+  it('shows only global support nav for support-only users', () => {
+    const items = visibleNav(profile({ isSupport: true, tenants: [] }), null);
+    expect(items.map((i) => i.href)).toEqual(['/platform/support']);
+  });
+
   it('filters tenant nav by role and module', () => {
     const m = membership({ roles: ['DOCTOR'], modules: ['PATIENT', 'OPD', 'LAB'] });
     const hrefs = visibleNav(profile({ tenants: [m] }), m).map((i) => i.href);
@@ -138,6 +147,19 @@ describe('routeDecision', () => {
 
   it('lets platform users through platform-only routes', () => {
     expect(routeDecision(profile({ isPlatform: true, tenants: [] }), null, { requirePlatform: true })).toBeNull();
+  });
+
+  it('lets support-only users through support-enabled platform routes', () => {
+    expect(
+      routeDecision(profile({ isSupport: true, tenants: [] }), null, { requirePlatform: true, allowSupport: true }),
+    ).toBeNull();
+  });
+
+  it('routes support-only users back to global support outside support-enabled routes', () => {
+    expect(routeDecision(profile({ isSupport: true, tenants: [] }), null, {})).toBe('/platform/support');
+    expect(routeDecision(profile({ isSupport: true, tenants: [] }), null, { requirePlatform: true })).toBe(
+      '/platform/support',
+    );
   });
 
   it('redirects tenant users with no memberships to /unauthorized', () => {

@@ -109,6 +109,21 @@ describe('SupportService', () => {
     });
   });
 
+  it('lets platform support staff open and update tickets from any tenant', async () => {
+    db.supportTicket.findUnique.mockResolvedValue(ticket());
+    db.supportTicket.update.mockResolvedValue(ticket({ status: 'RESOLVED' }));
+
+    await expect(svc.getTicket(ctx({ isSupport: true, tenantId: null }), 'ticket-1')).resolves.toMatchObject({
+      id: 'ticket-1',
+    });
+    await svc.updateTicketStatus(ctx({ isSupport: true, tenantId: null }), 'ticket-1', 'RESOLVED' as any);
+
+    expect(db.supportTicket.update).toHaveBeenCalledWith({
+      where: { id: 'ticket-1' },
+      data: { status: 'RESOLVED' },
+    });
+  });
+
   it('does not let tenant users open or close tickets outside their scope', async () => {
     db.supportTicket.findUnique.mockResolvedValue(ticket({ tenantId: 'tenant-b', reporterId: 'someone-else' }));
 
