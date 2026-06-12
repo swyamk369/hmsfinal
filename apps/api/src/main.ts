@@ -23,7 +23,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
-  const port = Number(process.env.API_PORT ?? 4000);
+  const port = Number(process.env.API_PORT ?? process.env.PORT ?? 4000);
   await app.listen(port);
   new Logger('Bootstrap').log(`API listening on :${port} (Firebase Auth)`);
 }
