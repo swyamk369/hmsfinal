@@ -36,6 +36,8 @@ export class AccessService {
       };
     }
 
+    const user = await platformDb.user.findUnique({ where: { id: userId } });
+
     const membership = await platformDb.tenantUser.findUnique({
       where: { tenantId_userId: { tenantId, userId } },
       include: {
@@ -47,7 +49,13 @@ export class AccessService {
 
     const roles: string[] = [];
     const perms = new Set<string>();
-    if (membership) {
+
+    if (user?.isSupport) {
+      // Support Staff get automatic SYSTEM_ADMIN override for any tenant
+      roles.push('SYSTEM_ADMIN');
+      const allPerms = await platformDb.permission.findMany();
+      for (const p of allPerms) perms.add(p.key);
+    } else if (membership) {
       for (const ur of membership.roles) {
         roles.push(ur.role.code);
         for (const rp of ur.role.permissions) perms.add(rp.permission.key);
@@ -67,8 +75,8 @@ export class AccessService {
       tenantStatus: tenant.status,
       tenantName: tenant.name,
       tenantSlug: tenant.slug,
-      membershipActive: membership?.active ?? false,
-      membershipExists: Boolean(membership),
+      membershipActive: user?.isSupport ? true : (membership?.active ?? false),
+      membershipExists: user?.isSupport ? true : Boolean(membership),
     };
   }
 }

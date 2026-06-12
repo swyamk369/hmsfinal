@@ -26,7 +26,7 @@ import {
 } from '@/components/patient/booking-ui';
 import { publicApi, inr, type BookingOptions, type DaySlots, type BookingResult } from '@/lib/public';
 
-type Screen = 'choose' | 'details' | 'review' | 'confirmed';
+type Screen = 'choose' | 'auth' | 'details' | 'review' | 'confirmed';
 
 interface PatientForm {
   fullName: string;
@@ -46,6 +46,8 @@ function BookPageInner() {
   const prefConsult = search.get('consult') ?? '';
   const prefDate = search.get('date') ?? '';
   const prefTime = search.get('time') ?? '';
+  const bookFor = search.get('bookFor');
+  const bookForName = search.get('bookForName') || '';
 
   const [opts, setOpts] = useState<BookingOptions | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
@@ -56,11 +58,41 @@ function BookPageInner() {
   const [slots, setSlots] = useState<DaySlots[] | null>(null);
   const [date, setDate] = useState(prefDate);
   const [time, setTime] = useState(prefTime);
-  const [form, setForm] = useState<PatientForm>({ fullName: '', dateOfBirth: '', email: '', mobile: '', reasonForVisit: '' });
+  const [form, setForm] = useState<PatientForm>({ fullName: bookForName, dateOfBirth: '', email: '', mobile: '', reasonForVisit: '' });
   const [consents, setConsents] = useState({ terms: false, records: false });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [result, setResult] = useState<BookingResult | null>(null);
+  const [patientStatus, setPatientStatus] = useState<'NEW' | 'EXISTING'>('NEW');
+
+  // Auth embedded state
+  const [authMode, setAuthMode] = useState<'register' | 'login'>('register');
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPass, setAuthPass] = useState('');
+  const [authName, setAuthName] = useState('');
+  const [authBusy, setAuthBusy] = useState(false);
+  const [authErr, setAuthErr] = useState<string | null>(null);
+
+  // Check if already logged in on mount
+  useEffect(() => {
+    import('@/lib/firebase').then(({ getFirebaseAuth }) => {
+      const auth = getFirebaseAuth();
+      if (!auth) return;
+      import('firebase/auth').then(({ onAuthStateChanged }) => {
+        const unsub = onAuthStateChanged(auth, async (u) => {
+          if (u) {
+            setPatientStatus('EXISTING');
+            try {
+              const { portalApi } = await import('@/lib/patient-portal');
+              const me = await portalApi.me();
+              setForm((f) => ({ ...f, fullName: me.displayName || f.fullName, email: me.email || f.email, mobile: me.mobile || f.mobile }));
+            } catch {}
+          }
+        });
+        return () => unsub();
+      });
+    });
+  }, []);
 
   useEffect(() => {
     publicApi
@@ -94,7 +126,7 @@ function BookPageInner() {
   const selectedType = useMemo(() => opts?.appointmentTypes.find((t) => t.id === typeId), [opts, typeId]);
   const datesWithSlots = useMemo(() => (slots ?? []).filter((d) => d.slots.some((s) => s.available)), [slots]);
   const activeDay = useMemo(() => datesWithSlots.find((d) => d.date === date) ?? null, [datesWithSlots, date]);
-  const stepperCurrent = screen === 'choose' ? (time ? 2 : 1) : screen === 'details' ? 3 : screen === 'review' ? 4 : 5;
+  const stepperCurrent = screen === 'choose' ? (time ? 2 : 1) : (screen === 'auth' || screen === 'details') ? 3 : screen === 'review' ? 4 : 5;
 
   async function confirm() {
     setBusy(true);
@@ -112,7 +144,7 @@ function BookPageInner() {
         email: form.email.trim() || undefined,
         mobile: form.mobile.trim() || undefined,
         reasonForVisit: form.reasonForVisit.trim() || undefined,
-        newOrExistingPatient: 'NEW',
+        newOrExistingPatient: patientStatus,
       });
       setResult(res);
       setScreen('confirmed');
@@ -173,11 +205,25 @@ function BookPageInner() {
               </span>
             </div>
             <button
-              onClick={() => setScreen('details')}
+              onClick={async () => {
+                const { getFirebaseAuth } = await import('@/lib/firebase');
+                const auth = getFirebaseAuth();
+                if (auth?.currentUser) {
+                  setScreen('details');
+                } else {
+                  setScreen('auth');
+                }
+              }}
               disabled={(opts.appointmentTypes.length > 0 && !typeId) || !date || !time}
               className="ml-auto inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-label-md text-white shadow-sm transition-colors hover:bg-primary-700 disabled:opacity-50"
             >
               Continue to details <ArrowRight className="h-5 w-5" />
+            </button>
+          </>
+        ) : screen === 'auth' ? (
+          <>
+            <button onClick={() => setScreen('choose')} className="inline-flex items-center gap-1.5 text-label-md text-ink-muted hover:text-ink">
+              <ArrowLeft className="h-4 w-4" /> Back
             </button>
           </>
         ) : screen === 'details' ? (
@@ -335,10 +381,106 @@ function BookPageInner() {
         </div>
       )}
 
+      {screen === 'auth' && (
+        <div className="mx-auto max-w-md rounded-xl border border-line bg-surface p-6 shadow-sm">
+          <div className="mb-6 text-center">
+            <h2 className="text-headline-sm text-ink">Sign in to book</h2>
+            <p className="mt-1 text-body-sm text-ink-muted">Choose how you'd like to proceed.</p>
+          </div>
+          <div className="mb-6 flex overflow-hidden rounded-lg border border-line p-1">
+            <button
+              onClick={() => { setAuthMode('register'); setAuthErr(null); }}
+              className={`flex-1 rounded-md py-2 text-label-sm transition-colors ${authMode === 'register' ? 'bg-primary text-white' : 'text-ink-muted hover:text-ink'}`}
+            >
+              New Patient
+            </button>
+            <button
+              onClick={() => { setAuthMode('login'); setAuthErr(null); }}
+              className={`flex-1 rounded-md py-2 text-label-sm transition-colors ${authMode === 'login' ? 'bg-primary text-white' : 'text-ink-muted hover:text-ink'}`}
+            >
+              Existing Patient
+            </button>
+          </div>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setAuthBusy(true);
+              setAuthErr(null);
+              try {
+                const { getFirebaseAuth } = await import('@/lib/firebase');
+                const auth = getFirebaseAuth();
+                if (!auth) throw new Error('Auth not available');
+                const { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
+                
+                let meName = authName;
+                let meEmail = authEmail;
+                let meMobile = '';
+
+                if (authMode === 'login') {
+                  await signInWithEmailAndPassword(auth, authEmail.trim(), authPass);
+                  try {
+                    const { portalApi } = await import('@/lib/patient-portal');
+                    const me = await portalApi.me();
+                    meName = me.displayName || '';
+                    meEmail = me.email || authEmail;
+                    meMobile = me.mobile || '';
+                  } catch (e) {
+                    console.error('Failed to fetch patient profile:', e);
+                  }
+                } else {
+                  if (authPass.length < 6) throw new Error('Password must be at least 6 characters');
+                  const cred = await createUserWithEmailAndPassword(auth, authEmail.trim(), authPass);
+                  if (authName.trim()) await updateProfile(cred.user, { displayName: authName.trim() });
+                }
+
+                setPatientStatus(authMode === 'login' ? 'EXISTING' : 'NEW');
+                setForm(f => ({ ...f, email: meEmail, fullName: meName || f.fullName, mobile: meMobile || f.mobile }));
+                setScreen('details');
+              } catch (err) {
+                setAuthErr((err as Error).message);
+              } finally {
+                setAuthBusy(false);
+              }
+            }}
+            className="space-y-4"
+          >
+            {authErr && <div className="rounded border border-danger/30 bg-danger-bg p-3 text-body-sm text-danger-fg">{authErr}</div>}
+            {authMode === 'register' && (
+              <div>
+                <label className="mb-1 block text-label-sm text-ink">Full name</label>
+                <input required value={authName} onChange={e => setAuthName(e.target.value)} className={inputCls} placeholder="John Doe" />
+              </div>
+            )}
+            <div>
+              <label className="mb-1 block text-label-sm text-ink">Email</label>
+              <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} className={inputCls} placeholder="you@email.com" />
+            </div>
+            <div>
+              <label className="mb-1 block text-label-sm text-ink">Password</label>
+              <input type="password" required value={authPass} onChange={e => setAuthPass(e.target.value)} className={inputCls} placeholder="••••••••" />
+            </div>
+            <button
+              type="submit"
+              disabled={authBusy}
+              className="mt-2 w-full rounded-lg bg-primary py-2.5 text-label-md text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+            >
+              {authBusy ? 'Please wait...' : authMode === 'login' ? 'Sign in and Continue' : 'Create account and Continue'}
+            </button>
+          </form>
+        </div>
+      )}
+
       {screen === 'details' && (
         <div className="mx-auto max-w-2xl">
-          <h2 className="text-headline-md text-ink">Patient details</h2>
-          <p className="mb-6 text-body-md text-ink-muted">Please provide the required information to secure your appointment.</p>
+          <div className="mb-6">
+            <h2 className="text-headline-md text-ink">Patient details</h2>
+            <p className="mt-1 text-body-md text-ink-muted">Please provide the required information to secure your appointment.</p>
+            {bookFor && bookForName && (
+              <div className="mt-4 inline-flex items-center gap-2 rounded-md bg-primary-50 px-3 py-1.5 text-label-sm text-primary">
+                <User className="h-4 w-4" /> Booking on behalf of {bookForName}
+              </div>
+            )}
+          </div>
           <div className="space-y-6 rounded-xl border border-line bg-surface p-5 md:p-6">
             <fieldset className="space-y-4">
               <legend className="mb-2 w-full border-b border-line pb-2 text-headline-sm text-ink">Personal information</legend>

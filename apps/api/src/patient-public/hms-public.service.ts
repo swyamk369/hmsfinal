@@ -131,7 +131,7 @@ export class HmsPublicService {
     // De-list hospital AND its doctors from public search while hidden.
     await this.index.syncHospital(s.db, s.tenantId, row, false);
     const docs = await s.db.publicDoctorProfile.findMany();
-    for (const d of docs) await this.index.syncDoctor(s.db, s.tenantId, { ...d, isPublic: false }, row.hospitalDisplayName, false);
+    for (const d of docs) await this.index.syncDoctor(s.db, s.tenantId, { ...d, isPublic: false }, row.hospitalDisplayName, row.logoUrl, false);
     return row;
   }
 
@@ -188,7 +188,7 @@ export class HmsPublicService {
 
   private async resyncDoctor(s: Scope, profile: any) {
     const hp = await s.db.publicHospitalProfile.findUnique({ where: { tenantId: s.tenantId } });
-    await this.index.syncDoctor(s.db, s.tenantId, profile, hp?.hospitalDisplayName ?? (await this.tenantName(s)), await this.portalBookable(s));
+    await this.index.syncDoctor(s.db, s.tenantId, profile, hp?.hospitalDisplayName ?? (await this.tenantName(s)), hp?.logoUrl ?? null, await this.portalBookable(s));
   }
 
   // ── Appointment types ─────────────────────────────────────────

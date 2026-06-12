@@ -33,6 +33,7 @@ export class AuthMiddleware implements NestMiddleware {
     ctx.userId = user.id;
     ctx.user = { id: user.id, email: user.email, fullName: user.fullName };
     ctx.isPlatform = user.isPlatform;
+    ctx.isSupport = user.isSupport;
 
     const tenantId = req.header('x-tenant-id') || null;
     if (tenantId) {

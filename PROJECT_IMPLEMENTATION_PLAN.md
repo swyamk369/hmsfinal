@@ -1056,3 +1056,31 @@ First real product target:
 - Firebase Auth is mandatory.
 - Production readiness is required from the beginning.
 - `PROJECT_IMPLEMENTATION_PLAN.md` is updated with this plan after approval.
+
+### Phase 22 — Global AI Assistant & Support Ticketing ✅ DONE (2026-06-12)
+
+Build:
+
+- A global `SupportTicket` model tracking user issues, mapped by tenant and author.
+- A platform-wide Support Staff Dashboard to view, comment on, and manage ticket lifecycle (`OPEN`, `IN_PROGRESS`, `RESOLVED`, `CLOSED`).
+- An AI Assistant (`AiChatbot`) component globally injected into the Next.js App Router layout.
+- The `AiService` in NestJS leveraging Vercel AI SDK and Google Gemini 1.5 Pro to interact with users, answer questions, and invoke internal tools.
+- A `createSupportTicket` AI Tool that allows the LLM to autonomously create support tickets on behalf of the user seamlessly.
+
+Frontend routes:
+
+- `/platform/support` (Super Admin / Support Staff)
+- `/support` (Tenant users to view their tickets)
+
+API endpoints:
+
+- `POST /ai/chat` (Vercel AI SDK streaming endpoint)
+- `GET/POST /support/tickets`
+- `PATCH /support/tickets/:id/status`
+
+Acceptance:
+
+- AI chatbot floats on all routes (app shell, portal shell, public routes).
+- Support module seamlessly registers auth headers and tenant contexts.
+- Bugs and issues can be routed automatically to tickets via natural language.
+

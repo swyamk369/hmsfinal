@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { Building2, MapPin, Video, CalendarCheck } from 'lucide-react';
 import { PublicShell, SearchBar } from '@/components/public-shell';
 import { Avatar, CheckRow, FilterGroup, Pagination, ResultsLayout, SortSelect, Tag, Toggle } from '@/components/patient/directory-ui';
+import { SaveHospitalButton } from '@/components/patient/save-button';
 import { publicApi, type SearchRow } from '@/lib/public';
 
 const PAGE_SIZE = 8;
@@ -147,7 +148,7 @@ function HospitalsInner() {
           ) : (
             <div className="space-y-4">
               {pageRows.map((h) => (
-                <article key={h.id} className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row">
+                <article key={h.id} className="relative flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row">
                   <div className="flex flex-grow gap-4">
                     <Avatar name={h.hospitalName} url={h.logoUrl} shape="square" />
                     <div className="min-w-0">
@@ -174,6 +175,14 @@ function HospitalsInner() {
                     </div>
                   </div>
                   <div className="flex flex-shrink-0 flex-col items-stretch justify-center gap-2 sm:w-44">
+                    <SaveHospitalButton
+                      tenantId={h.tenantId}
+                      hospitalSlug={h.hospitalSlug}
+                      hospitalName={h.hospitalName}
+                      city={h.city}
+                      logoUrl={h.logoUrl}
+                      className="absolute right-3 top-3"
+                    />
                     {h.isBookable && (
                       <div className="flex items-center justify-center gap-1 text-label-sm font-medium text-success-fg">
                         <CalendarCheck className="h-3.5 w-3.5" /> Online booking

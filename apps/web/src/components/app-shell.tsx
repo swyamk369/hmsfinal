@@ -37,6 +37,7 @@ import { ROLE_LABELS, SEGMENT_LABELS, type NavItem } from '@/lib/constants';
 import { visibleNav, breadcrumbs } from '@/lib/access';
 import NotificationBell from './notification-bell';
 import { cx } from './ui';
+import { AiChatbot } from './shared/ai-chatbot';
 
 const ICONS: Record<string, LucideIcon> = {
   '/dashboard': LayoutDashboard,

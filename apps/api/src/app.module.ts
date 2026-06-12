@@ -29,6 +29,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { OperationsModule } from './operations/operations.module';
 import { PatientPublicModule } from './patient-public/patient-public.module';
 import { HealthModule } from './health/health.module';
+import { SupportModule } from './support/support.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { HealthModule } from './health/health.module';
     OperationsModule,
     PatientPublicModule,
     HealthModule,
+    SupportModule,
+    AiModule,
   ],
   providers: [
     AuthMiddleware,

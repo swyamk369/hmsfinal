@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
   Building2,
@@ -19,9 +19,10 @@ import {
 } from 'lucide-react';
 import { PublicShell } from '@/components/public-shell';
 import { Avatar, Tag } from '@/components/patient/directory-ui';
+import { SaveDoctorButton } from '@/components/patient/save-button';
 import { publicApi, inr, type PublicDoctor, type PublicHospital, type PublicAppointmentType, type DaySlots } from '@/lib/public';
 
-export default function DoctorProfilePage() {
+function DoctorProfileInner() {
   const { slug } = useParams<{ slug: string }>();
   const [data, setData] = useState<{ doctor: PublicDoctor; hospital: PublicHospital | null; appointmentTypes: PublicAppointmentType[] } | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -57,8 +58,20 @@ export default function DoctorProfilePage() {
           <section className="rounded-xl border border-line bg-surface p-6">
             <div className="flex flex-col gap-4 sm:flex-row">
               <Avatar name={d.name} url={d.photoUrl} size="lg" />
-              <div className="min-w-0">
-                <h1 className="text-headline-md font-semibold text-ink">{d.name}</h1>
+              <div className="min-w-0 flex-grow">
+                <div className="flex items-start justify-between gap-4">
+                  <h1 className="text-headline-md font-semibold text-ink">{d.name}</h1>
+                  <SaveDoctorButton
+                    tenantId={d.tenantId}
+                    doctorId={d.doctorId}
+                    doctorSlug={d.slug}
+                    doctorName={d.name}
+                    specialty={d.specialty}
+                    hospitalName={h?.name ?? ''}
+                    photoUrl={d.photoUrl}
+                    className="-mr-1.5 -mt-1.5 flex-shrink-0"
+                  />
+                </div>
                 {d.specialty && <div className="text-body-lg font-medium text-primary">{d.specialty}</div>}
                 {d.qualifications && (
                   <div className="mt-1 flex items-center gap-1.5 text-body-sm text-ink-muted">
@@ -171,6 +184,14 @@ export default function DoctorProfilePage() {
   );
 }
 
+export default function DoctorProfilePage() {
+  return (
+    <Suspense fallback={<PublicShell><p className="py-10 text-center text-body-sm text-ink-soft">Loading…</p></PublicShell>}>
+      <DoctorProfileInner />
+    </Suspense>
+  );
+}
+
 /** Real-slot mini-booking widget. Selecting a time deep-links into the full booking wizard. */
 function BookingWidget({
   doctor,
@@ -182,6 +203,7 @@ function BookingWidget({
   appointmentTypes: PublicAppointmentType[];
 }) {
   const router = useRouter();
+  const search = useSearchParams();
   const [typeId, setTypeId] = useState(appointmentTypes[0]?.id ?? '');
   const [slots, setSlots] = useState<DaySlots[] | null>(null);
   const [slotErr, setSlotErr] = useState<string | null>(null);
@@ -215,6 +237,10 @@ function BookingWidget({
     if (typeId) params.set('type', typeId);
     if (date) params.set('date', date);
     if (time) params.set('time', time);
+    const bookFor = search.get('bookFor');
+    if (bookFor) params.set('bookFor', bookFor);
+    const bookForName = search.get('bookForName');
+    if (bookForName) params.set('bookForName', bookForName);
     router.push(`/book/${doctor.tenantId}/${doctor.doctorId}?${params.toString()}`);
   }
 

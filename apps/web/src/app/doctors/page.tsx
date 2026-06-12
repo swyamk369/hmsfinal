@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { Stethoscope, Building2, Video, User, CalendarCheck, Globe } from 'lucide-react';
 import { PublicShell, SearchBar } from '@/components/public-shell';
 import { Avatar, CheckRow, FilterGroup, Pagination, ResultsLayout, SortSelect, Tag, Toggle } from '@/components/patient/directory-ui';
+import { SaveDoctorButton } from '@/components/patient/save-button';
 import { publicApi, type SearchRow } from '@/lib/public';
 
 const PAGE_SIZE = 8;
@@ -28,6 +29,13 @@ function DoctorsInner() {
   const [bookableOnly, setBookableOnly] = useState(false);
   const [sort, setSort] = useState('name');
   const [page, setPage] = useState(1);
+
+  const bookFor = params.get('bookFor');
+  const bookForName = params.get('bookForName');
+  const fwParams = useMemo(() => {
+    if (!bookFor) return '';
+    return `?bookFor=${bookFor}&bookForName=${encodeURIComponent(bookForName || '')}`;
+  }, [bookFor, bookForName]);
 
   // Seed filters from the home-page query (?q, ?city, ?specialty).
   useEffect(() => {
@@ -169,7 +177,7 @@ function DoctorsInner() {
           ) : (
             <div className="space-y-4">
               {pageRows.map((d) => (
-                <article key={d.id} className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row">
+                <article key={d.id} className="relative flex flex-col gap-4 rounded-xl border border-line bg-surface p-5 sm:flex-row">
                   <div className="flex flex-grow gap-4">
                     <Avatar name={d.doctorName ?? 'Doctor'} url={d.photoUrl} />
                     <div className="min-w-0">
@@ -206,6 +214,16 @@ function DoctorsInner() {
                     </div>
                   </div>
                   <div className="flex flex-shrink-0 flex-col items-stretch justify-center gap-2 sm:w-44">
+                    <SaveDoctorButton
+                      tenantId={d.tenantId}
+                      doctorId={d.doctorId ?? ''}
+                      doctorSlug={d.doctorSlug}
+                      doctorName={d.doctorName ?? 'Doctor'}
+                      specialty={d.specialty}
+                      hospitalName={d.hospitalName}
+                      photoUrl={d.photoUrl}
+                      className="absolute right-3 top-3"
+                    />
                     {d.isBookable && (
                       <div className="flex items-center justify-center gap-1 text-label-sm font-medium text-success-fg">
                         <CalendarCheck className="h-3.5 w-3.5" /> Online booking
@@ -213,14 +231,14 @@ function DoctorsInner() {
                     )}
                     {d.isBookable && d.doctorId ? (
                       <Link
-                        href={`/book/${d.tenantId}/${d.doctorId}`}
+                        href={`/book/${d.tenantId}/${d.doctorId}${fwParams}`}
                         className="rounded-lg bg-primary px-4 py-2 text-center text-label-md font-medium text-white hover:bg-primary-700"
                       >
                         Book appointment
                       </Link>
                     ) : null}
                     <Link
-                      href={`/doctors/${d.doctorSlug}`}
+                      href={`/doctors/${d.doctorSlug}${fwParams}`}
                       className="rounded-lg border border-line px-4 py-2 text-center text-label-md font-medium text-ink hover:bg-canvas"
                     >
                       View profile

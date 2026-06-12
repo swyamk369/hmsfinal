@@ -7,6 +7,7 @@ import type { TenantClient } from '@hms/db';
 export interface RequestContext {
   userId: string | null;
   isPlatform: boolean;
+  isSupport: boolean;
   tenantId: string | null;
   tenantStatus: string | null;
   roles: string[];
@@ -26,6 +27,7 @@ export function emptyContext(): RequestContext {
   return {
     userId: null,
     isPlatform: false,
+    isSupport: false,
     tenantId: null,
     tenantStatus: null,
     roles: [],

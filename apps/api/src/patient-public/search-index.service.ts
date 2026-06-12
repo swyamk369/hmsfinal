@@ -31,12 +31,13 @@ export class SearchIndexService {
         languages: profile.languages ?? [],
         isBookable: Boolean(profile.bookingEnabled && portalBookable),
         profileUrl: `/hospitals/${profile.hospitalSlug}`,
+        logoUrl: profile.logoUrl ?? null,
         searchKeywords: this.kw([profile.hospitalDisplayName, profile.city, profile.state, ...(profile.specialties ?? []), ...(profile.services ?? [])]),
       },
     });
   }
 
-  async syncDoctor(db: TenantClient, tenantId: string, profile: any | null, hospitalName: string, portalBookable: boolean) {
+  async syncDoctor(db: TenantClient, tenantId: string, profile: any | null, hospitalName: string, hospitalLogoUrl: string | null, portalBookable: boolean) {
     await db.publicSearchIndex.deleteMany({ where: { type: 'DOCTOR' as any, tenantId, doctorId: profile?.doctorId } });
     if (!profile || !profile.isPublic || profile.profileStatus !== 'PUBLISHED') return;
     await db.publicSearchIndex.create({
@@ -53,6 +54,8 @@ export class SearchIndexService {
         languages: profile.languages ?? [],
         isBookable: Boolean(profile.bookingEnabled && portalBookable),
         profileUrl: `/doctors/${profile.doctorSlug}`,
+        photoUrl: profile.photoUrl ?? null,
+        logoUrl: hospitalLogoUrl,
         searchKeywords: this.kw([profile.displayName, profile.specialty, hospitalName, ...(profile.services ?? []), ...(profile.languages ?? [])]),
       },
     });

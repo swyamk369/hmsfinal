@@ -1,10 +1,33 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { HeartPulse } from 'lucide-react';
+import { HeartPulse, User } from 'lucide-react';
+import { getFirebaseAuth } from '@/lib/firebase';
+import { AiChatbot } from './shared/ai-chatbot';
 
 /** Public, no-auth layout for the patient-facing directory (Phase 22.3). */
 export function PublicShell({ children }: { children: React.ReactNode }) {
+  const [isPatientLogged, setIsPatientLogged] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setIsPatientLogged(false);
+      return;
+    }
+    let active = true;
+    import('firebase/auth').then(({ onAuthStateChanged }) => {
+      const unsub = onAuthStateChanged(auth, (user) => {
+        if (active) setIsPatientLogged(!!user);
+      });
+      return () => unsub();
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-canvas">
       <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
@@ -24,9 +47,15 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             </Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Link href="/patient/login" className="rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas">
-              Sign in
-            </Link>
+            {isPatientLogged === false ? (
+              <Link href="/patient/login" className="rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas">
+                Patient Login
+              </Link>
+            ) : isPatientLogged === true ? (
+              <Link href="/patient/dashboard" className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas">
+                <User className="h-4 w-4" /> Patient Portal
+              </Link>
+            ) : null}
             <Link href="/doctors" className="rounded-lg bg-primary px-4 py-1.5 text-label-md font-medium text-white hover:bg-primary-700">
               Book appointment
             </Link>
@@ -34,11 +63,17 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-      <footer className="mx-auto flex max-w-6xl flex-col items-center gap-1 px-4 py-8 text-center text-body-sm text-ink-soft">
+      <footer className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 py-8 text-center text-body-sm text-ink-soft">
         <span>Find hospitals and doctors, and book appointments online. © {new Date().getFullYear()} HealthConnect.</span>
-        <Link href="/login" className="font-medium text-ink-muted hover:text-primary">
-          Hospital staff login
-        </Link>
+        <div className="flex gap-4">
+          <Link href="/patient/login" className="font-medium text-ink-muted hover:text-primary">
+            Patient Portal
+          </Link>
+          <span className="text-line">•</span>
+          <Link href="/login" className="font-medium text-ink-muted hover:text-primary">
+            Hospital staff login
+          </Link>
+        </div>
       </footer>
     </div>
   );

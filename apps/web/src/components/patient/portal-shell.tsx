@@ -26,6 +26,7 @@ import {
 import { getFirebaseAuth } from '@/lib/firebase';
 import { portalApi, type LinkedHospital, type PortalMe } from '@/lib/patient-portal';
 import { publicApi, type SearchRow } from '@/lib/public';
+import { AiChatbot } from '../shared/ai-chatbot';
 
 /**
  * Persistent patient-portal shell + context. Mounted once by `app/patient/layout.tsx`
@@ -41,8 +42,10 @@ interface PortalCtx {
   hospitals: LinkedHospital[];
   tenantId: string;
   current: LinkedHospital | null;
+  unreadCount: number;
   setTenantId: (id: string) => void;
   refresh: () => Promise<void>;
+  refreshNotifications: () => Promise<void>;
   logout: () => Promise<void>;
   openLinkModal: () => void;
 }
@@ -83,9 +86,19 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
   const [me, setMe] = useState<PortalMe | null>(null);
   const [hospitals, setHospitals] = useState<LinkedHospital[]>([]);
   const [tenantId, setTenantIdState] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
   const [err, setErr] = useState<string | null>(null);
   const [showLink, setShowLink] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
+
+  async function loadNotifications() {
+    try {
+      const n = await portalApi.notifications();
+      setUnreadCount(n.unread);
+    } catch {
+      // Non-critical — don't block the shell
+    }
+  }
 
   async function load() {
     const [profile, linked] = await Promise.all([portalApi.me(), portalApi.linkedHospitals()]);
@@ -93,6 +106,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
     setHospitals(linked);
     const stored = typeof window !== 'undefined' ? localStorage.getItem(STORE) : null;
     setTenantIdState(linked.find((h) => h.tenantId === stored)?.tenantId ?? linked[0]?.tenantId ?? '');
+    await loadNotifications();
   }
 
   // Wait for Firebase auth, then load identity + linked hospitals once.
@@ -144,7 +158,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
   }
 
   const current = hospitals.find((h) => h.tenantId === tenantId) ?? null;
-  const ctx: PortalCtx = { ready, me, hospitals, tenantId, current, setTenantId, refresh: load, logout, openLinkModal: () => setShowLink(true) };
+  const ctx: PortalCtx = { ready, me, hospitals, tenantId, current, unreadCount, setTenantId, refresh: load, refreshNotifications: loadNotifications, logout, openLinkModal: () => setShowLink(true) };
 
   if (!ready) {
     return (
@@ -233,6 +247,14 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
                     ))}
                   </select>
                 )}
+                <Link href="/patient/notifications" className="relative rounded-md p-2 text-ink-muted hover:bg-canvas hover:text-ink" aria-label="Notifications">
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-danger px-1 text-[10px] font-bold leading-none text-white">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
                 <button onClick={logout} className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-body-sm font-medium text-ink hover:bg-canvas">
                   <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Sign out</span>
                 </button>

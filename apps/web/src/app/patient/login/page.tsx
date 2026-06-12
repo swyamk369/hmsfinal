@@ -24,8 +24,20 @@ export default function PatientLoginPage() {
     setBusy(true);
     setErr(null);
     try {
-      const { signInWithEmailAndPassword } = await import('firebase/auth');
+      const { signInWithEmailAndPassword, signOut } = await import('firebase/auth');
       await signInWithEmailAndPassword(auth, email.trim(), password);
+      
+      try {
+        const { portalApi } = await import('@/lib/patient-portal');
+        await portalApi.me();
+      } catch (apiErr: any) {
+        if (apiErr.message?.includes('Staff accounts')) {
+          await signOut(auth);
+          setErr('Staff accounts cannot access the patient portal.');
+          return;
+        }
+      }
+      
       router.replace('/patient/dashboard');
     } catch (e) {
       setErr(friendly((e as Error).message));

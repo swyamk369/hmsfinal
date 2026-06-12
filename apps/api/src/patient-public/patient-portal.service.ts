@@ -23,6 +23,10 @@ export class PatientPortalService {
     if (!authHeader?.startsWith('Bearer ')) throw new UnauthorizedException('Please sign in to continue.');
     const v = await this.firebase.verifyIdToken(authHeader.slice(7));
     if (!v?.uid) throw new UnauthorizedException('Your session has expired. Please sign in again.');
+
+    // Prevent staff users from logging into the patient portal
+    const staffUser = await platformDb.user.findFirst({ where: { firebaseUid: v.uid } });
+    if (staffUser) throw new UnauthorizedException('Staff accounts cannot access the patient portal.');
     await platformDb.patientAuthUser.upsert({
       where: { uid: v.uid },
       create: { uid: v.uid, email: v.email ?? null, status: 'ACTIVE', lastLoginAt: new Date() },

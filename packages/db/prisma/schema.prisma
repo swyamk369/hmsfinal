@@ -197,6 +197,12 @@ enum FinanceDayCloseStatus {
   REOPENED
 }
 
+enum AdvanceDepositStatus {
+  COLLECTED
+  CONSUMED
+  REFUNDED
+}
+
 enum FinanceApprovalType {
   REFUND
   DISCOUNT
@@ -210,6 +216,14 @@ enum FinanceApprovalStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum CostEstimateStatus {
+  DRAFT
+  ISSUED
+  EXPIRED
+  CONVERTED
+  CANCELLED
 }
 
 enum WardType {
@@ -387,6 +401,7 @@ model User {
   fullName    String
   phone       String?
   isPlatform  Boolean      @default(false)
+  isSupport   Boolean      @default(false)
   createdAt   DateTime     @default(now())
   disabledAt  DateTime?
   memberships TenantUser[]
@@ -520,6 +535,9 @@ model HospitalSettings {
   ipdChargeAdmissionDay         Boolean  @default(true) @map("ipd_charge_admission_day")
   ipdChargeDischargeDay         Boolean  @default(false) @map("ipd_charge_discharge_day")
   ipdMinUnits                   Int      @default(1) @map("ipd_min_units")
+  // Phase 21.5: Finance Governance thresholds
+  discountApprovalThreshold     Int      @default(1000) @map("discount_approval_threshold") // in basis points (1000 = 10%)
+  refundApprovalThreshold       Int      @default(500000) @map("refund_approval_threshold") // in minor units (500000 = 5000 INR)
   createdAt                     DateTime @default(now())
   updatedAt                     DateTime @updatedAt
 
@@ -537,9 +555,74 @@ model ServiceCatalog {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
 
+  priceListItems  PriceListItem[]
+  packageItems    ServicePackageItem[]
+
   @@unique([tenantId, code])
   @@index([tenantId])
   @@map("service_catalog")
+}
+
+model PriceList {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @db.Uuid @map("tenant_id")
+  name        String
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       PriceListItem[]
+
+  @@index([tenantId])
+  @@map("price_list")
+}
+
+model PriceListItem {
+  id          String         @id @default(uuid()) @db.Uuid
+  tenantId    String         @db.Uuid @map("tenant_id")
+  priceListId String         @db.Uuid @map("price_list_id")
+  catalogId   String         @db.Uuid @map("catalog_id")
+  price       Int
+  createdAt   DateTime       @default(now())
+  priceList   PriceList      @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  catalogItem ServiceCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, priceListId, catalogId])
+  @@index([tenantId])
+  @@map("price_list_item")
+}
+
+model ServicePackage {
+  id          String               @id @default(uuid()) @db.Uuid
+  tenantId    String               @db.Uuid @map("tenant_id")
+  code        String
+  name        String
+  description String?
+  fixedPrice  Int
+  active      Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  items       ServicePackageItem[]
+  charges     BillableCharge[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("service_package")
+}
+
+model ServicePackageItem {
+  id        String         @id @default(uuid()) @db.Uuid
+  tenantId  String         @db.Uuid @map("tenant_id")
+  packageId String         @db.Uuid @map("package_id")
+  catalogId String         @db.Uuid @map("catalog_id")
+  quantity  Int            @default(1)
+  package   ServicePackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  catalog   ServiceCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, packageId, catalogId])
+  @@index([tenantId])
+  @@index([packageId])
+  @@map("service_package_item")
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -574,6 +657,8 @@ model Patient {
   admissions            Admission[]
   policies              PatientInsurancePolicy[]
   documents             PatientDocument[]
+  deposits              AdvanceDeposit[]
+  costEstimates         CostEstimate[]
 
   @@unique([tenantId, mrn])
   @@index([tenantId])
@@ -1129,6 +1214,31 @@ model Refund {
   @@map("refund")
 }
 
+model AdvanceDeposit {
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        String        @db.Uuid @map("tenant_id")
+  patientId       String        @db.Uuid @map("patient_id")
+  patient         Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  admissionId     String?       @db.Uuid @map("admission_id")
+  admission       Admission?    @relation(fields: [admissionId], references: [id])
+  amount          Int
+  paymentMethod   PaymentMethod @default(CASH)
+  transactionId   String?
+  status          AdvanceDepositStatus @default(COLLECTED)
+  consumedBillId  String?       @db.Uuid @map("consumed_bill_id")
+  notes           String?
+  collectedById   String?       @db.Uuid
+  refundedById    String?       @db.Uuid
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([tenantId])
+  @@index([patientId])
+  @@index([admissionId])
+  @@index([status])
+  @@map("advance_deposit")
+}
+
 model BillableCharge {
   id                 String                     @id @default(uuid()) @db.Uuid
   tenantId           String                     @db.Uuid @map("tenant_id")
@@ -1138,6 +1248,8 @@ model BillableCharge {
   billId             String?                    @db.Uuid
   billItemId         String?                    @db.Uuid
   catalogId          String?                    @db.Uuid
+  packageId          String?                    @db.Uuid @map("package_id")
+  package            ServicePackage?            @relation(fields: [packageId], references: [id])
   sourceModule       BillableChargeSourceModule
   sourceType         String
   sourceId           String?                    @db.Uuid
@@ -1209,6 +1321,46 @@ model FinanceApproval {
   @@map("finance_approval")
 }
 
+model CostEstimate {
+  id              String             @id @default(uuid()) @db.Uuid
+  tenantId        String             @db.Uuid @map("tenant_id")
+  patientId       String             @db.Uuid @map("patient_id")
+  patient         Patient            @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  status          CostEstimateStatus @default(DRAFT)
+  validUntil      DateTime?          @db.Date
+  notes           String?
+  totalAmount     Int                @default(0)
+  totalTax        Int                @default(0)
+  netAmount       Int                @default(0)
+  createdById     String?            @db.Uuid
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  items           CostEstimateItem[]
+
+  @@index([tenantId])
+  @@index([patientId])
+  @@index([status])
+  @@map("cost_estimate")
+}
+
+model CostEstimateItem {
+  id              String         @id @default(uuid()) @db.Uuid
+  tenantId        String         @db.Uuid @map("tenant_id")
+  estimateId      String         @db.Uuid @map("estimate_id")
+  estimate        CostEstimate   @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  catalogId       String?        @db.Uuid @map("catalog_id")
+  packageId       String?        @db.Uuid @map("package_id")
+  name            String
+  quantity        Int            @default(1)
+  unitPrice       Int            @default(0)
+  taxRate         Int            @default(0)
+  total           Int            @default(0)
+
+  @@index([tenantId])
+  @@index([estimateId])
+  @@map("cost_estimate_item")
+}
+
 // ─────────────────────────────────────────────────────────────
 // IPD
 // ─────────────────────────────────────────────────────────────
@@ -1264,6 +1416,7 @@ model Admission {
   rounds             IpdRound[]
   charges            IpdCharge[]
   transfers          BedTransfer[]
+  advanceDeposits    AdvanceDeposit[]
 
   @@index([tenantId])
   @@index([patientId])
@@ -1589,9 +1742,9 @@ model PatientAuthUser {
   notifyDocuments      Boolean      @default(true)
   notifyBilling        Boolean      @default(true)
   notifyByEmail        Boolean      @default(true)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  lastLoginAt     DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  lastLoginAt       DateTime?
 
   // Phase 23 patient-owned, cross-hospital data (global, keyed by uid).
   savedProviders  PatientSavedProvider[]
@@ -1942,6 +2095,8 @@ model PublicSearchIndex {
   consultationTypes String[]
   languages         String[]
   fees              Int?
+  photoUrl          String?
+  logoUrl           String?
   nextAvailableSlot DateTime?
   isBookable        Boolean         @default(false)
   profileUrl        String?
@@ -1987,4 +2142,60 @@ model OnlineBooking {
   @@index([tenantId])
   @@index([bookingStatus])
   @@map("online_booking")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Support & Ticketing System
+// ─────────────────────────────────────────────────────────────
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketReporterType {
+  STAFF
+  PATIENT
+}
+
+model SupportTicket {
+  id           String             @id @default(uuid()) @db.Uuid
+  tenantId     String?            @db.Uuid @map("tenant_id")
+  reporterId   String             @db.Uuid
+  reporterType TicketReporterType
+  title        String
+  description  String
+  status       TicketStatus       @default(OPEN)
+  priority     TicketPriority     @default(LOW)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  comments     SupportTicketComment[]
+
+  @@index([tenantId])
+  @@map("support_ticket")
+}
+
+model SupportTicketComment {
+  id           String             @id @default(uuid()) @db.Uuid
+  ticketId     String             @db.Uuid
+  authorId     String             @db.Uuid
+  authorType   TicketReporterType
+  content      String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  ticket       SupportTicket      @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("support_ticket_comment")
 }

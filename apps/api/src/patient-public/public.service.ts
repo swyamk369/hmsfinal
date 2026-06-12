@@ -77,10 +77,10 @@ export class PublicService {
     if (!q || q.length < 2) return [];
     const rows = await platformDb.publicSearchIndex.findMany({
       where: { searchKeywords: { contains: q.toLowerCase() } },
-      select: { type: true, hospitalName: true, doctorName: true, specialty: true, profileUrl: true },
+      select: { type: true, hospitalName: true, doctorName: true, specialty: true, profileUrl: true, photoUrl: true, logoUrl: true },
       take: 8,
     });
-    return rows.map((r) => ({ type: r.type, label: r.doctorName ?? r.hospitalName, sub: r.specialty ?? r.hospitalName, href: r.profileUrl }));
+    return rows.map((r) => ({ type: r.type, label: r.doctorName ?? r.hospitalName, sub: r.specialty ?? r.hospitalName, href: r.profileUrl, photoUrl: r.photoUrl, logoUrl: r.logoUrl }));
   }
 
   // ── Hospitals ─────────────────────────────────────────────────

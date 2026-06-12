@@ -1,10 +1,13 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, LifeBuoy, Route, ShieldCheck, Stethoscope } from 'lucide-react';
+import { BookOpen, LifeBuoy, Route, ShieldCheck, Stethoscope, Plus, MessageSquare } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 import Protected from '@/components/Protected';
 import { HelpTip } from '@/components/operations';
-import { PageHeader, Section } from '@/components/ui';
+import { PageHeader, Section, Button, Modal, FormField, Input, Select, EmptyState, Badge, StatusChip } from '@/components/ui';
+import { supportApi, type SupportTicket } from '@/lib/support-api';
 
 const CARDS = [
   {
@@ -28,9 +31,53 @@ const CARDS = [
 ];
 
 export default function SupportPage() {
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const [subject, setSubject] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('GENERAL');
+  const [priority, setPriority] = useState('LOW');
+  const [busy, setBusy] = useState(false);
+
+  async function load() {
+    setLoading(true);
+    try {
+      setTickets(await supportApi.listTickets());
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function submit() {
+    setBusy(true);
+    try {
+      await supportApi.createTicket({ subject, description, category, priority });
+      setCreateOpen(false);
+      setSubject('');
+      setDescription('');
+      await load();
+    } catch (e) {
+      alert((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <Protected>
-      <PageHeader title="Support" subtitle="Operational help for hospital staff" />
+      <PageHeader 
+        title="Support" 
+        subtitle="Operational help for hospital staff" 
+        action={<Button icon={Plus} onClick={() => setCreateOpen(true)}>Raise Ticket</Button>}
+      />
       <div className="space-y-6">
         <HelpTip title="Use this during live work">
           These notes explain the intended workflow and common blockers. They do not bypass permissions; hospital admins
@@ -50,12 +97,35 @@ export default function SupportPage() {
           })}
         </div>
 
-        <Section title="Fast orientation">
-          <div className="grid gap-4 p-5 md:grid-cols-2">
-            <SupportNote title="Start with the queue" text="Role dashboards now show live next actions. If something is missing, check module entitlement and role permissions." />
-            <SupportNote title="Keep reasons specific" text="Transfers, refunds, cancellations, stock adjustments, and archive actions should describe the real-world reason." />
-            <SupportNote title="Patient profile is the source" text="Use the patient journey strip to see current location, blockers, documents, open bills, lab orders, and prescriptions." />
-            <SupportNote title="Escalate clinical blockers" text="Abnormal lab results, missed medications, allergy alerts, and delayed IPD discharge should be handled before routine work." />
+        <Section title="My Support Tickets">
+          <div className="p-4 bg-surface rounded-md border border-line">
+            {loading ? (
+              <div className="text-center text-ink-soft py-4">Loading...</div>
+            ) : tickets.length === 0 ? (
+              <EmptyState
+                title="No support tickets"
+                hint="You haven't raised any support tickets yet."
+                action={<Button icon={Plus} onClick={() => setCreateOpen(true)}>Raise Ticket</Button>}
+              />
+            ) : (
+              <div className="divide-y divide-line">
+                {tickets.map((t) => (
+                  <div key={t.id} className="py-3 flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-ink mb-1">{t.subject}</h4>
+                      <div className="flex gap-3 text-label-sm text-ink-soft">
+                        <span>{formatDistanceToNow(new Date(t.createdAt), { addSuffix: true })}</span>
+                        <span>•</span>
+                        <span>ID: {t.id.slice(0,8)}</span>
+                        <span>•</span>
+                        <Badge variant={t.priority === 'URGENT' ? 'danger' : 'neutral'}>{t.priority}</Badge>
+                      </div>
+                    </div>
+                    <StatusChip status={t.status} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </Section>
 
@@ -69,6 +139,54 @@ export default function SupportPage() {
           </div>
         </Section>
       </div>
+
+      <Modal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title="Raise Support Ticket"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setCreateOpen(false)} disabled={busy}>Cancel</Button>
+            <Button onClick={submit} loading={busy} disabled={!subject.trim() || !description.trim()}>Submit Ticket</Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-body-sm text-ink-soft mb-4">Please describe the issue you are facing. Our global support team will look into it.</p>
+          <FormField label="Subject" required>
+            <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Brief summary of the issue" />
+          </FormField>
+          
+          <FormField label="Category" required>
+            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="GENERAL">General</option>
+              <option value="BUG">Bug / Technical Issue</option>
+              <option value="FEATURE_REQUEST">Feature Request</option>
+              <option value="BILLING">Billing</option>
+              <option value="ACCESS">Access & Permissions</option>
+            </Select>
+          </FormField>
+
+          <FormField label="Priority" required>
+            <Select value={priority} onChange={(e) => setPriority(e.target.value)}>
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+              <option value="URGENT">Urgent (System Down)</option>
+            </Select>
+          </FormField>
+
+          <FormField label="Description" required>
+            <textarea
+              className="w-full rounded-md border border-line bg-surface p-3 text-body-sm focus:border-primary focus:outline-none"
+              rows={4}
+              placeholder="Provide as much detail as possible..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </FormField>
+        </div>
+      </Modal>
     </Protected>
   );
 }

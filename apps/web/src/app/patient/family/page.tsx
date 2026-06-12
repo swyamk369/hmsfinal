@@ -82,7 +82,7 @@ export default function FamilyPage() {
                   {m.sex ? ` · ${m.sex}` : ''}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
-                  <Link href="/doctors" className="inline-flex items-center gap-1 text-label-md font-medium text-primary hover:underline">
+                  <Link href={`/doctors?bookFor=${m.id}&bookForName=${encodeURIComponent(m.fullName)}`} className="inline-flex items-center gap-1 text-label-md font-medium text-primary hover:underline">
                     <CalendarPlus className="h-4 w-4" /> Book for this person
                   </Link>
                   <button onClick={() => openEdit(m)} className="inline-flex items-center gap-1 text-label-md text-ink-muted hover:text-ink">

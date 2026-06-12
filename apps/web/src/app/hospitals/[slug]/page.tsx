@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { ArrowLeft, Building2, MapPin, Phone, Globe, Mail, Clock, Video, Languages, ShieldCheck, CalendarCheck } from 'lucide-react';
 import { PublicShell } from '@/components/public-shell';
 import { Avatar, Tag } from '@/components/patient/directory-ui';
+import { SaveHospitalButton } from '@/components/patient/save-button';
 import { publicApi, inr, type PublicHospital, type PublicDoctor, type PublicAppointmentType } from '@/lib/public';
 
 export default function HospitalProfilePage() {
@@ -53,7 +54,17 @@ export default function HospitalProfilePage() {
           <div className="-mt-8 mb-3">
             <Avatar name={h.name} url={h.logoUrl} shape="square" size="lg" />
           </div>
-          <h1 className="text-headline-md font-semibold text-ink">{h.name}</h1>
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-headline-md font-semibold text-ink">{h.name}</h1>
+            <SaveHospitalButton
+              tenantId={h.tenantId}
+              hospitalSlug={h.slug}
+              hospitalName={h.name}
+              city={h.city}
+              logoUrl={h.logoUrl}
+              className="-mr-1.5 -mt-1.5 flex-shrink-0"
+            />
+          </div>
           <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-body-sm text-ink-muted">
             {(h.address || h.city) && (
               <span className="inline-flex items-center gap-1">
