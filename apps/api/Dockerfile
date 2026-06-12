@@ -60,6 +60,7 @@ COPY --chown=node:node --from=builder /repo/tsconfig.base.json ./tsconfig.base.j
 COPY --chown=node:node --from=builder /repo/pnpm-workspace.yaml ./pnpm-workspace.yaml
 COPY --chown=node:node --from=builder /repo/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --chown=node:node --from=builder /repo/packages ./packages
+COPY --chown=node:node --from=builder /repo/apps/api/node_modules ./apps/api/node_modules
 COPY --chown=node:node --from=builder /repo/apps/api/dist ./apps/api/dist
 COPY --chown=node:node --from=builder /repo/apps/api/package.json ./apps/api/package.json
 
