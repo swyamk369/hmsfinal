@@ -9,7 +9,7 @@ services:
     dockerfilePath: apps/api/Dockerfile
     dockerContext: .
     healthCheckPath: /health
-    preDeployCommand: pnpm db:deploy
+    dockerCommand: sh -c "pnpm db:deploy && node apps/api/dist/main.js"
     autoDeployTrigger: checksPass
     envVars:
       - key: NODE_ENV
