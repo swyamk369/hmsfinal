@@ -15,6 +15,8 @@ FROM node:${NODE_VERSION} AS builder
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
 RUN corepack enable && corepack prepare pnpm@11.5.2 --activate
 WORKDIR /repo
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+ && rm -rf /var/lib/apt/lists/*
 
 # Workspace manifests first for better layer caching.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
@@ -50,7 +52,7 @@ WORKDIR /repo
 # Copy the built workspace. dumb-init for correct signal handling (PID 1).
 # Ownership is set during COPY (--chown) so we avoid a giant `chown -R` layer
 # over node_modules (slow, and it can exhaust the snapshotter on some hosts).
-RUN apt-get update && apt-get install -y --no-install-recommends dumb-init \
+RUN apt-get update && apt-get install -y --no-install-recommends dumb-init openssl postgresql-client \
  && rm -rf /var/lib/apt/lists/*
 COPY --chown=node:node --from=builder /repo/node_modules ./node_modules
 COPY --chown=node:node --from=builder /repo/package.json ./package.json
