@@ -4,6 +4,7 @@ import { requireDb } from '../common/util';
 import { AuditService } from '../common/audit.service';
 import type { RequestContext } from '../common/types';
 import { NOTIFICATION_CATEGORIES, type NotificationQueryDto, type UpdatePreferencesDto } from './dto';
+import { dispatchDelivery, resolveProviderConfig, type DeliveryChannel } from './delivery';
 
 type Channel = NotificationChannel;
 type Category = NotificationCategory;
@@ -35,6 +36,8 @@ export interface NotifyInput {
 interface Recipient {
   userId: string;
   tenantUserId: string;
+  email?: string | null;
+  phone?: string | null;
 }
 
 const DEFAULT_CHANNELS: Channel[] = ['IN_APP'];
@@ -234,7 +237,7 @@ export class NotificationsService {
       created += channels.includes('IN_APP') && prefs.inAppEnabled ? 1 : 0;
 
       for (const channel of channels) {
-        await this.recordDelivery(db, tenantId, notification.id, channel);
+        await this.recordDelivery(db, tenantId, notification.id, channel, recipient, input);
       }
     }
     return { created };
@@ -246,31 +249,37 @@ export class NotificationsService {
 
   private async resolveRecipients(db: TenantClient, input: NotifyInput): Promise<Recipient[]> {
     const byUser = new Map<string, Recipient>();
-    const add = (row: { userId: string; id: string }) =>
-      byUser.set(row.userId, { userId: row.userId, tenantUserId: row.id });
+    const add = (row: { userId: string; id: string; user?: { email?: string | null; phone?: string | null } | null }) =>
+      byUser.set(row.userId, {
+        userId: row.userId,
+        tenantUserId: row.id,
+        email: row.user?.email ?? null,
+        phone: row.user?.phone ?? null,
+      });
+    const select = { id: true, userId: true, user: { select: { email: true, phone: true } } } as const;
 
     if (input.allTenantUsers) {
-      const rows = await db.tenantUser.findMany({ where: { active: true }, select: { id: true, userId: true } });
+      const rows = await db.tenantUser.findMany({ where: { active: true }, select });
       rows.forEach(add);
     }
     if (input.userIds?.length) {
       const rows = await db.tenantUser.findMany({
         where: { active: true, userId: { in: input.userIds } },
-        select: { id: true, userId: true },
+        select,
       });
       rows.forEach(add);
     }
     if (input.tenantUserIds?.length) {
       const rows = await db.tenantUser.findMany({
         where: { active: true, id: { in: input.tenantUserIds } },
-        select: { id: true, userId: true },
+        select,
       });
       rows.forEach(add);
     }
     if (input.roleCodes?.length) {
       const rows = await db.tenantUser.findMany({
         where: { active: true, roles: { some: { role: { code: { in: input.roleCodes } } } } },
-        select: { id: true, userId: true },
+        select,
       });
       rows.forEach(add);
     }
@@ -305,7 +314,14 @@ export class NotificationsService {
     });
   }
 
-  private async recordDelivery(db: TenantClient, tenantId: string, notificationId: string, channel: Channel) {
+  private async recordDelivery(
+    db: TenantClient,
+    tenantId: string,
+    notificationId: string,
+    channel: Channel,
+    recipient: Recipient,
+    input: NotifyInput,
+  ) {
     if (channel === 'IN_APP') {
       await db.notificationDeliveryAttempt.create({
         data: { tenantId, notificationId, channel: 'IN_APP', status: 'SENT', provider: 'database' },
@@ -313,21 +329,24 @@ export class NotificationsService {
       return;
     }
 
-    const provider = process.env[`NOTIFICATION_${channel}_PROVIDER`] || process.env[`${channel}_PROVIDER`] || null;
-    const apiKey = process.env[`NOTIFICATION_${channel}_API_KEY`] || process.env[`${channel}_API_KEY`] || null;
-    if (!provider || !apiKey) {
+    const config = resolveProviderConfig(channel as DeliveryChannel);
+    if (!config) {
+      // No provider/API key for this channel, so external delivery is intentionally
+      // skipped; the in-app notification still stands.
       await db.notificationDeliveryAttempt.create({
         data: {
           tenantId,
           notificationId,
           channel,
           status: 'SKIPPED',
-          provider: provider ?? null,
+          provider: null,
           errorMessage: 'Provider env not configured',
         },
       });
       return;
     }
+
+    // Test/ops hook: force a FAILED record without touching the network.
     const failChannels = (process.env.NOTIFICATION_FAIL_CHANNELS ?? '')
       .split(',')
       .map((v) => v.trim().toUpperCase())
@@ -339,21 +358,79 @@ export class NotificationsService {
           notificationId,
           channel,
           status: 'FAILED',
-          provider,
-          errorMessage: 'Provider delivery failed',
+          provider: config.provider,
+          errorMessage: 'Provider delivery failed (forced by NOTIFICATION_FAIL_CHANNELS)',
         },
       });
       return;
     }
-    await db.notificationDeliveryAttempt.create({
-      data: {
-        tenantId,
-        notificationId,
-        channel,
-        status: 'SENT',
-        provider,
-        metadata: { mode: 'configured_adapter' } as any,
-      },
-    });
+
+    // Resolve the destination address for this channel.
+    const to = channel === 'EMAIL' ? recipient.email : recipient.phone;
+    if (!to) {
+      await db.notificationDeliveryAttempt.create({
+        data: {
+          tenantId,
+          notificationId,
+          channel,
+          status: 'SKIPPED',
+          provider: config.provider,
+          errorMessage: `No ${channel === 'EMAIL' ? 'email' : 'phone'} on file for recipient`,
+        },
+      });
+      return;
+    }
+
+    // Staging / safe-mode: record SENT without actually calling the provider.
+    if (/^(1|true|yes)$/i.test(process.env.NOTIFICATION_DRY_RUN ?? '')) {
+      await db.notificationDeliveryAttempt.create({
+        data: {
+          tenantId,
+          notificationId,
+          channel,
+          status: 'SENT',
+          provider: config.provider,
+          metadata: { mode: 'dry_run' } as any,
+        },
+      });
+      return;
+    }
+
+    try {
+      const result = await dispatchDelivery(
+        { channel: channel as DeliveryChannel, to, subject: input.title, text: this.renderBody(input) },
+        config,
+      );
+      await db.notificationDeliveryAttempt.create({
+        data: {
+          tenantId,
+          notificationId,
+          channel,
+          status: 'SENT',
+          provider: result.provider,
+          metadata: { providerMessageId: result.providerMessageId ?? null } as any,
+        },
+      });
+    } catch (err) {
+      const message = (err as Error).message ?? 'Unknown delivery error';
+      this.logger.warn(`External ${channel} delivery failed via ${config.provider}: ${message}`);
+      await db.notificationDeliveryAttempt.create({
+        data: {
+          tenantId,
+          notificationId,
+          channel,
+          status: 'FAILED',
+          provider: config.provider,
+          errorMessage: message.slice(0, 500),
+        },
+      });
+    }
+  }
+
+  /** Plain-text body for external channels: title + message, with the deep link if present. */
+  private renderBody(input: NotifyInput): string {
+    const lines = [input.title, '', input.message];
+    if (input.actionUrl) lines.push('', input.actionUrl);
+    return lines.join('\n').trim();
   }
 }

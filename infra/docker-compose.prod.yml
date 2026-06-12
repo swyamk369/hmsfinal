@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────
-# HMS SaaS — production-like compose (self-host / staging).
+# HMS SaaS - production-like compose (self-host / staging).
 # In real production prefer a MANAGED Postgres and drop the `postgres` service.
 #
 # Build images first (from repo root):
@@ -10,8 +10,8 @@
 #
 # Then:  docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.production up -d
 #
-# Boot order: postgres (healthy) → migrate (one-shot: migrate+RLS+seed) → api → web.
-# No secrets are baked into images — everything is injected here at runtime.
+# Boot order: postgres (healthy) -> migrate (one-shot: migrate+RLS+seed) -> api -> web.
+# No secrets are baked into images - everything is injected here at runtime.
 # ─────────────────────────────────────────────────────────────
 services:
   postgres:
@@ -29,9 +29,9 @@ services:
       timeout: 5s
       retries: 10
 
-  # One-shot: prisma migrate deploy → apply RLS (creates hms_app role + policies
-  # + append-only audit triggers) → canonical production seed (plans, modules,
-  # roles, permissions — NO demo users). Exits 0 when done.
+  # One-shot: prisma migrate deploy -> apply RLS (creates hms_app role + policies
+  # + append-only audit triggers) -> canonical production seed (plans, modules,
+  # roles, permissions - NO demo users). Exits 0 when done.
   migrate:
     image: hms-api:latest
     command: ['pnpm', 'db:deploy']
@@ -55,6 +55,26 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:?production web origin(s), no localhost}
       THROTTLE_LIMIT: ${THROTTLE_LIMIT:-300}
       THROTTLE_TTL_MS: ${THROTTLE_TTL_MS:-60000}
+      GOOGLE_GENERATIVE_AI_API_KEY: ${GOOGLE_GENERATIVE_AI_API_KEY:?set Google AI key}
+      GOOGLE_GENERATIVE_AI_MODEL: ${GOOGLE_GENERATIVE_AI_MODEL:-gemini-1.5-flash}
+      NOTIFICATION_EMAIL_PROVIDER: ${NOTIFICATION_EMAIL_PROVIDER:-}
+      NOTIFICATION_EMAIL_API_KEY: ${NOTIFICATION_EMAIL_API_KEY:-}
+      NOTIFICATION_EMAIL_FROM: ${NOTIFICATION_EMAIL_FROM:-}
+      NOTIFICATION_EMAIL_API_BASE_URL: ${NOTIFICATION_EMAIL_API_BASE_URL:-}
+      NOTIFICATION_MAILGUN_DOMAIN: ${NOTIFICATION_MAILGUN_DOMAIN:-}
+      NOTIFICATION_SMS_PROVIDER: ${NOTIFICATION_SMS_PROVIDER:-}
+      NOTIFICATION_SMS_API_KEY: ${NOTIFICATION_SMS_API_KEY:-}
+      NOTIFICATION_SMS_FROM: ${NOTIFICATION_SMS_FROM:-}
+      NOTIFICATION_SMS_ACCOUNT_SID: ${NOTIFICATION_SMS_ACCOUNT_SID:-}
+      NOTIFICATION_SMS_API_BASE_URL: ${NOTIFICATION_SMS_API_BASE_URL:-}
+      NOTIFICATION_WHATSAPP_PROVIDER: ${NOTIFICATION_WHATSAPP_PROVIDER:-}
+      NOTIFICATION_WHATSAPP_API_KEY: ${NOTIFICATION_WHATSAPP_API_KEY:-}
+      NOTIFICATION_WHATSAPP_FROM: ${NOTIFICATION_WHATSAPP_FROM:-}
+      NOTIFICATION_WHATSAPP_ACCOUNT_SID: ${NOTIFICATION_WHATSAPP_ACCOUNT_SID:-}
+      NOTIFICATION_WHATSAPP_PHONE_NUMBER_ID: ${NOTIFICATION_WHATSAPP_PHONE_NUMBER_ID:-}
+      NOTIFICATION_WHATSAPP_API_BASE_URL: ${NOTIFICATION_WHATSAPP_API_BASE_URL:-}
+      NOTIFICATION_TIMEOUT_MS: ${NOTIFICATION_TIMEOUT_MS:-10000}
+      NOTIFICATION_DRY_RUN: ${NOTIFICATION_DRY_RUN:-}
       # Firebase Admin: mount the service account and point at it (preferred),
       # or supply FIREBASE_* env. The file is provided via the volume below.
       GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase-service-account.json
