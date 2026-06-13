@@ -6,10 +6,11 @@ import { useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { MessageCircle, X, Send } from 'lucide-react';
 
+import { apiBaseUrl } from '@/lib/api-url';
 import { getFirebaseIdToken } from '@/lib/firebase';
 import { useAuth } from '@/lib/auth-context';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_URL = apiBaseUrl();
 const PATIENT_TENANT_STORE = 'hms_portal_tenant';
 
 function messageText(message: UIMessage): string {

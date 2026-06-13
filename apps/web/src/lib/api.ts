@@ -1,6 +1,7 @@
 import { getFirebaseIdToken } from './firebase';
+import { apiBaseUrl } from './api-url';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API = apiBaseUrl();
 
 // Hard ceiling on every request. Without it a hung socket (API mid-restart,
 // wedged dev proxy, dead DB connection) leaves fetch pending forever and the

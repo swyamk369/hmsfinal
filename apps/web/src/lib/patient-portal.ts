@@ -1,7 +1,8 @@
 // Patient-portal API client. Uses the patient's own Firebase token (separate from staff).
+import { apiBaseUrl } from './api-url';
 import { getFirebaseIdToken } from './firebase';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API = apiBaseUrl();
 
 async function pget<T>(path: string, tenantId?: string): Promise<T> {
   const token = await getFirebaseIdToken();

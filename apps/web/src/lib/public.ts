@@ -3,8 +3,9 @@
 // signed-in patient's Firebase token so booking notifications reach them.
 
 import { getFirebaseIdToken } from './firebase';
+import { apiBaseUrl } from './api-url';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API = apiBaseUrl();
 
 function qs(params: Record<string, string | undefined>): string {
   const e = Object.entries(params).filter(([, v]) => v);
