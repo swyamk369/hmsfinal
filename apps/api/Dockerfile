@@ -72,4 +72,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:'+(process.env.API_PORT||process.env.PORT||4000)+'/health').then(r=>r.json()).then(j=>process.exit(j.status==='ok'?0:1)).catch(()=>process.exit(1))"
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["sh", "-c", "pnpm db:deploy && node apps/api/dist/main.js"]
+CMD ["sh", "-c", "pnpm db:deploy && if [ \"$DEMO_PROVISION_ON_START\" = \"1\" ]; then pnpm --filter @hms/api provision:demo; fi && node apps/api/dist/main.js"]
