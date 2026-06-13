@@ -73,3 +73,128 @@ body {
     @apply animate-pulse rounded bg-slate-100;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   HealthConnect homepage motion. Subtle, GPU-friendly (opacity +
+   transform only), and fully disabled under prefers-reduced-motion.
+   ───────────────────────────────────────────────────────────── */
+@keyframes hc-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hc-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes hc-blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(18px, 26px) scale(1.06);
+  }
+}
+
+/* Entrance: applied on mount (hero). Stagger via delay classes. */
+.hc-enter {
+  opacity: 0;
+  animation: hc-fade-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.hc-d1 {
+  animation-delay: 0.05s;
+}
+.hc-d2 {
+  animation-delay: 0.15s;
+}
+.hc-d3 {
+  animation-delay: 0.25s;
+}
+.hc-d4 {
+  animation-delay: 0.35s;
+}
+.hc-d5 {
+  animation-delay: 0.45s;
+}
+
+/* Scroll reveal: toggled by IntersectionObserver adding .hc-in. */
+.hc-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.hc-reveal.hc-in {
+  opacity: 1;
+  transform: none;
+}
+/* Stagger children of a revealed container. */
+.hc-stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.hc-stagger.hc-in > * {
+  opacity: 1;
+  transform: none;
+}
+.hc-stagger.hc-in > *:nth-child(2) {
+  transition-delay: 0.07s;
+}
+.hc-stagger.hc-in > *:nth-child(3) {
+  transition-delay: 0.14s;
+}
+.hc-stagger.hc-in > *:nth-child(4) {
+  transition-delay: 0.21s;
+}
+.hc-stagger.hc-in > *:nth-child(5) {
+  transition-delay: 0.28s;
+}
+.hc-stagger.hc-in > *:nth-child(6) {
+  transition-delay: 0.35s;
+}
+.hc-stagger.hc-in > *:nth-child(7) {
+  transition-delay: 0.42s;
+}
+.hc-stagger.hc-in > *:nth-child(8) {
+  transition-delay: 0.49s;
+}
+
+.hc-float {
+  animation: hc-float 6s ease-in-out infinite;
+}
+.hc-float-slow {
+  animation: hc-float 7.5s ease-in-out infinite;
+}
+.hc-blob {
+  animation: hc-blob 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-enter,
+  .hc-reveal,
+  .hc-stagger > *,
+  .hc-float,
+  .hc-float-slow,
+  .hc-blob {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

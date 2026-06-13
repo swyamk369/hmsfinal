@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { HeartPulse, User } from 'lucide-react';
+import { HeartPulse, LogIn, User } from 'lucide-react';
 import { getFirebaseAuth } from '@/lib/firebase';
 import { AiChatbot } from './shared/ai-chatbot';
 
@@ -29,64 +29,94 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <header className="sticky top-0 z-10 border-b border-line bg-surface/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <Link href="/" className="flex items-center gap-2 text-headline-sm font-semibold text-primary">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-white">
+    <div className="min-h-screen overflow-x-hidden bg-[#f8f5ef]">
+      <header className="sticky top-0 z-20 border-b border-black/10 bg-[#fbf8f1]/88 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
+          <Link href="/" className="flex min-w-0 items-center gap-2 text-headline-sm font-semibold text-[#111315]">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#111315] text-white">
               <HeartPulse className="h-5 w-5" />
             </span>
-            HealthConnect
+            <span className="truncate">HealthConnect</span>
           </Link>
-          <nav className="hidden items-center gap-1 text-body-md md:flex">
+          <nav className="hidden items-center gap-1 text-body-md lg:flex">
             <Link
               href="/hospitals"
-              className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink"
+              className="rounded-full px-3 py-2 font-medium text-ink-muted hover:bg-white hover:text-ink"
             >
               Hospitals
             </Link>
             <Link
               href="/doctors"
-              className="rounded-md px-3 py-1.5 font-medium text-ink-muted hover:bg-canvas hover:text-ink"
+              className="rounded-full px-3 py-2 font-medium text-ink-muted hover:bg-white hover:text-ink"
             >
               Doctors
             </Link>
+            <Link
+              href="/#specialties"
+              className="rounded-full px-3 py-2 font-medium text-ink-muted hover:bg-white hover:text-ink"
+            >
+              Specialties
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full px-3 py-2 font-medium text-ink-muted hover:bg-white hover:text-ink"
+            >
+              Staff login
+            </Link>
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {isPatientLogged === false ? (
               <Link
                 href="/patient/login"
-                className="rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas"
+                className="hidden rounded-full border border-black/10 bg-white/70 px-3 py-2 text-label-md font-semibold text-ink hover:bg-white sm:inline-flex"
               >
-                Patient Login
+                Patient login
               </Link>
             ) : isPatientLogged === true ? (
               <Link
                 href="/patient/dashboard"
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-label-md font-medium text-primary hover:bg-canvas"
+                className="hidden items-center gap-1.5 rounded-full border border-black/10 bg-white/70 px-3 py-2 text-label-md font-semibold text-ink hover:bg-white sm:flex"
               >
                 <User className="h-4 w-4" /> Patient Portal
               </Link>
             ) : null}
             <Link
               href="/doctors"
-              className="rounded-lg bg-primary px-4 py-1.5 text-label-md font-medium text-white hover:bg-primary-700"
+              className="rounded-full bg-[#111315] px-4 py-2 text-label-md font-semibold text-white shadow-sm hover:bg-black"
             >
-              Book appointment
+              <span className="hidden sm:inline">Book appointment</span>
+              <span className="sm:hidden">Book</span>
             </Link>
+            {isPatientLogged === false ? (
+              <Link
+                href="/patient/login"
+                aria-label="Patient login"
+                className="grid h-9 w-9 place-items-center rounded-full border border-black/10 bg-white/70 text-ink hover:bg-white sm:hidden"
+              >
+                <LogIn className="h-4 w-4" />
+              </Link>
+            ) : null}
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-      <footer className="mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 py-8 text-center text-body-sm text-ink-soft">
+      <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+      <footer className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-8 text-center text-body-sm text-ink-soft">
         <span>
           Find hospitals and doctors, and book appointments online. © {new Date().getFullYear()} HealthConnect.
         </span>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap justify-center gap-4">
+          <Link href="/hospitals" className="font-medium text-ink-muted hover:text-ink">
+            Hospitals
+          </Link>
+          <Link href="/doctors" className="font-medium text-ink-muted hover:text-ink">
+            Doctors
+          </Link>
+          <Link href="/#specialties" className="font-medium text-ink-muted hover:text-ink">
+            Specialties
+          </Link>
           <Link href="/patient/login" className="font-medium text-ink-muted hover:text-primary">
             Patient Portal
           </Link>
-          <span className="text-line">•</span>
           <Link href="/login" className="font-medium text-ink-muted hover:text-primary">
             Hospital staff login
           </Link>

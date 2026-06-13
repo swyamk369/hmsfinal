@@ -7,6 +7,15 @@ import { AppModule } from './app.module';
 import { GlobalHttpExceptionFilter } from './common/http-exception.filter';
 import { assertEnv } from './common/env.validation';
 
+const configuredCorsOrigins = (): string[] =>
+  (process.env.CORS_ORIGIN ?? 'http://localhost:4001')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const isLocalDevOrigin = (origin: string): boolean =>
+  process.env.NODE_ENV !== 'production' && /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+
 async function bootstrap(): Promise<void> {
   // Fail fast on a misconfigured environment (missing DB/Firebase, insecure
   // production CORS or default passwords). Never boot insecurely.
@@ -14,9 +23,16 @@ async function bootstrap(): Promise<void> {
 
   const app = await NestFactory.create(AppModule, { cors: false });
   app.use(helmet());
+  const corsOrigins = configuredCorsOrigins();
   app.enableCors({
-    // Dev default matches this app's web port (:4001); see CLAUDE.md ports.
-    origin: (process.env.CORS_ORIGIN ?? 'http://localhost:4001').split(',').map((s) => s.trim()),
+    origin: (origin, callback) => {
+      if (!origin || corsOrigins.includes(origin) || isLocalDevOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS origin not allowed: ${origin}`));
+    },
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'X-HMS-Path'],
   });
