@@ -9,7 +9,7 @@ import { platformDb } from '@hms/db';
  */
 @Injectable()
 export class PublicService {
-  private hospitalView(hp: any) {
+  private hospitalView(hp: any, portalBookable = false) {
     return {
       tenantId: hp.tenantId, // needed by the booking layer to target the hospital
       slug: hp.hospitalSlug,
@@ -31,11 +31,12 @@ export class PublicService {
       consultationTypes: hp.consultationTypes,
       insuranceAccepted: hp.insuranceAccepted,
       languages: hp.languages,
-      bookingEnabled: hp.bookingEnabled,
+      // Effective booking: the hospital flag AND the portal master switches.
+      bookingEnabled: Boolean(hp.bookingEnabled && portalBookable),
     };
   }
 
-  private doctorView(dp: any) {
+  private doctorView(dp: any, hospitalBookable = false) {
     return {
       tenantId: dp.tenantId,
       doctorId: dp.doctorId,
@@ -55,8 +56,15 @@ export class PublicService {
       acceptsNewPatients: dp.acceptsNewPatients,
       acceptsExistingPatients: dp.acceptsExistingPatients,
       telehealthAvailable: dp.telehealthAvailable,
-      bookingEnabled: dp.bookingEnabled,
+      // Effective booking: the doctor flag AND the hospital + portal master switches.
+      bookingEnabled: Boolean(dp.bookingEnabled && hospitalBookable),
     };
+  }
+
+  /** True when the tenant's portal + online booking master switches are both on. */
+  private async portalBookable(tenantId: string): Promise<boolean> {
+    const portal = await platformDb.patientPortalSettings.findUnique({ where: { tenantId } });
+    return Boolean(portal?.enabled && portal?.onlineBookingEnabled);
   }
 
   private typeView(t: any) {
@@ -123,7 +131,7 @@ export class PublicService {
       where: { hospitalSlug: slug, isPublic: true, profileStatus: 'PUBLISHED' as any },
     });
     if (!hp) throw new NotFoundException('Hospital not found or not published');
-    const [doctors, types] = await Promise.all([
+    const [doctors, types, portalBookable] = await Promise.all([
       platformDb.publicDoctorProfile.findMany({
         where: { tenantId: hp.tenantId, isPublic: true, profileStatus: 'PUBLISHED' as any },
         orderBy: { displayName: 'asc' },
@@ -132,10 +140,12 @@ export class PublicService {
         where: { tenantId: hp.tenantId, isPublic: true, isActive: true },
         orderBy: { name: 'asc' },
       }),
+      this.portalBookable(hp.tenantId),
     ]);
+    const hospitalBookable = Boolean(hp.bookingEnabled && portalBookable);
     return {
-      hospital: this.hospitalView(hp),
-      doctors: doctors.map((d) => this.doctorView(d)),
+      hospital: this.hospitalView(hp, portalBookable),
+      doctors: doctors.map((d) => this.doctorView(d, hospitalBookable)),
       appointmentTypes: types.map((t) => this.typeView(t)),
     };
   }
@@ -154,7 +164,7 @@ export class PublicService {
       where: { doctorSlug: slug, isPublic: true, profileStatus: 'PUBLISHED' as any },
     });
     if (!dp) throw new NotFoundException('Doctor not found or not published');
-    const [hp, types] = await Promise.all([
+    const [hp, types, portalBookable] = await Promise.all([
       platformDb.publicHospitalProfile.findFirst({
         where: { tenantId: dp.tenantId, isPublic: true, profileStatus: 'PUBLISHED' as any },
       }),
@@ -162,10 +172,12 @@ export class PublicService {
         where: { tenantId: dp.tenantId, isPublic: true, isActive: true },
         orderBy: { name: 'asc' },
       }),
+      this.portalBookable(dp.tenantId),
     ]);
+    const hospitalBookable = Boolean(hp?.bookingEnabled && portalBookable);
     return {
-      doctor: this.doctorView(dp),
-      hospital: hp ? this.hospitalView(hp) : null,
+      doctor: this.doctorView(dp, hospitalBookable),
+      hospital: hp ? this.hospitalView(hp, portalBookable) : null,
       appointmentTypes: types.map((t) => this.typeView(t)),
     };
   }

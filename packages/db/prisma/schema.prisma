@@ -1936,7 +1936,9 @@ model PublicDoctorProfile {
   doctorId                String              @db.Uuid // Provider.id
   doctorSlug              String
   isPublic                Boolean             @default(false)
-  bookingEnabled          Boolean             @default(false)
+  // Opt-out: hospital + portal switches are the master control for online
+  // booking. A published doctor is bookable unless explicitly disabled here.
+  bookingEnabled          Boolean             @default(true)
   displayName             String
   photoUrl                String?
   specialty               String?

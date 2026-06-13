@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HealthConnect — Homepage v2 (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-700:#1d4ed8; --blue-600:#2563eb; --blue-500:#3b82f6; --blue-400:#60a5fa;
+    --blue-50:#eff6ff; --blue-100:#dbeafe; --teal:#0ea5b7;
+    --ink:#0f172a; --slate-700:#334155; --slate-600:#475569; --slate-500:#64748b; --slate-400:#94a3b8;
+    --line:#e8eef5; --bg:#f7faff; --white:#ffffff;
+    --radius:20px; --radius-sm:14px;
+    --shadow-sm:0 1px 2px rgba(16,38,76,.06), 0 1px 3px rgba(16,38,76,.05);
+    --shadow:0 10px 30px -12px rgba(20,52,110,.20), 0 4px 12px -6px rgba(20,52,110,.12);
+    --shadow-lg:0 30px 60px -20px rgba(20,52,110,.30), 0 12px 24px -12px rgba(20,52,110,.18);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased;
+    line-height:1.55;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:.02em;
+    color:var(--blue-700);background:var(--blue-50);border:1px solid var(--blue-100);
+    padding:7px 14px;border-radius:999px}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--blue-500);box-shadow:0 0 0 4px rgba(59,130,246,.18)}
+  h1,h2,h3{margin:0;letter-spacing:-.02em;line-height:1.08}
+  .muted{color:var(--slate-600)}
+
+  /* ===== Top progress bar ===== */
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:120;
+    background:linear-gradient(90deg,var(--blue-500),var(--teal));transition:width .1s linear}
+
+  /* ===== Nav ===== */
+  header.nav{position:sticky;top:0;z-index:100;backdrop-filter:saturate(1.4) blur(12px);
+    background:rgba(247,250,255,.72);border-bottom:1px solid transparent;transition:border-color .3s, background .3s, box-shadow .3s}
+  header.nav.scrolled{border-color:var(--line);background:rgba(255,255,255,.82);box-shadow:var(--shadow-sm)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .brand .logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-400));box-shadow:0 8px 18px -6px rgba(37,99,235,.6)}
+  .nav-links{display:flex;align-items:center;gap:28px}
+  .nav-links a.link{font-weight:600;color:var(--slate-700);font-size:15px;position:relative}
+  .nav-links a.link::after{content:"";position:absolute;left:0;bottom:-6px;height:2px;width:0;background:var(--blue-600);transition:width .25s}
+  .nav-links a.link:hover::after{width:100%}
+  .nav-cta{display:flex;align-items:center;gap:16px}
+  .ghost{display:inline-flex;align-items:center;gap:7px;font-weight:600;color:var(--blue-700)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;border:none;cursor:pointer;
+    padding:11px 20px;border-radius:12px;font-size:15px;transition:transform .15s, box-shadow .25s, background .25s}
+  .btn-primary{color:#fff;background:linear-gradient(135deg,var(--blue-600),var(--blue-500));box-shadow:0 12px 24px -10px rgba(37,99,235,.7)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 30px -10px rgba(37,99,235,.75)}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;overflow:hidden;padding:64px 0 40px}
+  .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+  .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:float 14s ease-in-out infinite}
+  .blob.b1{width:520px;height:520px;left:-160px;top:-160px;background:radial-gradient(circle at 30% 30%,#bfdbfe,#93c5fd 60%,transparent 70%)}
+  .blob.b2{width:460px;height:460px;right:-140px;top:-80px;background:radial-gradient(circle at 60% 40%,#cffafe,#a5f3fc 55%,transparent 70%);animation-delay:-5s}
+  .blob.b3{width:380px;height:380px;left:40%;bottom:-200px;background:radial-gradient(circle at 50% 50%,#e0e7ff,#c7d2fe 55%,transparent 70%);animation-delay:-9s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,30px) scale(1.06)}}
+  .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.05) 1px,transparent 1px);background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 75%)}
+  .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .hero h1{font-size:54px;font-weight:900;margin:18px 0 16px}
+  .hero h1 .grad{background:linear-gradient(120deg,var(--blue-600),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.sub{font-size:18px;max-width:520px;color:var(--slate-600);margin:0 0 26px}
+
+  /* search */
+  .search{display:flex;gap:10px;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);
+    border:1px solid var(--line);border-radius:18px;padding:10px;box-shadow:var(--shadow);max-width:560px;
+    transition:box-shadow .3s, border-color .3s}
+  .search:focus-within{border-color:var(--blue-300,#93c5fd);box-shadow:0 0 0 4px rgba(59,130,246,.16),var(--shadow-lg)}
+  .field{display:flex;align-items:center;gap:9px;flex:1;padding:8px 12px;border-radius:12px}
+  .field svg{flex:0 0 auto;color:var(--slate-400)}
+  .field input{border:none;outline:none;background:transparent;font-size:15px;width:100%;font-family:inherit;color:var(--ink)}
+  .field.city{flex:.8;border-left:1px solid var(--line)}
+  .search .btn-primary{border-radius:12px;padding:12px 22px}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;max-width:560px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
+    padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--slate-700);
+    cursor:pointer;transition:transform .15s, box-shadow .2s, border-color .2s, color .2s}
+  .chip:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--blue-100);color:var(--blue-700)}
+  .chip .ic{color:var(--blue-500)}
+
+  /* hero visual */
+  .hero-visual{position:relative}
+  .hero-photo{width:100%;height:440px;border-radius:24px;object-fit:cover;display:block;
+    box-shadow:var(--shadow-lg);background:linear-gradient(135deg,#dbeafe,#a5f3fc)}
+  .float-card{position:absolute;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
+  .float-card .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff}
+  .fc-1{top:24px;left:-26px;animation:bob 6s ease-in-out infinite}
+  .fc-2{bottom:26px;right:-22px;animation:bob 6s ease-in-out infinite;animation-delay:-3s}
+  .fc-3{bottom:120px;left:-34px;animation:bob 7s ease-in-out infinite;animation-delay:-1.5s}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .float-card .t{font-size:13px;color:var(--slate-500);font-weight:500}
+  .float-card .v{font-size:16px;font-weight:800}
+
+  /* ===== Stats ===== */
+  .stats{margin-top:18px}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px 30px;box-shadow:var(--shadow-sm)}
+  .stat .n{font-size:34px;font-weight:900;letter-spacing:-.03em;background:linear-gradient(120deg,var(--blue-600),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{font-size:14px;color:var(--slate-600);font-weight:500;margin-top:2px}
+
+  /* ===== Section header ===== */
+  section{padding:74px 0}
+  .sec-head{text-align:center;max-width:680px;margin:0 auto 46px}
+  .sec-head h2{font-size:38px;font-weight:850;margin:14px 0 12px}
+  .sec-head p{font-size:17px;color:var(--slate-600);margin:0}
+
+  /* ===== Bento features ===== */
+  .bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:200px;gap:20px}
+  .card{position:relative;overflow:hidden;background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px;box-shadow:var(--shadow-sm);transition:transform .25s, box-shadow .25s, border-color .25s}
+  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--blue-100)}
+  .card .icw{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:#fff;margin-bottom:14px;
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-400));box-shadow:0 10px 20px -8px rgba(37,99,235,.6)}
+  .card h3{font-size:19px;font-weight:750;margin-bottom:8px}
+  .card p{font-size:14.5px;color:var(--slate-600);margin:0}
+  .card.big{grid-column:span 3;grid-row:span 2}
+  .card.tall{grid-column:span 3}
+  .card.wide{grid-column:span 3}
+  .card.sm{grid-column:span 2}
+  .card .photo{position:absolute;inset:0;z-index:0;object-fit:cover;width:100%;height:100%;opacity:.9}
+  .card .veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(15,23,42,.05),rgba(15,23,42,.72))}
+  .card .on-photo{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
+  .card .on-photo h3{color:#fff}.card .on-photo p{color:rgba(255,255,255,.85)}
+  .grad-border{position:absolute;inset:0;border-radius:var(--radius);padding:1px;background:linear-gradient(135deg,rgba(59,130,246,.5),rgba(14,165,183,.3),transparent);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .25s}
+  .card:hover .grad-border{opacity:1}
+
+  /* ===== How it works ===== */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;counter-reset:step}
+  .step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px;position:relative;box-shadow:var(--shadow-sm)}
+  .step .num{counter-increment:step;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#fff;
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-400));margin-bottom:16px}
+  .step .num::before{content:counter(step,decimal-leading-zero)}
+  .step h3{font-size:18px;margin-bottom:8px}
+  .step p{font-size:14.5px;color:var(--slate-600);margin:0}
+  .step .line{position:absolute;top:51px;right:-26px;width:26px;height:2px;background:linear-gradient(90deg,var(--blue-300,#93c5fd),transparent)}
+  .step:last-child .line{display:none}
+
+  /* ===== Specialties ===== */
+  .spec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .spec{position:relative;height:150px;border-radius:var(--radius-sm);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer}
+  .spec img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s;background:linear-gradient(135deg,#dbeafe,#a5f3fc)}
+  .spec:hover img{transform:scale(1.08)}
+  .spec .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.1),rgba(15,23,42,.66))}
+  .spec .label{position:absolute;left:14px;bottom:12px;color:#fff;font-weight:700;font-size:15px;z-index:2;display:flex;align-items:center;gap:8px}
+
+  /* ===== Doctors ===== */
+  .docs{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .doc{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .25s, box-shadow .25s}
+  .doc:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+  .doc .ph{height:170px;width:100%;object-fit:cover;background:linear-gradient(135deg,#dbeafe,#a5f3fc)}
+  .doc .body{padding:16px 18px}
+  .doc .name{font-weight:750;font-size:16px}
+  .doc .sp{color:var(--slate-500);font-size:13.5px;margin-top:2px}
+  .doc .row{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+  .doc .rate{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:13.5px;color:#b45309}
+  .doc .book{font-size:13px;font-weight:700;color:var(--blue-700)}
+
+  /* ===== Testimonial ===== */
+  .quote{max-width:840px;margin:0 auto;text-align:center}
+  .quote p{font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.4}
+  .quote .who{margin-top:22px;color:var(--slate-600);font-weight:600}
+
+  /* ===== CTA ===== */
+  .cta{position:relative;overflow:hidden;border-radius:28px;padding:60px 40px;text-align:center;color:#fff;
+    background:linear-gradient(135deg,var(--blue-700),var(--blue-500) 60%,var(--teal));box-shadow:var(--shadow-lg)}
+  .cta::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1px);background-size:22px 22px;opacity:.5}
+  .cta h2{position:relative;z-index:1;font-size:38px;font-weight:850;margin-bottom:14px}
+  .cta p{position:relative;z-index:1;font-size:17px;opacity:.92;max-width:560px;margin:0 auto 26px}
+  .cta .btns{position:relative;z-index:1;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .cta .btn-white{background:#fff;color:var(--blue-700)}
+  .cta .btn-outline{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.5);color:#fff}
+
+  /* ===== Footer ===== */
+  footer{padding:54px 0 40px;border-top:1px solid var(--line);background:#fff}
+  .foot{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px}
+  .foot h4{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--slate-500);margin:0 0 14px}
+  .foot a{display:block;color:var(--slate-600);font-size:14.5px;margin-bottom:10px}
+  .foot a:hover{color:var(--blue-700)}
+  .foot .muted{font-size:14px;max-width:280px;margin-top:12px}
+  .foot-bottom{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--slate-500);font-size:13.5px;flex-wrap:wrap;gap:10px}
+
+  /* ===== Reveal animation ===== */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .stagger>*{opacity:0;transform:translateY(22px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+  .stagger.in>*{opacity:1;transform:none}
+  .stagger.in>*:nth-child(2){transition-delay:.08s}.stagger.in>*:nth-child(3){transition-delay:.16s}
+  .stagger.in>*:nth-child(4){transition-delay:.24s}.stagger.in>*:nth-child(5){transition-delay:.32s}
+  .stagger.in>*:nth-child(6){transition-delay:.4s}.stagger.in>*:nth-child(7){transition-delay:.48s}
+  .stagger.in>*:nth-child(8){transition-delay:.56s}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal,.stagger>*{opacity:1;transform:none}}
+
+  /* ===== Responsive ===== */
+  @media(max-width:980px){
+    .hero-grid{grid-template-columns:1fr;gap:34px}.hero h1{font-size:42px}
+    .stats-grid{grid-template-columns:repeat(2,1fr);gap:18px}
+    .bento{grid-template-columns:repeat(2,1fr);grid-auto-rows:auto}
+    .card.big,.card.tall,.card.wide,.card.sm{grid-column:span 2;grid-row:auto;min-height:200px}
+    .steps,.spec-grid,.docs{grid-template-columns:repeat(2,1fr)}
+    .foot{grid-template-columns:1fr 1fr}.nav-links{display:none}
+  }
+  @media(max-width:560px){
+    .hero h1{font-size:34px}.search{flex-direction:column}.field.city{border-left:none;border-top:1px solid var(--line)}
+    .stats-grid,.steps,.spec-grid,.docs,.foot{grid-template-columns:1fr}.sec-head h2{font-size:30px}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <span class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>
+      </span>
+      HealthConnect
+    </div>
+    <nav class="nav-links">
+      <a class="link" href="#features">Hospitals</a>
+      <a class="link" href="#doctors">Doctors</a>
+      <a class="link" href="#how">How it works</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="ghost" href="#">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+        Patient Portal
+      </a>
+      <button class="btn btn-primary">Book appointment</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid-overlay"></div></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy reveal">
+      <span class="eyebrow"><span class="dot"></span> Trusted by patients across every partner hospital</span>
+      <h1>Find &amp; book healthcare <span class="grad">appointments online</span></h1>
+      <p class="sub">Search doctors and hospitals, see real-time availability, and manage your visits securely — one login across every hospital you visit.</p>
+
+      <div class="search">
+        <label class="field">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input placeholder="Doctor, specialty, or condition" />
+        </label>
+        <label class="field city">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <input placeholder="City" />
+        </label>
+        <button class="btn btn-primary">Search</button>
+      </div>
+
+      <div class="chips">
+        <span class="chip"><span class="ic">♡</span> General Physician</span>
+        <span class="chip"><span class="ic">♥</span> Cardiology</span>
+        <span class="chip"><span class="ic">◍</span> Pediatrics</span>
+        <span class="chip"><span class="ic">⚇</span> Neurology</span>
+        <span class="chip"><span class="ic">⚘</span> Orthopedics</span>
+        <span class="chip"><span class="ic">◉</span> Ophthalmology</span>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal">
+      <img class="hero-photo" alt="Doctor with patient"
+        src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80"
+        onerror="this.style.visibility='hidden'" />
+      <div class="float-card fc-1">
+        <span class="ic" style="background:linear-gradient(135deg,#22c55e,#16a34a)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="m20 6-11 11-5-5"/></svg>
+        </span>
+        <div><div class="t">Appointment confirmed</div><div class="v">Today, 4:30 PM</div></div>
+      </div>
+      <div class="float-card fc-3">
+        <span class="ic" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M3 12h4l2 5 4-12 2 7h6"/></svg>
+        </span>
+        <div><div class="t">Live availability</div><div class="v">12 slots open</div></div>
+      </div>
+      <div class="float-card fc-2">
+        <span class="ic" style="background:linear-gradient(135deg,#0ea5b7,#22d3ee)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+        </span>
+        <div><div class="t">Records</div><div class="v">Private &amp; secure</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="wrap stats">
+    <div class="stats-grid reveal stagger">
+      <div class="stat"><div class="n" data-count="120" data-suffix="+">0</div><div class="l">Partner hospitals</div></div>
+      <div class="stat"><div class="n" data-count="3500" data-suffix="+">0</div><div class="l">Verified doctors</div></div>
+      <div class="stat"><div class="n" data-count="98" data-suffix="%">0</div><div class="l">Appointments on time</div></div>
+      <div class="stat"><div class="n" data-count="250" data-suffix="K+">0</div><div class="l">Patients served</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES (bento) -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><span class="dot"></span> Why HealthConnect</span>
+      <h2>Care that feels effortless</h2>
+      <p>Everything you need to find the right doctor, book in seconds, and keep your health records together — across every hospital.</p>
+    </div>
+    <div class="bento stagger reveal">
+      <div class="card big">
+        <img class="photo" alt="Booking" src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80" onerror="this.remove()"/>
+        <div class="veil"></div>
+        <div class="on-photo">
+          <h3>Real-time booking</h3>
+          <p>See genuine open slots from each hospital's live schedule and confirm in a few taps — no phone calls, no waiting.</p>
+        </div>
+        <div class="grad-border"></div>
+      </div>
+      <div class="card sm">
+        <div class="icw"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <h3>One login, everywhere</h3>
+        <p>A single patient identity across every hospital you visit.</p>
+        <div class="grad-border"></div>
+      </div>
+      <div class="card sm">
+        <div class="icw"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></div>
+        <h3>Private &amp; secure</h3>
+        <p>Records isolated per hospital, never shared between them.</p>
+        <div class="grad-border"></div>
+      </div>
+      <div class="card wide">
+        <div class="icw"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
+        <h3>Your records, in one place</h3>
+        <p>Appointments, bills, prescriptions and shared reports — organised and accessible whenever you need them.</p>
+        <div class="grad-border"></div>
+      </div>
+      <div class="card sm">
+        <div class="icw"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <h3>Reminders that work</h3>
+        <p>Email, SMS &amp; WhatsApp nudges so you never miss a visit.</p>
+        <div class="grad-border"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background:linear-gradient(180deg,#fff,var(--bg))">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><span class="dot"></span> How it works</span>
+      <h2>Book your visit in three steps</h2>
+      <p>From search to confirmation in under a minute.</p>
+    </div>
+    <div class="steps stagger reveal">
+      <div class="step"><div class="num"></div><h3>Search</h3><p>Find doctors and hospitals by specialty, condition, or city with real-time availability.</p><div class="line"></div></div>
+      <div class="step"><div class="num"></div><h3>Choose a slot</h3><p>Pick a genuine open time from the hospital's live schedule — instantly, in your timezone.</p><div class="line"></div></div>
+      <div class="step"><div class="num"></div><h3>Confirm &amp; manage</h3><p>Get confirmation and reminders, then manage everything from your secure patient portal.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECIALTIES -->
+<section id="specialties">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><span class="dot"></span> Browse by specialty</span>
+      <h2>Care for every need</h2>
+      <p>Explore top specialties available across partner hospitals.</p>
+    </div>
+    <div class="spec-grid stagger reveal">
+      <div class="spec"><img alt="Cardiology" src="https://images.unsplash.com/photo-1628348070889-cb656235b4eb?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">♥ Cardiology</div></div>
+      <div class="spec"><img alt="Pediatrics" src="https://images.unsplash.com/photo-1602052793312-b99c2a9ee797?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">◍ Pediatrics</div></div>
+      <div class="spec"><img alt="Neurology" src="https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">⚇ Neurology</div></div>
+      <div class="spec"><img alt="Orthopedics" src="https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">⚘ Orthopedics</div></div>
+      <div class="spec"><img alt="Ophthalmology" src="https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">◉ Ophthalmology</div></div>
+      <div class="spec"><img alt="General Physician" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">♡ General Physician</div></div>
+      <div class="spec"><img alt="Dermatology" src="https://images.unsplash.com/photo-1612531386530-97286d97c2d2?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">✦ Dermatology</div></div>
+      <div class="spec"><img alt="Dentistry" src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="veil"></div><div class="label">◇ Dentistry</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DOCTORS -->
+<section id="doctors" style="background:linear-gradient(180deg,var(--bg),#fff)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow"><span class="dot"></span> Top rated</span>
+      <h2>Meet trusted doctors</h2>
+      <p>Verified profiles, real patient ratings, and live availability.</p>
+    </div>
+    <div class="docs stagger reveal">
+      <div class="doc"><img class="ph" alt="Dr. Anita Rao" src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="body"><div class="name">Dr. Anita Rao</div><div class="sp">Cardiologist · 14 yrs</div><div class="row"><span class="rate">★ 4.9</span><span class="book">Book →</span></div></div></div>
+      <div class="doc"><img class="ph" alt="Dr. James Okoye" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="body"><div class="name">Dr. James Okoye</div><div class="sp">Neurologist · 11 yrs</div><div class="row"><span class="rate">★ 4.8</span><span class="book">Book →</span></div></div></div>
+      <div class="doc"><img class="ph" alt="Dr. Mei Lin" src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="body"><div class="name">Dr. Mei Lin</div><div class="sp">Pediatrician · 9 yrs</div><div class="row"><span class="rate">★ 5.0</span><span class="book">Book →</span></div></div></div>
+      <div class="doc"><img class="ph" alt="Dr. Sara Haddad" src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=500&q=80" onerror="this.remove()"/><div class="body"><div class="name">Dr. Sara Haddad</div><div class="sp">Orthopedic Surgeon · 16 yrs</div><div class="row"><span class="rate">★ 4.9</span><span class="book">Book →</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section>
+  <div class="wrap quote reveal">
+    <span class="eyebrow"><span class="dot"></span> What patients say</span>
+    <p style="margin-top:22px">“I booked a cardiologist, saw my reports from a different hospital, and got a WhatsApp reminder — all from one login. It finally feels like healthcare built for patients.”</p>
+    <div class="who">— Priya M., HealthConnect patient</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="wrap">
+    <div class="cta reveal">
+      <h2>Your next appointment is a search away</h2>
+      <p>Join thousands of patients booking and managing care across every partner hospital — securely, in one place.</p>
+      <div class="btns">
+        <button class="btn btn-white">Book an appointment</button>
+        <button class="btn btn-outline">Open patient portal</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="brand"><span class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></span>HealthConnect</div>
+        <p class="muted">Find, book, and manage healthcare across every hospital you visit — with one secure login.</p>
+      </div>
+      <div><h4>Patients</h4><a href="#">Find a doctor</a><a href="#">Find a hospital</a><a href="#">Patient portal</a><a href="#">Book appointment</a></div>
+      <div><h4>Company</h4><a href="#">About</a><a href="#">For hospitals</a><a href="#">Security</a><a href="#">Careers</a></div>
+      <div><h4>Support</h4><a href="#">Help center</a><a href="#">Contact</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+    <div class="foot-bottom"><span>© 2026 HealthConnect. All rights reserved.</span><span>Made for patients · Built on a secure multi-hospital platform</span></div>
+  </div>
+</footer>
+
+<script>
+  // Scroll progress + nav shadow
+  const prog=document.getElementById('progress'), nav=document.getElementById('nav');
+  const onScroll=()=>{
+    const h=document.documentElement;
+    const sc=(h.scrollTop)/(h.scrollHeight-h.clientHeight);
+    prog.style.width=(sc*100)+'%';
+    nav.classList.toggle('scrolled', h.scrollTop>8);
+  };
+  document.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  // Reveal on scroll
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in');
+      if(e.target.dataset.counted!=='1' && e.target.querySelector('[data-count]')){ e.target.dataset.counted='1'; runCounts(e.target);}
+      io.unobserve(e.target);} });
+  },{threshold:.16});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Count-up
+  function runCounts(scope){
+    scope.querySelectorAll('[data-count]').forEach(el=>{
+      const target=+el.dataset.count, suffix=el.dataset.suffix||'', dur=1300, t0=performance.now();
+      const render=v=> (target>=1000 ? Math.round(v).toLocaleString() : Math.round(v));
+      const step=(t)=>{
+        const p=Math.min(1,(t-t0)/dur), eased=1-Math.pow(1-p,3), val=target*eased;
+        el.textContent = render(val) + (p>=1 ? suffix : '');
+        if(p<1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  }
+</script>
+</body>
+</html>

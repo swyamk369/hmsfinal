@@ -108,10 +108,14 @@ function ProfileTab({ t }: { t: string }) {
       );
     } catch (e) {
       const message = (e as Error).message;
+      // status 0 = the request never reached the API (bad URL / connectivity).
+      // Any other status means the API responded with an error — surface the real
+      // message instead of guessing, so the actual cause is visible.
+      const status = (e as { status?: number }).status;
       setErr(
-        message.includes('expected pattern')
-          ? 'Could not load the hospital public profile because the web app API URL is invalid. Check NEXT_PUBLIC_API_URL in Render and redeploy the web service.'
-          : message,
+        status === 0
+          ? 'Could not reach the API. On Render, set NEXT_PUBLIC_API_URL on the web service to your API URL and redeploy; otherwise check the API service is running.'
+          : `Could not load the hospital public profile: ${message}`,
       );
     } finally {
       setLoaded(true);

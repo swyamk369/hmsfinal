@@ -11,6 +11,7 @@ function model() {
   return {
     findFirst: jest.fn().mockResolvedValue(null),
     findMany: jest.fn().mockResolvedValue([]),
+    findUnique: jest.fn().mockResolvedValue(null),
   };
 }
 
@@ -23,6 +24,7 @@ beforeEach(() => {
     publicHospitalProfile: model(),
     publicDoctorProfile: model(),
     appointmentType: model(),
+    patientPortalSettings: model(),
   });
   svc = new PublicService();
 });
@@ -67,6 +69,24 @@ describe('Public directory — published-only & public-safe', () => {
   it('doctorBySlug 404s when the doctor is missing or unpublished', async () => {
     pdb.publicDoctorProfile.findFirst.mockResolvedValue(null);
     await expect(svc.doctorBySlug('nope')).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('doctor is bookable only when doctor + hospital + portal switches are all on', async () => {
+    pdb.publicDoctorProfile.findFirst.mockResolvedValue({
+      tenantId: 't1', doctorId: 'd1', doctorSlug: 'dr', displayName: 'Dr A', bookingEnabled: true,
+    });
+    pdb.publicHospitalProfile.findFirst.mockResolvedValue({ tenantId: 't1', bookingEnabled: true });
+    pdb.appointmentType.findMany.mockResolvedValue([]);
+
+    // portal OFF → not bookable even though doctor + hospital flags are on
+    pdb.patientPortalSettings.findUnique.mockResolvedValue({ enabled: true, onlineBookingEnabled: false });
+    let out = await svc.doctorBySlug('dr');
+    expect(out.doctor.bookingEnabled).toBe(false);
+
+    // portal ON → bookable
+    pdb.patientPortalSettings.findUnique.mockResolvedValue({ enabled: true, onlineBookingEnabled: true });
+    out = await svc.doctorBySlug('dr');
+    expect(out.doctor.bookingEnabled).toBe(true);
   });
 
   it('search() honors the type filter', async () => {
