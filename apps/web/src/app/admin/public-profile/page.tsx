@@ -107,7 +107,12 @@ function ProfileTab({ t }: { t: string }) {
           : { hospitalDisplayName: '' },
       );
     } catch (e) {
-      setErr((e as Error).message);
+      const message = (e as Error).message;
+      setErr(
+        message.includes('expected pattern')
+          ? 'Could not load the hospital public profile because the web app API URL is invalid. Check NEXT_PUBLIC_API_URL in Render and redeploy the web service.'
+          : message,
+      );
     } finally {
       setLoaded(true);
     }
